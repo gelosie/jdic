@@ -1,76 +1,122 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>SaverBeans FAQ</title></head>
+<html><head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>SaverBeans FAQ</title>
+</head>
 <body>
 <h1>SaverBeans Screensaver FAQ</h1>
 
+
 <a href="https://jdic.dev.java.net/documentation/incubator/screensaver/">&lt;&lt; Go Back to SaverBeans SDK page</a><br>
+
 <h3>General</h3>
 
+
 <span style="font-weight: bold;">Q.</span> What is SaverBeans?<br>
+
 <span style="font-weight: bold;">A.</span> <a href="https://jdic.dev.java.net/documentation/incubator/screensaver/">SaverBeans</a> is a collection of platform independent screensavers and a set of tools to help developers build them.<br>
+
 <span style="font-weight: bold;"><br>
 </span><span style="font-weight: bold;">Q.</span> What is the SaverBeans SDK?<br>
+
 <span style="font-weight: bold;">A.</span> It is a software development kit for developing platform-independent screensavers, and it is part of the <a href="http://jdic.dev.java.net/">JDIC</a> project.<br>
+
 <span style="font-weight: bold;"><br>
 </span><span style="font-weight: bold;">Q. </span>What is JDIC?<br>
+
 
 <span style="font-weight: bold;">A.</span> <a href="http://jdic.dev.java.net/">JDIC</a> is short for JDesktop Integration Components.&nbsp; It "aims to make Java technology-based 
   applications ("Java applications") first-class citizens of current 
   desktop platforms without sacrificing platform independence."<br>
 
+
 <span style="font-weight: bold;"><br>
 </span><span style="font-weight: bold;">Q.</span> What is the SaverBeans Screensaver Pack?<br>
+
 <span style="font-weight: bold;">A.</span> It is a collection of community-contributed screensavers built with the SaverBeans SDK.<br>
+
 <br>
+
 <span style="font-weight: bold;">Q.</span> Where can I download the SaverBeans SDK and SaverBeans Screensaver Pack?<br>
+
 <span style="font-weight: bold;">A.</span> Click to download the <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList?folderID=1330&amp;expandFolder=1330&amp;folderID=0">SaverBeans SDK</a> and <a href="https://screensavers.dev.java.net/servlets/ProjectDocumentList">SaverBeans Screensaver Pack</a>.<br>
+
 <br>
+
 <span style="font-weight: bold;">Q.</span> How stable is the SaverBeans SDK?<br>
+
 <span style="font-weight: bold;">A.</span> The SaverBeans SDK is
 currently an early access release and is likely to have a number of
 bugs.&nbsp; We've tested it on various flavors of Windows and Unix and
 have had success, but true stability won't come until more people use
 it and report bugs.<br>
+
 <br>
+
 <span style="font-weight: bold;">Q.</span> I've written a screensaver.&nbsp; Where can I submit it?<br>
+
 <span style="font-weight: bold;">A.</span> Go to the <a href="http://screensavers.dev.java.net/">screensavers</a> project and follow the instructions there.<br>
+
 <br>
+
 <span style="font-weight: bold;">Q. </span>I've found a bug in a screensaver or the SaverBeans SDK.&nbsp; Where do I report it?<br>
+
 <span style="font-weight: bold;">A.</span> If the bug is in a particular screensaver, report it <a href="https://screensavers.dev.java.net/servlets/ProjectIssues">here</a>.&nbsp; If you are sure the bug is in the SDK itself (e.g. incorrect code generated for a particular platform), report it <a href="https://jdic.dev.java.net/servlets/ProjectIssues">here</a>.&nbsp; If you're not sure, use the first link.<br>
+
 <br>
+
 <span style="font-weight: bold;">Q. </span>What forums are available?<br>
+
 <span style="font-weight: bold;">A.</span> There is a <a href="https://screensavers.dev.java.net/servlets/ForumMessageList?forumID=698">general screensavers discussion forum</a> for screensavers developed using the SDK.<br>
+
 <br>
-<h3>Installing Screensavers</h3><span style="font-weight: bold;">
+
+<h3>Installing Screensavers</h3>
+<span style="font-weight: bold;">
 Q.</span> How do I install a SaverBeans screensaver on Windows?<br>
+
 <span style="font-weight: bold;">A.</span> First, <a href="https://screensavers.dev.java.net/servlets/ProjectDocumentList">download the screensaver</a>.&nbsp;
 For Windows, you should only download the files that end in
 -win32.zip.&nbsp; Then, copy all the files in the .zip (except
 README.txt) to your Windows system directory (usually
 C:\WINDOWS\SYSTEM32).&nbsp; That should do the trick.&nbsp; See the
 README.txt file that came with the screensaver for more details.<br>
+
 <br>
+
 <span style="font-weight: bold;">Q. </span>How do I install a SaverBeans screensaver on Unix (Linux, Solaris, JDS, etc.)?<br>
+
 <span style="font-weight: bold;">A.</span> First, <a href="https://screensavers.dev.java.net/servlets/ProjectDocumentList">download the screensaver</a>.&nbsp;
 For Unix, you should only download the files that end in
 -unix.zip.&nbsp; Then, follow the instructions in the README.txt.&nbsp;
 You will have to copy files to various places in your system to install
 the screensaver.<br>
+
 <br>
-<h3>Running Screensavers</h3><span style="font-weight: bold;">
+
+<h3>Running Screensavers</h3>
+<span style="font-weight: bold;">
 Q.</span> I tried to run the 'blackglass' screensaver but the screen looks like it's chopped in half.&nbsp; What happened?<br>
+
 <span style="font-weight: bold;">A.</span> This is how it's supposed to look - let it run for a little while
 and the effect will become clear.&nbsp; The beans at the top of the
 screen are going in a circle that's bigger than the screen and the
 beans on the bottom of the screen are simply a reflection.<br>
+
 <br>
+
 <span style="font-weight: bold;">Q.</span> Is it possible to change whcih Java Virtual Machine (JVM) the screensaver will use?<br>
+
 <span style="font-weight: bold;">A.</span> On Unix, the virtual machine
 is automatically detected using the steps outlined in the README.&nbsp;
 If this automatic detection fails, you can override it by passing <code>-jdkhome</code> to the screensaver.&nbsp; On Windows, the screensaver will use the "<code>HKEY_LOCAL_MACHINE\Software\JavaSoft\Java Runtime Environment\JavaHome</code>" registry setting to determine which JVM to use.&nbsp; This is automatically set by the JVM installer.<br>
+
 <br>
+
 <h3>Writing Screensavers</h3>
+
 <span style="font-weight: bold;">Q.</span> How do I write a screensaver configuration XML file?&nbsp; Is there a DTD or schema available?<br>
+
 <span style="font-weight: bold;">A.</span> The screensaver
 configuration XML file uses the same syntax as the xscreensaver
 configuration file.&nbsp; To access that documentation, you have to
@@ -78,10 +124,15 @@ first download the xscreensaver source bundle from <a href="http://www.jwz.org/x
 with no extension.&nbsp; There are also various examples in that
 directory.&nbsp; In order for the SDK to work correctly, you must
 always have the <code>-root</code>, <code>-jar</code>, <code>-class</code> and <code>-jdkhome</code> options, and the <code>-jar</code> and <code>-class</code> must be hard-coded via a <code>&lt;command&gt;</code> tag to the appropriate values.&nbsp; See the bouncingline sample for details.<br>
+
 <br>
+
 <span style="font-weight: bold;">Q.</span> My screensaver is throwing an exception - how do I access the stack trace?<br>
+
 <span style="font-weight: bold;">A.</span> The SaverBeans SDK uses the J2SE logging API.&nbsp; In most cases (e.g. if the exception is thrown during the <code>paint()</code> method) you should be able to retrieve the stack trace by adjusting your JVM logging configuration as follows:<br>
+
 <ol>
+
   <li>Edit your <code>$JAVA_HOME/jre/lib/logging.properties</code> file</li>
   <li>Change the line:<br>
 &nbsp;&nbsp;&nbsp; <code>handlers= java.util.logging.ConsoleHandler</code><br>
@@ -90,9 +141,27 @@ to:<br>
   <li>At the end of the file, add the following line:<br>
 &nbsp;&nbsp;&nbsp; <code>org.jdesktop.jdic.screensaver=ALL</code><br>
   </li>
-  <li>Restart the screensaver and look for a file called <code>java0.log</code>.&nbsp; That file should contain your stack trace and other debugging information.</li>
+  <li>Restart the screensaver and look for a file called <code>java0.log</code> in your home directory.&nbsp; That file should contain your stack trace and other debugging information.</li>
 </ol>
+
+<span style="font-weight: bold;">Q. </span>How do I log information from my screensaver?<br>
+
+<span style="font-weight: bold;">A.</span> The SaverBeans SDK uses J2SE logging.&nbsp; Follow the above
+instructions to enable logging to a file.&nbsp; Then, use code similar
+to the following to log information from your screensaver:<br>
+
+<blockquote>
+  <code>import java.util.logging.*;<br>
+...<br>
+Logger logger = Logger.getLogger("org.jdesktop.jdic.screensaver");<br>
+logger.log(Level.INFO, "Log message.");<br>
+
+    
+  </code>
+</blockquote>
+
 <br>
+
 
 
 
