@@ -304,6 +304,8 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
 char* ConvertJByteArray(JNIEnv *env, jbyteArray arr )
 {
 	int len =  env->GetArrayLength(arr);
+	if(len == 0)
+		return NULL;
 	char *temp = (char *)env->GetByteArrayElements(arr, 0);
 	char *buffer = (char *)malloc(len+1);
 	strncpy(buffer, temp, len);
@@ -327,6 +329,44 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
 	free(buffer);
 }
 
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_showBalloonMessage
+(JNIEnv *env , jobject obj, jlong icon, jint id, jbyteArray title, jbyteArray message, jint type)
+{
+	NOTIFYICONDATA tnd;
+	::ZeroMemory(&tnd, sizeof(tnd));
+	tnd.cbSize		= sizeof(tnd);
+	tnd.hWnd		= messageWindow;
+	tnd.uID			= id;
+	tnd.uFlags		= NIF_INFO;
+	switch (type) {
+		case 0 :
+			tnd.dwInfoFlags = NIIF_INFO;
+			break;
+		case 1 :
+			tnd.dwInfoFlags = NIIF_ERROR;
+			break;
+		case 2 :
+			tnd.dwInfoFlags = NIIF_WARNING;
+			break;
+		case 3 :
+			tnd.dwInfoFlags = NIIF_NONE;
+	}
+	tnd.hIcon		= (HICON)icon;
+
+	char *buffer = ConvertJByteArray(env, title);
+	if (buffer) {
+		lstrcpyn(tnd.szInfoTitle, buffer, ARRAYSIZE(tnd.szInfoTitle));
+	}
+	free(buffer);
+
+	buffer = ConvertJByteArray(env, message);
+	if (buffer) {
+		lstrcpyn(tnd.szInfo, buffer, ARRAYSIZE(tnd.szInfo));
+	}
+	free(buffer);
+
+	Shell_NotifyIcon(NIM_MODIFY, &tnd);
+}
 
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_removeIcon
 

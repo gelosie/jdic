@@ -41,6 +41,13 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
 
 /*
  * Class:     org_jdesktop_jdic_tray_internal_impl_WinTrayIconService
+ * Method:    showBalloonMessage
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_showBalloonMessage
+  (JNIEnv *, jobject, jlong, jint, jbyteArray, jbyteArray, jint);
+
+/*
+ * Class:     org_jdesktop_jdic_tray_internal_impl_WinTrayIconService
  * Method:    removeIcon
  * Signature: (I)V
  */
