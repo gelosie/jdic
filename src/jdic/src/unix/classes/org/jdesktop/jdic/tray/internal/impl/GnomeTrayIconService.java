@@ -70,10 +70,11 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
     }
 
     void mousePressed(final MouseEvent e) {
-        if (menu != null) {
-            if (e.isPopupTrigger()) {
-                if(tooltip != null)
-                	tooltip.setVisible(false);
+        if(tooltip != null)
+        	tooltip.setVisible(false);
+
+        if (e.isPopupTrigger()) {
+        	if (menu != null) {
                 Dimension d = menu.getPreferredSize();
                 Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
                 final Point p = e.getPoint();
@@ -88,27 +89,25 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                         popupMenuParent.toFront();
                     }
                 });
-            } else {
-                if(tooltip != null)
-                	tooltip.setVisible(false);
-                SwingUtilities.invokeLater(new Runnable(){
+            } 
+        }else {
+            SwingUtilities.invokeLater(new Runnable(){
+                public void run() {
+                  Thread actionThread = new Thread(){
                     public void run() {
-                      Thread actionThread = new Thread(new Runnable(){
-                      public void run() {
-                          ListIterator li = actionList.listIterator(0);
-                          while (li.hasNext()) {
-                          ActionListener al;
-                          al = (ActionListener) li.next();
-                          al.actionPerformed(new ActionEvent(GnomeTrayIconService.this,
-                                      ActionEvent.ACTION_PERFORMED, "PressAction", e.getWhen(),
-                                      0));
-                          }
-                      }
-                    });
-                    actionThread.start();
-                    }
-                });
-            }
+                        ListIterator li = actionList.listIterator(0);
+                        while (li.hasNext()) {
+                        ActionListener al;
+                        al = (ActionListener) li.next();
+                        al.actionPerformed(new ActionEvent(GnomeTrayIconService.this,
+                                    ActionEvent.ACTION_PERFORMED, "PressAction", e.getWhen(),
+                                    0));
+                        }
+                    }                  
+                  };
+                  actionThread.start();
+                }
+            });
         }
     }
 
