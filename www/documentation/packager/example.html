@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=iso-8859-1">
+  <title>JDIC Packager Example</title>
+  <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+  <meta name="AUTHOR" content=" ">
+  <meta name="CREATED" content="20000519;14440300">
+  <meta name="CHANGEDBY" content=" ">
+  <meta name="CHANGED" content="20000901;17584900">
+  <style>
+	<!--
+		@page { size: 21cm 29.7cm }
+		P { margin-left: 0.99cm; font-size: 12pt }
+		H1 { font-size: 20pt }
+		TD P { margin-left: 0.99cm; font-size: 12pt }
+		H2 { font-size: 16pt }
+		P.comment { color: #666666 }
+		P.required { color: #800000 }
+	-->
+	</style>
+</head>
+<body>
+<table WIDTH="100%"  height="25" BORDER=0 CELLPADDING=4 CELLSPACING=0 bordercolor="#FFFFCC" BGCOLOR="#99CCFF" >
+  <tr> 
+    <td><strong><font face="sans-serif" size="3">Example of using JDIC Packager
+      to package a JNLP
+      application</font></strong></td>
+  </tr>
+</table>
+<p>Below give the implementation details of using JDIC Packager to package a
+sample JNLP application.</p>
+<ul>
+  <li>
+    <h3><b>Draw - the sample JNLP application to package</b></h3>
+  </li>
+</ul>
+<blockquote>
+  We take a JNLP application Draw
+  as an example to demonstrate the usage of JDIC Packager.&nbsp;&nbsp;
+</blockquote>
+<p>Draw is a two dimensional drawing program allowing you to create rectangles, polygons,
+circles, which is created&nbsp; by Sun. The binary (draw.zip)
+for this application is available for download <a href="draw.zip">here</a>.</p>
+<ul>
+  <li>
+    <h3><b>Steps </b><b>of packaging the Draw application into an installable
+    package</b></h3>
+  </li>
+</ul>
+<p>Below are the steps to package Draw into an MSI package on Windows. To
+package it into a RPM package on Linux or PKG package on Solaris follows the
+same steps.</p>
+<p><b>1. Download draw.zip from the above link, and unzip it into a temporary
+directory, for example, <i>C:\temp\draw</i>.</b>&nbsp;
+</p>
+<p>There are below JNLP files under this directory:
+<blockquote>
+  <blockquote>
+<pre>C:\temp\draw
++- draw.jnlp: 
++- draw.jar: 
++- images/: 
+   +- draw.jpg</pre>
+  </blockquote>
+</blockquote>
+<p><span style="font-weight: bold;">2. Follow up the </span><span style="font-weight: bold">JDIC
+Packager </span><b><a name="Usage" href="README.html#Usage">u</a></b><b><a name="Usage" href="README.html#Usage">sage</a></b><span style="font-weight: bold">
+guideline to setup the running environment for jPackager.exe.</span>
+</p>
+<p><b>3. Run jPackager.exe.</b></p>
+<p>Suppose we are currently under directory <i>C:\temp</i>.
+We give below values for the required parameter and options.</p>
+<blockquote>
+  <ul>
+    <li><b>&lt;JNLP file path&gt;</b> = .\draw\draw.jnlp: this is the path of
+      the JNLP file.</li>
+    <li><b>-resourcepath</b>   <i>.\draw </i>:
+      since all the jnlp resource files (.jar file and image
+    files) are located under this path.</li>
+    <li><b>-packagename</b>  <i>drawpkg </i>: if this option is not used, <i>draw</i>
+      will be used by default.&nbsp;</li>
+    <li><b>-packagepath</b>  <i>C:\</i> : if this option is not used, the
+      current directory (C:\temp) will be used.</li>
+    <li><b>-version</b>  <i>2.0 </i>:&nbsp; if this option is not used, <i>1.0</i>
+      will be used.</li>
+    <li><b>-release</b>  <i>2</i> : if this option is not used, <i>1</i> will be
+      used.</li>
+    <li><b>-licensepath</b>  : we do not use this option for this example.</li>
+  </ul>
+</blockquote>
+<p>So, the complete command line is:</p>
+<p><b>C:\temp\&gt;jPackager.exe -resourcepath .\draw -packagename drawpkg -packagepath
+C:\ -version 2.0 -release 2 .\draw\draw.jnlp</b></p>
+<p>Hopefully, we'll get an installable <b> drawpkg.msi</b> file under directory <i>C:\</i>.</p>
+<ul>
+  <li><b>Run and verify the generated package.</b></li>
+</ul>
+<p>To check and verify the generated msi file, we could try to install it. Double click the generated drawpkg.msi file, there'll be below
+snapshot:</p>
+<p><img border="0" src="../../resource/draw4-install.jpg" width="499" height="392"></p>
+<p>Follow up the process by pressing &quot;Install&quot;, it finishes the
+installation with below snapshot: </p>
+<p><img border="0" src="../../resource/draw4-finish.jpg" width="499" height="392"> </p>
+<p>Press &quot;Finish&quot;, and launch javaws, Draw should be available in Java
+Web Start Application Manager: </p>
+<p><img border="0" src="../../resource/draw4-javaws.jpg" width="499" height="434"> </p>
+<p>So, the validation of the generated MSI package is verified. </p>
+</body>
+</html>
