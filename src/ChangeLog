@@ -1,14 +1,17 @@
-    * Release 0.8.8
+    * Up to date
     
     * Fixed issue list:   
       ID  Pri  Summary
       ==  ===  =======
+      101 P2   Browser not working with Mozilla installable (.exe) package
       106 P1   Tray disapears under windows
-      141 P3   I18N issue with tray support 
+      141 P3   I18N issue with tray support
+      147 P3   Jnlp2msi dose not support relative path.
+      148 P3   System tray empty space after remove/add
       150 P3   Tray's popup menu shows behind the frame if JFrame.setAlwaysOnTop(true)
       128 P3   PopupMenu is shown behind the taskbar if the auto-hide taskbar is enabled.
-      148 P3   System tray empty space after remove/add
       155 P3   Tray popup menu flashes on screen briefly(On Linux)
+      158 P3   MozEmbed.exe needs to be copied to work.
 
 2004-12-09 Armin Chen <armin_chen@dev.java.net>
 
