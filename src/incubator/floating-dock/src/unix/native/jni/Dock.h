@@ -42,10 +42,10 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
 /*
  * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
  * Method:    locateDock
- * Signature: ()Z
+ * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_locateDock
-  (JNIEnv *, jclass);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService

@@ -39,7 +39,6 @@
 #define POLLRDNORM POLLIN
 #endif
 
-#define DEBUG
 #ifdef DEBUG
 #define dprintf printf
 #else
@@ -55,6 +54,8 @@ static Display *     awt_display;
 
 /* AWT interface functions. */
 static int initialized_lock = 0;
+
+static const jbyte *javaHomeStr = NULL;
 
 
 /* AWT interface functions. */
@@ -81,12 +82,12 @@ static void *awtHandle = NULL;
 static void initAwtHandle() {
     char awtPath[MAXPATHLEN];
 
-    sprintf(awtPath,"%s/lib/%s/libawt.so",getenv("JAVA_HOME"),LIBARCH);
+    sprintf(awtPath,"%s/lib/%s/libawt.so",javaHomeStr,LIBARCH);
     dprintf("%s\n",awtPath);
     awtHandle = dlopen(awtPath, RTLD_LAZY);
     if (awtHandle == NULL) {
         /* must be JDK try JDK location */
-        sprintf(awtPath,"%s/jre/lib/%s/libawt.so",getenv("JAVA_HOME"),LIBARCH);
+        sprintf(awtPath,"%s/jre/lib/%s/libawt.so",javaHomeStr,LIBARCH);
         dprintf("JDK - %s\n",awtPath);
         awtHandle = dlopen(awtPath, RTLD_LAZY);
 
@@ -309,8 +310,13 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
  * Method:    locateDock
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_locateDock(JNIEnv *env, jclass klass)
+JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_locateDock(JNIEnv *env, jclass klass, jstring javaHome)
 {
+    if (javaHomeStr == NULL) {
+	/* there is only one of these, it is ok to not free it for now */
+        javaHomeStr = (*env)->GetStringUTFChars(env, javaHome, NULL);
+    }
+
     if (initialized_lock == 0) {
         getAwtLockFunctions(&LockIt, &UnLockIt, &NoFlushUnlockIt, NULL);
         initialized_lock = 1 ;

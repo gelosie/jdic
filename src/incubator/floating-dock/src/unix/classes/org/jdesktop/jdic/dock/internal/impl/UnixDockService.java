@@ -47,7 +47,7 @@ public class UnixDockService implements DockService {
     native long getWidget(long window, int widht, int height, int x, int y);
     native void adjustSizeAndLocation(long window, int width, int height, int location);
     native void mapWindow(long window, boolean b);
-    static native boolean  locateDock();
+    static native boolean  locateDock(String JavaHome);
     static native void eventLoop();
 
     static Thread display_thread;
@@ -62,7 +62,7 @@ public class UnixDockService implements DockService {
         t.sync();
 
         System.loadLibrary("floatingdock");
-        if (!locateDock()) {
+        if (!locateDock(System.getProperty("java.home"))) { 
             throw new Error("Dock not Found !");
         }
 
