@@ -32,11 +32,11 @@ void ReportError(const char* msg);
 // helper function for using the xpcom directory service
 nsresult GetSpecialDirectory(const char *key, nsIFile **result);
 
-// helper function for converting ASCII chars to a Mozilla nsAString
-PRBool ConvertAsciiToUtf16(const char *str, nsAString &result);
+// helper function for converting ASCII chars to a Mozilla nsEmbedString
+PRBool ConvertAsciiToUtf16(const char *str, nsEmbedString &result);
 
-// helper function for converting host endian UTF-16 chars to a Mozilla nsACString
-PRBool ConvertUtf16ToUtf8(const PRUnichar *input, nsACString &result);
+// helper function for converting host endian UTF-16 chars to ASCII chars
+char* ConvertUtf16ToAscii(nsEmbedString &aSource);
 
 // helper function for getting xpcom services
 nsresult GetService(const char *aContractID, const nsIID &aIID, void **aResult);

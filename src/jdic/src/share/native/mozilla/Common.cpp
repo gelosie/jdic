@@ -55,6 +55,10 @@
 #include "nsIHttpProtocolHandler.h"
 #include "nsIProfileInternalOld.h"
 
+// copied from the mozilla 1.7 source tree to support UTF-16 to to UTF-8
+// conversion.
+#include "nsUTF8Utils.h"
+
 // from nsAppDirectoryServiceDefs.h (which is not part of the
 // Gecko SDK v1.4)
 #define NS_APP_USER_PROFILES_ROOT_DIR "DefProfRt"
@@ -295,7 +299,7 @@ void ReportError(const char* msg)
 
 // copy ASCII characters from |str| into |result|.  use a temporary buffer.
 PRBool
-ConvertAsciiToUtf16(const char *str, nsAString &result)
+ConvertAsciiToUtf16(const char *str, nsEmbedString &result)
 {
     int len = strlen(str);
     PRUnichar *buf = (PRUnichar *) malloc(len * sizeof(PRUnichar));
@@ -308,31 +312,28 @@ ConvertAsciiToUtf16(const char *str, nsAString &result)
     return PR_TRUE;
 }
 
-// helper function for converting host endian UTF-16 chars to a Mozilla nsACString
-PRBool
-ConvertUtf16ToUtf8(const PRUnichar *str, nsACString &result)
+// helper function for converting host endian UTF-16 chars to ASCII chars
+char* 
+ConvertUtf16ToAscii(nsEmbedString &aSource)
 {
-    // XXX insert proper UTF-16 to UTF-8 conversion here
-    // XXX for now, we just do a lossy conversion to ASCII
+    nsEmbedString::const_iterator source_start, source_end;
+    CalculateUTF8Size calculator;
+    copy_string(aSource.BeginReading(source_start),
+                aSource.EndReading(source_end), calculator);
 
-    int len = 0;
-    for (const PRUnichar *p = str; *p; ++p)
-        ++len;
-    char *buf = (char *) malloc(len * sizeof(char));
-    if (!buf)
-        return PR_FALSE;
-    for (int i=0; i<len; ++i)
-    {
-        buf[i] = (char) str[i];
-        if (((unsigned char ) buf[i]) & 0x80)
-        {
-            fprintf(stderr, "FIXME: lossy conversion!!\n");
-            buf[i] = '?';
-        }
+    char *result = NS_STATIC_CAST(char*,
+        nsMemory::Alloc(calculator.Size() + 1));
+    
+    ConvertUTF16toUTF8 converter(result);
+    copy_string(aSource.BeginReading(source_start), 
+                aSource.EndReading(source_end),
+                converter).write_terminator();
+
+    if (calculator.Size() != converter.Size()) {
+        return NULL;
     }
-    result.Assign(buf, len);
-    free(buf);
-    return PR_TRUE;
+    
+    return result;
 }
 
 // helper function for getting xpcom services
@@ -453,27 +454,11 @@ ExecuteScript(nsIWebNavigation *aWebNav, const char *jscript)
     if (attrValue.Length() ==0) 
         return NULL;
 
-    const PRUnichar *attrStr = attrValue.get();
+    char* resultStr = ConvertUtf16ToAscii(attrValue);
 
-    // XXX insert proper UTF-16 to UTF-8 conversion here
-    // XXX for now, we just do a lossy conversion to ASCII
-    char *resultBuf;
-    int len = 0;
-    for (const PRUnichar *p = attrStr; *p; ++p)
-       ++len;
-
-    resultBuf = (char *) malloc(len * sizeof(char));
-    for (int j = 0; j < len; j++) {
-        resultBuf[j] = (char) attrStr[j];
-        if (((unsigned char ) resultBuf[j]) & 0x80) {
-            fprintf(stderr, "FIXME: lossy conversion!!\n");
-            resultBuf[j] = '?';
-        }
-    }
-    resultBuf[len] = '\0';
-
-    if (strncmp(resultBuf, "undefined", len))
-        return resultBuf;
+    if (resultStr != NULL && 
+        strncmp(resultStr, "undefined", strlen(resultStr)))
+        return resultStr;
     else
         return NULL;
 }
