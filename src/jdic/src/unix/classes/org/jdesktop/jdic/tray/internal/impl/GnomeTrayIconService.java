@@ -429,6 +429,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                 hideThread.interrupt(); // already in hiding.
             } else if(showThread != null){
                 hideTimer.stop();
+                showThread.interrupt();
                 this.setVisible(false);
 
                 synchronized(GnomeTrayIconService.class){
@@ -534,9 +535,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                     this.validate();
                 }
                 hideTimer.start();
-            }catch(Exception ie){
-            	System.out.println(ie);
-            }
+            }catch(InterruptedException ie){}
         }
 
         private void doHide(){
