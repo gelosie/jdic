@@ -392,9 +392,6 @@ public class ForEachScreensaver
         File configFile )
         throws IOException
     {
-        // Include jogl.jar in the path if this is a JOGL screensaver.
-        if(jogl) jarArg += ";jogl.jar";
-        
         // Windows needs the XML config file data so we can construct the
         // settings dialog from it.  Include as a char[]:
         StringBuffer configData = new StringBuffer();
