@@ -140,6 +140,10 @@ SOURCE=..\..\..\share\native\utils\InitUtility.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\jdic.rc
+# End Source File
+# Begin Source File
+
 SOURCE=.\JNIloader.cpp
 # End Source File
 # Begin Source File

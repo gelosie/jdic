@@ -375,7 +375,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
+ FILEVERSION 0,0,0,0
  PRODUCTVERSION 1,0,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -389,17 +389,20 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040904B0"
+        BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "MozEmbed MFC Application\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "JDesktop Integration Components (JDIC) Project\0"
+            VALUE "FileDescription", "JDesktop Integration Components binary\0"
+            VALUE "FileVersion", "0.8.8\0"
             VALUE "InternalName", "MozEmbed\0"
-            VALUE "LegalCopyright", "Copyright (C) 2001\0"
+            VALUE "LegalCopyright", "LGPL\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "MozEmbed.EXE\0"
-            VALUE "ProductName", "MozEmbed Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "JDesktop Integration Components (JDIC)\0"
+            VALUE "ProductVersion", "0.8.8\0"
+            VALUE "SpecialBuild", "\0"
         END
     END
     BLOCK "VarFileInfo"
