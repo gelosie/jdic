@@ -13,6 +13,7 @@
       138 P3   Dependence on libpopt.so.0
       139 P3   Tray requires setting JAVA_HOME to work.
       140 P3   Desktop.browse takes long time if you call it from TrayIcon
+      142 P3   Automatically set java.library.path property for Tray.
 
 2004-11-10 Armin Chen <armin_chen@dev.java.net>
 
