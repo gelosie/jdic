@@ -1,3 +1,4 @@
+# vim:set ts=8 sw=8 sts=8 noet:
 # ***** BEGIN LICENSE BLOCK *****
 # Version: MPL 1.1/GPL 2.0/LGPL 2.1
 #
@@ -34,31 +35,34 @@
 #
 # ***** END LICENSE BLOCK *****
 
-DEPTH       = $(MOZILLA_SRC_HOME)
-topsrcdir   = $(MOZILLA_SRC_HOME)
-srcdir      = .
-VPATH       = .
+#
+# Before using this script, MOZILLA_DIST must be set to the Mozilla distribution 
+# path for libgtkembedmoz.so, and GECKO_SDK must be set to the Gecko SDK home 
+# directory for header and lib files.
+#
 
-include $(DEPTH)/config/autoconf.mk
+# using Gecko SDK 1.4 or 1.7.
+USING_GECKO_SDK_1_4 = 1
+#USING_GECKO_SDK_1_7 = 1
 
-MODULE   = gtkembedmoz
-
-REQUIRES = xpcom \
-           string \
-           dom \
-           webbrwsr \
-           docshell \
-           necko \
-           content \
-           widget \
-           pref \
-           profile \
-           nspr \
-           $(NULL)
-
-ifdef NS_TRACE_MALLOC
-REQUIRES += tracemalloc
+# set architecture
+UNAME = $(shell uname)
+ifeq ($(UNAME), Linux)
+OS_ARCH = Linux
 endif
+ifeq ($(UNAME), SunOS)
+OS_ARCH = SunOS 
+endif
+ifeq ($(UNAME), FreeBSD)
+OS_ARCH = FreeBSD
+endif
+
+# set gtk version
+MOZ_ENABLE_GTK = 1
+#MOZ_ENABLE_GTK2 = 1
+
+# set other variables
+BIN_SUFFIX =
 
 CPPSRCS = MozEmbed.cpp \
           Callback.cpp \
@@ -68,92 +72,134 @@ CPPSRCS = MozEmbed.cpp \
           ../../../share/native/utils/MsgServer.cpp \
           $(NULL)
           
-PROGRAM = mozembed$(BIN_SUFFIX)
+MODULE_NAME	= mozembed
 ifeq ($(OS_ARCH), Linux)
 ifdef MOZ_ENABLE_GTK
-PROGRAM = mozembed-linux-gtk1.2$(BIN_SUFFIX)
+MODULE_NAME = mozembed-linux-gtk1.2
 endif
 ifdef MOZ_ENABLE_GTK2
-PROGRAM = mozembed-linux-gtk2$(BIN_SUFFIX)
+MODULE_NAME = mozembed-linux-gtk2
 endif
 endif
 ifeq ($(OS_ARCH), SunOS)
 ifdef MOZ_ENABLE_GTK
-PROGRAM = mozembed-solaris-gtk1.2$(BIN_SUFFIX)
+MODULE_NAME = mozembed-solaris-gtk1.2
 endif
 ifdef MOZ_ENABLE_GTK2
-PROGRAM = mozembed-solaris-gtk2$(BIN_SUFFIX)
+MODULE_NAME = mozembed-solaris-gtk2
 endif
 endif
 ifeq ($(OS_ARCH), FreeBSD)
 ifdef MOZ_ENABLE_GTK
-PROGRAM = mozembed-freebsd-gtk1.2$(BIN_SUFFIX)
+MODULE_NAME = mozembed-freebsd-gtk1.2
 endif
 ifdef MOZ_ENABLE_GTK2
-PROGRAM = mozembed-freebsd-gtk2$(BIN_SUFFIX)
+MODULE_NAME = mozembed-freebsd-gtk2
 endif
 endif
 
+PROGRAM = $(MODULE_NAME)$(BIN_SUFFIX)
+LIBRARY = lib$(MODULE_NAME).so
 
+CXXFLAGS = -g -fPIC
+#CXXFLAGS = -O2 -fPIC
 
-LIBS = -lgtkembedmoz \
-       $(NULL)
+LDFLAGS = -fPIC -Wl,--version-script=gnu-ld-script
+
+# link against the version of gtkembedmoz included with a
+# mozilla distribution
+LIBS = -L$(MOZILLA_DIST) -lgtkembedmoz
+
+# libembedstring.a from the 1.4.2 gecko sdk requires __ctype_tolower,
+# but for some reason that isn't available from the version of glibc
+# that ships with Fedora Core 2.
+ifdef USING_GECKO_SDK_1_4
+ifeq ($(OS_ARCH), Linux)
+NEED___ctype_tolower = 1
+endif
+endif
 
 ifdef MOZ_ENABLE_GTK
-LIBS += -lgtksuperwin \
-        $(NULL)
+CPPFLAGS += -DMOZ_WIDGET_GTK
+LIBS += -lgtksuperwin
+LIBS_PROG += -L$(MOZILLA_DIST) -lgtkembedmoz -lxpcom -lgtksuperwin
 endif
 
 ifdef MOZ_ENABLE_GTK2
-LIBS += $(XLDFLAGS) \
-        $(XLIBS) \
-        $(NULL)
+CPPFLAGS += -DMOZ_WIDGET_GTK2
+# XXX need to get these from pkg-config perhaps?
+LIBS += $(XLDFLAGS) $(XLIBS)
+LIBS_PROG += -L$(MOZILLA_DIST) -lgtkembedmoz -lxpcom
 endif
 
-include $(topsrcdir)/config/config.mk
+CPPFLAGS += \
+	-DXPCOM_GLUE -DMOZILLA_STRICT_API \
+	-I. \
+	-I../../../share/native/utils \
+	-I../../../share/native/mozilla \
+	$(NULL)
 
-ifdef BUILD_STATIC_LIBS
-
-ifndef MOZ_FAT_EMBED
-FINAL_LINK_COMPS=../src/embed-link-comps
+ifdef USING_GECKO_SDK_1_4
+CPPFLAGS += \
+	-include $(GECKO_SDK)/mozilla-config.h \
+	-I$(GECKO_SDK)/xpcom/include \
+	-I$(GECKO_SDK)/nspr/include \
+	-I$(GECKO_SDK)/webbrwsr/include \
+	-I$(GECKO_SDK)/profile/include \
+	-I$(GECKO_SDK)/dom/include \
+	-I$(GECKO_SDK)/string/include \
+	-I$(GECKO_SDK)/embedstring/include \
+	-I$(GECKO_SDK)/necko/include \
+	-I$(GECKO_SDK)/pref/include \
+	$(NULL)
+LIBS += \
+	-L$(GECKO_SDK)/embedstring/bin -lembedstring \
+	-L$(GECKO_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
+	-L$(GECKO_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4 \
+	$(NULL)
 endif
-
-include $(topsrcdir)/config/static-config.mk
-
-EXTRA_DEPS  += $(STATIC_EXTRA_DEPS)
-EXTRA_DSO_LIBS  += $(STATIC_EXTRA_DSO_LIBS)
-EXTRA_LIBS  += -L$(DEPTH)/dist/lib/components
-EXTRA_LIBS  += $(EXTRA_DSO_LIBS) $(STATIC_EXTRA_LIBS)
-
+ifdef USING_GECKO_SDK_1_7
+CPPFLAGS += \
+	-include $(GECKO_SDK)/include/mozilla-config.h \
+	-I$(GECKO_SDK)/include \
+	$(NULL)
+LIBS += \
+	-L$(GECKO_SDK)/lib -lxpcomglue_s \
+	-L$(GECKO_SDK)/bin -lxpcom -lnspr4 -lplds4 -lplc4 \
+	$(NULL)
 endif
-
-ifdef NS_TRACE_MALLOC
-EXTRA_LIBS  += -ltracemalloc
-endif
-
-EXTRA_LIBS  += $(MOZ_JS_LIBS)
-EXTRA_LIBS  += $(MOZ_COMPONENT_LIBS)
-
-include $(topsrcdir)/config/rules.mk
-
-LOCAL_INCLUDES += -I$(srcdir)/../../../share/native/utils \
-                  -I$(srcdir)/../../../share/native/mozilla \
-                  $(NULL)
 
 ifeq ($(OS_ARCH), SunOS)
 CXXFLAGS += -features=tmplife
 endif
-CXXFLAGS += $(MOZ_GTK_CFLAGS) $(MOZ_GTK2_CFLAGS)
-
-ifdef ENABLE_GNOME
-CXXFLAGS   += `gnome-config --cflags gnomeui`
-EXTRA_LIBS += `gnome-config --libs gnomeui`
+ifdef MOZ_ENABLE_GTK
+CXXFLAGS += `gtk-config --cflags`
+LIBS += `gtk-config --libs`
+endif
+ifdef MOZ_ENABLE_GTK2
+CXXFLAGS += `pkg-config gtk+-2.0 --cflags`
+# do not use --libs since it includes -Wl,--export-dynamic
+LIBS += `pkg-config gtk+-2.0 --libs-only-L` 
+LIBS += `pkg-config gtk+-2.0 --libs-only-l` 
 endif
 
-EXTRA_LIBS += \
-        $(TK_LIBS) \
-        $(NULL)
+OBJS = $(CPPSRCS:.cpp=.o)
 
-ifeq ($(OS_ARCH), OpenVMS)
-DEFINES += -DGENERIC_MOTIF_REDEFINES
+ifdef NEED___ctype_tolower
+OBJS += tolower.o
 endif
+
+$(PROGRAM): $(LIBRARY) Main.o
+	$(CXX) -o $(PROGRAM) Main.o -L. -l$(MODULE_NAME) $(LIBS_PROG)
+
+$(LIBRARY): $(OBJS)
+	$(CXX) -o $(LIBRARY) $^ -shared $(LDFLAGS) $(LIBS)
+
+%.o: %.cpp
+	$(CXX) -c $< -o $@ $(CPPFLAGS) $(CXXFLAGS)
+
+Main.o: Main.cpp
+	$(CXX) -c $< -o $@
+
+clean::
+	rm -f $(OBJS) $(PROGRAM) $(LIBRARY) Main.o

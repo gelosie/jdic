@@ -40,25 +40,42 @@
 // the original nsProfileDirServiceProvider depends on XPCOM library,
 // so we move and rewrite it here to make our private profile.
 
+#include "Common.h"
 #include "ProfileDirServiceProvider.h"
-#include "nsILocalFile.h"
+
+// from the Gecko SDK:
 #include "nsDirectoryServiceDefs.h"
-#include "nsAppDirectoryServiceDefs.h"
+#include "nsILocalFile.h"
 #include "nsISupportsUtils.h"
 #include "nsIObserverService.h"
-#include "nsCRT.h"
+#include "nsEmbedString.h"
+
+// from nsAppDirectoryServiceDefs.h (which is not included in the
+// Gecko SDK v1.4):
+#define NS_APP_PREFS_50_DIR                     "PrefD"
+#define NS_APP_PREFS_50_FILE                    "PrefF"
+#define NS_APP_USER_PROFILE_50_DIR              "ProfD"
+#define NS_APP_USER_CHROME_DIR                  "UChrm"
+#define NS_APP_LOCALSTORE_50_FILE               "LclSt"
+#define NS_APP_HISTORY_50_FILE                  "UHist"
+#define NS_APP_USER_PANELS_50_FILE              "UPnls"
+#define NS_APP_USER_MIMETYPES_50_FILE           "UMimTyp"
+#define NS_APP_BOOKMARKS_50_FILE                "BMarks"
+#define NS_APP_DOWNLOADS_50_FILE                "DLoads"
+#define NS_APP_SEARCH_50_FILE                   "SrchF"
+#define NS_APP_PROFILE_DEFAULTS_50_DIR          "profDef"
 
 // File Name Defines
 
-#define PREFS_FILE_50_NAME           NS_LITERAL_CSTRING("prefs.js")
-#define USER_CHROME_DIR_50_NAME      NS_LITERAL_CSTRING("chrome")
-#define LOCAL_STORE_FILE_50_NAME     NS_LITERAL_CSTRING("localstore.rdf")
-#define HISTORY_FILE_50_NAME         NS_LITERAL_CSTRING("history.dat")
-#define PANELS_FILE_50_NAME          NS_LITERAL_CSTRING("panels.rdf")
-#define MIME_TYPES_FILE_50_NAME      NS_LITERAL_CSTRING("mimeTypes.rdf")
-#define BOOKMARKS_FILE_50_NAME       NS_LITERAL_CSTRING("bookmarks.html")
-#define DOWNLOADS_FILE_50_NAME       NS_LITERAL_CSTRING("downloads.rdf")
-#define SEARCH_FILE_50_NAME          NS_LITERAL_CSTRING("search.rdf" )
+#define PREFS_FILE_50_NAME           nsEmbedCString("prefs.js")
+#define USER_CHROME_DIR_50_NAME      nsEmbedCString("chrome")
+#define LOCAL_STORE_FILE_50_NAME     nsEmbedCString("localstore.rdf")
+#define HISTORY_FILE_50_NAME         nsEmbedCString("history.dat")
+#define PANELS_FILE_50_NAME          nsEmbedCString("panels.rdf")
+#define MIME_TYPES_FILE_50_NAME      nsEmbedCString("mimeTypes.rdf")
+#define BOOKMARKS_FILE_50_NAME       nsEmbedCString("bookmarks.html")
+#define DOWNLOADS_FILE_50_NAME       nsEmbedCString("downloads.rdf")
+#define SEARCH_FILE_50_NAME          nsEmbedCString("search.rdf" )
 
 //*****************************************************************************
 // ProfileDirServiceProvider::ProfileDirServiceProvider
@@ -91,16 +108,18 @@ ProfileDirServiceProvider::SetProfileDir(nsIFile* aProfileDir)
   nsresult rv = InitProfileDir(mProfileDir);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  nsCOMPtr<nsIObserverService> observerService = 
-           do_GetService("@mozilla.org/observer-service;1");
+  nsCOMPtr<nsIObserverService> observerService;
+  rv = GetService("@mozilla.org/observer-service;1",
+                  NS_GET_IID(nsIObserverService),
+                  getter_AddRefs(observerService));
   if (!observerService)
     return NS_ERROR_FAILURE;
 
-  NS_NAMED_LITERAL_STRING(context, "startup");
+  PRUnichar context[] = {'s','t','a','r','t','u','p','\0'};
   // Notify observers that the profile has changed - Here they respond to new profile
-  observerService->NotifyObservers(nsnull, "profile-do-change", context.get());
+  observerService->NotifyObservers(nsnull, "profile-do-change", context);
   // Now observers can respond to something another observer did on "profile-do-change"
-  observerService->NotifyObservers(nsnull, "profile-after-change", context.get());
+  observerService->NotifyObservers(nsnull, "profile-after-change", context);
   
   return NS_OK;
 }
@@ -108,8 +127,10 @@ ProfileDirServiceProvider::SetProfileDir(nsIFile* aProfileDir)
 nsresult
 ProfileDirServiceProvider::Register()
 {
-  nsCOMPtr<nsIDirectoryService> directoryService = 
-          do_GetService(NS_DIRECTORY_SERVICE_CONTRACTID);
+  nsCOMPtr<nsIDirectoryService> directoryService;
+  GetService("@mozilla.org/file/directory_service;1",
+             NS_GET_IID(nsIDirectoryService),
+             getter_AddRefs(directoryService));
   if (!directoryService)
     return NS_ERROR_FAILURE;
   return directoryService->RegisterProvider(this);
@@ -118,13 +139,16 @@ ProfileDirServiceProvider::Register()
 nsresult
 ProfileDirServiceProvider::Shutdown()
 {
-  nsCOMPtr<nsIObserverService> observerService = 
-           do_GetService("@mozilla.org/observer-service;1");
+  nsCOMPtr<nsIObserverService> observerService;
+  GetService("@mozilla.org/observer-service;1",
+             NS_GET_IID(nsIObserverService),
+             getter_AddRefs(observerService));
   if (!observerService)
     return NS_ERROR_FAILURE;
     
-  NS_NAMED_LITERAL_STRING(context, "shutdown-persist");
-  observerService->NotifyObservers(nsnull, "profile-before-change", context.get());        
+  PRUnichar context[] =
+    {'s','h','u','t','d','o','w','n','-','p','e','r','s','i','s','t','\0'};
+  observerService->NotifyObservers(nsnull, "profile-before-change", context);        
   return NS_OK;
 }
 
@@ -156,23 +180,23 @@ ProfileDirServiceProvider::GetFile(const char *prop, PRBool *persistant, nsIFile
   nsCOMPtr<nsIFile>  localFile;
   nsresult rv = NS_ERROR_FAILURE;
       
-  if (nsCRT::strcmp(prop, NS_APP_PREFS_50_DIR) == 0) {
+  if (strcmp(prop, NS_APP_PREFS_50_DIR) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
   }
-  else if (nsCRT::strcmp(prop, NS_APP_PREFS_50_FILE) == 0) {
+  else if (strcmp(prop, NS_APP_PREFS_50_FILE) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
     if (NS_SUCCEEDED(rv))
       rv = localFile->AppendNative(PREFS_FILE_50_NAME);
   }
-  else if (nsCRT::strcmp(prop, NS_APP_USER_PROFILE_50_DIR) == 0) {
+  else if (strcmp(prop, NS_APP_USER_PROFILE_50_DIR) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
   }
-  else if (nsCRT::strcmp(prop, NS_APP_USER_CHROME_DIR) == 0) {
+  else if (strcmp(prop, NS_APP_USER_CHROME_DIR) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
     if (NS_SUCCEEDED(rv))
       rv = localFile->AppendNative(USER_CHROME_DIR_50_NAME);
   }
-  else if (nsCRT::strcmp(prop, NS_APP_LOCALSTORE_50_FILE) == 0) {
+  else if (strcmp(prop, NS_APP_LOCALSTORE_50_FILE) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
     if (NS_SUCCEEDED(rv)) {
       rv = localFile->AppendNative(LOCAL_STORE_FILE_50_NAME);
@@ -180,12 +204,12 @@ ProfileDirServiceProvider::GetFile(const char *prop, PRBool *persistant, nsIFile
         rv = EnsureProfileFileExists(localFile, domainDir);
     }
   }
-  else if (nsCRT::strcmp(prop, NS_APP_HISTORY_50_FILE) == 0) {
+  else if (strcmp(prop, NS_APP_HISTORY_50_FILE) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
     if (NS_SUCCEEDED(rv))
       rv = localFile->AppendNative(HISTORY_FILE_50_NAME);
   }
-  else if (nsCRT::strcmp(prop, NS_APP_USER_PANELS_50_FILE) == 0) {
+  else if (strcmp(prop, NS_APP_USER_PANELS_50_FILE) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
     if (NS_SUCCEEDED(rv)) {
       rv = localFile->AppendNative(PANELS_FILE_50_NAME);
@@ -193,7 +217,7 @@ ProfileDirServiceProvider::GetFile(const char *prop, PRBool *persistant, nsIFile
         rv = EnsureProfileFileExists(localFile, domainDir);
     }
   }
-  else if (nsCRT::strcmp(prop, NS_APP_USER_MIMETYPES_50_FILE) == 0) {
+  else if (strcmp(prop, NS_APP_USER_MIMETYPES_50_FILE) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
     if (NS_SUCCEEDED(rv)) {
       rv = localFile->AppendNative(MIME_TYPES_FILE_50_NAME);
@@ -201,7 +225,7 @@ ProfileDirServiceProvider::GetFile(const char *prop, PRBool *persistant, nsIFile
         rv = EnsureProfileFileExists(localFile, domainDir);
     }
   }
-  else if (nsCRT::strcmp(prop, NS_APP_BOOKMARKS_50_FILE) == 0) {
+  else if (strcmp(prop, NS_APP_BOOKMARKS_50_FILE) == 0) {
 #ifdef XP_MACOSX
     *persistant = PR_FALSE; // See bug 192124
 #endif
@@ -209,12 +233,12 @@ ProfileDirServiceProvider::GetFile(const char *prop, PRBool *persistant, nsIFile
     if (NS_SUCCEEDED(rv))
       rv = localFile->AppendNative(BOOKMARKS_FILE_50_NAME);
   }
-  else if (nsCRT::strcmp(prop, NS_APP_DOWNLOADS_50_FILE) == 0) {
+  else if (strcmp(prop, NS_APP_DOWNLOADS_50_FILE) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
     if (NS_SUCCEEDED(rv))
       rv = localFile->AppendNative(DOWNLOADS_FILE_50_NAME);
   }
-  else if (nsCRT::strcmp(prop, NS_APP_SEARCH_50_FILE) == 0) {
+  else if (strcmp(prop, NS_APP_SEARCH_50_FILE) == 0) {
     rv = domainDir->Clone(getter_AddRefs(localFile));
     if (NS_SUCCEEDED(rv)) {
       rv = localFile->AppendNative(SEARCH_FILE_50_NAME);
@@ -247,7 +271,7 @@ ProfileDirServiceProvider::InitProfileDir(nsIFile *profileDir)
   if (!exists) {
     nsCOMPtr<nsIFile> profileDefaultsDir;
     nsCOMPtr<nsIFile> profileDirParent;
-    nsCAutoString profileDirName;
+    nsEmbedCString profileDirName;
     
     profileDir->GetParent(getter_AddRefs(profileDirParent));
     if (!profileDirParent)
@@ -255,7 +279,7 @@ ProfileDirServiceProvider::InitProfileDir(nsIFile *profileDir)
     rv = profileDir->GetNativeLeafName(profileDirName);
     NS_ENSURE_SUCCESS(rv, rv);
 
-    rv = NS_GetSpecialDirectory(NS_APP_PROFILE_DEFAULTS_50_DIR, getter_AddRefs(profileDefaultsDir));
+    rv = GetSpecialDirectory(NS_APP_PROFILE_DEFAULTS_50_DIR, getter_AddRefs(profileDefaultsDir));
     NS_ENSURE_SUCCESS(rv, rv);
 
     rv = profileDefaultsDir->CopyToNative(profileDirParent, profileDirName);
@@ -297,16 +321,16 @@ ProfileDirServiceProvider::EnsureProfileFileExists(nsIFile *aFile, nsIFile *dest
   nsCOMPtr<nsIFile> defaultsFile;
 
   // Attempt first to get the localized subdir of the defaults
-  rv = NS_GetSpecialDirectory(NS_APP_PROFILE_DEFAULTS_50_DIR, getter_AddRefs(defaultsFile));
+  rv = GetSpecialDirectory(NS_APP_PROFILE_DEFAULTS_50_DIR, getter_AddRefs(defaultsFile));
   NS_ENSURE_SUCCESS(rv, rv);
     
-  nsCAutoString leafName;
+  nsEmbedCString leafName;
   rv = aFile->GetNativeLeafName(leafName);
   NS_ENSURE_SUCCESS(rv, rv);
   rv = defaultsFile->AppendNative(leafName);
   NS_ENSURE_SUCCESS(rv, rv);
   
-  return defaultsFile->CopyTo(destDir, nsString());
+  return defaultsFile->CopyTo(destDir, nsEmbedString());
 }
 
 //*****************************************************************************

@@ -1,3 +1,4 @@
+/* vim:set ts=4 sw=4 sts=4 et cin: */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -35,18 +36,30 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "prenv.h"
-#include "prthread.h"
-#include "nsDebug.h"
 #include "MozEmbed.h"
 #include "MsgServer.h"
 #include "Message.h"
 #include "Common.h"
-#include "nsString.h"
-#include "nsIWebNavigation.h"
+
+// These are included from the Gecko SDK
+#include "prenv.h"
+#include "prthread.h"
+#include "nsXPCOM.h"
+#include "nsEmbedString.h"
+#include "nsDebug.h"
+#include "nsMemory.h"
 #include "nsIURI.h"
-#include "nsComponentManagerUtils.h"
-#include "nsStringStream.h"
+#include "nsIComponentManager.h"
+
+// These are currently not part of the Gecko SDK, so we include our local
+// copy of these files.  If these interfaces ever change in the future, then
+// our application may stop working.
+#include "nsIWebNavigation.h"
+#include "nsIStringStream.h"
+
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 
 int gTestMode = 0;
 
@@ -76,91 +89,6 @@ static GSourceFuncs event_funcs = {
     gs_dispatch_cb,
 };
 #endif
-
-int
-main(int argc, char **argv)
-{
-    if (argc > 1) {
-        if (strstr(argv[1], "-port=")) {
-            int port = atoi(&(argv[1][6]));
-            gMessenger.SetPort(port);
-            gMessenger.CreateServerSocket();
-        }
-        else if (strcmp(argv[1], "-test") == 0) {
-            gTestMode = 1;
-        }
-    }
-    
-    if (!gTestMode && gMessenger.IsFailed()) {
-        ReportError("Failed to create server socket!");
-        exit(1);
-    }
-
-    gtk_set_locale();
-    gtk_init(&argc, &argv);
-
-    // force the startup code to be executed because we need to start
-    // the profile in a different way
-    gtk_moz_embed_push_startup();
-
-    if (NS_FAILED(InitializeProfile())) {
-        ReportError("Failed to initialize profile!");
-        exit(1);
-    }
-
-    gMsgLock = PR_NewLock();
-
-    if (!gTestMode) {
-        PRThread *socketListenThread = 
-          PR_CreateThread(PR_USER_THREAD,
-                          PortListening,
-                          (void*)SocketMsgHandler,
-                          PR_PRIORITY_NORMAL,
-                          PR_GLOBAL_THREAD,
-                          PR_UNJOINABLE_THREAD,
-                          0);
-        if (!socketListenThread) {
-            ReportError("Failed to create socket listening thread!");
-            exit(1);
-        }
-
-        // add event source to process socket messages
-#ifdef MOZ_WIDGET_GTK
-        g_source_add (GDK_PRIORITY_EVENTS, TRUE, &event_funcs, NULL, NULL, NULL);
-#endif
-#ifdef MOZ_WIDGET_GTK2
-        GSource *newsource = g_source_new(&event_funcs, sizeof(GSource));
-        g_source_attach(newsource, NULL);
-#endif
-    }
-    else {
-        GtkBrowser *browser = new_gtk_browser(GTK_MOZ_EMBED_FLAG_DEFAULTCHROME);
-        
-        // set our minimum size
-        gtk_widget_set_usize(browser->mozEmbed, 400, 400);
-        
-        set_browser_visibility(browser, TRUE);
-    }
-
-    // get the singleton object and hook up to its new window callback
-    // so we can create orphaned windows.
-
-    GtkMozEmbedSingle *single;
-
-    single = gtk_moz_embed_single_get();
-    if (!single) {
-        ReportError("Failed to get singleton embed object!");
-        exit(1);
-    }
-
-    gtk_signal_connect(GTK_OBJECT(single), "new_window_orphan",
-        GTK_SIGNAL_FUNC(new_window_orphan_cb), NULL);
-
-    gtk_main();
-    gtk_moz_embed_pop_startup();
-
-    PR_DestroyLock(gMsgLock);
-}
 
 GtkBrowser *
 new_gtk_browser(guint32 chromeMask)
@@ -428,7 +356,9 @@ OpenURL(GtkBrowser *pBrowser, const char *pUrl, const char *pPostData, const cha
                 tmp[nSize] = '\0';
 
                 nsCOMPtr<nsIStringInputStream> stream;
-                stream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
+                rv = CreateInstance("@mozilla.org/io/string-input-stream;1",
+                                    NS_GET_IID(nsIStringInputStream),
+                                    getter_AddRefs(stream));
                 if (NS_FAILED(rv) || !stream) 
                 {
                     NS_ASSERTION(0, "cannot create PostData stream");
@@ -453,7 +383,9 @@ OpenURL(GtkBrowser *pBrowser, const char *pUrl, const char *pPostData, const cha
                 memcpy(tmp, pHeader, nSize);
 
                 nsCOMPtr<nsIStringInputStream> stream;
-                stream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
+                rv = CreateInstance("@mozilla.org/io/string-input-stream;1",
+                                    NS_GET_IID(nsIStringInputStream),
+                                    getter_AddRefs(stream));
                 if (NS_FAILED(rv) || !stream) 
                 {
                     NS_ASSERTION(0, "cannot create Header stream");
@@ -473,7 +405,10 @@ OpenURL(GtkBrowser *pBrowser, const char *pUrl, const char *pPostData, const cha
     if (!webNavigation)
         return;
 
-    webNavigation->LoadURI(NS_ConvertASCIItoUCS2(pUrl).get(), // URI string
+    nsEmbedString unicodeUrl;
+    ConvertAsciiToUtf16(pUrl, unicodeUrl);
+
+    webNavigation->LoadURI(unicodeUrl.get(), // URI string
                            nsIWebNavigation::LOAD_FLAGS_NONE, // Load flags
                            nsnull,                            // Refering URI
                            postDataStream,                    // Post data
@@ -589,7 +524,7 @@ HandleSocketMessage(gpointer data, gpointer user_data)
             if (currentURI == NULL)
                 SendSocketMessage(instance, CEVENT_RETURN_URL, "");
             else { 
-            	nsCAutoString uriString;
+            	nsEmbedCString uriString;
                 currentURI->GetAsciiSpec(uriString);
                 SendSocketMessage(instance, CEVENT_RETURN_URL, uriString.get());
             }
@@ -639,6 +574,104 @@ HandleSocketMessage(gpointer data, gpointer user_data)
 
         break;
     }
+}
+
+extern "C" int mozembed_main(int argc, char **argv);
+
+int
+mozembed_main(int argc, char **argv)
+{
+    if (argc > 1) {
+        if (strstr(argv[1], "-port=")) {
+            int port = atoi(&(argv[1][6]));
+            gMessenger.SetPort(port);
+            gMessenger.CreateServerSocket();
+        }
+        else if (strcmp(argv[1], "-test") == 0) {
+            gTestMode = 1;
+        }
+    }
+    
+    if (!gTestMode && gMessenger.IsFailed()) {
+        ReportError("Failed to create server socket!");
+        exit(1);
+    }
+
+    gtk_set_locale();
+    gtk_init(&argc, &argv);
+
+    // force the startup code to be executed because we need to start
+    // the profile in a different way
+    gtk_moz_embed_push_startup();
+
+    if (NS_FAILED(InitializeProfile())) {
+        ReportError("Failed to initialize profile!");
+        exit(1);
+    }
+
+    gMsgLock = PR_NewLock();
+
+    if (!gTestMode) {
+        PRThread *socketListenThread = 
+          PR_CreateThread(PR_USER_THREAD,
+                          PortListening,
+                          (void*)SocketMsgHandler,
+                          PR_PRIORITY_NORMAL,
+                          PR_GLOBAL_THREAD,
+                          PR_UNJOINABLE_THREAD,
+                          0);
+        if (!socketListenThread) {
+            ReportError("Failed to create socket listening thread!");
+            exit(1);
+        }
+
+        // add event source to process socket messages
+#ifdef MOZ_WIDGET_GTK
+        g_source_add (GDK_PRIORITY_EVENTS, TRUE, &event_funcs, NULL, NULL, NULL);
+#endif
+#ifdef MOZ_WIDGET_GTK2
+        GSource *newsource = g_source_new(&event_funcs, sizeof(GSource));
+        g_source_attach(newsource, NULL);
+#endif
+    }
+    else {
+        GtkBrowser *browser = new_gtk_browser(GTK_MOZ_EMBED_FLAG_DEFAULTCHROME);
+        
+        // set our minimum size
+        gtk_widget_set_usize(browser->mozEmbed, 400, 400);
+        
+        set_browser_visibility(browser, TRUE);
+    }
+
+    // get the singleton object and hook up to its new window callback
+    // so we can create orphaned windows.
+
+    GtkMozEmbedSingle *single;
+
+    single = gtk_moz_embed_single_get();
+    if (!single) {
+        ReportError("Failed to get singleton embed object!");
+        exit(1);
+    }
+
+    gtk_signal_connect(GTK_OBJECT(single), "new_window_orphan",
+        GTK_SIGNAL_FUNC(new_window_orphan_cb), NULL);
+
+    gtk_main();
+    gtk_moz_embed_pop_startup();
+
+    PR_DestroyLock(gMsgLock);
+}
+
+// this function is running in the socket listening thread
+void 
+SocketMsgHandler(const char *pMsg)
+{
+    char *msg = new char[strlen(pMsg) + 1];
+    strcpy(msg, pMsg);
+    PR_Lock(gMsgLock);
+    gMessageList = g_list_append(gMessageList, msg);
+    PR_Unlock(gMsgLock);
 }
 
 gboolean 
@@ -696,15 +729,4 @@ gs_dispatch_cb(GSource    *source,
     g_list_foreach(tmpList, HandleSocketMessage, NULL);
 
     return TRUE;
-}
-
-// this function is running in the socket listening thread
-void 
-SocketMsgHandler(const char *pMsg)
-{
-    char *msg = new char[strlen(pMsg) + 1];
-    strcpy(msg, pMsg);
-    PR_Lock(gMsgLock);
-    gMessageList = g_list_append(gMessageList, msg);
-    PR_Unlock(gMsgLock);
 }

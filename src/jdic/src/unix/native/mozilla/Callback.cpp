@@ -35,18 +35,23 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#include "Common.h"
 #include "Message.h"
 #include "MozEmbed.h"
 #include "MsgServer.h"
 #include "Util.h"
-#include "gtkmozembed_internal.h"
+#include "xembed.h"
+
+// from the Gecko SDK
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsIURI.h"
 #include "nsIWebBrowser.h"
 #include "nsIWebBrowserFocus.h"
+#include "nsEmbedString.h"
+
+// copied from Mozilla 1.7
+#include "gtkmozembed_internal.h"
 #include "nsIWebNavigation.h"
-#include "nsString.h"
-#include "xembed.h"
 
 extern int gTestMode;
 
@@ -477,17 +482,17 @@ void new_window_orphan_cb(GtkMozEmbedSingle *embed,
 
 void title_change_cb(GtkMozEmbed *embed, GtkBrowser *browser)
 {
-    char buf[1024];
-    sprintf(buf, "%s", NS_ConvertUCS2toUTF8(gtk_moz_embed_get_title_unichar(embed)).get());
-    SendSocketMessage(browser->id, CEVENT_TITLE_CHANGE, buf);
+    nsEmbedCString buf;
+    ConvertUtf16ToUtf8(gtk_moz_embed_get_title_unichar(embed), buf);
+    SendSocketMessage(browser->id, CEVENT_TITLE_CHANGE, buf.get());
 }
 
 void status_text_change_cb(GtkMozEmbed *embed, gpointer request,
 				gint status, gpointer message, GtkBrowser *browser)
 {
-    char buf[1024];
-    sprintf(buf, "%s", NS_ConvertUCS2toUTF8((PRUnichar *)message).get());
-    SendSocketMessage(browser->id, CEVENT_STATUSTEXT_CHANGE, buf);
+    nsEmbedCString buf;
+    ConvertUtf16ToUtf8((const PRUnichar *)message, buf);
+    SendSocketMessage(browser->id, CEVENT_STATUSTEXT_CHANGE, buf.get());
 }
 
 // utility functions

@@ -36,10 +36,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Interfaces Needed
+// from the Gecko SDK
 #include "nsIDirectoryService.h"
-#include "nsILocalFile.h"
-#include "nsString.h"
+#include "nsIFile.h"
+#include "nsCOMPtr.h"
 
 // --------------------------------------------------------------------------------------
 // ProfileDirServiceProvider - The nsIDirectoryServiceProvider implementation used for

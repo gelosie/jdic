@@ -21,7 +21,26 @@
 #ifndef _Common_H_
 #define _Common_H_
 
+#include "nsIFile.h"
+#include "nsEmbedString.h"
+#include "nsID.h"
+
 nsresult InitializeProfile();
 void ReportError(const char* msg);
+
+// helper function for using the xpcom directory service
+nsresult GetSpecialDirectory(const char *key, nsIFile **result);
+
+// helper function for converting ASCII chars to a Mozilla nsAString
+PRBool ConvertAsciiToUtf16(const char *str, nsAString &result);
+
+// helper function for converting host endian UTF-16 chars to a Mozilla nsACString
+PRBool ConvertUtf16ToUtf8(const PRUnichar *input, nsACString &result);
+
+// helper function for getting xpcom services
+nsresult GetService(const char *aContractID, const nsIID &aIID, void **aResult);
+
+// helper function for instantiating xpcom components
+nsresult CreateInstance(const char *aContractID, const nsIID &aIID, void **aResult);
 
 #endif
