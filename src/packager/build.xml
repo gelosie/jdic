@@ -267,7 +267,7 @@ Top-level target:
   <!--
     - FREEBSD DISTRIBUTION
     -->
-  <target name="buildfreebsd" depends="buildsolaris"
+  <target name="buildfreebsd" depends="init"
           description="build all the class and native source code" >
   </target>
 

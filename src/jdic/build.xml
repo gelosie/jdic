@@ -241,7 +241,7 @@ Top-level target:
     - FREEBSD DISTRIBUTION
     -->
   <!-- This target is the same with buildlinux. -->
-  <target name="buildfreebsd" depends="buildlinux"
+  <target name="buildfreebsd" depends="buildunixjar, javadoc, buildbsdjni, buildbsdembed"
           description="build java and native source code for FreeBSD platform" >
   </target>
 
@@ -270,6 +270,32 @@ Top-level target:
     <copy file="${unix.classes.defmailer.dir}/defmailer.properties" 
           todir="${dist.dir}" />
   </target>
+
+  <!-- *** Build BSD native JNI code *** -->
+  <target name="buildbsdjni" depends="init"
+          description="build native jni libraries." >
+    <exec dir="${unix.native.jni.dir}" executable="gmake" failonerror="yes" />
+
+    <!-- copy generated .so file -->
+    <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}" />
+  </target>
+
+  <!-- *** Build BSD native embeded browser code *** -->
+  <target name="buildbsdembed" depends="init">
+    <!-- clean the previous build -->   
+    <exec dir="${unix.native.mozilla.dir}" executable="gmake" failonerror="yes">
+      <arg line="clean"/>
+    </exec>                   
+
+    <exec dir="${unix.native.mozilla.dir}" executable="gmake" failonerror="yes">
+      <arg line="all"/>
+    </exec>                   
+
+    <exec os="FreeBSD" executable="cp" failonerror="yes">
+      <arg value="${unix.native.mozilla.dir}/mozembed-freebsd-gtk2" />
+      <arg value="${dist.dir}/." />
+    </exec>
+  </target>  
 
   <!-- *** Build Unix native JNI code *** -->
   <target name="buildunixjni" depends="init"
@@ -302,10 +328,6 @@ Top-level target:
       <arg value="${dist.dir}/." />
     </exec>
 
-    <exec os="FreeBSD" executable="cp" failonerror="yes">
-      <arg value="${unix.native.mozilla.dir}/mozembed-freebsd-gtk2" />
-      <arg value="${dist.dir}/." />
-    </exec>
   </target>
 
 </project>
