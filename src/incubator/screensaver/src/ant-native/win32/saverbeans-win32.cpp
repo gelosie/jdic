@@ -856,12 +856,14 @@ int start_java() {
         JavaVMInitArgs vm_args;
         JavaVMOption options[1];
         /* System directory, e.g. C:\\windows\\system32 */
-        options[0].optionString = (char *)malloc( MAX_PATH * 2 + 32 );
+        options[0].optionString = (char *)malloc( MAX_PATH * 3 + 32 );
         sprintf( options[0].optionString, 
-            "-Djava.class.path=%s\\%s%c%s\\%s", 
+            "-Djava.class.path=%s\\%s%c%s\\%s%c%s\\%s", 
             jarDirectory, jarName,
             PATH_SEPARATOR, 
-            jarDirectory, "saverbeans-api.jar" );
+            jarDirectory, "saverbeans-api.jar",
+            PATH_SEPARATOR,
+            jarDirectory, "jogl.jar" );
         if(DEBUG) fprintf( log, "%s\n", options[0].optionString );
         vm_args.version = 0x00010002;
         vm_args.options = options;
@@ -871,22 +873,7 @@ int start_java() {
         /* Use dynamically-loaded DLL instead of JNI_CreateJavaVM */
         res = ifn.CreateJavaVM(&jvm, (void**)&env, &vm_args);
         #else
-        JDK1_1InitArgs vm_args;
-        char *classpath = malloc( 32 + strlen( vm_args.classpath ) + 
-            strlen( jarName ) );
-        vm_args.version = 0x00010001;
-        ifn.GetDefaultJavaVMInitArgs(&vm_args);
-        /* Append jarName to the default system class path */
-        sprintf( classpath, "%s%c%s\\%s%c%s\\%s",
-            vm_args.classpath, 
-            PATH_SEPARATOR, 
-            systemDirectory, jarName, 
-            PATH_SEPARATOR, 
-            systemDirectory, "saverbeans-api.jar" );
-        vm_args.classpath = classpath;
-        /* Create the Java VM */
-        /* Use dynamically-loaded DLL instead of JNI_CreateJavaVM */
-        res = ifn.CreateJavaVM(&jvm, &env, &vm_args);
+        #error JDK 1.4 or greater required
         #endif /* JNI_VERSION_1_2 */
         if (res < 0) {
             if(DEBUG) fprintf(log, "Can't create Java VM\n");
