@@ -1,15 +1,27 @@
 The demo applications in this directory showcase JDIC API 
 functionalities, and how to use the JDIC API packages.
 
-To run the demo applications, you need to follow the installation 
-instructions in the project website: https://jdic.dev.java.net, or 
-in the README.html file included in the distribution.
+Run the demos using the following instructions (assuming java command 
+is under your PATH):
 
-Then, you can run the demo (assuming java command is in your path) using:
-  
+Windows
+
+  java -classpath ..\..\jdic.jar;. -Djava.library.path=..\..\ <class name>
+
+Unix
+
+  java -classpath ../../tray.jar:. -Djava.library.path=../../ <class name>
+
+where <class name> is the same as the application's name, such as FileExplorer,
+FileChooser, FileTypes, SimpleBrowser, Browser, and Tray. 
+
+Or:
+
+follow the installation instructions in the project website: 
+https://jdic.dev.java.net, or in the README.html file included in the 
+distribution to set CLASSPATH and java.library.path first, then use:
+
   java <class name> 
-
-where <class name> is the same as the application's name. 
 
 
 FileExplorer
@@ -89,5 +101,5 @@ Tray
   icon, and an associated Swing menu containing icons. It also has a tooltip 
   displayed when the mouse hovers over the tray icon.
   
-  On Windows, the tray icon is created in the System Tray Area. On Gnome/Unix,
-  it's created in the Notification Area.
+  For Windows platforms, the tray icon is created in the System Tray Area. 
+  For Unix platforms, it's created in the Notification Area.
