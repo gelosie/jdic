@@ -34,6 +34,8 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.PopupMenuEvent;
 import java.awt.event.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 import sun.awt.image.IntegerComponentRaster;
@@ -86,9 +88,14 @@ public class WinTrayIconService implements TrayIconService{
         map.put(new Integer(iconID), this);
 
         popupParentFrame = new JDialog();
-        
-        if( Integer.parseInt(System.getProperty("java.version").substring(2,3)) >=5 )
-        	popupParentFrame.setAlwaysOnTop(true);
+        try{
+        	Method setAlwaysOnTop = popupParentFrame.getClass().getMethod("setAlwaysOnTop", new Class[]{boolean.class});
+        	setAlwaysOnTop.invoke(popupParentFrame, new Object[]{Boolean.TRUE});
+        }catch(NoSuchMethodException e){
+        	//ignore this exception
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
         popupParentFrame.setUndecorated(true);
         popupParentFrame.setBounds(0, 0, 0, 0);
     }
