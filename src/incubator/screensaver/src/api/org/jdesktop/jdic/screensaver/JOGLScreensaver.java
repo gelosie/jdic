@@ -110,16 +110,18 @@ public abstract class JOGLScreensaver
      * Cleanly shuts down the OpenGL subsystem.
      */
     public final void destroy() {
-        if(canvasAdded && (canvas != null)) {
-            canvas.removeGLEventListener(this);
-            this.animator.stop();
-            Container container = 
-                (Container)getContext().getComponent();
-            container.removeAll();
-            if(container instanceof Frame) {
-                ((Frame)container).dispose();
+        // Run this on another thread than the AWE event queue to
+        // make sure the call to Animator.stop() completes before exiting.
+        new Thread(
+            new Runnable() {
+                public void run() {
+                    if(canvasAdded && (canvas != null)) {
+                        animator.stop();
+                        System.exit(0);
+                    }
+                }
             }
-        }
+        ).start();
     }
     
     /**
