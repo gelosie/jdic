@@ -119,10 +119,19 @@ files.</b>
   <ul>
     <li>Create a <code><b>fileexplorer.jar</b></code> file with the
 generated FileExplorer .class files and image resource files using the <code>jar</code>
-tool;</li>
+      tool:<br>
+      &nbsp;&nbsp;&nbsp; For Windows: <code>C:\temp\FileExplorer&gt;jar cvf
+      fileexplorer.jar *.class images/*<br>
+      &nbsp; </code>For Linux/Unix: <code>/temp/FileExplorer&gt;jar cvf
+      fileexplorer.jar *.class images/*</code></li>
     <li>Create a platform-dependent <code><b>jdic-native.jar</b></code>
 file with the platform-dependent JDIC native files using the <code>jar</code>
-tool.<br>
+      tool:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp; For Windows: <code>C:\jdic\dist\windows&gt;jar
+      cvf jdic-native.jar *.dll *.exe<br>
+      </code>&nbsp;&nbsp;&nbsp;&nbsp; For Linux/Unix: <code>/temp/jdic/dist/linux&gt;jar
+      cvf jdic-native.jar *.so mozembed-* defmailer.properties</code><code><br>
+      </code>
       <span style="font-weight: bold;">NOTE</span>: the native jar file
 name must be <code style="font-weight: bold;">jdic-native.jar</code>.
 Since the application needs to retrieve the native files after the jar
@@ -161,7 +170,38 @@ file for the FileExplorer application: <br>
     <tbody>
       <tr>
         <td>
-        <pre><code>1    &lt;?xml version="1.0" encoding="utf-8"?&gt; <br>2    &lt;!-- JNLP File for JDIC Demo Application (FileExplorer) --&gt; <br>3    &lt;jnlp spec="1.0+" codebase="</code><code>http://localhost:8080/fileexplorer</code><code>" href="fileexplorer.jnlp"&gt; <br>4        &lt;information&gt; <br>5            &lt;title&gt;JDIC FileExplorer Example&lt;/title&gt; <br>6            &lt;vendor&gt;Your website&lt;/vendor&gt; <br>7            &lt;description&gt;</code><code>FileExplorer Example App.</code><code>&lt;/description&gt; <br>8           &lt;description kind="short"&gt;</code><code>FileExplorer Example App.</code><code>&lt;/description&gt; <br>9           &lt;offline-allowed/&gt; <br>10       &lt;/information&gt; <br>11       &lt;security&gt; <br>12           &lt;all-permissions/&gt;<br>13       &lt;/security&gt; <br>14       &lt;resources&gt;<br>15           &lt;j2se      version="1.4+"/&gt;<br>16           &lt;jar       href="lib/fileexplorer.jar"/&gt; </code><br><code>17       &lt;/resources&gt;<br>18       &lt;resources os="Windows"&gt;<br>19           &lt;jar       href="lib/win32/jdic.jar"/&gt; <br>20           &lt;nativelib href="lib/win32/jdic-native.jar"/&gt;<br>21       &lt;/resources&gt;<br></code><code>22       &lt;resources os="SunOS"&gt;<br></code><code>23           &lt;jar       href="lib/solaris/jdic.jar"/&gt; <br>24           &lt;nativelib href="lib/solaris/jdic-native.jar"/&gt;<br>25       &lt;/resources&gt;<br>26       &lt;resources os="Linux"&gt;<br>27           &lt;jar       href="lib/linux/jdic.jar"/&gt; <br>28           &lt;nativelib href="lib/linux/jdic-native.jar"/&gt;<br>29       &lt;/resources&gt;<br>30       &lt;application-desc main-class="FileExplorer"/&gt;<br>31    &lt;/jnlp&gt;<br></code></pre>
+        <pre><code>1    &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt; 
+2    &lt;!-- JNLP File for JDIC Demo Application (FileExplorer) --&gt; 
+3    &lt;jnlp spec=&quot;1.0+&quot; codebase=&quot;</code><code>http://localhost:8080/fileexplorer</code><code>&quot; href=&quot;fileexplorer.jnlp&quot;&gt; 
+4        &lt;information&gt; 
+5            &lt;title&gt;JDIC FileExplorer Example&lt;/title&gt; 
+6            &lt;vendor&gt;Your website&lt;/vendor&gt; 
+7            &lt;description&gt;</code><code>FileExplorer Example App.</code><code>&lt;/description&gt; 
+8           &lt;description kind=&quot;short&quot;&gt;</code><code>FileExplorer Example App.</code><code>&lt;/description&gt; 
+9           &lt;offline-allowed/&gt; 
+10       &lt;/information&gt; 
+11       &lt;security&gt; 
+12           &lt;all-permissions/&gt;
+13       &lt;/security&gt; 
+14       &lt;resources&gt;
+15           &lt;j2se      version=&quot;1.4+&quot;/&gt;
+16           &lt;jar       href=&quot;lib/fileexplorer.jar&quot;/&gt; </code>
+<code>17       &lt;/resources&gt;
+18       &lt;resources os=&quot;Windows&quot;&gt;
+19           &lt;jar       href=&quot;lib/win32/jdic.jar&quot;/&gt; 
+20           &lt;nativelib href=&quot;lib/win32/jdic-native.jar&quot;/&gt;
+21       &lt;/resources&gt;
+</code><code>22       &lt;resources os=&quot;SunOS&quot;&gt;
+</code><code>23           &lt;jar       href=&quot;lib/solaris/jdic.jar&quot;/&gt; 
+24           &lt;nativelib href=&quot;lib/solaris/jdic-native.jar&quot;/&gt;
+25       &lt;/resources&gt;
+26       &lt;resources os=&quot;Linux&quot;&gt;
+27           &lt;jar       href=&quot;lib/linux/jdic.jar&quot;/&gt; 
+28           &lt;nativelib href=&quot;lib/linux/jdic-native.jar&quot;/&gt;
+29       &lt;/resources&gt;
+30       &lt;application-desc main-class=&quot;FileExplorer&quot;/&gt;
+31    &lt;/jnlp&gt;
+</code></pre>
         </td>
       </tr>
     </tbody>
