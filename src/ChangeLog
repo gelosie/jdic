@@ -1,22 +1,29 @@
-2005-03-02 Armin Chen <armin_chen@dev.java.net>
+2005-03-18 Armin Chen <armin_chen@dev.java.net>
 
-    * Biweekly build 20050302
+    * Release 0.9
     
     * Fixed issue list:   
       ID  Pri  Summary
       ==  ===  =======
-       67 P3   PopMenu does not close when focus is lost(Windows)
+       67 P3   PopMenu does not close when focus is lost
       144 P3   New Browser APIs supporting DOM/javascript execution support
       161 P3   Add a method documentCompleted on the WebBrowserListener
+      177 P3   Balloon Messages / Notification Window
       185 P3   Tray icon is lost when taskbar is restarted.
       192 P3   Add version info to the JDIC release binaries on Windows.
-      195 P3   Add property to build.xml to support debug compiling
       194 P3   Browser DOM support lacks unicode support
+      195 P3   Add property to build.xml to support debug compiling
       197 P3   Common.cpp building error: IsEmpty' undeclared.
+      223 P3   Events defined in WebBrowserEvent don't match WebBrowserList
+      224 P3   Unclear definition of addNotify and paint methods in WebBrow
+      225 P3   Javadoc comments need to be improved.
+      226 P3   Deprecate WebBrowserUtil class.
+      227 P3   Remove WebBrowser.getBrowserBinary() method.
+      231 P3   Deprecate WebBrowser.Status class.
+      232 P3   Add WebBrowser.getWebBrowserListeners method.
 
     * Known issue list:   
       Below are some of the most frequently mentioned known issues.
-       67 P3   PopMenu does not close when focus is lost(Linux/Solaris).
       170 P3   Browser doesn't work with Mozilla 1.4 .exe installation.
 
 2005-01-27 George Zhang <georgez@dev.java.net>
