@@ -236,8 +236,8 @@ Top-level target:
     </exec>                   
 
     <!-- copy generated .dll file -->
-    <copy file="${win32.native.jni.dir}/jdic.dll" todir="${dist.dir}" />
-    <copy file="${win32.native.jni.dir}/jdic.dll" todir="${dist.dir}/${native.dir}" />
+    <copy file="${win32.native.jni.dir}/release/jdic.dll" todir="${dist.dir}" />
+    <copy file="${win32.native.jni.dir}/release/jdic.dll" todir="${dist.dir}/${native.dir}" />
   </target>
 
   <!-- *** Build Win32 native embeded browser code *** -->
@@ -260,10 +260,10 @@ Top-level target:
     </exec>
     
     <!-- copy the embeded IE and Mozilla executable -->
-    <copy file="${win32.native.ie.dir}/Debug/IeEmbed.exe" todir="${dist.dir}" />
-    <copy file="${win32.native.ie.dir}/Debug/IeEmbed.exe" todir="${dist.dir}/${native.dir}" />
-    <copy file="${win32.native.mozilla.dir}/Debug/MozEmbed.exe" todir="${dist.dir}" />
-    <copy file="${win32.native.mozilla.dir}/Debug/MozEmbed.exe" todir="${dist.dir}/${native.dir}" />
+    <copy file="${win32.native.ie.dir}/release/IeEmbed.exe" todir="${dist.dir}" />
+    <copy file="${win32.native.ie.dir}/release/IeEmbed.exe" todir="${dist.dir}/${native.dir}" />
+    <copy file="${win32.native.mozilla.dir}/release/MozEmbed.exe" todir="${dist.dir}" />
+    <copy file="${win32.native.mozilla.dir}/release/MozEmbed.exe" todir="${dist.dir}/${native.dir}" />
 
     <!-- copy the bundled dll used by embeded IE executable -->
     <copy file="${win32.native.ie.dir}/nspr4.dll" todir="${dist.dir}" />
