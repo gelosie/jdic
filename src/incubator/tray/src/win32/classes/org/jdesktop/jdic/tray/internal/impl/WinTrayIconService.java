@@ -48,18 +48,19 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
     private String caption = "JDIC TrayIcon";
 
     private long hicon;
-
+    private Image oldIconImage;
     static private HashMap map = new HashMap();
 
     private LinkedList actionList = new LinkedList();
-
-    BufferedImage iconImage;
 
     static int noIcons;
 
     int iconID;
 
-    Component observer;
+    AnimationObserver observer;
+
+    private final int WINDOWS_TASKBAR_ICON_WIDTH = 16;
+    private final int WINDOWS_TASKBAR_ICON_HEIGHT = 16;
 
     // JDialog is required because we dont want window to show on
     // task bar, but it cant be JWindow since JWindow is not activatable.
@@ -70,8 +71,6 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
     static {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
-                System.out.println("Removing all Icons");
-                System.out.flush();
                 removeAllIcons();
             }
         });
@@ -95,24 +94,20 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
     private native void createIcon(long hIcon, int id, String string);
 
-    private native void updateIcon(long hIcon, int id, String string);
+    private native void updateNativeIcon(long hIcon, int id, String string);
+    
+    private native void deleteHIcon(long hIcon);
 
     private static native void removeIcon(int id);
 
     public void addNotify() {
-        int width = icon.getIconWidth();
-        int height = icon.getIconHeight();
-
-        iconImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = (Graphics2D) iconImage.getGraphics();
-
-        observer = new DummyComponent();
-        g.setComposite(AlphaComposite.Src);
-        icon.paintIcon(observer, g, 0, 0);
-        updateNativeIcon(iconImage);
-        createIcon(hicon, iconID, caption);
+        observer = new AnimationObserver();
+        updateIcon(null);
         created = true;
     }
+
+    private void updateBufferedImage() {
+           }
 
     public void setPopupMenu(JPopupMenu m) {
         menu = m;
@@ -126,7 +121,7 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
         int  pixels[] = ((DataBufferInt) bimage.getRaster().getDataBuffer()).getData();
         Raster  raster = bimage.getRaster();
-        byte[] andMask = new byte[w * h / 8];
+        byte[] andMask = new byte[(w * h) / 8];
         int npixels = pixels.length;
 
         for (int i = 0; i < npixels; i++) {
@@ -135,7 +130,9 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
             if ((pixels[i] & 0xff000000) == 0) {
                 // Transparent bit
-                andMask[ibyte] |= omask;
+                if (ibyte < andMask.length) {
+                    andMask[ibyte] |= omask;
+                }
             }
         } {
             int     ficW = raster.getWidth();
@@ -188,6 +185,15 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
             if (!isShowing) {
                 isShowing = true;
                 popupParentFrame = new JDialog();
+                // Fix for bug 25 
+                GraphicsConfiguration gc = popupParentFrame.getGraphicsConfiguration();
+                Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+                if (x < screenInsets.left) {
+                 x = screenInsets.left;
+                }
+                if (y < screenInsets.top) {
+                 y = screenInsets.top;
+                }
                 popupParentFrame.setBounds(x, y, 1, 1);
                 popupParentFrame.setVisible(true);
                 menu.show(popupParentFrame, 0, 0);
@@ -210,31 +216,51 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
         } catch (Exception e) {}
     }
 
-    private void updateNativeIcon(Image img) {
-        int w;
-        int h;
+    private void updateIcon(Image iconImage) {
+        Graphics2D g;
+        if (icon != null) {
+            if (iconImage == null) {
+                iconImage = new BufferedImage(icon.getIconWidth(),  icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+                g = (Graphics2D) ((BufferedImage)iconImage).getGraphics();
+                g.setComposite(AlphaComposite.Src);
+                icon.paintIcon(observer, g, 0, 0);
+                oldIconImage = iconImage;
+            }
 
-        if (autoSize) {
-            w = h = 16;
-        } else {
-            w = img.getWidth(observer);
-            h = img.getHeight(observer);
-        }
-        BufferedImage tmpImage = new BufferedImage(w, h,
-                BufferedImage.TYPE_INT_ARGB);
-        Graphics g = tmpImage.getGraphics();
+            // Temp image is used for scaling.
 
-        try {
-            ((Graphics2D) g).setComposite(AlphaComposite.Src);
-            g.drawImage(img, 0, 0, w, h, null);
-        } finally {
-            g.dispose();
+            BufferedImage tmpImage = new BufferedImage(WINDOWS_TASKBAR_ICON_WIDTH, WINDOWS_TASKBAR_ICON_HEIGHT,
+                    BufferedImage.TYPE_INT_ARGB);
+            g = (Graphics2D) tmpImage.getGraphics();
+
+            try {
+                g.setComposite(AlphaComposite.Src);
+                g.drawImage(iconImage, 0, 0, WINDOWS_TASKBAR_ICON_WIDTH,WINDOWS_TASKBAR_ICON_HEIGHT, null);
+            } finally {
+                g.dispose();
+            }
+            tmpImage.flush();
+
+            // Free old icon.
+            if (hicon != 0) {
+                deleteHIcon(hicon); 
+            }
+            hicon = createNativeIcon(tmpImage, WINDOWS_TASKBAR_ICON_WIDTH, WINDOWS_TASKBAR_ICON_HEIGHT, 0, 0);
+            if (created) {
+                updateNativeIcon(hicon, iconID, caption);
+            }
+            else {
+                createIcon(hicon, iconID, caption);
+            }
         }
-        tmpImage.flush();
-        hicon = createNativeIcon(tmpImage, w, h, 0, 0);
     }
 
-    private class DummyComponent extends Component {
+    private class AnimationObserver extends Component {
+        boolean update = true;
+
+        public void setUpdate(boolean b) {
+            update = b;
+        }
         public boolean imageUpdate(Image img,
                 int infoflags,
                 int x,
@@ -242,36 +268,33 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
                 int width,
                 int height) {
 
-            if (created) {
-                updateNativeIcon(img);
-                updateIcon(hicon, iconID, caption);
+            if (update && created) {
+                updateIcon(img);
             }
-            return true;
+            return update;
         }
     }
 
     public void setIcon(final Icon i) {
         icon = i;
         if (created) {
-            updateNativeIcon(iconImage);
-            updateIcon(hicon, iconID, caption);
+            observer.setUpdate(false);
+            observer = new AnimationObserver();
+            updateIcon(null);
         }
     }
 
     public void setCaption(String s) {
         caption = s;
         if (created) {
-            updateNativeIcon(iconImage);
-            updateIcon(hicon, iconID, caption);
+            observer.setUpdate(false);
+            observer = new AnimationObserver();
+            updateIcon(null);
         }
     }
 
     public void setIconAutoSize(boolean b) {
-        autoSize = b;
-        if (created) {
-            updateNativeIcon(iconImage);
-            updateIcon(hicon, iconID, caption);
-        }
+        // Not necessary for Win32 impl.
     }
 
     public void addActionListener(ActionListener l) {
@@ -291,6 +314,11 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
     void remove() {
         removeIcon(iconID);
+        // Free old icon.
+        if (hicon != 0) {
+            deleteHIcon(hicon); 
+        }
+        created = false;
     }
 
 }

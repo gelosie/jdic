@@ -323,6 +323,11 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconSer
 	return (jlong) hIcon; 
 }
 
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_deleteHIcon
+(JNIEnv *env , jobject obj, jlong icon)
+{
+    DestroyIcon((HICON)icon);
+}
 
 
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_createIcon
@@ -333,7 +338,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
 	env->ReleaseStringUTFChars(str, buffer);
 }
 
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_updateIcon
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_updateNativeIcon
 (JNIEnv *env , jobject obj, jlong icon, jint id, jstring str)
 {
 	LPTSTR buffer = (LPTSTR) env->GetStringUTFChars( str, NULL);

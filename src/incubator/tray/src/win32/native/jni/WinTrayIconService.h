@@ -17,6 +17,14 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconSer
 
 /*
  * Class:     org_jdesktop_jdic_tray_internal_impl_WinTrayIconService
+ * Method:    deleteHIcon
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_deleteHIcon
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     org_jdesktop_jdic_tray_internal_impl_WinTrayIconService
  * Method:    createIcon
  * Signature: (JILjava/lang/String;)V
  */
@@ -25,10 +33,10 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
 
 /*
  * Class:     org_jdesktop_jdic_tray_internal_impl_WinTrayIconService
- * Method:    updateIcon
+ * Method:    updateNativeIcon
  * Signature: (JILjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_updateIcon
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_updateNativeIcon
   (JNIEnv *, jobject, jlong, jint, jstring);
 
 /*
