@@ -59,7 +59,6 @@ public class ServiceManager {
     // Add the initialization code from package org.jdesktop.jdic.init.
     // To set the environment variables or initialize the set up for 
     // native libraries and executable files.
-    // Note: below code is commented out at the moment. As the Tray Icon native code
     static {
         try {
             JdicManager jm = JdicManager.getManager();
