@@ -34,7 +34,7 @@ Tray Icon API (Early Access)</h2>
 </blockquote>
 <h3><a name="Download">Download</a></h3>
 <blockquote>
-  <p><a href="https://jdic.dev.java.net/servlets/ProjectDocumentList?folderID=1330&amp;expandFolder=1330&amp;folderID=0">Download</a> 
+  <p><a href="https://jdic.dev.java.net/servlets/ProjectDocumentList?folderID=1330&amp;expandFolder=1330&amp;folderID=0"><b>Download</b></a> 
     the latest release of the Tray Icon API and documentation. 
 </blockquote>
 <h3><a name="System Requirements">System Requirements</a></h3>
@@ -59,8 +59,12 @@ Tray Icon API (Early Access)</h2>
 <h3><a name="Run the Demos">Run the Demos</a></h3>
 <blockquote> 
   <blockquote> 
-    <h4> Windows</h4>
-    <p>Assuming the tray icons are installed under c:\tray:</p>
+    <p>You can use Java Web Start to <a href="http://javadesktop.org/jdic/demo/TrayIcon/trayicon.jnlp"><b>run 
+      the TrayIcon demo</b></a>. You can also run demos locally, using the following 
+      instructions.</p>
+    <h4>Windows</h4>
+    <p>Assuming the tray icons are installed under c:\tray and the Java installation 
+      is under c:\j2sdk1.4.2:</p>
     <pre>
 set JAVA_HOME=c:\j2sdk1.4.2
 cd c:\tray\demo\Tray
@@ -73,11 +77,16 @@ export JAVA_HOME=/usr/java/j2sdk1.4.2
 cd /home/duke/tray/demo/Tray
 $JAVA_HOME/bin/java -classpath ../../tray.jar:. -Djava.library.path=../../ IconDemo
 </pre>
-    <p>If you do not see tray icons, the notification area is probably disabled. 
-      You can enable it by right-clicking the GNOME panel and selecting Add&nbsp;to&nbsp;Panel 
-      > Utility > Notification&nbsp;Area.</p>
-    <p></p>
+<blockquote>
+	<hr>
+      <b> Linux Troubleshooting Note:</b> If you do not see tray icons, the notification 
+      area is probably disabled. You can enable it by right-clicking the GNOME 
+      panel and selecting Add&nbsp;to&nbsp;Panel > Utility > Notification&nbsp;Area. 
+      <hr>
     </blockquote>
+    
+    <p></p>
+  </blockquote>
 </blockquote>
 <h3><a name="Build the Source">Build the Source</a></h3>
 <blockquote>
