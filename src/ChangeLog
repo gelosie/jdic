@@ -24,10 +24,12 @@
       232 P3   Add WebBrowser.getWebBrowserListeners method.
       236 P3   NullPointerException thrown when running Tray demo.
       238 P3   getLocationOnScreen() can not return the location of the icon
-
+      241 P3   Trayicon actionlistener dosen't works without pupup menu.
+      
     * Known issue list:   
       Below are some of the most frequently mentioned known issues.
       170 P3   Browser doesn't work with Mozilla 1.4 .exe installation.
+      221 P3   popmenu flashes when first right-click to the icon.
 
 2005-01-27 George Zhang <georgez@dev.java.net>
 
