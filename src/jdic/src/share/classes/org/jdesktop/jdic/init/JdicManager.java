@@ -150,9 +150,6 @@ public class JdicManager {
                 fieldSysPath.set(System.class.getClassLoader(), null);
             }
     
-            // Pre-append the binary path to PATH(on Windows) or LD_LIBRARY_PATH 
-            // (on Unix).                     
-            InitUtility.appendEnv(libPathEnv, binaryPath); 
         } catch (Throwable e) {
             throw new JdicInitException(e);
         }
@@ -178,6 +175,9 @@ public class JdicManager {
         }
 
         try {
+            // Pre-append the binary path to PATH(on Windows) or LD_LIBRARY_PATH 
+            // (on Unix).                     
+            InitUtility.appendEnv(libPathEnv, binaryPath); 
             // Check and set MOZILLA_FIVE_HOME, add it to PATH(on Windows) or 
             // LD_LIBRARY_PATH (on Unix). 
             String browserPath = WebBrowserUtil.getBrowserPath();
