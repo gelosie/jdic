@@ -27,6 +27,9 @@ public class SystemInfoDemo extends TimerTask {
     long idleTime = SystemInfo.getSessionIdleTime();
     System.out.println("User has been idle for " + 
         (int)(idleTime/1000) + " seconds.");
+
+    System.out.println("Is user's workstation locked? (" + SystemInfo.isSessionLocked() +")");
+    
   }
 
   public static void main(String[] args) {
