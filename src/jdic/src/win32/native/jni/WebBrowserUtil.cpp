@@ -144,17 +144,17 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, szKey, 0, KEY_QUERY_VALUE, &hKey) 
         != ERROR_SUCCESS) {
         return 0;
-     }
+    }
      
-     if (RegQueryValueEx(hKey, "GreHome", NULL, NULL, (BYTE *)greHome,
-            &cb) != ERROR_SUCCESS) {
-          RegCloseKey(hKey); 
-          return 0;
-      } 
+    if (RegQueryValueEx(hKey, "GreHome", NULL, NULL, (BYTE *)greHome,
+        &cb) != ERROR_SUCCESS) {
+        RegCloseKey(hKey); 
+        return 0;
+    } 
           
-      RegCloseKey(hKey); 
+    RegCloseKey(hKey); 
 
-      return env->NewStringUTF(greHome);
+    return env->NewStringUTF(greHome);
 }
 #ifdef __cplusplus
 }
