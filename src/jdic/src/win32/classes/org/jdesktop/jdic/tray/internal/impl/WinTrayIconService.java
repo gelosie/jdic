@@ -209,14 +209,17 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
     public synchronized static void notifyEvent(int id, final int mouseState, final int x, final int y) {
         final  WinTrayIconService instance = (WinTrayIconService) map.get(new Integer(id));
-
+        if(instance == null)
+        	return;
         try {
-            EventQueue.invokeAndWait(new Runnable() {
+            EventQueue.invokeLater(new Runnable() {
                 public void run() {
                     instance.processEvent(mouseState, x, y);
                 }
             });
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateIcon(Image iconImage) {
