@@ -80,10 +80,12 @@ LIBS = -L$(USR_LIB_DIR) \
        -lpopt \
        -lrt
 
-EXTRA_BROWSER_LIBS = \
+EXTRA_BROWSER_LIBS = 
     -L$(JAVA_HOME)/jre/lib/sparc \
     -L$(JAVA_HOME)/jre/lib/i386 \
     -ljawt \
+
+TRAY_LIBS = -lXt -lX11
 
 CPPSRCS = GnomeBrowserService.cpp \
           GnomeLaunchService.cpp \
@@ -91,7 +93,11 @@ CPPSRCS = GnomeBrowserService.cpp \
           GnomeVfsWrapper.cpp \
           WebBrowser.cpp \
           WebBrowserUtil.cpp \
-          ../../../share/native/utils/InitUtility.cpp
+          ../../../share/native/utils/InitUtility.cpp \
+          native.c
+
+TRAY_CPPSRCS = ../../../share/native/utils/InitUtility.cpp \
+               native.c
           
 SO_NAME = libjdic.so
 
@@ -103,7 +109,16 @@ SO_o = $(CPPSRCS:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(EXTRA_INCLUDES) -o $@ $<
 
 $(SO_NAME): $(SO_o)
-	$(CXX) $(LDFLAGS) $(LIBS) $(EXTRA_BROWSER_LIBS) $(SO_o) -o $@
+	$(CXX) $(LDFLAGS) $(LIBS) $(EXTRA_BROWSER_LIBS) $(TRAY_LIBS) $(SO_o) -o $@
+
+tray: clean $(SO_NAME)
+SO_tray_o = $(TRAY_CPPSRCS:.cpp=.o)
+
+.cpp.o:
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
+
+$(SO_NAME): $(SO_tray_o)
+	$(CXX) $(LDFLAGS) $(TRAY_LIBS) $(SO_o) -o $@
 
 clean:
 	rm -f *.so
