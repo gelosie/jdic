@@ -211,7 +211,7 @@ J2RE, it's <code>&lt;J2RE HOME&gt;/lib</code>.</li>
   current platform (Windows/Linux/Solaris), which is put under <code>dist/&lt;platform&gt;</code>
   directory.</p>
   <ul>
-    <li><b>Jakarta Ant:</b><br>
+    <li>Jakarta Ant:<br>
       JDIC comes with an Ant-based build system. Obtain and install 
       <a href="http://ant.apache.org/" target="_blank">Ant</a> 1.5.4 or later as outlined in 
       the manual.</li>
@@ -219,6 +219,12 @@ J2RE, it's <code>&lt;J2RE HOME&gt;/lib</code>.</li>
   </ul>
   <blockquote>
   <ul>
+    <li>J2SDK v1.4.2 or later
+      <ul>
+        <li>Set <code><b>JAVA_HOME</b></code> to the installation path. It can
+          be downloaded from <a href="http://java.sun.com">http://java.sun.com</a>.</li>
+      </ul>
+    </li>
     <li><b>Windows:</b>
       <ul>
         <li>Microsoft Visual C++ Compiler<br>
@@ -265,12 +271,21 @@ J2RE, it's <code>&lt;J2RE HOME&gt;/lib</code>.</li>
   </ul>
   <blockquote>
   <ul>
+    <li>J2SDK v1.5.0 or later
+      <ul>
+        <li>It can be downloaded from <a href="http://java.sun.com">http://java.sun.com</a>.</li>
+      </ul>
+    </li>
     <li><b>Windows:</b>
       <ul>
         <li>Microsoft Visual C++ Compiler<br>
           The Microsoft Visual C++ 6.0 Professional Edition compiler is required.</li>
         <li>Microsoft Platform Software Development Kit (SDK)<b><br>
           </b>It can be downloaded from <a href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">here</a>.</li>
+        <li>Add <code>deploy.jar</code> and <code>javaws.jar</code> in J2SDK/J2RE
+          1.5 or later to CLASSPATH. For J2SDK, the path is <code> &lt;J2SDK HOME&gt;/jre/lib</code>;
+For
+J2RE, it's <code>&lt;J2RE HOME&gt;/lib</code>.</li>
       </ul>
     </li>
   </ul>
