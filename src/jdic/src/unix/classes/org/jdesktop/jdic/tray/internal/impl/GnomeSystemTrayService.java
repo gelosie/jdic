@@ -74,6 +74,7 @@ public class GnomeSystemTrayService implements SystemTrayService {
         t.sync();
 
         System.loadLibrary("tray");
+        GnomeSystemTrayService.initNative(System.getProperty("java.home"));
         if (!locateSystemTray()) {
             throw new Error("System Tray not Found !");
         }
@@ -89,5 +90,6 @@ public class GnomeSystemTrayService implements SystemTrayService {
     }
 
     static native void dockWindow(long window);
+    private static native void initNative(String javaHome);
 
 }

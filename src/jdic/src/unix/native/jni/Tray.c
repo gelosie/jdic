@@ -65,6 +65,12 @@ static void (* LockIt)(JNIEnv *) = NULL;
 static void (* UnLockIt)(JNIEnv *) = NULL;
 static void (* NoFlushUnlockIt)(JNIEnv *) = NULL;
 
+/* 
+ *  awtHandle is initialized in function:
+ *  Java_org_jdesktop_jdic_tray_internal_impl_GnomeSystemTrayService_initNative
+ *   (JNIEnv *env, jobject object, jstring java_home_string) 
+ *  This function should be called from Java side after loadLibrary("tray") immediately.
+ */
 static void *awtHandle = NULL;
 
 #ifdef __linux__
@@ -81,38 +87,12 @@ static void *awtHandle = NULL;
 #endif
 #endif
 
-static void initAwtHandle() {
-    char awtPath[MAXPATHLEN];
-
-    sprintf(awtPath,"%s/lib/%s/libawt.so",getenv("JAVA_HOME"),LIBARCH);
-    dprintf("%s\n",awtPath);
-    awtHandle = dlopen(awtPath, RTLD_LAZY);
-    if (awtHandle == NULL) {
-        /* must be JDK try JDK location */
-        sprintf(awtPath,"%s/jre/lib/%s/libawt.so",getenv("JAVA_HOME"),LIBARCH);
-        dprintf("JDK - %s\n",awtPath);
-        awtHandle = dlopen(awtPath, RTLD_LAZY);
-
-    }
-
-    if (awtHandle == NULL) {
-        fprintf(stderr,"reflect - bad awtHandle.\n");
-        fprintf(stderr,"%s\n",dlerror());
-        exit(123);
-    }
-    return;
-}
-
-
 #define REFLECT_VOID_FUNCTION(name, arglist, paramlist)			\
 typedef name##_type arglist;						\
     static void name arglist						\
 {									\
     static name##_type *name##_ptr = NULL;				\
         if (name##_ptr == NULL) {						\
-            if (awtHandle == NULL) {					\
-                initAwtHandle();						\
-            }								\
             name##_ptr = (name##_type *) dlsym(awtHandle, #name);		\
                 if (name##_ptr == NULL) {					\
                     fprintf(stderr,"reflect failed to find " #name ".\n");	\
@@ -129,9 +109,6 @@ typedef return_type name##_type arglist;				\
 {									\
     static name##_type *name##_ptr = NULL;				\
         if (name##_ptr == NULL) {						\
-            if (awtHandle == NULL) {					\
-                initAwtHandle();						\
-            }								\
             name##_ptr = (name##_type *) dlsym(awtHandle, #name);		\
                 if (name##_ptr == NULL) {					\
                     fprintf(stderr,"reflect failed to find " #name ".\n");	\
@@ -724,7 +701,33 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayApplet
     XDestroyWindow(display,(Window) window);
     XSync(display,False);
     (*UnLockIt)(env);	
-
 }
 
+/*
+ * Class:     org_jdesktop_jdic_tray_internal_impl_GnomeSystemTrayService
+ * Method:    initNative
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeSystemTrayService_initNative (JNIEnv *env, jobject object, jstring java_home_string) {
+    
+    char awtPath[MAXPATHLEN];
+    const char *java_home = (*env)->GetStringUTFChars(env, java_home_string, 0); 
+    sprintf(awtPath,"%s/lib/%s/libawt.so",java_home,LIBARCH);
+    dprintf("%s\n",awtPath);
+    awtHandle = dlopen(awtPath, RTLD_LAZY);
+    if (awtHandle == NULL) {
+        /* must be JDK try JDK location */
+        sprintf(awtPath,"%s/jre/lib/%s/libawt.so",java_home, LIBARCH);
+        dprintf("JDK - %s\n",awtPath);
+        awtHandle = dlopen(awtPath, RTLD_LAZY);
+
+    }
+    (*env)->ReleaseStringUTFChars(env, java_home_string, java_home); 
+    if (awtHandle == NULL) {
+        fprintf(stderr,"reflect - bad awtHandle.\n");
+        fprintf(stderr,"%s\n",dlerror());
+        exit(123);
+    }
+    return;
+}
 
