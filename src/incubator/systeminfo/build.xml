@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<project name="SystemInfo source code building script" default="showtargets" basedir=".">
+
+<!--
+This is the master build script for use with the Jakarta Ant build tool 
+to build the source code of SystemInfo project.
+
+For Ant, see http://jakarta.apache.org/ant/index.html
+
+Top-level target:
+  buildall:         Build a SystemInfo API distribution for the current platform. 
+                    Which will run one of below targets:
+    buildwin32:     on Windows to build a Windows distribuition.
+    buildlinux:     on Linux to build a Linux distribuition.
+    buildsolaris:   on Solaris to build a Solaris distribuition.
+  clean:            Remove the generated distribution (including files and directories).
+
+-->
+
+  <!-- the top-level package names -->
+  <property name="pkg.jdic.name" value="org.jdesktop.jdic" /> 
+  <property name="pkg.systeminfo.name" value="${pkg.jdic.name}.systeminfo" /> 
+
+  <!-- the path of source directory -->
+  <property name="src.dir" value="src" />
+  <property name="share.classes.dir" value="${src.dir}/share/classes" />
+
+  <property name="unix.native.dir" value="${src.dir}/unix/native" />    
+  <property name="unix.native.jni.dir" value="${unix.native.dir}/jni" />
+  <property name="unix.classes.dir" value="${src.dir}/unix/classes" />
+
+  <property name="solaris.native.dir" value="${src.dir}/solaris/native" />    
+  <property name="solaris.native.jni.dir" value="${unix.native.dir}/jni" />
+  <property name="solaris.classes.dir" value="${src.dir}/solaris/classes" />
+
+  <property name="win32.native.dir" value="${src.dir}/win32/native" />    
+  <property name="win32.native.jni.dir" value="${win32.native.dir}/jni" />
+  <property name="win32.classes.dir" value="${src.dir}/win32/classes" />
+
+  <!-- the distribution version and release of this build -->
+  <!-- which is only used in javadoc target -->
+  <property name="version" value="0.1" />
+  <property name="release" value="1" />
+
+  <!-- the generated jar file name -->
+  <property name="jar.file" value="systeminfo.jar" />
+
+  <target name="showtargets" description="default target showing all available targets">
+    <echo>The top-level targets are:</echo>
+    <echo>  buildall:   Build a distribution for the current platform.</echo>
+    <echo>  clean:      Remove the generated distribution.</echo>
+    <echo></echo>
+    <echo>  The generated distribution is put under *dist* directory.</echo>
+  </target>
+
+  <!--
+    - SHARED TARGETS FOR WIN32/LINUX/SOLARIS DISTRIBUTIONS
+    -->
+  <target name="init" description="the init target">
+    <tstamp/>
+
+    <condition property="dist.dir" value="dist/windows">
+      <os family="windows" />      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/linux">
+      <os name="linux"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/solaris_sparc">
+      <os name="sunos" arch="sparc"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/solaris_x86">
+      <os name="sunos" arch="x86"/>      
+    </condition> 
+
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist.dir}" />   
+  </target>
+
+  <target name="clean" depends="init" description="clean up the built directory and files">
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}"/>
+    </delete>
+    <delete>
+      <fileset dir="." includes="**/*~" defaultexcludes="no"/>
+    </delete>
+  </target>
+
+
+  <!-- *** Build a SystemInfo API distribution for the current platform *** -->
+  <target name="buildall" description="build a distribution for the current platform.">
+    <!-- Set the platform-dependent buildall target -->
+    <condition property="platform.target" value="buildwin32">
+      <os family="windows" />      
+    </condition> 
+
+    <condition property="platform.target" value="buildlinux">
+      <os name="linux"/>      
+    </condition> 
+
+    <condition property="platform.target" value="buildsolaris">
+      <os name="sunos"/>      
+    </condition>  
+
+    <antcall target="${platform.target}" />
+  </target>
+
+  <!-- *** javadoc *** -->
+  <target name="javadoc" depends="init" description="generate javadoc into dist/javadoc" >
+    <javadoc packagenames="${pkg.systeminfo.name}" 
+             sourcepath="${share.classes.dir}" 
+             destdir="${dist.dir}/javadoc" 
+             author="false" 
+             version="false" 
+             use="true" 
+             Windowtitle="SystemInfo API V${version} Release ${release}" 
+             Header="SystemInfo API V${version} Release ${release}">
+      <docTitle>
+        <![CDATA[DestkopInfo API Specification, Version ${version} Release ${release}]]>
+      </docTitle>
+      
+      <bottom>
+        <![CDATA[<font size="-1">For more information and documentation on SystemInfo, 
+          see <a href="https://jdic.dev.java.net">SystemInfo website</a>. <p>That documentation 
+          contains more detailed, developer-targeted descriptions, with conceptual 
+          overviews, working code examples, license terms and bug report information.
+          Use is subject to <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">
+          license terms</a>. 
+          </font>]]>
+      </bottom>
+    </javadoc>
+  </target>
+
+  <target name="buildwin32" depends="buildwin32jar, javadoc, buildwin32jni" 
+    description="build java and native source code for Win32 platform" />
+
+  <target name="buildlinux" depends="buildunixjar, javadoc, buildunixjni" 
+    description="build java and native source code for Linux platform"/>
+
+  <target name="buildsolaris" depends="buildsolarisjar, javadoc, buildsolarisjni" 
+    description="build java and native source code for Solaris platform"/>
+
+  <target name="buildwin32jar" depends="init" description="build the classes and jar file." >
+    <javac srcdir="${share.classes.dir}:${win32.classes.dir}" 
+        destdir="${dist.dir}" classpath="${dist.dir}"/>
+        
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+      <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="buildunixjar" depends="init" description="build the classes and jar file.">
+    <javac srcdir="${share.classes.dir}:${unix.classes.dir}" destdir="${dist.dir}" 
+        classpath="${dist.dir}" debug="true"/>
+        
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+      <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+  </target>
+  
+  <target name="buildsolarisjar" depends="init" description="build the classes and jar file.">
+    <javac srcdir="${share.classes.dir}:${solaris.classes.dir}" destdir="${dist.dir}" 
+        classpath="${dist.dir}" debug="true"/>
+        
+    <jar destfile="dist/${jar.file}" update="false">
+      <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="buildunixjni" depends="init" description="build native jni libraries." >
+    <exec dir="${unix.native.jni.dir}" executable="make" failonerror="yes" />
+    <copy file="${unix.native.jni.dir}/libsysteminfo.so" todir="${dist.dir}" />
+  </target>
+
+  <target name="buildsolarisjni" depends="init" description="build native jni libraries." >
+    <exec dir="${solaris.native.jni.dir}" executable="make" failonerror="yes"/>
+    <copy file="${solaris.native.jni.dir}/libsysteminfo.so" todir="${dist.dir}" />
+  </target>
+
+  <target name="buildwin32jni" depends="init" description="build native jni libraries." >
+    <exec dir="${win32.native.jni.dir}" executable="make" failonerror="yes"/>
+    <copy file="${win32.native.jni.dir}/systeminfo.dll" todir="${dist.dir}" />
+  </target>
+
+</project>
