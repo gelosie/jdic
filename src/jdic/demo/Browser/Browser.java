@@ -173,7 +173,7 @@ public class Browser extends JPanel {
         try {
             webBrowser = new WebBrowser(new URL("http://java.net"));
             // Print out debug messages in the command line.
-            //myWebBrowser.setDebug(true);
+            //webBrowser.setDebug(true);
         } catch (MalformedURLException e) {
             System.out.println(e.getMessage());
             return;
