@@ -111,7 +111,7 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
 
         // Check if libxpcom.so is located at the Mozilla parent path. If not, 
         // scan the Mozilla command file for the MOZILLA_FIVE_HOME setting.
-        char *moz5home_value;
+        char *moz5home_value = NULL;
         if (mozpath) {
             // Check if libxpcom.so exists at the same path.
             char *str_p = g_strrstr(mozpath, "/");
