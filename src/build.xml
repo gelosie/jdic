@@ -76,17 +76,7 @@ Top-level target:
     <!-- Unix Note: the executable permission of mozembed-<os>-gtk* 
          files are not retained using Ant Copy, add executable mode.
     -->
-    <exec os="Linux" executable="chmod">
-      <arg line="+x ${dist.dir}/mozembed-linux-gtk2" />   
-    </exec>
-
-    <exec os="SunOS" executable="chmod">
-      <arg line="+x ${dist.dir}/mozembed-solaris-gtk2" />   
-    </exec>
-
-    <exec os="FreeBSD" executable="chmod">
-      <arg line="+x ${dist.dir}/mozembed-freebsd-gtk2" />   
-    </exec>
+    <chmod dir="${dist.dir}" perm="+x" includes="*mozembed-*-gtk*" />
 
     <!-- Copy JDIC Packager distribution files -->
     <copy todir="${dist.dir}">
@@ -100,13 +90,7 @@ Top-level target:
     <!-- Unix Note: the executable permission of jnlp2rpm or jnlp2pkg 
          files are not retained using Ant Copy, add executable mode.
     -->
-    <exec os="Linux" executable="chmod">
-      <arg line="+x ${dist.dir}/jnlp2rpm" />   
-    </exec>
-
-    <exec os="SunOS" executable="chmod">
-      <arg line="+x ${dist.dir}/jnlp2pkg" />   
-    </exec>
+    <chmod dir="${dist.dir}" perm="+x" includes="jnlp2*" />
 
     <!-- Copy the documentation files -->
     <copy file="README.html" todir="${dist.dir}"/>
