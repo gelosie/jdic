@@ -242,6 +242,11 @@ Top-level target:
   <target name="cplinuxscript" depends="init"
           description="copy the command-line packaging script." >
     <copy file="${unix.dir}/jnlp2rpm" todir="${dist.dir}" />
+
+    <!-- Note: the executable permission of jnlp2rpm is not retained 
+         using Ant Copy, add executable mode.
+    -->
+    <chmod dir="${dist.dir}" perm="+x" includes="jnlp2rpm" />
   </target>
 
   <!--
@@ -272,6 +277,11 @@ Top-level target:
   <target name="cpsolarisscript" depends="init"
           description="copy the command-line packaging script." >
     <copy file="${solaris.dir}/jnlp2pkg" todir="${dist.dir}" />
+
+    <!-- Note: the executable permission of jnlp2pkg is not retained 
+         using Ant Copy, add executable mode.
+    -->
+    <chmod dir="${dist.dir}" perm="+x" includes="jnlp2pkg" />
   </target>
 
   <!--
