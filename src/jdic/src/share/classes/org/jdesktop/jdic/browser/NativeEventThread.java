@@ -82,7 +82,8 @@ class NativeEventThread extends Thread
             );
         } catch (PrivilegedActionException e) {
             setBrowsersInitFailReason("Can't find native browser");
-            System.out.println("Can't execute native browser. ErrMsg is " + e.getMessage());
+            System.out.println("Can't execute native browser. Error message is: " 
+                    + e.getCause().getMessage());
             return;
         }
      
@@ -97,7 +98,8 @@ class NativeEventThread extends Thread
                 }
             );
         } catch (PrivilegedActionException e) {          
-            System.out.println("Can't connect to native browser. ErrMsg is " + e.getMessage());
+            System.out.println("Can't connect to native browser. Error " +
+                    "message is: " + e.getCause().getMessage());
             setBrowsersInitFailReason("Can't connect to native browser");
             return;
         } 
