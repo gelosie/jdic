@@ -39,6 +39,7 @@
 #define POLLRDNORM POLLIN
 #endif
 
+#define DEBUG
 #ifdef DEBUG
 #define dprintf printf
 #else
@@ -53,7 +54,6 @@
 static Display *     awt_display;
 
 /* AWT interface functions. */
-static void *res = NULL;
 static int initialized_lock = 0;
 
 
@@ -280,7 +280,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
 
                 break;
             case ConfigureNotify:
-                dprintf("ConfigureNotify x = %d y=%d w=%d h=%d\n",report.xconfigure.x,report.xconfigure.y, report.xconfigure.width, report.xconfigure.height);
+                dprintf("ConfigureNotify win = %x x = %d y=%d w=%d h=%d\n",report.xconfigure.window, report.xconfigure.x,report.xconfigure.y, report.xconfigure.width, report.xconfigure.height);
                 configureNotify(env,report.xconfigure.window,report.xconfigure.x,report.xconfigure.y, report.xconfigure.width, report.xconfigure.height);
 
                 break;
@@ -291,7 +291,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
 		dprintf("MapRequest\n");
 		break;
 	    case MapNotify:
-                dprintf("MapNotify\n");
+                dprintf("MapNotify %x\n", report.xconfigure.window);
                 break;
 	    case UnmapNotify:
                 dprintf("UnmapNotify\n");
@@ -354,8 +354,6 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
     Atom _NET_WM_STATE_STICKY;
     char *       window_name = "JDIC Dock";
     char *       icon_name = "JDIC Dock Icon";
-
-    unsigned int *data =  (unsigned int *) malloc(6*4);
 
     (*LockIt)(env);
     /*  Allocate memory for our structures  */
@@ -481,7 +479,6 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
                     (unsigned char *)&insets, 12);
 
     (*UnLockIt)(env);
-
 }
 
 
@@ -492,6 +489,8 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
  */
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_mapWindow(JNIEnv *env, jobject obj, jlong win, jboolean b)
 {
+    (*LockIt)(env);
+
     if (b) {
 	dprintf("mapped window id is %x\n", win);
 	XMapWindow(display, win);
@@ -500,6 +499,8 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
 	dprintf("unmapped window id is %x\n", win);	
 	XUnmapWindow(display, win);
     }
+
+    (*UnLockIt)(env);
 }
 
 /*

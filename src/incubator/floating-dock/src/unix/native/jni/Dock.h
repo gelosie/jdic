@@ -33,6 +33,14 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
 
 /*
  * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
+ * Method:    mapWindow
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_mapWindow
+  (JNIEnv *, jobject, jlong, jboolean);
+
+/*
+ * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
  * Method:    locateDock
  * Signature: ()Z
  */
@@ -46,14 +54,6 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockSer
  */
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_eventLoop
   (JNIEnv *, jclass);
-
-/*
- * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
- * Method:    mapWindow
- * Signature: (JZ)V
- */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_mapWindow
-  (JNIEnv *, jclass, jlong, jboolean);
 
 #ifdef __cplusplus
 }

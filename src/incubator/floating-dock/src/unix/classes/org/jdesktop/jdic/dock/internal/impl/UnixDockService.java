@@ -41,17 +41,17 @@ public class UnixDockService implements DockService {
 
     EmbeddedFrame frame;
     int location = FloatingDock.LEFT;
-    static long window_id;
-    static HashMap winmap = new HashMap();
+    long window_id;
 
     native long createDockWindow();
     native long getWidget(long window, int widht, int height, int x, int y);
     native void adjustSizeAndLocation(long window, int width, int height, int location);
+    native void mapWindow(long window, boolean b);
     static native boolean  locateDock();
     static native void eventLoop();
-    static native void mapWindow(long window, boolean b);
 
     static Thread display_thread;
+    static HashMap winmap = new HashMap();
 
     static {
         //
@@ -84,7 +84,9 @@ public class UnixDockService implements DockService {
     void init()
     {
 	window_id = createDockWindow();
-	winmap.put(new Long(window_id), (Object)this);	
+	synchronized (winmap) {
+	    winmap.put(new Long(window_id), (Object)this);	
+	}
 	frame = createEmbeddedFrame(window_id);
     }
 
@@ -214,13 +216,16 @@ public class UnixDockService implements DockService {
     {
         frame.setSize(w, h);
         frame.validate();
-     //   System.out.println("configureWindow: frame = " + frame + " configure width = " + width + " height = " + height);
+        //System.out.println("configureWindow: window id = " + window_id + "configure width = " + w + " height = " + h);
     }
 
     static void configureNotify(long window, int x, int y, int w, int h) 
     {
         //  System.out.println("configureNotify: window =" + window );
-	UnixDockService uds = (UnixDockService)winmap.get(new Long(window));
+	UnixDockService uds;
+	synchronized (winmap) {
+	    uds = (UnixDockService)winmap.get(new Long(window));
+	}
 	if (uds != null) {
             uds.configureWindow(x, y, w, h);
         }
