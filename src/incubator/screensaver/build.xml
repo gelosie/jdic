@@ -92,7 +92,7 @@ USA
     -->
   <target depends="init" description="Compile Saver Beans ant task" name="compile-ant">
     <mkdir dir="${build}/ant"/>
-    <javac classpath="${ant.home}/lib/ant.jar" debug="on" destdir="${build}/ant" srcdir="${src}/ant"/>
+    <javac classpath="${ant.home}/lib/ant.jar" debug="on" destdir="${build}/ant" srcdir="${src}/ant" deprecation="true"/>
     <copy todir="${build}/ant">
       <fileset dir="${src}/ant">
         <include name="**/*.template"/>
@@ -163,7 +163,7 @@ USA
   <target name="compile-api" depends="init" 
           description="Compile Saver Beans APIs">
       <mkdir dir="${build}/api"/>
-      <javac classpath="${lib.jogl}/jogl.jar" debug="on" destdir="${build}/api" srcdir="${src}/api"/>
+      <javac classpath="${lib.jogl}/jogl.jar" debug="on" destdir="${build}/api" srcdir="${src}/api" deprecation="true"/>
   </target>
   
   <target name="javadoc-api" depends="init" 

@@ -450,7 +450,7 @@ public class ForEachScreensaver
         }
         
         public void execute() {
-            ExecTask execTask = (ExecTask)project.createTask( "exec" );
+            ExecTask execTask = (ExecTask)getProject().createTask( "exec" );
             execTask.setDir( dir );
             execTask.setExecutable( executable );
             execTask.setFailonerror( failonerror );
