@@ -27,7 +27,7 @@ DLLWRAP = $(TARGET_ALIAS)-dllwrap
 
 INCLUDE = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -I.
 LDFLAGS = -L$(XCOMPILE_DIR)/lib -lm -lmingwex -lsupc++ -lstdc++
-CFLAGS =  -g -02 -c $(INCLUDE) -g 
+CFLAGS =  -g -O2 -c $(INCLUDE) -g 
 DLLWRAP_FLAGS = --as=$(AS) --driver-name=$(CC) --add-stdcall-alias -s
 
 all: systeminfo.dll
