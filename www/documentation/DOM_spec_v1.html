@@ -1,0 +1,627 @@
+<html>
+<head>
+	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<title>JDIC Browser DOM API Specification</title>
+	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+	<meta NAME="AUTHOR" CONTENT=" ">
+	<meta NAME="CREATED" CONTENT="20000519;14440300">
+	<meta NAME="CHANGEDBY" CONTENT=" ">
+	<meta NAME="CHANGED" CONTENT="20000901;17584900">
+</head>
+
+<body>
+<h1 align="center"><b>JDIC Browser Component DOM API Specification</b></h1>
+<h4 align="center"><b>(Draft 1 - An early version for discussion and to be
+developed)</b></h4>
+<hr>
+<h2><b>Table of Contents</b></h2>
+<ol>
+  <li><a href="#Overview">Overview</a>
+  </li>
+  <li><a href="#Endorsed Specifications">Endorsed Specifications</a>
+  </li>
+  <li><a href="#API Design">API Design</a>
+  </li>
+  <li><a href="#Implementation Design">Implementation Design</a>
+  </li>
+  <li><a href="#Challenges &amp; Questions">Challenges</a>
+  </li>
+  <li><a href="#Related Projects">Related Projects</a>
+  </li>
+  <li><a href="#Change History">Change History</a>
+  </li>
+</ol>
+<h3>1. <a name="Overview"> Overview</a></h3>
+<blockquote>
+<p>The Document Object Model (DOM) is a World Wide Web Consortium (W3C)
+specification that provides &quot;a platform- and language-neutral interface
+that allows programs and scripts to dynamically access and update the content,
+structure and style of documents.&quot; Java applications, and JavaScript embedded in an HTML document, can directly access the current document through the DOM API, and make changes or read the content.
+For more information on the W3C DOM, see <a href="http://www.w3.org/">http://www.w3.org/</a>.</p>
+<p>This spec is part of the <a href="https://jdic.dev.java.net/documentation/Specification.html">JDIC
+Browser component (package org.jdesktop.jdic.browser) specification</a>. It outlines the
+Java DOM
+API for JDIC Browser to provide a way for applets, javabeans or applications using JDIC Browser to access to the DOM in the embedded browser (Internet Explorer or Mozilla on Windows, Mozilla on
+Linux/Unix) through a standard set of APIs.
+</p>
+</blockquote>
+<h3>2. <a name="Endorsed Specifications"> Endorsed Specifications</a></h3>
+<blockquote>
+<p>This specification endorses and builds upon other specifications. Each specification endorsed by this document is called out together with the exact version of this specification and its publicly accessible location.</p>
+</blockquote>
+<ul>
+  <li>
+    <h4>W3C Document Object Model (DOM) Level 2</h4>
+  </li>
+</ul>
+<blockquote>
+  <p>The Document Object Model (DOM) is a set of interfaces defined by the W3C DOM Working Group. It describes facilities for a programmatic representation of a parsed XML or HTML document. The DOM Level 2 specification defines these interfaces using Interface Definition Language
+  (IDL) in a language independent fashion and also includes a Java language binding.<br>
+<br>
+      The W3C DOM Level 2 Recommendation subsumes below models:</p>
+  <ul type="circle">
+    <li><a href="http://www.w3.org/TR/DOM-Level-2-Core/">DOM Level 2 Core</a>: specifies
+      a minimal set API to access and update the content and structure of
+      documents (mainly XML oriented).</li>
+    <li><a href="http://www.w3.org/TR/DOM-Level-2-HTML/">DOM Level 2 HTML</a>: specifies
+      an API extending the Core API to manipulate the structure and contents of an HTML document.&nbsp;</li>
+    <li><a href="http://www.w3.org/TR/DOM-Level-2-Views/">DOM Level 2 Views</a>:
+      specifies an API to dynamically access and update the view of a document. A view is some alternate representation of, or a presentation of, a document.</li>
+    <li><a href="http://www.w3.org/TR/DOM-Level-2-Style/">DOM Level 2 Style</a>:
+      specifies an API to dynamically access and update the content style sheets.</li>
+    <li><a href="http://www.w3.org/TR/DOM-Level-2-Events/">DOM Level 2 Events</a>:
+      specifies an API to access document events.</li>
+    <li><a href="http://www.w3.org/TR/DOM-Level-2-Traversal-Range/">DOM Level 2 Traversal-Range</a>:
+      specifies an API to dynamically traverse and identify a range of content in a document.</li>
+  </ul>
+  <p>The API packages for the Java Language binding are:</p>
+  <ul type="circle">
+    <li>org.w3c.dom</li>
+    <li>org.w3c.dom.html2</li>
+    <li>org.w3c.dom.views</li>
+    <li>org.w3c.dom.stylesheets &amp; org.w3c.dom.css</li>
+    <li>org.w3c.dom.events</li>
+    <li>org.w3c.dom.traversal</li>
+  </ul>
+</blockquote>
+<h3>3. <a name="API Design">API Design</a></h3>
+<blockquote>
+  <p>The user's interaction with the Browser DOM API is through the standard W3C
+  DOM Level 2 interface. Here we will focus on how to get access to the DOM in the first
+  place. Once you have get a Document instance, you can access the information in the DOM and listen for DOM events using standard mechanisms specified by the W3C.</p>
+</blockquote>
+<ul>
+  <li>
+    <h4>Accessing the DOM</h4>
+  </li>
+</ul>
+<blockquote>
+  <p>Use <code>WebBrowser.getDocument()</code> to get the <code>Document</code>
+instance associated with this <code>WebBrowser</code>  instance. This method is
+  added to the current <a href="https://jdic.dev.java.net/nonav/documentation/javadoc/0.8.6/org/jdesktop/jdic/browser/WebBrowser.html">WebBrowser
+  APIs</a>:</p>
+<table border="1" width="904" cellpadding="3" cellspacing="0" summary="">
+    <tr bgcolor="#ccccff" class="TableHeadingColor">
+      <td colspan="2" width="496"><font size="+2"><b>class WebBrowser </b></font>extends 
+      java.awt.Canvas<br>
+      </td>
+      <td valign="Top" width="390"><br>
+      </td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="148"><font size="-1"><code> <font color="#000000">org.w3c.dom.Document</font></code></font></td>
+      <td width="340"><b><font color="#000000"><code>getDocument</code></font></b><font color="#000000"><code>
+() throws WebBrowserException</code></font></td>
+      <td valign="Top" width="390"> Returns the current DOM document for
+      the embedded browser.</td>
+    </tr>
+</table>
+  <p> As each
+Browser component may display more than one XML/HTML in multiple browser frame/window, it is important to return the DOM that associated with
+  the current <code>WebBrowser</code> instance.</p>
+  <p>One new exception class WebBrowserException is added to the
+  org.jdesktop.jdic.browser package, which is thrown from WebBrowser.getDocument()
+  if no URL is loaded in the WebBrowser component,&nbsp;or illegal
+  access&nbsp;to the embedded browser DOM.</p>
+<table border="1" width="840" cellpadding="3" cellspacing="0" summary="">
+    <tr bgcolor="#ccccff" class="TableHeadingColor">
+      <td colspan="2" width="413"><font size="+2"><b>class WebBrowserException </b></font>extends
+        Exception<br>
+      </td>
+      <td valign="Top" width="409"><br>
+      </td>
+    </tr>
+  <tr>
+      <td align="Right" valign="Top" width="148"><font size="-1"><code><font color="#000000">void&nbsp;</font></code></font></td>
+      <td width="257"><b><font color="#000000"><code>WebBrowserException</code></font></b><font color="#000000"><code>
+        ()</code></font></td>
+      <td valign="Top" width="409"> Constructs a new
+      WebBrowserException with no detailed message.</td>
+  </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="148"><font size="-1"><code><font color="#000000">void&nbsp;</font></code></font></td>
+      <td width="257"><b><font color="#000000"><code>WebBrowserException</code></font></b><font color="#000000"><code>
+        (String msg)</code></font></td>
+      <td valign="Top" width="409"> Constructs a new
+      WebBrowserException with a detailed message.</td>
+    </tr>
+</table>
+</blockquote>
+<ul>
+  <li>
+    <h4>Sample code accessing the DOM</h4>
+  </li>
+</ul>
+<blockquote>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3" bgcolor="#e0e0e0" width="587">
+    <tr>
+     <td width="583"> <pre><font face="Times" lang="ZH-CN" size="2">// Sample code to get the title of the current displayed page.
+import org.w3c.dom.html2.*;
+import org.jdesktop.jdic.browser.*;
+
+...
+    WebBrowser webBrowser = new WebBrowser();
+       
+    try {
+        webBrowser.setURL(new URL(&quot;http://java.net&quot;));
+        
+<b>      HTMLDocument doc = (HTMLDocument) webBrowser.getDocument();
+</b>       System.out.println(&quot;The current webpage title: &quot; + doc.getTitle());
+    } catch (WebBrowserException wbe) {
+        return;
+    } catch (Exception e) {
+        return;
+    }               
+...
+</font></pre></td>
+   </tr>
+</table>
+</blockquote>
+<ul>
+  <li>
+    <h4>Sample code for listening for DOM Events</h4>
+    <p>You can access elements of the DOM directly and add your own event
+    listener. The following code adds a listener for mouse clicks on paragraph elements
+    created:</p>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber4" bgcolor="#e0e0e0" width="700">
+    <tr>
+     <td width="696"> <p><font face="Times" lang="ZH-CN" size="2">// Sample code
+      to get the title of the current displayed page.<br>
+      import org.w3c.dom.html2.*;<br>
+      import org.w3c.dom.events.*;<br>
+      import org.jdesktop.jdic.browser.*;<br>
+      <br>
+      <b>
+      public class ClickListener implements EventListener{<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public void handleEvent(org.w3c.dom.events.Event e) {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //concrete implementation of
+      how to handle the event<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }<br>
+      </b>
+      ...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+      &nbsp;&nbsp;&nbsp; HTMLDocument doc = (HTMLDocument)
+      webBrowser.getDocument();<br>
+      &nbsp;&nbsp;&nbsp; Element myElement = doc.createElement(&quot;p&quot;);<br>
+      <br>
+      <b>
+      &nbsp;&nbsp;&nbsp; ((EventTarget)myElement).addEventListener(&quot;click&quot;,
+      new ClickListener(), false);&nbsp;&nbsp;&nbsp;&nbsp;<br>
+      </b>
+      ...<br>
+</font></p></td>
+   </tr>
+</table>
+  </li>
+</ul>
+<blockquote>
+    <p>The DOM events that supported are as follows:</p>
+<table border="1" cellpadding="5" cellspacing="0">
+  <tbody><tr bgcolor="#cccccc">
+    <th><a name="309752"> </a><div class="CellHeading">Event Type</div></th>
+    <th><a name="309754"> </a><div class="CellHeading">Events</div></th>
+  </tr>
+  <tr>
+    <td><a name="309756"> </a><div class="CellBody">Mouse Events</div></td>
+    <td><a name="309758"> </a><div class="CellBody">click<br>dblclick<br>mousedown<br>mousemove<br>mouseout<br>mouseover<br>mouseup</div></td>
+  </tr>
+  <tr>
+    <td><a name="309760"> </a><div class="CellBody">Key Events</div></td>
+    <td><a name="309762"> </a><div class="CellBody">keydown<br>keypress<br>keyup</div></td>
+  </tr>
+  <tr>
+    <td><a name="309764"> </a><div class="CellBody">HTML Events</div></td>
+    <td><a name="309766"> </a><div class="CellBody">abort<br>blur<br>change<br>error<br>focus<br>load<br>reset<br>resize<br>scroll<br>select<br>submit<br>unload</div></td>
+  </tr>
+  <tr>
+    <td><a name="309768"> </a><div class="CellBody">Mutation Events</div></td>
+    <td><a name="309770"> </a><div class="CellBody">CSSModified<br>DOMAttrModified<br>DOMNodeInserted<br>DOMNodeRemoved</div></td>
+  </tr>
+  <tr>
+    <td><a name="309772"> </a><div class="CellBody">MSIE-specific Events</div></td>
+    <td><a name="309774"> </a><div class="CellBody">contextmenu<br>help</div></td>
+  </tr>
+</tbody></table>
+
+</blockquote>
+
+<ul>
+  <li>
+    <h4>DOMImplementation plugability</h4>
+  </li>
+</ul>
+<blockquote>
+<p>The <code>WebBrowser.getDocument()</code> will return the proper <code>Document</code>
+instance created by the <code>DOMImplementation</code> instance. The <code>DOMImplementation</code>
+class acts as a factory to produce <code>Document</code> instances. JDIC
+provides a reference implementation for <code>DOMImplementation</code>. It can
+also allow third party to plug their
+<code>DOMImplementation</code> implementation into the WebBrowser DOM classes. To achieve that, a new Java property
+<code>org.jdesktop.jdic.browser.DOMImplementationClass</code> is defined.<br>
+<br>
+        If this property is defined, it should contain a class name of <code>org.jdesktop.jdic.browser.DOMImplementationClass</code>
+implementation.<br>
+<br>
+        When <code>WebBrowser.getDocument()</code> is called, <code>DOMImplementationClass</code> specified by the
+system property <code>org.jdesktop.jdic.browser.DOMImplementationClass</code> will be
+checked and instantiated through the <code> Class.forName().newInstance()</code> mechanism. Once that's done,
+a <code>Document</code> instance will be created and returned.</p>
+</blockquote>
+
+<blockquote>
+
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3" bgcolor="#e0e0e0" width="634">
+    <tr>
+     <td width="630"> <p><font face="Times" lang="ZH-CN" size="2">package
+      org.jdesktop.jdic.browser;<br>
+      <br>
+      import org.w3c.dom.*;<br>
+      import org.w3c.dom.html2;<br>
+      import org.jdesktop.jdic.browser.*;<br>
+      <br>
+      public class WebBrowser extends extends java.awt.Canvas {<br>
+      &nbsp;&nbsp;&nbsp; /** System property name */<br>
+      &nbsp;&nbsp;&nbsp; private static final String IMPL_PROPERTY_NAME =<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;org.jdesktop.jdic.browser.DOMImplementationClass&quot;;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; /** The DOMImplementation to use */<br>
+      &nbsp;&nbsp;&nbsp; private static DOMImplementation domImpl;<br>
+      &nbsp;&nbsp;&nbsp; ...<br>
+      &nbsp;&nbsp;&nbsp; /** Returns the current DOM document for the embedded
+      browser. */&nbsp;<br>
+      &nbsp;&nbsp;&nbsp; public org.w3c.dom.Document getDocument() throws
+      WebBrowserException {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (domImpl == null) {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; domImpl =
+      (DOMImplementation)Class.forName(<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      System.getProperty(IMPL_PROPERTY_NAME)).newInstance();<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (domImpl
+      == null) {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      /** use the default DOMImplementation implementation we provided */<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      domImpl = DomImplementationImpl.newInstance();<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (domImpl
+      == null) {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      return null;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } else
+      {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      return domImpl.createDocument();<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; ...<br>
+      }<br>
+      </font>
+      </p>
+     </td>
+   </tr>
+</table>
+</blockquote>
+
+<h3>4. <a name="Implementation Design">Implementation Design</a></h3>
+<ul>
+  <li>
+<h4><b>Goals and Guidelines</b></h4>
+     
+<ul>
+  <li>Simple: just like the current WebBrowser APIs</li>
+  <li>Support the Browser embedded browsers</li>
+  <li>Acceptable performance</li>
+</ul>
+     
+  </li>
+</ul>
+<ul>
+  <li>
+     
+<h4>Development Method</h4>
+     
+  </li>
+</ul>
+<blockquote>
+     
+  As the Browser component uses an out-process approach, to support Java
+  applets. The native browser implemented in C++ runs as a standalone process, outside the Java VM process that the 
+  Browser component is running in. Each Browser instance in the Java side has a
+  &quot;peer&quot; native browser instance. Sockets are used for communication between 
+  these two processes.<p>The DOM API implementation follows this approach. Each DOM instance
+  associated with a Browser instance in the Java side has a &quot;peer&quot;
+  native DOM class instance associated with the native browser. All the DOM
+  access in the Browser side are dispatched as Socket messages to the native
+  browser. In the first place, when WebBrowser.getDocument() is called in the
+  Browser process, the access is dispatched to the native browser process using
+  Socket. After the native browser obtains a reference to
+  a native nsIDOMDocument interface, &quot;map&quot; it to a Document instance
+  in the Java side and return it to the caller WebBrowser instance.</p>
+  <p>There are several approaches to map the native DOM instances to the Java
+  DOM instances: One is to maintain a hash table for the bidirectional mapping
+  between native DOM instances and Java DOM instances, such as the <a href="http://lxr.mozilla.org/mozilla/source/extensions/java/xpcom/">Java-XPCOM
+  bridge</a>. Another approach is to cache each native DOM instance as a field
+  member of
+  the Java DOM instance, such as the <a href="http://www.mozilla.org/projects/blackwood/dom/">Blackwood
+  Java DOM API</a>. Every time a Java DOM instance is created, it's associated
+  native DOM instance is cached as one field member.&nbsp;</p>
+</blockquote>
+<ul>
+  <li>
+    <h4>Performance</h4>
+  </li>
+</ul>
+     
+<blockquote>
+  <p>As all the DOM accesses are dispatches as Socket messages between the
+  Browser instance and the native browser, there'll be lots of Socket
+  communications. For the DOM 2 Event API support, it might be a performance
+  problem.&nbsp;</p>
+</blockquote>
+<ul>
+  <li>
+    <h4>Thread Safety</h4>
+  </li>
+</ul>
+     
+<blockquote>
+  <p>Because the DOM of each browser is implemented differently, DOM access is not expected to be thread safe.</p>
+  <p>With this version of the spec, thread safely is not ensured.</p>
+</blockquote>
+<ul>
+  <li>
+    <h4>Security</h4>
+  </li>
+</ul>
+<blockquote>
+  <p>The browser DOM provides access to every service in the browser, so it is important to ensure that security is checked properly during each call into the DOM. When
+  WebBrowser.getDocument() is called, the security context of the caller will be captured. Later, when the
+  DOM accesses is dispatches through the DOM access dispatch thread, the caller's security context will be passed to the browser DOM when implementations of the DOM objects are called.
+  WebBrowserException will be thrown if the original caller doesn't have the required privileges to access the DOM.<br>
+    <br>
+    Security policy of DOM access in each browser is different. As a result, even if a Java application is signed and fully trusted, accessing the DOM objects in the browser may still result in
+  WebBrowserException.</p>
+</blockquote>
+<ul>
+  <li>
+    <h4>DOM Object Lifetime</h4>
+  </li>
+</ul>
+<blockquote>
+  <p>Implementation of the DOM objects represents the real underlying objects in the browser DOM. As the
+  XML/HTML document is changed on-the-fly, DOM objects in Java may no longer be valid. Accessing an invalid DOM object will result in org.w3c.dom.DOMException, according to the W3C DOM Level 2 Specification. Developers who write code to access DOM objects
+    returned by WebBrowser.getDocument() should not assume the validity of the DOM objects at any given moment.&nbsp;</p>
+</blockquote>
+<h3>5. <a name="Challenges &amp; Questions"> Challenges</a> </h3>
+<blockquote>
+  <p>The API specified by this spec supports below JDIC Browser component, and rely on their support for the W3C DOM
+  spec:</p>
+  <ul>
+    <li>Internet Explorer 5 or later: on Windows platforms</li>
+    <li>Mozilla 1.4 or later: on Linux/Unix platforms</li>
+  </ul>
+  <p>There are W3C DOM Level 1, Level 2 and Level 3 specs. Different versions of
+  browsers (IE or Mozilla) implemented a different subset of the W3C DOM APIs. On the other hand, the
+  browsers such as Internet Explorer have non-standard DOM implementations. One
+  of the challenges is to discover the expose only those W3C standard DOM APIs
+  implemented by the browsers. So, that web developers can build applications that work on all
+  the JDIC Browser supported browsers.</p>
+  <p>Below table shows the DOM levels supported by different versions of Internet Explorer
+  (IE) and Mozilla. I'm referring to the release notes of the browsers, and a <a href="http://www.w3.org/2003/02/06-dom-support.html">W3C
+  DOM support test page</a>.&nbsp;</p>
+  <table border="1" cellpadding="2" cellspacing="0" height="219" width="645">
+      <tr bgcolor="#dddddd">
+        <th align="left" height="56" bgcolor="#FFFFFF" width="186">Browser</th>
+        <th align="left" height="56" bgcolor="#FFFFFF" width="445">W3C DOM
+          Levels Supported</th>
+      </tr>
+      <tr>
+        <td height="5" width="186">Internet Explorer 5&nbsp;</td>
+        <td height="5" width="445">Part DOM Level 1 support</td>
+      </tr>
+<tr>
+        <td height="5" width="186">Internet Explorer 6</td>
+        <td height="5" width="445">Full DOM Level 1 support</td>
+</tr>
+<tr>
+        <td height="5" width="186">Mozilla 1.4</td>
+        <td height="5" width="445">Full DOM Level 1 support, part DOM Level 2 support</td>
+</tr>
+<tr>
+        <td height="5" width="186">Mozilla 1.7, 1.8&nbsp;</td>
+        <td height="5" width="445">Full DOM Level 2 support (except some
+          exceptional DOM classes)</td>
+</tr>
+  </table>
+</blockquote>
+<h3>6. <a name="Related Projects"> Related Projects</a></h3>
+<blockquote>
+    <h4>6.1 Common DOM API</h4>
+<p>Provides a standard API for accessing the DOM in the browser from applets with Java Plug-in:<br>
+<a href="http://java.sun.com/j2se/1.5.0/docs/guide/plugin/">http://java.sun.com/j2se/1.5.0/docs/guide/plugin/</a></p>
+  <ul>
+    <li>Accessing the DOM</li>
+  </ul>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber3" bgcolor="#e0e0e0" width="726">
+    <tr>
+     <td width="722"> <p><font face="Times" lang="ZH-CN" size="2">// Sample code
+      to get a Document instance.<br>
+      ......<br>
+      DOMService service = null;<br>
+      <br>
+      try {<br>
+      &nbsp;&nbsp;&nbsp; service = DOMService.getService(MyApplet);<br>
+      &nbsp;&nbsp;&nbsp; String title = (String) service.invokeAndWait(new
+      DOMAction() {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public Object run(DOMAccessor
+      accessor) {<br>
+      <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HTMLDocument doc =
+      (HTMLDocument) accessor.getDocument(MyApplet);<br>
+      </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      return doc.getTitle();<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; });<br>
+      } catch (DOMUnsupportedException e1) {<br>
+      } catch (DOMAccessException e2) {<br>
+      }<br>
+      </font>
+</p></td>
+   </tr>
+</table>
+    &nbsp;
+  <ul>
+    <li>The API contains a com.sun.java.browser.dom package and the W3C DOM
+      APIs:
+      <ul>
+        <li><code>com.sun.java.browser.dom<br>
+          - DOMService (DOM entry point)<br>
+          - DOMServiceProvider<br>
+          - DOMAction<br>
+          - </code><code>DOMUnsupportedException<br>
+          - </code><code>DOMAccessException</code></li>
+        <li>W3C APIs<br>
+          - org.w3c.dom (JAXP)<br>
+          - org.w3c.dom.html<br>
+          - org.w3c.dom.views<br>
+          - org.w3c.dom.stylesheets<br>
+          - org.w3c.dom.css<br>
+          - org.w3c.dom.events</li>
+      </ul>
+    </li>
+  </ul>
+<ul>
+  <li>Implemented through the JavaScript class <code>netscape.javascript.JSObject</code>.&nbsp;</li>
+</ul>
+  <h4>6.2 Mozilla Blackwood Java DOM API</h4>
+</blockquote>
+<blockquote>
+<p>The Blackwood <a href="http://www.mozilla.org/projects/blackwood/dom/index.html">Java
+DOM API</a>  is intended to be used by Java Applets, Java Pluglets and Java
+Applications that embed Mozilla Gecko.&nbsp;</p>
+<ul>
+  <li>Accessing the DOM</li>
+</ul>
+<p>Blackwood Java DOM API is used by the Blackwood <a href="http://www.mozilla.org/projects/blackwood/webclient/">Webclient</a>
+project. To access DOM for Webclient,
+call the method <code>CurrentPage.getDOM()</code>. With Applets and Pluglets, register a <code> DocumentLoadListener</code>  by calling the static
+method
+<code>DOMAccessor.addDocumentLoadListener()</code>. The <code>Document</code>
+ instance is passed along the returned parameters.</p>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber2" bgcolor="#e0e0e0" width="664">
+    <tr>
+     <td width="660"> <p><font face="Times" lang="ZH-CN" size="2">// Sample code
+      to get a Document instance with Applets.<br>
+      ......<br>
+      public class Test extends Applet implements DocumentLoadListener {<br>
+      &nbsp;&nbsp;&nbsp; public void init() {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      DOMAccessor.addDocumentLoadListener(this);<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp; // implementing DocumentLoadListener interface<br>
+      &nbsp;&nbsp; public void startURLLoad(String url, String contentType,
+      Document doc){}<br>
+      &nbsp;&nbsp; public void endURLLoad(String url, int status, Document
+      doc){}<br>
+      &nbsp;&nbsp; public void progressURLLoad(String url, int progress, int
+      progressMax,&nbsp;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Document doc){}<br>
+      &nbsp;&nbsp; public void statusURLLoad(String url, String message,
+      Document doc){}<br>
+      &nbsp;&nbsp; public void startDocumentLoad(String url){}<br>
+      <br>
+      <b>&nbsp;&nbsp; public void endDocumentLoad(String url, int status,
+      Document doc){<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Node body =
+      doc.getElementsByTagName(&quot;BODY&quot;).item(0);<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      </b>}</font><br>
+
+</p></td>
+   </tr>
+</table>
+<ul>
+  <li>Implementation</li>
+</ul>
+<p>JavaDOM uses a &quot;peer&quot; approach, similar to the AWT. For each native
+mozilla DOM class instance there is a Java instance. The C++ portion of JavaDOM
+implements interfaces that allow listening for Document Load events. When the
+&quot;end document load event&quot; occurs, the C++ portion obtains a reference
+to an nsIDOMDocument interface and creates the appropriate Java instance to
+provide access to the Java side. This process of creating Java instances
+continues as the Java user navigates through the Document tree.&quot;</p>
+<h4>6.3 JRex DOM API</h4>
+<p><a href="http://jrex.mozdev.org/">JRex</a> is a Java Browser Component with set of API's for Embedding Mozilla
+Gecko within a Java application.</p>
+<p>Support for accessing DOM objects of rendered page. implements DOM HTML2 for manipulating loaded HTML Document.</p>
+<ul>
+  <li>Accessing the DOM:</li>
+</ul>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber1" bgcolor="#e0e0e0" width="704">
+    <tr>
+     <td width="700"> <p><font face="Times" lang="ZH-CN" size="2">// Sample code
+      to get a Document instance.<br>
+      try {<br>
+      &nbsp;&nbsp;&nbsp; JRexFactory.getInstance().startEngine();<br>
+      &nbsp;&nbsp;&nbsp; JRexCanvas myBrowser =
+      JRexCanvas.createBrowserComponent();<br>
+      &nbsp;&nbsp;&nbsp; JFrame testFrame = new JFrame();<br>
+      &nbsp;&nbsp;&nbsp; testFrame.getContentPane().add(myBrowser);<br>
+      &nbsp;&nbsp;&nbsp; ......<br>
+      &nbsp;&nbsp;&nbsp; WebNavigation navigator = myBrowser.getNavigator();<br>
+      &nbsp;&nbsp;&nbsp; java.net.URI myURI=new java.net.URI(&quot;http://java.net&quot;);<br>
+      &nbsp;&nbsp;&nbsp; navigator.loadURI(myURI,<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      WebNavigationConstants.LOAD_FLAGS_NONE,null,null,null);<br>
+      <b>&nbsp;&nbsp;&nbsp; HTMLDocument doc= (HTMLDocument)navigator.getDocument();</b><br>
+      &nbsp;&nbsp;&nbsp; System.out.println(doc);<br>
+      } catch (Exception e) {<br>
+      &nbsp;&nbsp;&nbsp; e.printStackTrace();<br>
+      }<br>
+      </font>
+</p></td>
+   </tr>
+</table>
+<ul>
+  <li>Implementation follows the same approach as Blackwood Java DOM API</li>
+</ul>
+</blockquote>
+<h3>7. <a name="Change History">Change History</a></h3>
+<table border="1" width="100%">
+  <tbody><tr>
+    <td bgcolor="#0000ff" width="14%"><b><font color="#ffff00">Date</font></b></td>
+    <td bgcolor="#0000ff" width="59%"><b><font color="#ffff00">Action</font></b></td>
+    <td bgcolor="#0000ff" width="27%"><b><font color="#ffff00">Author(s)</font></b></td>
+  </tr>
+  <tr>
+    <td width="14%">2004/11/11</td>
+    <td width="59%">JDIC Browser DOM API Specification Draft 1 </td>
+    <td width="27%"><a href="mailto:georgez@dev.java.net">George Zhang</a></td>
+  </tr>
+</tbody></table>
+</body>
+</html>
