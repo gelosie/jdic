@@ -37,6 +37,9 @@ public abstract class SimpleScreensaver
     
     /**
      * Override this method in your subclasses to paint a single frame.
+     * Any exceptions thrown during paint will be sent to the
+     * org.jdesktop.jdic.screensaver J2SE logger.
+     * <p>
      * Tip: Treat this as though it were part of a game loop.  In general, 
      * it's a good idea not to allocate ('new') any objects after init
      * unless they will not be deleted.  This will yield smoother animation
