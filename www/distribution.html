@@ -62,9 +62,13 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
 </noscript>
 <!-- etracker CODE END -->
 <h2 align="center">Build A JDIC Distribution</h2>
-<p>These are directions for creating your own milestone build or any other distribution. You might want to create your own distribution in order to create a build for some platform that's not normally on
-the JDIC website or to enable some feature that's not supported in the standard builds.
-This page is generally for the JDIC Release Engineer, but anybody can refer to
+<p>These are directions for creating your own milestone build or any
+other distribution. You might want to create your own distribution in
+order to create a build for some platform that's not normally on
+the JDIC website or to enable some feature that's not supported in the
+standard builds.
+This page is generally for the JDIC Release Engineer, but anybody can
+refer to
 it to build his own distribution.</p>
 <ol>
   <li><b>Update the version and release information.<br>
@@ -154,10 +158,12 @@ directory.<br>
   </ul>
   <p> </p>
   <li><b>Create a source package.</b><br>
-Create a source zip (or tarball) package with source files for this release. Use
-    command &quot;<b>cvs export -r &lt;release tag&gt; jdic/src</b>&quot; to
-    export the source files from the CVS repository into an empty local folder, then create the zip (or tarball)
-package with the &quot;<b>src</b>&quot; folder. The source package name should be in the form
+Create a source zip (or tarball) package with source files for this
+release. Use command "<b>cvs export -r &lt;release tag&gt; jdic/src</b>"
+to export the source files from the CVS repository into an empty local
+folder, then create the zip (or tarball)
+package with the "<b>src</b>" folder. The source package name should be
+in the form
 "<b>jdic-major.minor.micro-src.zip</b>", such as "jdic-0.8.4-src.zip".
     <p> </p>
   </li>
@@ -174,6 +180,10 @@ major and minor release numbers.
   <li><b>Announce.</b><br>
 Announce the new distribution to the public:
     <ul>
+      <li>Add a notice to the <a
+ href="https://jdic.dev.java.net/#announcements">Announcements</a>
+section in the JDIC <a href="https://jdic.dev.java.net/">homepage</a>.<br>
+      </li>
       <li>Give an announcement to the JDIC <a
  href="http://www.javadesktop.org/forums/forum.jspa?forumID=52">Forum</a>.</li>
       <li>Give an announcement to the mailing list <a
@@ -193,7 +203,7 @@ Announcements</a> page.</li>
       <li>Update the <a href="releases.html">releases</a> page.</li>
       <li>Add the new release tag or branch name created for this
 release to below <a href="#CVS_tags">CVS tags</a> table.</li>
-      <li>Update the online WebStart demos on the JDIC <a
+      <li>Update the online WebStart demos in the JDIC <a
  href="https://jdic.dev.java.net/">homepage</a>.</li>
       <li>If javadoc for the release is updated, update the <a
  href="https://jdic.dev.java.net/nonav/documentation/javadoc/jdic/index.html">javadoc</a>
