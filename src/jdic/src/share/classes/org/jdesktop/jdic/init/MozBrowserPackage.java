@@ -88,7 +88,8 @@ public class MozBrowserPackage extends Package {
             String nativeBrowserPath = WebBrowserUtil.getBrowserPath();
             if (null == nativeBrowserPath) {
                 throw new JdicInitException(
-                        "Can't locate the native browser path!");
+                        "Can't locate the native Mozilla path!\n" + 
+                        "Please set Mozilla as the default browser!");
             }
             File browserFile = new File(nativeBrowserPath);
             try {
