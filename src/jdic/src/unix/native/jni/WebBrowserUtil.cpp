@@ -118,6 +118,7 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
             char *parentpath = g_strndup(mozpath, str_p - mozpath);
             char *libpath = g_strconcat (parentpath, "/libxpcom.so", NULL);
             if (stat (libpath, &stat_p) == 0) {
+                moz5home_value = g_strdup(parentpath);
 #ifdef DEBUG
                 printf("Found libxpcom.so under mozilla binary path: %s\n", parentpath);
 #endif
