@@ -30,8 +30,8 @@ USA
 <project basedir="." default="dist" name="bouncingline">
 
   <target name="properties">
-    <property file="${user.home}/build.properties" />
     <property file="build.properties" />
+    <property file="${user.home}/build.properties" />
     
     <property name="build" value="build" />
     <property name="dist" value="dist" />
