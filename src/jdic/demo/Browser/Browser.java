@@ -260,7 +260,8 @@ public class Browser extends JPanel {
                     if (inputValue.toLowerCase().startsWith("http://")
                             || inputValue.toLowerCase().startsWith("https://")
                             || inputValue.toLowerCase().startsWith("ftp://")
-                            || inputValue.toLowerCase().startsWith("gopher://")) {
+                            || inputValue.toLowerCase().startsWith("gopher://")
+                            || inputValue.toLowerCase().startsWith("file://")) {
                         curUrl = new URL(inputValue);
                     } else {
                         if (inputValue.toLowerCase().startsWith("ftp.")) {
