@@ -21,7 +21,9 @@
 package org.jdesktop.jdic.tray;
 
 
-import org.jdesktop.jdic.tray.spi.SystemTrayProvider;
+import org.jdesktop.jdic.tray.internal.ServiceManager;
+import org.jdesktop.jdic.tray.internal.SystemTrayService;
+
 
 /**
  *  The <code>SystemTray</code> class represents the System Tray for a desktop.
@@ -34,7 +36,8 @@ import org.jdesktop.jdic.tray.spi.SystemTrayProvider;
 
 public class SystemTray {
 
-    static SystemTrayProvider stp = SystemTrayProvider.getProvider(); 
+    static SystemTrayService sts = (SystemTrayService) 
+        ServiceManager.getService(ServiceManager.SYSTEM_TRAY_SERVICE);
 
     int trayIndex;
 
@@ -61,8 +64,8 @@ public class SystemTray {
      * @param trayIcon
      */
     public void addTrayIcon(TrayIcon trayIcon) {
-        if (stp != null) {
-            stp.addTrayIcon(trayIcon, trayIcon.getTrayIconService(), trayIndex);
+        if (sts != null) {
+            sts.addTrayIcon(trayIcon, trayIcon.getTrayIconService(), trayIndex);
         }
     }
 
@@ -71,8 +74,8 @@ public class SystemTray {
      * @param trayIcon
      */
     public void removeTrayIcon(TrayIcon trayIcon) {
-        if (stp != null) {
-            stp.removeTrayIcon(trayIcon, trayIcon.getTrayIconService(),
+        if (sts != null) {
+            sts.removeTrayIcon(trayIcon, trayIcon.getTrayIconService(),
                     trayIndex);
         }
     }
