@@ -61,7 +61,7 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
     Component observer;
 
-    Frame popupParentFrame;
+    JWindow popupParentFrame;
 
     boolean created;
 
@@ -175,17 +175,21 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
                             System.currentTimeMillis(), 0));
                 }
             }
+            else {
+             popupParentFrame.toFront();
+            }
             break;
 
         case 2:
             if (!isShowing) {
                 isShowing = true;
-                popupParentFrame = new Frame();
+                popupParentFrame = new JWindow();
                 popupParentFrame.setBounds(x, y, 1, 1);
                 popupParentFrame.setVisible(true);
                 menu.show(popupParentFrame, 0, 0);
                 menu.addPopupMenuListener(this);
             }
+            popupParentFrame.toFront();
             break;
         }
     }
