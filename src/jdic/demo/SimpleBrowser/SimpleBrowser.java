@@ -62,10 +62,6 @@ public class SimpleBrowser {
         String result = webBrowser.executeScript(jscript);
         System.out.println("Execution of: " + jscript + " returns: " + result);
                 
-        jscript = "scriptMethod();";
-        System.out.println("Execute JavaScript method within the current page ...");        
-        //result = webBrowser.executeScript(jscript);        
-
         System.out.println("============================");
         System.out.println("=== To test getContent() ===");
         System.out.println("============================");
@@ -77,6 +73,10 @@ public class SimpleBrowser {
         System.out.println("============================");    
         System.out.println("To setContent(): " + HTML_CONTENT);
         webBrowser.setContent(HTML_CONTENT);
+
+        jscript = "scriptMethod();";
+        System.out.println("Execute JavaScript method within the current page ...");        
+        result = webBrowser.executeScript(jscript);        
         
         String retContent = webBrowser.getContent();
         System.out.println("getContent() returns: " + retContent);        
@@ -84,7 +84,8 @@ public class SimpleBrowser {
         // getContent may return the same content in different upper/lower 
         // case or single/double quotation mark.
         // Here we assume the content is equal if the content lengh is equal.        
-        if (retContent.length() == HTML_CONTENT.length()) {
+        if (retContent != null
+            && retContent.length() == HTML_CONTENT.length()) {
             System.out.println("=== SUCCEED: getContent() correctly returns "
                 + "the content set by setContent() !!!");
         } else {
