@@ -38,6 +38,8 @@ import com.sun.javaws.exceptions.BadFieldException;
  */
 public final class JnlpPackageInfo {
 
+    private static String osName = System.getProperty("os.name").toLowerCase();
+ 
     /**
      * JnlpPackageInfo contructor.
      *
@@ -354,6 +356,14 @@ public final class JnlpPackageInfo {
      * @param theVersion The given version number.
      */
     public void setVersion(String theVersion) {
+        if (osName.startsWith(JnlpConstants.OS_WINDOWS)) {
+            try {
+                Float.parseFloat(theVersion);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error: " +
+                    "Illegal Version Number (Valid input: digits & '.')");
+            }
+        }
         version = theVersion;
     }
 
@@ -370,6 +380,14 @@ public final class JnlpPackageInfo {
      * @param theRelease The given release number.
      */
     public void setRelease(String theRelease) {
+        if (osName.startsWith(JnlpConstants.OS_WINDOWS)) {
+            try {
+                Float.parseFloat(theRelease);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error: " +
+                    "Illegal Release Number (Valid input: digits & '.')");
+            }
+        }
         release = theRelease;
     }
 
