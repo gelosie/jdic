@@ -182,15 +182,15 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Overrides the same method of <code>java.awt.Canvas</code> in order to
-     * paint the browser window. On Windows system it is invoked by the system
-     * automatically, users are not recommended to call it.
+     * Creates the peer for this WebBrowser component. The peer allows us to 
+     * modify the appearance of the WebBrowser component without changing its 
+     * functionality.
      */
     public void addNotify() {
         super.addNotify();
-        if (isRunningOnWindows) {
-            eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_CREATEWINDOW);
-        }
+
+        eventThread.fireNativeEvent(instanceNum, 
+                NativeEventData.EVENT_CREATEWINDOW);
     }
 
     /**
@@ -547,27 +547,6 @@ public class WebBrowser extends Canvas
         return nativeGetWindow(System.getProperty("java.home"));
     }
 
-    /* only used for GTK */
-    private boolean firstTime = true;
-
-     /**
-     * Overrides the same method of <code>java.awt.Canvas</code> in order to
-     * paint the browser window. On Linux and Unix systems it is invoked by
-     * the system automatically, users are not recommended to call it.
-     *
-     * @param g the specified graphics context.
-     */
-    public void paint(Graphics g) {
-        // don't call super.paint(), we will handle the drawing by ourselves.
-        if (firstTime) {
-            // On GTK, the native window id of Canvas is only available when the first call of paint
-            firstTime = false;
-            if (! isRunningOnWindows) {
-                eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_CREATEWINDOW);
-            }
-        }
-    }
-    
     /* native functions */
     private native int nativeGetWindow(String javaHome);
     
