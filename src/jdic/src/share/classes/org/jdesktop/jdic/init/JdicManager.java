@@ -157,8 +157,19 @@ public class JdicManager {
                     "Can't locate the native browser path!");
             }
 
-            // Mozilla is the default/embedded browser.
-            if (WebBrowserUtil.isDefaultBrowserMozilla()) {                   
+            
+            if (!WebBrowserUtil.isDefaultBrowserMozilla()) {
+                 if (isWindows) {
+                    // Internet Explorer is the default/embedded browser.
+                    // Pre-append the "ielib" directory to PATH, which includes 
+                    // the bundled, IeEmbed.exe dependent library nspr4.dll.
+                    // NOTE: if nspr4.dll is put under any other path, it needs
+                    //       to be added to PATH.
+                    InitUtility.appendEnv(libPathEnv, binaryPath 
+                                          + File.separator + "ielib"); 
+                 }                
+            } else {
+            	// Mozilla is the default/embedded browser.
                 // Use the user defined env variable or the mozilla binary
                 // path as the default MOZILLA_FIVE_HOME value.
                 String envMFH = InitUtility.getEnv("MOZILLA_FIVE_HOME");

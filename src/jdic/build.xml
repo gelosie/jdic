@@ -250,8 +250,9 @@ Top-level target:
     <copy file="${win32.native.ie.dir}/Release/IeEmbed.exe" todir="${dist.dir}" />
     <copy file="${win32.native.mozilla.dir}/Release/MozEmbed.exe" todir="${dist.dir}" />
 
-    <!-- copy the bundled dll used by embeded IE executable -->
-    <copy file="${win32.native.ie.dir}/nspr4.dll" todir="${dist.dir}" />
+    <!-- copy the bundled nspr4.dll used by embedded IE executable -->
+    <mkdir dir="${dist.dir}/ielib" />   
+    <copy file="${win32.native.ie.dir}/ielib/nspr4.dll" todir="${dist.dir}/ielib" />
   </target>
 
   <!--
