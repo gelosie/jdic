@@ -175,11 +175,20 @@ public class WinUtility {
             out.setMethod(ZipOutputStream.STORED);
             //Non-empty file list, loop each file to add into the jar file
             checkDirValid(sourcePath);
+            //The first entry is the jnlp file specified in the absolute path,
+            //so there would be no need to locate it relevant to the sourcepath.
+            boolean isJnlpFile = true;
             while (it.hasNext()) {
                 String oneFileName = (String) it.next();
-                String oneFilePath = sourcePath
-                                        + File.separator
-                                        + oneFileName;
+                String oneFilePath = null; 
+                if (!isJnlpFile) {
+                    oneFilePath = sourcePath
+                                  + File.separator
+                                  + oneFileName;
+                } else {
+                    oneFilePath = oneFileName;
+                    isJnlpFile = false;
+                }
                 checkFileValid(oneFilePath);
                 putIntoZip(oneFileName, oneFilePath, out);
             }

@@ -623,8 +623,7 @@ public final class JnlpPackageInfo {
         
         try {
         	File jnlpFile = new File(jnlp.toURI());
-            jnlpRefFilePaths.add(FileOperUtility.getRelativePath(
-                    jnlpFile.getPath(), resourceDirPath));
+            jnlpRefFilePaths.add(jnlpFile.getAbsolutePath());
             LaunchDesc laDesc = LaunchDescFactory.buildDescriptor(jnlp);
             URL codebase = laDesc.getCodebase();
             InformationDesc infoDesc = laDesc.getInformation();
