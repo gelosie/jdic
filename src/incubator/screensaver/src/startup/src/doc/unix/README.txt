@@ -30,17 +30,10 @@ Requirements:
   * Java VM 1.5 Beta or higher (Get at http://java.sun.com/).  
 
 To Install:
-  * Make sure the Java Virtual Machine can be located by the screensaver
-    from the shell launched by the xscreensaver process. 
-    The following sources will be checked for your Java Virtual Machine
-    (in order).  See the screensaver wrapper script for more details.
-    At worst, you can always edit these scripts directly.
-      - -jdkhome parameter, if present (this parameter is also set by the
-        screensaver "Java Home" option in the control panel)
-      - $JAVA_HOME environment variable, if set
-      - `rpm -ql j2sdk`, if available
-      - `which java`, if found
-      - otherwise error
+  * Edit Makefile and jdkhome and xscreensaverhome to valid directories
+  * Run 'make' to build the screensaver binaries for your platform
+  * In the future, there will be a 'make install' task (contributions welcome).
+    For now this has to be done manually:
   * Copy files to the right directories.
       Java Desktop System:
         SCREENSAVER_BIN=/usr/lib/xscreensaver
@@ -69,6 +62,18 @@ To Install:
     NOTE: If you don't have a .xscreensaver file, go to your screensaver
     preferences and adjust the settings of a screensaver.  The file will
     be created for you automatically.
+  * Make sure the Java Virtual Machine can be located by each screensaver
+    from the shell launched by the xscreensaver process. 
+    The following sources will be checked for your Java Virtual Machine
+    (in order).  See the screensaver wrapper script for more details.
+    At worst, you can always edit these scripts directly, but usually
+    editing ~/.xscreensaver and adding -jdkhome will suffice.
+      - -jdkhome parameter, if present (this parameter is also set by the
+        screensaver "Java Home" option in the control panel)
+      - $JAVA_HOME environment variable, if set
+      - `rpm -ql j2sdk`, if available
+      - `which java`, if found
+      - otherwise error
   * Run xscreensaver-demo to test and select.  Look for 
     "Bouncing Line (Java)".  If it works, you should see a bouncing line
     in the preview window.  If not, look for an error message in stderr.

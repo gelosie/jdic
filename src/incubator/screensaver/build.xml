@@ -40,6 +40,15 @@ USA
     <property name="release-version" value="saverbeans-sdk-0_1" />
   </target>
   
+  <target name="check-win32"
+          description="Check to make sure properties are set">
+    <fail unless="cc">
+      Please copy build.properties.x.sample to build.properties
+      and follow the instructions in that file, where x is
+      your current platform.
+    </fail>
+  </target>
+  
   <target name="init" depends="properties" />
   
   <!--
@@ -80,24 +89,66 @@ USA
     -->
   <target name="compile-ant" depends="init"
           description="Compile Saver Beans ant task">
-      <mkdir dir="${build}/ant" />
-      <javac debug="on" destdir="${build}/ant" srcdir="${src}/ant" 
-             classpath="${ant.home}/lib/ant.jar" />
-      <copy todir="${build}/ant">
-        <fileset dir="${src}/ant">
-          <include name="**/*.template" />
-          <include name="**/*.rc" />
-          <include name="**/*.ico" />
-        </fileset>
-      </copy>
+    <mkdir dir="${build}/ant" />
+    <javac debug="on" destdir="${build}/ant" srcdir="${src}/ant" 
+           classpath="${ant.home}/lib/ant.jar" />
+    <copy todir="${build}/ant">
+      <fileset dir="${src}/ant">
+        <include name="**/*.template" />
+        <include name="**/*.rc" />
+        <include name="**/*.ico" />
+      </fileset>
+    </copy>
   </target>
   
   <target name="dist-ant" depends="init,compile-ant"
           description="Distribute Saver Beans ant task">
-      <mkdir dir="${dist}" />
-      <jar destfile="${dist}/saverbeans-ant.jar">
-        <fileset dir="${build}/ant" />
-      </jar>
+    <mkdir dir="${dist}" />
+    <jar destfile="${dist}/saverbeans-ant.jar">
+      <fileset dir="${build}/ant" />
+    </jar>
+  </target>
+
+  <!-- 
+    - Builds the Win32 native screensaver executable, which is used
+    - by the ant task to generate the final screensaver binary.  This
+    - task needs to be run when saverbeans-win32.cpp is modified and
+    - the resulting binary needs to be checked into the SaverBeans workspace.
+    -->  
+  <target name="ant-native-win32" depends="init,check-win32"
+          description="Rebuild native win32 binary components">
+    <mkdir dir="${build}/ant-native-${os}" />
+    
+    <!-- Build resource saverbeans.res -->
+    <exec dir="${build}/ant-native-${os}" executable="${rc}" 
+          failonerror="true">
+      <arg line="/Fo${basedir}\${build}\ant-native-${os}\saverbeans.res" />
+      <arg line="saverbeans.rc" />
+    </exec>
+    <!-- Build saverbeans-win32.obj -->
+    <exec dir="${build}/ant-native-${os}" executable="${cc}" 
+          failonerror="true">
+      <arg line="${cc.args}" />
+      <arg line="-DPLATFORM_WIN32" />
+      <arg line="/Fo${basedir}\${build}\ant-native-${os}\saverbeans-win32.obj" />
+      <arg line="-c saverbeans-win32.cpp" />
+    </exec>
+    <!-- Link saverbeans-win32.scr -->
+    <exec dir="${build}/ant-native-${os}" executable="${link}" 
+          failonerror="true">
+      <arg line="${link.args}" />
+      <arg line="/out:${basedir}\${build}\ant-native-${os}\saverbeans-win32.scr" />
+      <arg line="${basedir}\${build}\ant-native-${os}\saverbeans.res" />
+      <arg line="${basedir}\${build}\ant-native-${os}\saverbeans-win32.obj" />
+      <arg line="${link.obj}" />
+    </exec>
+    <!-- Copy to ant resources directory so it can be checked into CVS -->
+    <copy 
+      todir="${src}/ant/org/jdesktop/jdic/screensaver/autogen/resources/win32">
+      <fileset dir="${build}/ant-native-${os}">
+        <include name="saverbeans-win32.scr" />
+      </fileset>
+    </copy>
   </target>
     
   <!--
@@ -150,6 +201,9 @@ USA
         <include name="**/*.xml" />
         <include name="**/*.java" />
         <include name="**/*.sample" />
+      </fileset>
+      <fileset dir="${basedir}">
+        <include name="COPYING" />
       </fileset>
     </copy>
   </target>

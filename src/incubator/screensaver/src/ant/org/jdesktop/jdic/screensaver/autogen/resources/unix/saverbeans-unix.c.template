@@ -20,7 +20,7 @@
 
 /*
  * Bridges xscreensaver (Linux or Solaris) to Java
- * Define either -DPLATFORM_SOLARIS or -DPLATFORM_LINUX as a parameter to gcc
+ * Define either -DPLATFORM_SunOS or -DPLATFORM_Linux as a parameter to gcc
  * 
  * Author: Mark Roth <mark.roth@sun.com>
  * Contributor: Bino George <bino.george@sun.com>
@@ -35,9 +35,9 @@
 #define SCREENSAVER_BASE_CLASS "org/jdesktop/jdic/screensaver/ScreensaverBase"
 #define SCREENSAVER_CONTEXT_CLASS "org/jdesktop/jdic/screensaver/ScreensaverContext"
 
-#ifdef PLATFORM_LINUX
+#ifdef PLATFORM_Linux
 #define EMBEDDED_FRAME_CLASS "sun/awt/X11/XEmbeddedFrame"
-#elif PLATFORM_SOLARIS
+#elif PLATFORM_SunOS
 #define EMBEDDED_FRAME_CLASS "sun/awt/motif/MEmbeddedFrame"
 #endif
 

@@ -27,7 +27,7 @@ USA
   - http://jdic.dev.java.net/
   -->
 
-<project basedir="." default="dist-unix" name="bouncingline">
+<project basedir="." default="dist" name="bouncingline">
 
   <target name="properties">
     <property file="${user.home}/build.properties" />
@@ -60,10 +60,8 @@ USA
     
   <target name="init" depends="properties,check,define" />
   
-  <target name="compile-share" depends="init"
-          description="Compile the screensaver">
+  <target name="compile" depends="init" description="Compile the screensaver">
     <mkdir dir="${build}/share" />
-    <mkdir dir="${build}/${os}" />
     <javac debug="on" destdir="${build}/share" srcdir="${src}/java" 
            classpath="${saverbeans.path}/saverbeans-api.jar" />
     <copy todir="${build}/share">
@@ -72,18 +70,69 @@ USA
         <exclude name="**/*.java" />
       </fileset>
     </copy>
+    
+    <!-- Generate Makefile and Unix source distribution for each -->
+    <mkdir dir="${build}/unix" />
+    <foreachscreensaver confDir="${src}/conf" outDir="${build}/unix" 
+                        os="unix" />
+    <!-- Generate Windows .scr and binary distribution for each -->
+    <mkdir dir="${build}/win32" />
+    <!-- XXX - Does not work yet
+    <foreachscreensaver confDir="${src}/conf" outDir="${build}/win32"
+                        os="win32" />
+    -->
   </target>
   
-  <target name="dist-share" depends="compile-share">
-    <mkdir dir="${dist}/${os}" />
-    <jar destfile="${dist}/${os}/${screensaver}.jar">
+  <target name="dist" depends="compile">
+    <mkdir dir="${build}/jar" />
+    <jar destfile="${build}/jar/${screensaver}.jar">
       <fileset dir="${build}/share" />
     </jar>
-    <copy todir="${dist}/${os}">
+    
+    <!-- Create distribution for win32: -->
+    <mkdir dir="${dist}/${screensaver}-win32" />
+    <copy todir="${dist}/${screensaver}-win32">
       <fileset dir="${saverbeans.path}">
         <include name="saverbeans-api.jar" />
       </fileset>
+      <fileset dir="${build}/jar">
+        <include name="*.jar" />
+      </fileset>
+      <fileset dir="${build}/win32">
+        <include name="*.scr" />
+      </fileset>
+      <fileset dir="${basedir}">
+        <include name="COPYING" />
+      </fileset>
+      <fileset dir="${src}/doc/win32">
+        <include name="README.txt" />
+      </fileset>
     </copy>
+    <zip destfile="${dist}/${screensaver}-win32.zip" basedir="${dist}"
+         includes="${screensaver}-win32" />
+    
+    <!-- Create distribution for Unix: -->
+    <mkdir dir="${dist}/${screensaver}-unix" />
+    <copy todir="${dist}/${screensaver}-unix">
+      <fileset dir="${saverbeans.path}">
+        <include name="saverbeans-api.jar" />
+      </fileset>
+      <fileset dir="${build}/jar">
+        <include name="*.jar" />
+      </fileset>
+      <fileset dir="${src}/conf">
+        <include name="*.xml" />
+      </fileset>
+      <fileset dir="${build}/unix" />
+      <fileset dir="${basedir}">
+        <include name="COPYING" />
+      </fileset>
+      <fileset dir="${src}/doc/unix">
+        <include name="README.txt" />
+      </fileset>
+    </copy>
+    <zip destfile="${dist}/${screensaver}-unix.zip" basedir="${dist}"
+         includes="${screensaver}-unix" />
   </target>
   
   <target name="clean" depends="init" 
@@ -92,93 +141,4 @@ USA
     <delete dir="${dist}"/>
   </target>
 
-  <!--
-    - TARGETS FOR UNIX DISTRIBUTION
-    -->
-  <target name="compile-unix" depends="init,compile-share"
-          description="Compile the distribution for Unix">
-    <!-- Generate and build native code for each screensaver in src/conf -->
-    <foreachscreensaver confDir="${src}/conf" outDir="${build}/${os}" 
-                        os="${os}">
-      <!-- Build [[source]].o -->
-      <exec dir="${build}/${os}" executable="${cc}" failonerror="true">
-        <arg line="${cc.args}" />
-        <arg line="-o ${basedir}/${build}/${os}/[[source]].o" />
-        <arg line="[[source]].c" />
-      </exec>
-      <!-- Link [[exe]] -->
-      <exec dir="${build}/${os}" executable="${link}" failonerror="true">
-        <arg line="${link.args}" />
-        <arg line="-o ${basedir}/${build}/${os}/[[exe]]" />
-        <arg line="${basedir}/${build}/${os}/[[source]].o" />
-        <arg line="${link.obj}" />
-      </exec>
-      <!-- Strip extra bits off [[exe]] -->
-      <exec dir="${basedir}/${build}/${os}" executable="${strip}" 
-            failonerror="true">
-        <arg line="[[exe]]" />
-      </exec>
-    </foreachscreensaver>
-  </target>
-    
-  <target name="dist-unix" depends="init,dist-share,compile-unix"
-          description="Creates target jar and distribution for Unix">
-    <copy todir="${dist}/${os}">
-      <fileset dir="${build}/${os}">
-        <exclude name="*.c" />
-        <exclude name="*.o" />
-      </fileset>
-      <fileset dir="${src}/conf">
-        <include name="*.xml" />
-      </fileset>
-      <fileset dir="${src}/doc/unix">
-        <include name="README.txt" />
-      </fileset>
-    </copy>
-    <chmod dir="${dist}/${os}" excludes="*.xml,*.jar,*.txt" perm="a+x" />
-  </target>
-  
-  <!--
-    - TARGETS FOR WINDOWS DISTRIBUTION
-    -->
-  <target name="compile-win32" depends="init,compile-share"
-          description="Compile the distribution for Windows">
-    <!-- Generate and build native code for each screensaver in src/conf -->
-    <foreachscreensaver confDir="${src}/conf" outDir="${build}/${os}"
-                        os="${os}">
-      <!-- Build resource [[source]].res -->
-      <exec dir="${build}/${os}" executable="${rc}" failonerror="true">
-        <arg line="/Fo${basedir}\${build}\${os}\[[source]].res" />
-        <arg line="saverbeans.rc" />
-      </exec>
-      
-      <!-- Build [[source]].obj -->
-      <exec dir="${build}/${os}" executable="${cc}" failonerror="true">
-        <arg line="${cc.args}" />
-        <arg line="-DPLATFORM_WIN32" />
-        <arg line="/Fo${basedir}\${build}\${os}\[[source]].obj" />
-        <arg line="-c [[source]].cpp" />
-      </exec>
-      <!-- Link [[source]].scr -->
-      <exec dir="${build}/${os}" executable="${link}" failonerror="true">
-        <arg line="${link.args}" />
-        <arg line="/out:${basedir}\${build}\${os}\[[source]].scr" />
-        <arg line="${basedir}\${build}\${os}\[[source]].res" />
-        <arg line="${basedir}\${build}\${os}\[[source]].obj" />
-        <arg line="${link.obj}" />
-      </exec>
-    </foreachscreensaver>
-  </target>
-
-  <target name="dist-win32" depends="init,dist-share,compile-win32"
-          description="Creates target jar and distribution for Windows">
-    <copy todir="${dist}/${os}">
-      <fileset dir="${build}/${os}">
-        <include name="*.scr" />
-      </fileset>
-      <fileset dir="${src}/doc/win32">
-        <include name="README.txt" />
-      </fileset>
-    </copy>
-  </target>
 </project>

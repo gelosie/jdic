@@ -18,28 +18,4 @@
 
 # You must download the SaverBeans SDK to build this screensaver.
 # Set this to the installation directory for the SaverBeans SDK.
-saverbeans.path=C:\\saverbeans
-
-# Set this to your Java home directory
-jdk.home=C:\\j2sdk1.4.2_04
-
-# You should not need to adjust any of the settings below this line.
-os=win32
-cc=cl
-rc=rc
-link=link
-cc.args=/MD /W3 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WIN32" /D "_WINDOWS" \
-        /W3 \
-        /I${jdk.home}\\include \
-        /I${jdk.home}\\include\\win32 \
-        /I.
-link.args=/subsystem:windows /machine:I386
-link.obj=user32.lib \
-        kernel32.lib \
-        gdi32.lib \
-        shell32.lib \
-        comdlg32.lib \
-        scrnsave.lib \
-        advapi32.lib \
-        winmm.lib \
-        ${jdk.home}\\lib\\jvm.lib
+saverbeans.path=/opt/saverbeans

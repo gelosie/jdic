@@ -41,24 +41,33 @@ import org.xml.sax.SAXException;
 
 /**
  * Steps through each screensaver by looking at the XML files present in
- * the configuration directory.  Performs a number of steps on each:
- * <ol>
- *   <li>Generates any platform-specific source code to handle screensaver
- *       options.</li>
- *   <li>Performs a number of substitutions for elements in the 
- *       substitution templates and in the body of the tag.
- *       <ul>
- *         <li>[[jar]] - Name of the JAR containing the screensaver.</li>
- *         <li>[[name]] - Name of the screensaver.</li>
- *         <li>[[class]] - Class implementing xscreensaver.</li>
- *         <li>[[config]] - Copy of config XML as hex data.</li>
- *         <li>[[options]] - Xrm options string for xscreensaver.</li>
- *         <li>[[exe]] - The name of the final executable.</li>
- *         <li>[[source]] - Filename of source file, without extension.</li>
- *       </ul></li>
- *   <li>Executes the tasks in the body of the task, with the
- *       substituted parameters.</li>
- * </ol>
+ * the configuration directory.  Autogenerates the appropriate files for
+ * each platform.
+ *
+ * Each platform is handled differently.
+ *
+ * For Windows, a binary (produced by the ant-native-win32 task in the
+ * SDK workspace) is copied, and parameters in the binary are substituted.
+ * This allows the building of .scr files without needing to purchase
+ * the Visual C++ compiler.
+ * 
+ * For Unix, the target is a Makefile and a collection of source files,
+ * so that the screensaver can be compiled for any target Unix platform.
+ *
+ * The following substitutions are performed when templates are copied over:
+ * <ul>
+ *   <li>[[jar]] - Name of the JAR containing the screensaver.</li>
+ *   <li>[[name]] - Name of the screensaver.</li>
+ *   <li>[[class]] - Class implementing xscreensaver.</li>
+ *   <li>[[config]] - Copy of config XML as hex data.</li>
+ *   <li>[[options]] - Xrm options string for xscreensaver.</li>
+ *   <li>[[exe]] - The name of the final executable.</li>
+ *   <li>[[source]] - Filename of source file, without extension.</li>
+ * </ul>
+ *
+ * The tasks in the body of the <foreachscreensaver> task are executed
+ * for each screensaver, and the above substitutions are performed for
+ * the child tasks as well.
  *
  * @author Mark Roth
  */
@@ -134,7 +143,10 @@ public class ForEachScreensaver
                            filename.endsWith( ".XML" );
                 }
             } );
-
+            
+        // Keep track of all screensavers so we can build our Makefile
+        Properties savers = new Properties();
+        
         try {
             DocumentBuilderFactory builderFactory = 
                 DocumentBuilderFactory.newInstance();
@@ -199,15 +211,19 @@ public class ForEachScreensaver
                         filename.substring( 0, index ) );
                     filename = filename.substring( 0, index );
                     
-                    if(os.equals("linux") || os.equals("solaris")) {
-                        // On Unix, we need to generate both the .sh wrapper AND the
-                        // native exe!  this is because XrmOptionDescRec needs to
-                        // be set right when we add customization options
-                        // but LD_LIBRARY_PATH needs to be set as well (on Linux)
-                        generateShellWrapper( outDir, filename, jarArg, classArg,
-                            exeName );
-                        generateUnixExecutable( outDir, filename, jarArg, classArg, 
-                            config.getName(), options );
+                    if(os.equals("unix")) {
+                        // On Unix, we need to generate:
+                        //   1. A shell script wrapper
+                        //   2. The source code
+                        // The shell script wrapper is needed because 
+                        // XrmOptionDescRec needs to be set right when we 
+                        // add customization options but LD_LIBRARY_PATH 
+                        // needs to be set as well (on Linux)
+                        generateUnixShellWrapper(outDir, filename, jarArg, 
+                            classArg, exeName);
+                        generateUnixSource(outDir, filename, jarArg, classArg, 
+                            config.getName(), options);
+                        savers.setProperty(filename, exeName);
                     }
                     else if(os.equals("win32")) {
                         generateWindowsExecutable(outDir, filename, jarArg, classArg,
@@ -228,27 +244,65 @@ public class ForEachScreensaver
                     t.execute();
                 }
             }
+            generateUnixMakefile(outDir, savers);
         }
         catch( ParserConfigurationException e ) {
             throw new BuildException( e );
         }
+        catch( IOException e ) {
+            throw new BuildException( e );
+        }
     }
 
-    private void generateShellWrapper( File outDir, String filename, 
+    private void generateUnixShellWrapper( File outDir, String filename, 
         String jarArg, String classArg, String exeName ) 
         throws IOException
     {
         File outFile = new File( outDir, filename );
         Properties substitute = new Properties();
-        substitute.setProperty( "jar", jarArg );
-        substitute.setProperty( "class", classArg );
-        substitute.setProperty( "exe", exeName );
-        Utilities.copyFileAndSubstitute( outFile, 
+        substitute.setProperty("jar", jarArg);
+        substitute.setProperty("class", classArg);
+        substitute.setProperty("exe", exeName);
+        Utilities.copyFileAndSubstitute(outFile, 
             "/org/jdesktop/jdic/screensaver/autogen/resources/unix/" +
-            "saverbeans.sh.template", substitute, "[[", "]]" );
+            "saverbeans.sh.template", substitute, "[[", "]]");
+    }
+
+    private void generateUnixMakefile(File outDir, Properties savers)
+        throws IOException
+    {
+        File outFile = new File( outDir, "Makefile" );
+        Properties substitute = new Properties();
+        StringBuffer targets = new StringBuffer();
+        Iterator iter = savers.keySet().iterator();
+        // key = filename, value = exeName
+        StringBuffer exes = new StringBuffer();
+        while(iter.hasNext()) {
+            String key = (String)iter.next();
+            String value = savers.getProperty(key);
+            exes.append(value);
+            exes.append(' ');
+        }
+        substitute.setProperty("exes", exes.toString());
+        iter = savers.keySet().iterator();
+        while(iter.hasNext()) {
+            String key = (String)iter.next();
+            String value = savers.getProperty(key);
+            targets.append(value + ":\n");
+            targets.append(
+                "\t${cc} ${ccargs} -o " + key + ".o " + key + ".c\n" +
+                "\t${link} ${linkargs} -o " + value + " " + key + 
+                    ".o ${linkobj}\n" + 
+                "\t${strip} " + value + "\n" +
+                "\tchmod a+x " + key + "\n\n");
+        }
+        substitute.setProperty("targets", targets.toString());
+        Utilities.copyFileAndSubstitute(outFile, 
+            "/org/jdesktop/jdic/screensaver/autogen/resources/unix/" +
+            "Makefile.template", substitute, "[[", "]]");
     }
     
-    private void generateUnixExecutable( File outDir, String filename,
+    private void generateUnixSource( File outDir, String filename,
         String jarArg, String classArg, String screensaverName,
         ArrayList options )
         throws IOException

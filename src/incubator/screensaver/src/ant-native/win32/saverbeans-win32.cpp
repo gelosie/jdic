@@ -45,6 +45,42 @@
 #define JRE_KEY	    "Software\\JavaSoft\\Java Runtime Environment"
 #define JVM_DLL     "jvm.dll"
 
+/** Copyright notice to appear in generated binaries */
+char *copyright = 
+"Copyright (c) 2004 Sun Microsystems, Inc., 4150 Network Circle, Santa\n"
+"Clara, California 95054, U.S.A. All rights reserved.  Use is subject \n"
+"to license terms available at http://www.gnu.org/copyleft/lesser.html.  \n"
+"Sun, Sun Microsystems and the Sun logo are trademarks or registered \n"
+"trademarks of Sun Microsystems, Inc. in the U.S. and other countries.\n"
+"\n"
+"This product is covered and controlled by U.S. Export\n"
+"Control laws and may be subject to the export or import laws in other\n"
+"countries.  Nuclear, missile, chemical biological weapons or nuclear\n"
+"maritime end uses or end users, whether direct or indirect, are\n"
+"strictly prohibited.  Export or reexport to countries subject to\n"
+"U.S. embargo or to entities identified on U.S. export exclusion lists,\n"
+"including, but not limited to, the denied persons and specially\n"
+"designated nationals lists is strictly prohibited.\n"
+"\n"
+"LICENSE TERMS:\n"
+"\n"
+"Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is\n"
+"subject to license terms.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the Lesser GNU General Public License as\n"
+"published by the Free Software Foundation; either version 2 of the\n"
+"License, or (at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but\n"
+"WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n"
+"General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307\n"
+"USA.\n";
 
 /***************************************************************************/
 /* Begin substituted parameters                                            */
