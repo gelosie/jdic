@@ -33,7 +33,6 @@
 #define POLLRDNORM POLLIN
 #endif
 
-#define DEBUG
 #ifdef DEBUG
 #define dprintf printf
 #else
