@@ -98,7 +98,8 @@ public class JdicManager {
         try {
             // Find the root path of this class.            
             binaryPath = (new URL(JdicManager.class.getProtectionDomain()
-           	    .getCodeSource().getLocation(), ".")).getPath();
+           	    .getCodeSource().getLocation(), ".")).openConnection().getPermission().getName();
+           	binaryPath = (new File(binaryPath)).getCanonicalPath();
             if (System.getProperty("javawebstart.version") != null) {
                 //  We are running under WebStart.
                 //  NOTE: for a WebStart application, the jar file including 
@@ -107,9 +108,6 @@ public class JdicManager {
                 String cacheDirName = "RN" + "jdic-native.jar" + "/";
                 binaryPath += File.separator + cacheDirName; 
             }                                                     
-   
-            // Decodes to the URL-style path to normal file path.
-            binaryPath = java.net.URLDecoder.decode(binaryPath, "UTF-8");
     
             // Add the binary path (including jdic.dll or libjdic.so) to 
             // "java.library.path", since we need to use the native methods in 
