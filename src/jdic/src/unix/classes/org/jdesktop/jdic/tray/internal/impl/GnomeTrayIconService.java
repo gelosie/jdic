@@ -61,10 +61,11 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         popupMenuParent.setVisible(true);
     }
 
-    void mousePressed(MouseEvent e) {
+    void mousePressed(final MouseEvent e) {
         if (menu != null) {
             if (e.isPopupTrigger()) {
-                tooltip.setVisible(false);
+                if(tooltip != null)
+                	tooltip.setVisible(false);
                 Dimension d = menu.getPreferredSize();
                 Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
                 Point p = e.getPoint();
@@ -74,17 +75,26 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                 SwingUtilities.convertPointFromScreen(p, popupMenuParent);
                 menu.show(popupMenuParent, p.x, p.y);
             } else {
-                tooltip.setVisible(false);
-                ListIterator li = actionList.listIterator(0);
-                ActionListener al;
-
-                while (li.hasNext()) {
-                    al = (ActionListener) li.next();
-                    al.actionPerformed(new ActionEvent(e.getSource(),
-                                ActionEvent.ACTION_PERFORMED, "PressAction", e.getWhen(),
-                                0));
-                }
-
+                if(tooltip != null)
+                	tooltip.setVisible(false);
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run() {
+                      Thread actionThread = new Thread(new Runnable(){
+                      public void run() {
+                          ListIterator li = actionList.listIterator(0);
+                          while (li.hasNext()) {
+                          ActionListener al;
+                          al = (ActionListener) li.next();
+                          al.actionPerformed(new ActionEvent(GnomeTrayIconService.this,
+                                      ActionEvent.ACTION_PERFORMED, "PressAction", e.getWhen(),
+                                      0));
+                          }
+                      }
+                        
+                    });
+                    actionThread.start();
+                    }
+                });
             }
         }
     }
@@ -126,7 +136,23 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
 
     }
 
-    public void addNotify() {}
+    public void addNotify() {
+    	if(GnomeTrayAppletService.winMap.get(new Long(this.getWindow())) == null){
+    		this.init();
+    		
+    		if(this.icon != null)
+    			this.setIcon(this.icon);
+    		if(this.menu != null)
+    			this.setPopupMenu(this.menu);
+    		
+    		if(this.tooltip != null)
+    			tooltip = new HWToolTip(this.tooltip.label.getTipText(), frame);
+    		
+    		this.initListeners();
+    	}
+        GnomeSystemTrayService.dockWindow(this.getWindow());
+        frame.setVisible(true);
+    }
 
     public void setPopupMenu(JPopupMenu m) {
         menu = m;

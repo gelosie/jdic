@@ -38,7 +38,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayApplet
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayAppletService_dispose
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

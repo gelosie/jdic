@@ -23,7 +23,6 @@ package org.jdesktop.jdic.tray.internal.impl;
 
 import org.jdesktop.jdic.tray.internal.TrayAppletService;
 import sun.awt.EmbeddedFrame;
-import sun.awt.EmbeddedFrame;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.peer.ComponentPeer;
@@ -34,6 +33,7 @@ import java.awt.Dimension;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
+import java.util.Iterator;
 
 
 /**
@@ -252,7 +252,15 @@ public class GnomeTrayAppletService implements TrayAppletService {
         }
         dispose(getWindow());
     }
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+            	Iterator wins = winMap.keySet().iterator();
+            	while(wins.hasNext())
+            		dispose(((Long)wins.next()).longValue());
+            }
+        });
+    }
  
-    native void dispose(long window_id); 
-
+     static native void dispose(long window_id);
 }

@@ -42,14 +42,7 @@ public class GnomeSystemTrayService implements SystemTrayService {
     public void addNotify() {}
 
     public void addTrayIcon(TrayIcon ti, TrayIconService tis, int trayIndex) {
-        GnomeTrayIconService gtis = (GnomeTrayIconService) tis;
-        long window = gtis.getWindow();
-
-        dockWindow(window);
-        EmbeddedFrame frame = gtis.getFrame();
-
-        frame.setVisible(true);
-        
+        tis.addNotify();
     }
 
     // public void addTrayApplet(TrayApplet ta, int trayIndex) {}
