@@ -18,7 +18,7 @@ USA
 JDIC Incubator Iconservice README
 ---------------------------------
 
-This is the Preliminary implementation for the JDIC IconService.
+This is the Preliminary implementation of the JDIC IconService.
 
 The IconService hides the Operating System dependencies for retrieving an 
 icon.  The most interesting place for its use is to retrieve the icon specified by the 
@@ -27,10 +27,11 @@ org.jdesktop.jdic.filetypes.Association.
 Supported Platforms
 -------------------
 - WinME/NT/2000/XP/2003 
-- Any Unix platform supporting Freedesktop icon speicification (Linux, Solaris)
+- Any Unix platform supporting Freedesktop icon specification (Linux, Solaris)
 
 System Requirements 
-- J2SE v1.4.2 or greater (get it at http://java.com/) 
+- J2SE v1.4.2 or greater (available at http://java.com/) 
+- JDIC 0.7 or greater (available at https://jdic.dev.java.net/servlets/ProjectDocumentList)
 
 Building the Source
 -------------------
@@ -42,11 +43,11 @@ requirements:
 
 To build the API:
 
-    * Run 'ant buildall' to build the API.
+    * Run 'ant buildall' to build the API and demos.
 
 Support
 -------
 Support for IconService is provided by the Java community on the
-JDIC and IconService projects on java.net.
+JDIC project on java.net.
 
     * http://jdic.dev.java.net/
