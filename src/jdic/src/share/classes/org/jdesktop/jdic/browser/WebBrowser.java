@@ -172,7 +172,10 @@ public class WebBrowser extends Canvas
 
         WebBrowserUtil.trace("Got event from NativeEventThread " + eid);
 
-        // native browser needs immediate return value for these two events.
+        // native browser needs immediate return value for these two events.       
+        // Special trigger messages beginning with a '@' character, to give 
+        // the native browser a yes or no to continue an operation(navigating
+        // an URL or openning a new window).
         String msg = "@" + instanceNum + "," + eid + ",";
         if (WebBrowserEvent.WEBBROWSER_BEFORE_NAVIGATE == eid) {
             URL url = null;
@@ -180,8 +183,10 @@ public class WebBrowser extends Canvas
                 url = new URL(e.getData());
             } catch (MalformedURLException ex1) {
                 try {
-                	// IE omits the file:/ protocol for local files, append it.
-                	url = new URL("file:/" + e.getData());  
+                	// IE omits the file:/ protocol for local files, append it.                    
+                    if (!WebBrowserUtil.isDefaultBrowserMozilla()) {
+                        url = new URL("file:/" + e.getData());
+                    }
                 } catch (MalformedURLException ex2) {                    
                 }
             }
@@ -505,11 +510,15 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Called before every navigation operation occurs. A subclass could 
-     * override this method to change or block URL loading.
-     *
-     * @return <code>false</code> will prevent the the navigation from starting;
-     *         otherwise <code>true</code>.
+     * Called before a navigation occurs.
+     * <p>
+     * A subclass can override this method to block the navigation or allow it 
+     * to proceed.
+     * 
+     * @param url the URL to navigate to.
+     * @return <code>false</code> will block the navigation from starting;
+     *         <code>true</code> otherwise. By default, it returns <code>
+     *         true</code>.
      */
     protected boolean willOpenURL(URL url) {
         if (null == url)
@@ -529,11 +538,14 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Called before every new window is to be created. A subclass could 
-     * override this method to prevent new window from popping up.
-     *
-     * @return <code>false</code> will prevent the new window from popping up; 
-     *         otherwise <code>true</code>.
+     * Called when a new window is to be created for displaying a resource.
+     * <p>
+     * A subclass can override this method to block the creation of a new 
+     * window or allow it to proceed. 
+     * 
+     * @return <code>false</code> will block the creation of a new window;  
+     *         <code>true</code> otherwise. By default, it returns <code>
+     *         true</code>.
      */
     protected boolean willOpenWindow() {
         return true;
