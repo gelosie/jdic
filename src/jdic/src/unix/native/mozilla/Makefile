@@ -56,8 +56,8 @@ USING_GECKO_SDK_1_4 = 1
 # (1.2 or 2) Gecko SDK and the Mozilla binary used. The GTK version building
 # Gecko SDK and the Mozilla binary must be same.
 #
-MOZ_ENABLE_GTK = 1
-#MOZ_ENABLE_GTK2 = 1
+#MOZ_ENABLE_GTK = 1
+MOZ_ENABLE_GTK2 = 1
 
 MODULE_NAME_PART= mozembed
 
