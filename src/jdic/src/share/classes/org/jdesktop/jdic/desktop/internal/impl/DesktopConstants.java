@@ -41,4 +41,5 @@ public interface DesktopConstants {
     // Mailer properties.
     static final String MOZ_MAILER = "mozilla";
     static final String EVO_MAILER = "evolution";
+    static final String THBD_MAILER = "thunderbird";
 }

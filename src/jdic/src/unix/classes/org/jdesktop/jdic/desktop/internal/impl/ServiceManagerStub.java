@@ -60,7 +60,8 @@ public class ServiceManagerStub {
 
             if (defMailerPath.indexOf(DesktopConstants.EVO_MAILER) != -1) { 
                 return new GnomeEvoMailer(defMailerPath.trim());
-            } else if (defMailerPath.indexOf(DesktopConstants.MOZ_MAILER) != -1) { 
+            } else if (defMailerPath.indexOf(DesktopConstants.MOZ_MAILER) != -1 
+                       ||defMailerPath.indexOf(DesktopConstants.THBD_MAILER) != -1) { 
                 return new GnomeMozMailer(defMailerPath.trim());
             } else {
                 throw new UnsupportedOperationException("Current system default mailer is not supported.");
