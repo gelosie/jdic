@@ -31,11 +31,163 @@ import java.awt.Dimension;
 import java.awt.event.WindowListener;
 import java.awt.LayoutManager;
 import java.awt.Component;
+import java.awt.Toolkit;
+import sun.awt.EmbeddedFrame;
+import java.lang.reflect.Constructor;
 
 public class GnomeDockService implements DockService {
 
+    EmbeddedFrame frame;
+    static long window_id;
+    static GnomeDockService gds;
+
+    native long createDockWindow();
+    native long getWidget(long window, int widht, int height, int x, int y);
+    native void adjustSizeHints (long window, int width, int height);
+    static native boolean  locateDock();
+    static native void eventLoop();
+
+    static Thread display_thread;
+
+    static {
+        //
+        // Very important, we need to force AWT to get loaded before the
+        // native library libtray.so is loaded. Otherwise AWT will fail.
+        Toolkit t = Toolkit.getDefaultToolkit();
+
+        t.sync();
+
+        System.loadLibrary("floatingdock");
+        if (!locateDock()) {
+            throw new Error("Dock not Found !");
+        }
+
+        display_thread = new Thread(new Runnable() {
+            public void run() {
+                eventLoop();
+            }
+        });
+
+        display_thread.start();
+
+    }
+
+    public GnomeDockService()
+    {
+	gds = this;
+	init();
+    }
+
+    void init()
+    {
+	window_id = createDockWindow();
+	frame = createEmbeddedFrame(window_id);
+    }
+
+    EmbeddedFrame createEmbeddedFrame(long window) {
+        EmbeddedFrame ef = null;
+        String version = System.getProperty("java.version");
+        String os = System.getProperty("os.name");
+
+        if ((version.indexOf("1.5") == -1) || (os.equals("SunOS"))) {
+            // 1.4.2 or older JVM, use MAWT !
+            long w = getWidget(window, 400, 400, 0, 0);
+            Class clazz = null;
+
+            try {
+                clazz = Class.forName("sun.awt.motif.MEmbeddedFrame");
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+            Constructor constructor = null;
+
+            try {
+                constructor = clazz.getConstructor(new Class[] {int.class});
+            } catch (Throwable e1) {
+                try {
+                    constructor = clazz.getConstructor(new Class[] {long.class});
+                } catch (Throwable e2) {
+                    e1.printStackTrace();
+                }
+            }
+            Object value = null;
+
+            try {
+                value = constructor.newInstance(new Object[] {new Long(w)});
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+            ef = (EmbeddedFrame) value;
+        } else {
+            // 1.5  JVM decide on which EmbeddedFrame to use
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+
+            if (toolkit instanceof sun.awt.motif.MToolkit) {
+                Class clazz = null;
+
+                try {
+                    clazz = Class.forName("sun.awt.motif.MEmbeddedFrame");
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                Constructor constructor = null;
+
+                try {
+                    constructor = clazz.getConstructor(new Class[] {int.class});
+                } catch (Throwable e1) {
+                    try {
+                        constructor = clazz.getConstructor(new Class[] {long.class});
+                    } catch (Throwable e2) {
+                        e1.printStackTrace();
+                    }
+                }
+                Object value = null;
+
+                try {
+                    value = constructor.newInstance(new Object[] {new Long(window)});
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
+                ef = (EmbeddedFrame) value;
+
+            } else {
+                Class clazz = null;
+
+                try {
+                    clazz = Class.forName("sun.awt.X11.XEmbeddedFrame");
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                Constructor constructor = null;
+
+                try {
+                    constructor = clazz.getConstructor(new Class[] {int.class});
+                } catch (Throwable e1) {
+                    try {
+                        constructor = clazz.getConstructor(new Class[] {long.class});
+                    } catch (Throwable e2) {
+                        e1.printStackTrace();
+                    }
+                }
+                Object value = null;
+
+                try {
+                    value = constructor.newInstance(new Object[] {new Long(window)});
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
+                ef = (EmbeddedFrame) value;
+            }
+        }
+        return ef;
+    }
+
+
     public void setVisible(boolean b)
     {
+	 frame.setVisible(b);
     }
 
     public boolean getVisible()
@@ -43,8 +195,30 @@ public class GnomeDockService implements DockService {
 	return true;
     }
 
-    public void setSize(Dimension s)
+    long getWindow() {
+        return window_id;
+    }
+
+    public void setSize(Dimension size)
     {
+	adjustSizeHints(getWindow(), size.width, size.height);
+        frame.reshape(0, 0, size.width, size.height);
+    }
+
+    void configureWindow(int x, int y, int w, int h) 
+    {
+        frame.setSize(w, h);
+        frame.validate();
+     //   System.out.println("configureWindow: frame = " + frame + " configure width = " + width + " height = " + height);
+    }
+
+    static void configureNotify(long window, int x, int y, int w, int h) 
+    {
+        //  System.out.println("configureNotify: window =" + window );
+	if (window == window_id)
+	{
+            gds.configureWindow(x, y, w, h);
+        }
     }
 
     public Dimension getSize()
