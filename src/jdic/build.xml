@@ -297,6 +297,7 @@ Top-level target:
 
     <!-- copy generated .so file -->
     <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}" />
+    <copy file="${unix.native.jni.dir}/libtray.so" todir="${dist.dir}" />
   </target>
 
   <!-- *** Build BSD native embeded browser code *** -->
@@ -323,6 +324,7 @@ Top-level target:
 
     <!-- copy generated .so file -->
     <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}" />
+    <copy file="${unix.native.jni.dir}/libtray.so" todir="${dist.dir}" />
   </target>
 
   <!-- *** Build Unix native embeded browser code *** -->
@@ -497,6 +499,7 @@ Top-level target:
 
     <!-- copy generated .so file -->
     <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}" />
+    <copy file="${unix.native.jni.dir}/libtray.so" todir="${dist.dir}" />
   </target>
 
 </project>
