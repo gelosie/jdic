@@ -68,7 +68,8 @@ public class WebBrowser extends Canvas
     private static String browserBinary;
     private Status status = new Status();
     private MyFocusListener focusListener = new MyFocusListener();
-    private static NativeEventThread eventThread = new NativeEventThread();
+    // eventThread should be initialized after JdicManager.initShareNative() in static block.
+    private static NativeEventThread eventThread; 
     private Vector webclientListeners = new Vector();
     private int instanceNum;
     private static int lastInstanceNum = 0;
@@ -86,6 +87,7 @@ public class WebBrowser extends Canvas
         } catch (JdicInitException e){
             e.printStackTrace();
         }
+        eventThread = new NativeEventThread();
         
         AccessController.doPrivileged(
                 new PrivilegedAction() {
