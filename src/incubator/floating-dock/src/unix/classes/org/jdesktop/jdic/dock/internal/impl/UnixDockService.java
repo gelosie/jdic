@@ -35,13 +35,14 @@ import java.awt.Toolkit;
 import sun.awt.EmbeddedFrame;
 import java.lang.reflect.Constructor;
 import org.jdesktop.jdic.dock.FloatingDock;
+import java.util.HashMap;
 
 public class UnixDockService implements DockService {
 
     EmbeddedFrame frame;
     int location = FloatingDock.LEFT;
     static long window_id;
-    static UnixDockService uds;
+    static HashMap winmap = new HashMap();
 
     native long createDockWindow();
     native long getWidget(long window, int widht, int height, int x, int y);
@@ -77,13 +78,13 @@ public class UnixDockService implements DockService {
 
     public UnixDockService()
     {
-	uds = this;
 	init();
     }
 
     void init()
     {
 	window_id = createDockWindow();
+	winmap.put(new Long(window_id), (Object)this);	
 	frame = createEmbeddedFrame(window_id);
     }
 
@@ -219,7 +220,8 @@ public class UnixDockService implements DockService {
     static void configureNotify(long window, int x, int y, int w, int h) 
     {
         //  System.out.println("configureNotify: window =" + window );
-	if (window == window_id) {
+	UnixDockService uds = (UnixDockService)winmap.get(new Long(window));
+	if (uds != null) {
             uds.configureWindow(x, y, w, h);
         }
     }
