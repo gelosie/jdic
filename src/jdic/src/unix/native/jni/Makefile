@@ -30,22 +30,24 @@ UNAME = $(shell uname)
 ifeq ($(UNAME), SunOS)
   PLATFORM = solaris
   CXX = CC
+  CC = cc  
   CXXFLAGS = -c
   LDFLAGS = -G -ldl -lrt -lpthread
   X11LIB=/usr/openwin/lib
 else 
   ifeq ($(UNAME), Linux)
     PLATFORM = linux
-    CXX = gcc
+    CXX = g++
     CXXFLAGS = -c
     LDFLAGS = -shared -fPIC -ldl -lrt -lpthread
   endif
   ifeq ($(UNAME), FreeBSD)
     PLATFORM = freebsd
-    CXX = gcc
+    CXX = g++
     CXXFLAGS = -c -I/usr/local/include -I/usr/X11R6/include
     LDFLAGS = -shared -fPIC -L/usr/local/lib -L/usr/X11R6/lib
   endif
+  CC = gcc
   X11LIB=/usr/X11R6/lib
 endif
 
@@ -96,42 +98,31 @@ CPPSRCS = GnomeBrowserService.cpp \
            WebBrowser.cpp \
            WebBrowserUtil.cpp \
            ../../../share/native/utils/InitUtility.cpp
-CSRCS = Tray.c
+TRAY_CSRC = Tray.c
           
 #
-# Build a whole libjdic.so containing all the native APIs.
+# Build both libjdic.so and ibtray.so containing all the native code.
 #
-SO_NAME = libjdic.so
-all: clean $(SO_NAME)
+JDIC_SO_NAME = libjdic.so
+TRAY_SO_NAME = libtray.so
 
-SO_OBJS = $(CPPSRCS:.cpp=.o) $(CSRCS:.c=.o)
+all: clean $(JDIC_SO_NAME) $(TRAY_SO_NAME)
 
-.cpp.o .c.o:
+JDIC_SO_OBJS = $(CPPSRCS:.cpp=.o)
+
+.cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(EXTRA_INCLUDES) -o $@ $<
 
-$(SO_NAME): $(SO_OBJS)
-	$(CXX) $(LDFLAGS) $(LIBS) $(EXTRA_BROWSER_LIBS) $(TRAY_LIBS) $(SO_OBJS) -o $@
+$(JDIC_SO_NAME): $(JDIC_SO_OBJS)
+	$(CXX) $(LDFLAGS) $(LIBS) $(EXTRA_BROWSER_LIBS) $(JDIC_SO_OBJS) -o $@
 
 #
-# Build a libjdic.so containing only the Tray Icon API,
-# though it has the same name (libjdic.so).
+# Build libtray.so containing only the Tray Icon API native code.
 #
-# Source files only needed for the Tray Icon API:
-#   ../../../share/native/utils/InitUtility.cpp
-#   Tray.c
-#
-tray: clean TRAY_SO_TARGET
+tray: clean $(TRAY_SO_NAME)
 
-TRAY_SO_OBJS = ../../../share/native/utils/InitUtility.o \
-               Tray.o
-
-../../../share/native/utils/InitUtility.o: ../../../share/native/utils/InitUtility.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
-Tray.o: Tray.c
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
-
-TRAY_SO_TARGET: $(TRAY_SO_OBJS)
-	$(CXX) $(LDFLAGS) $(TRAY_LIBS) $(TRAY_SO_OBJS) -o $(SO_NAME) 
+$(TRAY_SO_NAME): $(TRAY_CSRC)
+	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -lXt -lX11 $(TRAY_CSRC) -o $@
 
 clean:
 	rm -f *.so
