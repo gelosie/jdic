@@ -31,7 +31,19 @@ linkargs=${commonargs} -L/usr/local/lib -L/usr/X11R6/lib -L${jdkhome}/jre/lib/i3
 # Objects for linker
 linkobj=${xscreensaverhome}/hacks/screenhack.o ${xscreensaverhome}/utils/resources.o ${xscreensaverhome}/utils/visual.o ${xscreensaverhome}/utils/usleep.o ${xscreensaverhome}/utils/yarandom.o
 
-all: [[exes]]
+all: checkpaths [[exes]]
+
+checkpaths:
+	@if [ ! -d ${xscreensaverhome} ]; then \
+                echo "Directory ${xscreensaverhome} not found."; \
+                echo "Please edit Makefile and set xscreensaverhome to "; \
+                echo "the install directory for xscreensaver src."; \
+        fi;
+	@if [ ! -d ${jdkhome} ]; then \
+                echo "Directory ${jdkhome} not found."; \
+                echo "Please edit Makefile and set jdkhome to "; \
+                echo "the install directory for J2SDK 1.5.0 or greater."; \
+        fi;
 
 [[targets]]
 
