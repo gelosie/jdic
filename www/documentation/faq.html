@@ -70,31 +70,33 @@
       </ol>
       <H3>1. <a name="General">General</a></H3><b>Q. </b><a name="What is JDIC?"> What is
       JDIC?</a><BR>
-<SPAN style="FONT-WEIGHT: bold">A.</SPAN> <A           
-      href="http://jdic.dev.java.net/">JDIC</A> is short for JDesktop Integration 
-Components.&nbsp;The project aims to make Java technology-based applications (Java 
-applications) first-class citizens of current desktop platforms without sacrificing 
-platform independence. The JDIC project home page is: <a href="https://jdic.dev.java.net">https://jdic.dev.java.net</a>.<BR>
+<SPAN style="FONT-WEIGHT: bold">A.</SPAN> <A            
+      href="http://jdic.dev.java.net/">JDIC</A> is short for JDesktop Integration  
+Components.&nbsp;The project aims to make Java technology-based applications (Java  
+applications) first-class citizens of current desktop platforms without sacrificing  
+platform independence. The JDIC project home page is: <a href="https://jdic.dev.java.net">https://jdic.dev.java.net</a>.<BR> 
 <SPAN          
       style="FONT-WEIGHT: bold"><BR>Q. 
       </SPAN>  <a name="When was JDIC released?"> When was JDIC released?</a><SPAN     
       style="FONT-WEIGHT: bold"><br> 
-      </SPAN> <b> A.</b> The JDIC project was first released on 1 June 2004. The code is        
-      available via CVS, and periodic binary releases.&nbsp;       
+      </SPAN> <b> A.</b> The JDIC project was first released on 1 June 2004. The code is         
+      available via CVS, and periodic binary releases.&nbsp;        
       <p><span style="font-weight: bold">Q. </span><a name="What is the current version of JDIC?"> What is the current version of 
       JDIC?</a><br>
       <span style="font-weight: bold">
-      A.</span> JDIC source is continually available via CVS, and the latest versioned       
-      binary release is available <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>      
-      <p><span style="font-weight: bold">Q. </span><a name="Under which license terms was JDIC released?"> Under which license terms was JDIC      
+      A.</span> JDIC source is continually available via CVS, and the latest versioned        
+      binary release is available <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>       
+      <p><span style="font-weight: bold">Q. </span><a name="Under which license terms was JDIC released?"> Under which license terms was JDIC       
       released?</a><br>
-      <span style="font-weight: bold">A. </span>JDIC is released under LGPL.      
-      Take a look at JDIC's <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">COPYING</a>      
-      file for detailed license terms.</p>     
+      <span style="font-weight: bold">A. </span>JDIC is released under LGPL.       
+      Take a look at JDIC's <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">COPYING</a>       
+      file for detailed license terms.</p>      
       <p><span style="font-weight: bold">Q. </span><a name="What are the supported platforms?"> What are the supported platforms?</a><br>
       <span style="font-weight: bold">
-      A.</span>  Briefly, Windows, Linux and Solaris. Refer to the JDIC <a href="https://jdic.dev.java.net/documentation/README.html#System%20Requirements">System 
-      Requirements</a> for specific versions and distributions?</p>
+      A.</span>  Briefly, Windows, Linux and Solaris. Refer to the JDIC <a href="https://jdic.dev.java.net/documentation/README.html#System%20Requirements">System  
+      Requirements</a> for specific versions and distributions? The incubator 
+      projects may have different platform support matrixes, refer to the JDIC <a href="https://jdic.dev.java.net/#incubator">Incubator    
+      Projects</a>  space for their specific system requirements.</p>
       <p><span style="font-weight: bold">Q.</span> <a name="Will there be a port to Mac?"> Will there be a port to Mac?</a><br>
       <SPAN  
       style="FONT-WEIGHT: bold">A.</SPAN> JDIC currently doesn't support Mac. That's a gap  
@@ -120,37 +122,45 @@ platform independence. The JDIC project home page is: <a href="https://jdic.dev.
       Projects</a> space.</p>  
       <p><span style="font-weight: bold">Q. </span><a name="Is there any Java package naming convention?">Is there any Java package 
       naming convention?</a><span style="font-weight: bold"><br>
-      A. </span>Yes. All the Java 
-      packages of the JDIC project, including the incubator projects, use the top package name prefix <b><code>org.jdesktop.jdic</code></b>.
-      The first package name segment after <code><b>org.jdesktop.jdic</b></code>
-      is generally the component or incubator project name. The following
-      package names are used in the first release:</p> 
-      <blockquote>
-        <p><code>org.jdesktop.jdic.desktop</code> - for desktop APIs.<br> 
-      <code>org.jdesktop.jdic.filetypes</code> - for file types APIs.<br> 
-      <code>org.jdesktop.jdic.browser</code> - for browser APIs.<br> 
-      <code>org.jdesktop.jdic.packager</code> - for JDIC Packager APIs.<br>
-        <code>org.jdesktop.jdic.screensaver</code> - for SaverBeans Screensaver SDK (incubator
-        project).</p> 
-      </blockquote>
+      A. </span>Yes. All the Java  
+      packages of the JDIC project, including the incubator projects, use the top package name prefix <b><code>org.jdesktop.jdic</code></b>. 
+      The first package name segment after <code><b>org.jdesktop.jdic</b></code> 
+      is generally the component or incubator project name. The following 
+      package names are used in the early release:</p> 
+<ul>
+  <li><code>org.jdesktop.jdic.desktop</code> - for desktop APIs.</li> 
+  <li><code>org.jdesktop.jdic.filetypes</code> - for file types APIs.</li> 
+  <li><code>org.jdesktop.jdic.browser</code> - for browser APIs.</li> 
+  <li><code>org.jdesktop.jdic.packager</code> - for JDIC Packager APIs.</li> 
+  <li><code>org.jdesktop.jdic.screensaver</code> - for SaverBeans Screensaver SDK (incubator 
+        project).</li>
+  <li><code>org.jdesktop.jdic.tray</code> - for Tray Icon API (incubator 
+        project).</li>
+</ul>
       <H3>2. <a name="Downloading">Downloading</a></H3><p><span style="font-weight: bold">Q.
       </span><a name="Where can I get a binary?"> Where can I get 
       a binary?</a><br>
-      <span style="font-weight: bold">A. </span>JDIC can be fetched as a binary      
-      in a versioned release. You could find the JDIC binary downloads,      
-      including the incubator projects downloads <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>    
-      <p><span style="font-weight: bold">Q. </span><a name="Where can I get the source?"> Where can I get the source?</a><br>    
-      <span style="font-weight: bold">A</span>. There are several ways you can access the JDIC source code:</p>    
+      <span style="font-weight: bold">A. </span>JDIC can be fetched as a binary       
+      in a versioned release. You could find the JDIC binary downloads,       
+      including the incubator projects downloads <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>     
+      <p><span style="font-weight: bold">Q. </span><a name="Where can I get the source?"> Where can I get the source?</a><br>     
+      <span style="font-weight: bold">A</span>. There are several ways you can access the JDIC source code:</p>     
       <ul>
         <li>Browse<br>
           Browse the up-to-the-minute latest version of the source code <a href="https://jdic.dev.java.net/source/browse/jdic/src/">online</a>.</li>
-        <li>Download<br>
-          The latest source could be checked out using CVS following the &quot;CVS client setup instructions&quot;      
-          <a href="https://jdic.dev.java.net/source/browse/jdic/">here</a>. It lets you get up-to-the-minute changes.&nbsp;<br>     
-          For a specific JDIC release, a tag is created to help people pull the      
-          right source when working on bugs from a specific release. The tag      
-          names are of the form&nbsp; &quot;<b>jdic-major_minor_micro</b>&quot;.      
-          For example, JDIC release 0.8.4 has a tag &quot;jdic-0_8_4&quot;.</li>     
+        <li>Download
+          <ul>
+            <li><a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">FTP</a> - Download the source 
+              zip file for a specific release.</li>
+            <li><a href="https://jdic.dev.java.net/source/browse/jdic/">CVS</a> 
+              - The latest source could be checked out using CVS following the &quot;CVS client setup instructions&quot;       
+          <a href="https://jdic.dev.java.net/source/browse/jdic/">here</a>. It lets you get up-to-the-minute changes.&nbsp;For 
+              each JDIC release, a tag is created to help people pull the       
+          right source. The tag       
+          names are of the form&nbsp; &quot;<b>JDIC_major_minor_micro</b>&quot;.       
+          For example, JDIC release 0.8.4 has a tag &quot;JDIC_0_8_4&quot;.</li>
+          </ul>
+        </li>     
       </ul>
       <H3>3. <a name="Installation and Configuration">Installation and Configuration</a></H3> 
       <p><span style="font-weight: bold">Q. 
