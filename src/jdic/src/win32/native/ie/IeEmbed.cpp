@@ -239,16 +239,17 @@ void CommandProc(char* pInputChar)
     case JEVENT_CREATEWINDOW:
         {
         // only create new browser window when the instance does not exist
-        if (instanceNum < ABrowserWnd.GetSize() && (BrowserWindow *) ABrowserWnd[instanceNum] != NULL)
-			break;
+        if (instanceNum < ABrowserWnd.GetSize() && 
+            (BrowserWindow *) ABrowserWnd[instanceNum] != NULL)
+            break;
 
         RECT rect;
         if (i != 3) 
-			break;
-		HWND hWnd = (HWND) atoi(mMsgString);
+            break;
+        HWND hWnd = (HWND) atoi(mMsgString);
         pBrowserWnd = new BrowserWindow();
         if (!pBrowserWnd) 
-			break;
+            break;
 
         SetRect(&rect, 0, 0, 0, 0);
         HWND hWndClient = pBrowserWnd->Create(hWnd,rect,
