@@ -50,7 +50,7 @@ public class JnlpUtility {
             "then",
             "  echo \"ERROR: script line 'type javaws 2>&1' returns non-zero value.\"",
             "else",
-            "  JAVAWS_PATH=`echo $JNLP_ASSOCIATION | awk '{print $2}'`",
+            "  JAVAWS_PATH=`echo $JNLP_ASSOCIATION | awk -F\\; '{print $2}' | awk '{print $1}'`",
             "fi",
             "",
             "PARENT_DIR=`echo ${JAVAWS_PATH} | awk -F\\/ '{for (i=2; i<NF; i++) printf \"/%s\", $i}'`",

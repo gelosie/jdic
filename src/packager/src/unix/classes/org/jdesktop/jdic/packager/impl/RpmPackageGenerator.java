@@ -62,7 +62,7 @@ public class RpmPackageGenerator implements PackageGenerator {
         homePath = System.getProperty("user.home");
         topPath = homePath + "/.rpm/";
         buildPath = homePath + "/.rpm/BUILD/";
-        rpmsPath = homePath + "/.rpm/RPMS/i386/";
+        rpmsPath = homePath + "/.rpm/RPMS/";
         specsPath = homePath + "/.rpm/SPECS/";
     }
     
@@ -194,19 +194,6 @@ public class RpmPackageGenerator implements PackageGenerator {
 	    pw.println(input);
 
         /* copy files to install path in BuildRoot */
-/*        Iterator iter = pkgInfo.getJnlpRefFilePaths();
-        if(iter == null) {
-            throw new IOException("cannot get JnlpRefFilePaths");
-        }
-        else while(iter.hasNext()) {
-            String filePath = (String) iter.next();
-            try {
-                FileOperUtility.copyFile(resourcePath + filePath, buildPath + installationPath + filePath);
-            } catch (IOException e) {
-                throw new IOException("Cannot copy resource files to BuildRoot");
-            }
-        }
-*/
         try {
 	    FileOperUtility.copyLocalFile(pkgInfo.getResourceDirPath(), buildPath + installationPath);
 	    if (hasLicense) 
@@ -215,15 +202,9 @@ public class RpmPackageGenerator implements PackageGenerator {
             throw new IOException("Cannot copy resource files to BuildRoot: " + ioE.getMessage());
 	}	     
 	
-        /* create install script */
-/*
-        input = "%install\n";
-        input += "cp " + pkgInfo.getJnlpFileName() + " " + buildPath + installationPath + "\n";
-        input += "\n";
-        pw.println(input);
-*/
-        /* create pre install script */
-        input = "%pre\n";
+
+    /* create pre install script */
+    input = "%pre\n";
 	String[] checkScript;
 	checkScript = JnlpUtility.javawsCheckScript();
 	for(i=0; i<checkScript.length; i++) {
@@ -231,24 +212,11 @@ public class RpmPackageGenerator implements PackageGenerator {
 	}
 	input += "echo preinstall finished\n";
 	pw.println(input);
-/*	
-        input += "#!/bin/sh\n";
-		input += "PATH=$PACKAGER_JAVA_PATH:$PATH\n";
-		input += "export PATH\n";
-		input += "which javaws\n";
-		input += "if [ \"$?\" -ne \"0\" ]; then\n";
-		input
-			+= "  echo \"Sorry, there is no javaws in ${PATH}, please make sure javaws is included.\"\n";
-	    input += "  echo \"Or you have to specify the location of javaws 1.5+ by PACKAGER_JAVA_PATH.\"\n";
-			input += "  exit -1\n";
-			input += "fi\n";
-			input += "\n";
-			pw.println(input);
-*/
+
 			/* create post install script */
 			input = "%post\n";
-			input += "JNLP_ASSOCIATION=`grep application/x-java-jnlp-file /etc/mailcap`\n";
-			input += "JAVAWS_PATH=`echo $JNLP_ASSOCIATION | awk '{print $2}'`\n";
+			input += "JNLP_ASSOCIATION=`grep '^[^#]*application/x-java-jnlp-file' /etc/mailcap`\n";
+			input += "JAVAWS_PATH=`echo $JNLP_ASSOCIATION | awk -F\\; '{print $2}' | awk '{print $1}'`\n";
 			input += "echo JAVAWS_PATH: $JAVAWS_PATH\n";
 			input += "$JAVAWS_PATH ";
 			if (systemCacheEnabled) 
@@ -270,37 +238,19 @@ public class RpmPackageGenerator implements PackageGenerator {
 			pw.println(input);
 
 			/* create pre uninstall script */
-		        input = "%preun\n";
-/*
-			input += "#!/bin/sh\n";
-			input += "PATH=$PACKAGER_JAVA_PATH:$PATH\n";
-			input += "export PATH\n";
-			input += "which javaws\n";
-			input += "if [ \"$?\" -ne \"0\" ]; then\n";
-			input
-				+= "  echo \"Sorry, there is no javaws in ${PATH}, please make sure javaws is included.\"\n";
-			input
-				+= "  echo \"Or you have to specify the location of javaws 1.5+ by PACKAGER_JAVA_PATH.\"\n";
-			input += "  exit -1\n";
-			input += "fi\n";
-			input += "\n";
-*/
-                      	for(i=0; i<checkScript.length; i++) {
-                            input += checkScript[i] + "\n";
-	                }
+		    input = "%preun\n";
+
+		    for(i=0; i<checkScript.length; i++) {
+                input += checkScript[i] + "\n";
+	        }
 
 			pw.println(input);
 
 			/* create postuninstall script */
 			input = "%postun\n";
-			input += "JNLP_ASSOCIATION=`grep application/x-java-jnlp-file /etc/mailcap`";
+			input += "JNLP_ASSOCIATION=`grep '^[^#]*application/x-java-jnlp-file' /etc/mailcap`\n";
+			input += "JAVAWS_PATH=`echo $JNLP_ASSOCIATION | awk -F\\; '{print $2}' | awk '{print $1}'`\n";
 			input += "\n";
-			input += "JAVAWS_PATH=`echo $JNLP_ASSOCIATION | awk '{print $2}'`";
-			input += "\n";
-/*
-			input += "PATH=$PACKAGER_JAVA_PATH:$PATH\n";
-			input += "export PATH\n";
-*/
 			input += "$JAVAWS_PATH ";
 			if (systemCacheEnabled) 
 			    input += "-system ";
@@ -312,7 +262,7 @@ public class RpmPackageGenerator implements PackageGenerator {
 
 			/* create clean script */
 			input = "%clean\n";
-			input += "mv " + rpmsPath + "/*.rpm " + dest + "\n";
+			input += "mv " + "`find " + rpmsPath + " -name \"*.rpm\"` " + dest + "\n";
 			input += "cd " + topPath + "\n";
 			input += "cd ..\n";
 			input += "rm -rf " + topPath + "\n";
@@ -360,7 +310,7 @@ public class RpmPackageGenerator implements PackageGenerator {
             if(result == false) {
                 result = rpmsDir.exists();
                 if(result == false)
-                    throw new IOException("Cannot create RPMS/i386/ dir in $HOME directory");
+                    throw new IOException("Cannot create RPMS dir in $HOME directory");
             }
             File specsDir = new File(specsPath);
             result = specsDir.mkdirs();
