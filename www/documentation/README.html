@@ -211,25 +211,28 @@
 <ul>
   <li>Add jdic.jar to CLASSPATH.
   </li>
-  <li>Add native library (*.dll/*.so) directory to PATH
-    (for Windows) or LD_LIBRARY_PATH (for Unix).
+  <li>Add the directory of native libraries (*.dll or *.so) to PATH (on Windows)
+    or LD_LIBRARY_PATH (on Linux/Solaris).
   </li>
   <li>Specific usage settings to use package <b>org.jdesktop.jdic.browser</b>
     <ul>
       <li><b>Windows</b><br>
-        Add <i>&lt;JAVA_HOME&gt;\jre\bin</i> to PATH.<br>
-        By default, the system default browser (Mozilla/IE) will be embeded. But
-        if the user specifies the embedded browser using <i>org.jdesktop.jdic.browser.WebBrowser.browserBinary =
-        &lt;Browser Path&gt;</i>, the specified browser will be embedded.<br>
-        If Mozilla is the embeded browser:<br>
-        1) Setup the environment variable <i> MOZILLA_FIVE_HOME</i> to specify
+        - Add <i>&lt;JAVA_HOME&gt;\jre\bin</i> to PATH.<br>
+        - Add the directory of native executable files (*.exe) to PATH.<br>
+        - By default, the system default browser (Mozilla or Internet Explorer) will be
+        embeded.
+        If Mozilla is the embeded(default) browser:<br>
+        &nbsp; -- Set the environment variable <i> MOZILLA_FIVE_HOME</i> to specify
         the path where Mozilla 1.4 (or later) executables locates.<br>
-        2) Copy MozEmbed.exe file to <i>MOZILLA_FIVE_HOME</i> directory.<br>
-        3) Add <i> MOZILLA_FIVE_HOME</i> to PATH.</li>
-      <li><b>Linux/Solaris</b><br>
-        1) Setup the environment variable <i> MOZILLA_FIVE_HOME</i> to specify
-        the path where Mozilla 1.4 (or later) executables locates.<br>
-        2) Add <i> MOZILLA_FIVE_HOME</i> to LD_LIBRARY_PATH.</li>
+        &nbsp; -- Copy MozEmbed.exe file to <i>MOZILLA_FIVE_HOME</i> directory.<br>
+        &nbsp; -- Add <i> MOZILLA_FIVE_HOME</i> to PATH.</li>
+      <li><b>Linux/Solaris<br>
+        - </b>Add the directory of native exectuable files (MozEmbed-linux-gtk*)
+        to PATH.<br>
+        - Set the environment variable <i> MOZILLA_FIVE_HOME</i> to point to the absolute path of the
+        Mozilla 1.4 (or later) executable file.<br>
+        &nbsp; <b>Notice</b>: on Sun JDS, this is <i>/usr/lib/mozilla-1.4.</i><br>
+        - Add <i> MOZILLA_FIVE_HOME</i> to LD_LIBRARY_PATH.</li>
     </ul>
   </li>
 </ul>
