@@ -26,7 +26,13 @@
 #include <X11/Xos.h>
 #include <dlfcn.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/param.h>
+#include <X11/Intrinsic.h>
+#include <X11/StringDefs.h>
+#include <X11/Vendor.h>
+#include <X11/Shell.h>
+#include <X11/IntrinsicP.h>
 
 #include <poll.h>
 #ifndef POLLRDNORM
@@ -126,7 +132,6 @@ typedef return_type name##_type arglist;                                \
                 if (name##_ptr == NULL) {                                       \
                     fprintf(stderr,"reflect failed to find " #name ".\n");      \
                         exit(123);                                                      \
-                        return;                                                 \
                 }                                                               \
         }                                                                       \
     return (*name##_ptr)paramlist;                                      \
@@ -138,7 +143,7 @@ REFLECT_VOID_FUNCTION(getAwtLockFunctions,
         (AwtLock, AwtUnlock, AwtNoFlushUnlock, reserved))
 
 
-    REFLECT_VOID_FUNCTION(getAwtData,
+REFLECT_VOID_FUNCTION(getAwtData,
             (int *awt_depth, Colormap *awt_cmap, Visual **awt_visual,
              int *awt_num_colors, void *pReserved),
             (awt_depth, awt_cmap, awt_visual,
@@ -497,3 +502,97 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
     }
 }
 
+/*
+ * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
+ * Method:    getWidget
+ * Signature: (JIIII)J
+ */
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_getWidget (JNIEnv *env, jobject jobj , jlong winid, jint width, jint height, jint x, jint y)
+{
+    Arg args[40];
+    int argc;
+    Widget w;
+    Window child, parent;
+    Visual *visual;
+    Colormap cmap;
+    int depth;
+    int ncolors;
+    Display **awt_display_ptr;
+
+    /*
+     * Create a top-level shell.  Note that we need to use the
+     * AWT's own awt_display to initialize the widget.  If we
+     * try to create a second X11 display connection the Java
+     * runtimes get very confused.
+     */
+
+    (*LockIt)(env);
+
+    argc = 0;
+    XtSetArg(args[argc], XtNsaveUnder, False); argc++;
+    XtSetArg(args[argc], XtNallowShellResize, False); argc++;
+
+    /* the awt initialization should be done by now (awt_GraphicsEnv.c) */
+
+    getAwtData(&depth,&cmap,&visual,&ncolors,NULL);
+
+    awt_display_ptr = (Display **) dlsym(awtHandle, "awt_display");
+    if (awt_display_ptr == NULL)
+        awt_display = getAwtDisplay();
+    else
+        awt_display = *awt_display_ptr;
+
+    dprintf("awt_display = %x\n",awt_display);
+
+    XtSetArg(args[argc], XtNvisual, visual); argc++;
+    XtSetArg(args[argc], XtNdepth, depth); argc++;
+    XtSetArg(args[argc], XtNcolormap, cmap); argc++;
+
+    XtSetArg(args[argc], XtNwidth, width); argc++;
+    XtSetArg(args[argc], XtNheight, height); argc++;
+    /* The shell has to have relative coords of O,0? */
+    XtSetArg(args[argc], XtNx, 0); argc++;
+    XtSetArg(args[argc], XtNy, 0); argc++;
+
+    /* The shell widget starts out as a top level widget.
+     * Without intervention, it will be managed by the window
+     * manager and will be its own widow. So, until it is reparented,
+     *  we don't map it.
+     */
+    XtSetArg(args[argc], XtNmappedWhenManaged, False); argc++;
+
+    w = XtAppCreateShell("AWTapp","XApplication",
+            vendorShellWidgetClass,
+            awt_display,
+            args,
+            argc);
+    XtRealizeWidget(w);
+
+    /*
+     * i think the following 2 lines wont be needed because of fix of 4419207
+     * the function checkPos and propertyHandler can also be deleted
+     * please let me know if testing shows otherwise
+     * see awt_addEmbeddedFrame in awt_util.c
+     * tao.ma@eng
+     */
+/*    XtAddEventHandler(w, EnterWindowMask, FALSE,(XtEventHandler) checkPos, 0);
+    XtAddEventHandler(w, PropertyChangeMask , FALSE,(XtEventHandler) propertyHandler, 0);
+*/
+    /*
+     * Now reparent our new Widget into our Navigator window
+     */
+    parent = (Window) winid;
+    child = XtWindow(w);
+    XReparentWindow(awt_display, child, parent, 0, 0);
+    XFlush(awt_display);
+    XSync(awt_display, False);
+    XtVaSetValues(w, XtNx, 0, XtNy, 0, NULL);
+    XFlush(awt_display);
+    XSync(awt_display, False);
+
+    (*UnLockIt)(env);
+
+    dprintf("getWidget widget = %d\n",w);
+
+    return (jlong)(jint)w;
+}

@@ -57,36 +57,16 @@ USR_LIB_DIR = /usr/lib
 INCLUDES = -I$(JAVA_HOME)/include \
            -I$(JAVA_HOME)/include/$(PLATFORM)
 
-EXTRA_INCLUDES = `pkg-config --cflags glib-2.0` \
-                 `pkg-config --cflags libgnome-2.0` \
-                 `pkg-config --cflags gnome-vfs-2.0`\
-                 `pkg-config --cflags gnome-vfs-module-2.0` \
-                 `pkg-config --cflags bonobo-activation-2.0` \
-                 `pkg-config --cflags libbonobo-2.0` \
-                 `pkg-config --cflags ORBit-2.0` \
-                 `pkg-config --cflags linc` \
-                 `pkg-config --cflags gconf-2.0`
+#LIBS = -L$(USR_LIB_DIR) \
+#       -lz \
+#       -lm
 
-LIBS = -L$(USR_LIB_DIR) \
-       -lz \
-       -lm \
-       -lgnome-2 \
-       -lgnomevfs-2 \
-       -lbonobo-activation \
-       -lgconf-2 \
-       -lORBit-2 \
-       -lgmodule-2.0 \
-       -lgobject-2.0 \
-       -lgthread-2.0 \
-       -lglib-2.0 \
-       -lpopt
+#EXTRA_BROWSER_LIBS = \
+#    -L$(JAVA_HOME)/jre/lib/sparc \
+#    -L$(JAVA_HOME)/jre/lib/i386 \
+#    -ljawt
 
-EXTRA_BROWSER_LIBS = \
-    -L$(JAVA_HOME)/jre/lib/sparc \
-    -L$(JAVA_HOME)/jre/lib/i386 \
-    -ljawt
-
-DOCK_LIBS = -L$(X11LIB) -lXt -lX11
+#DOCK_LIBS = -L$(X11LIB) -lXt -lX11
 
 #
 # All the native source files.
