@@ -115,10 +115,10 @@ public abstract class JOGLScreensaver
         new Thread(
             new Runnable() {
                 public void run() {
-                    if(canvasAdded && (canvas != null)) {
+                    if(animator != null) {
                         animator.stop();
-                        System.exit(0);
                     }
+                    System.exit(0);
                 }
             }
         ).start();
