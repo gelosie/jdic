@@ -20,10 +20,10 @@
 package org.jdesktop.jdic.browser;
 
 /**
- * Utility class for webbrowser. This class will 
- *   - Get the native browser path
- *   - Check if the default browser is Mozilla
- *   - Set the native env variable
+ * Utility class for <code>WebBrowser</code> to check the default browser 
+ * path and type. 
+ * 
+ * @see WebBrowser
  * 
  * @author  Paul Huang
  * @version 0.1, August 20, 2004
