@@ -522,6 +522,7 @@ BOOL g_bWin95;
 TCHAR g_szClassName[] = TEXT( "SaverBeans" );
 BOOL started = FALSE;
 char szAppName[40] = TEXT( "SaverBeans" );
+int terminated = 0;
 
 /* 
  * Create the Graphics object.  The current strategy for this is to 
@@ -893,6 +894,51 @@ int start_java() {
     return valid;
 }
 
+/* Called when we are to shut down the screensaver */
+void on_destroy(void) {
+    jmethodID destroy_mid;
+    jclass cls = NULL;
+    int valid = 1;
+
+    /* If destroy was already called, return immediately */
+    if( terminated ) return;
+
+    /* Notify main loop to stop iterating */
+    terminated = 1;
+
+    /* First, invoke destroy() on the screensaver */
+    if( env ) {
+        /* Find the screensaver class */
+        if( valid ) {
+            cls = (*env)->FindClass(env, className);
+            if (cls == NULL) {
+                fprintf( stderr, "Can't find class %s\n", className );
+                valid = 0;
+            }
+        }
+
+        /* Find the destroy() method */
+        if( valid ) {
+            destroy_mid = (*env)->GetMethodID( env, cls, "baseDestroy", 
+                "()V" );
+            if (destroy_mid == NULL) {
+                fprintf( stderr, "Can't find baseDestroy() method\n" );
+                valid = 0;
+            }
+        }
+
+        /* Invoke destroy() */
+        if( valid ) {
+            (*env)->CallVoidMethod( env, saver, destroy_mid );
+        }
+
+        /* Output any exceptions before we quit */
+        if ((*env)->ExceptionOccurred(env)) {
+            (*env)->ExceptionDescribe(env);
+        }
+    }
+}
+
 int start_screensaver( HWND win ) {
     int valid = 1;
     jclass cls;
@@ -1147,6 +1193,9 @@ BOOL WINAPI ScreenSaverConfigureDialog( HWND hDlg, UINT msg, WPARAM wParam,
             if(DEBUG) fprintf( log, "Opened config.\n" );
             result = TRUE;
             valid = start_java() && start_config();
+            break;
+        case WM_DESTROY:
+            on_destroy();
             break;
         case WM_CLOSE:
             break;
