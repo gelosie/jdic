@@ -107,7 +107,7 @@ USA
       </fileset>
     </copy>
     <zip destfile="${dist}/${screensaver}-win32.zip" basedir="${dist}"
-         includes="${screensaver}-win32" />
+         includes="${screensaver}-win32/**" />
     
     <!-- Create distribution for Unix: -->
     <mkdir dir="${dist}/${screensaver}-unix" />
@@ -130,7 +130,7 @@ USA
       </fileset>
     </copy>
     <zip destfile="${dist}/${screensaver}-unix.zip" basedir="${dist}"
-         includes="${screensaver}-unix" />
+         includes="${screensaver}-unix/**" />
   </target>
   
   <target name="clean" depends="init" 
