@@ -42,8 +42,8 @@ public class Tray implements ActionListener, ItemListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        System.setProperty("javax.swing.adjustPopupLocationToFit", "false");
+        if( Integer.parseInt(System.getProperty("java.version").substring(2,3)) >=5 )
+            System.setProperty("javax.swing.adjustPopupLocationToFit", "false");
         menu = new JPopupMenu("A Menu");
         
         // a group of JMenuItems
