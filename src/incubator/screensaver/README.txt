@@ -103,6 +103,8 @@ requirements:
 
     * JDK 1.4 or greater, available from http://java.sun.com/
     * Ant 1.5.1 or greater, available from http://ant.apache.org/
+    * JOGL 1.1.0-b04 or greater, available from http://jogl.dev.java.net/
+      (jogl.jar and jogl-natives-*.jar)
 
 To build the SDK:
 
@@ -239,6 +241,9 @@ Revision History
 Version 0.2
     * Added a destroy() method to the ScreensaverBase API so that
       screensavers can release resources before shutting down.
+    * Screensaver now exits on Windows when cursor moves.
+    * Added isFullscreen() API on context object.
+    * Mouse cursor is no longer hidden from preview in Windows.
     * Added JOGL (OpenGL) Screensaver Startup Kit and corresponding APIs
       This allows developers to write OpenGL 3D screensavers in Java!
 
