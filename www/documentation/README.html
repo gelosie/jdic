@@ -64,7 +64,7 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
 <!-- etracker CODE END -->
 <h2 align="center">README<br>
 JDesktop Integration Components (JDIC)<br>
-Release 0.8.7</h2>
+Release 0.8.8</h2>
 <h2><b>Contents</b></h2>
 <ul>
   <li><a href="#Introduction">Introduction</a></li>
@@ -162,6 +162,11 @@ or built JDIC binaries, following below installation instructions:
   <p> <b>JDIC API</b>:</p>
   <ul>
     <li>Add <code>jdic.jar</code> to <code>CLASSPATH</code>. </li>
+    <li><b>Note: </b>with earlier releases, on Windows, Browser component copies
+      the bundled <code>MozEmbed.exe</code> file to the Mozilla binary path to
+      work. Since 0.8.8, that file is not copied. While using the Browser
+      component, BE SURE to remove the <code>MozEmbed.exe</code> file if it
+      locates at the Mozilla binary path.&nbsp;&nbsp;&nbsp; </li>
     <li>Below steps are ONLY necessary if the native library or executable files
       locate at a different location from jdic.jar. If a JDIC release (<code>jdic-&lt;version&gt;-bin-&lt;os&gt;.zip</code>)
       is unzipped, these files locate at the same location as <code>jdic.jar</code>
@@ -174,21 +179,24 @@ or built JDIC binaries, following below installation instructions:
       </ul>
  </li>
   </ul>
+  <blockquote>
+    <b>Notes for earlier JDIC releases:</b>
+  </blockquote>
   <ul>
-    <li><b>Note</b>: for JDIC release 0.8.6.*, additional setting
+    <li>for JDIC release 0.8.6.*, additional setting
 to use package <code><b>org.jdesktop.jdic.tray:</b></code>
       <ul>
         <li>Set the environment variable <code>JAVA_HOME</code>
 to the J2SDK/J2RE installation path.</li>
       </ul>
-    <li><b>Note</b>: for JDIC release 0.8.5, additional setting
+    <li>for JDIC release 0.8.5, additional setting
 to use package <code><b>org.jdesktop.jdic.browser:</b></code>
       <ul>
         <li>On Windows, set the environment variable <code>JAVA_HOME</code>
 to the J2SDK/J2RE installation path.</li>
       </ul>
     </li>
-    <li><b>Note</b>: for JDIC release 0.8.4.*, additional settings
+    <li>for JDIC release 0.8.4.*, additional settings
 to use package <code><b>org.jdesktop.jdic.browser:</b></code>
       <ul>
         <li><b>Windows</b><br>
