@@ -575,7 +575,6 @@ Top-level target:
     </exec>
 
     <!-- copy generated .so file -->
-    <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}" />
     <copy file="${unix.native.jni.dir}/libtray.so" todir="${dist.dir}" />
   </target>
 
