@@ -245,7 +245,7 @@ public class Browser extends JPanel {
 
             try {
                 // Check if the input string is a local path by checking if it starts
-                // with a driver name(on Windows) or root path(on Unix).
+                // with a driver name(on Windows) or root path(on Unix).               
                 File[] roots = File.listRoots();
 
                 for (int i = 0; i < roots.length; i++) {
@@ -258,33 +258,30 @@ public class Browser extends JPanel {
                 }
 
                 if (curUrl == null) {
-                    // Check if the text value starts with known protocols.
-                    if (inputValue.toLowerCase().startsWith("http://")
-                            || inputValue.toLowerCase().startsWith("https://")
-                            || inputValue.toLowerCase().startsWith("ftp://")
-                            || inputValue.toLowerCase().startsWith("gopher://")
-                            || inputValue.toLowerCase().startsWith("file://")) {
+                    // Check if the text value is a valid URL.
+                    try {
                         curUrl = new URL(inputValue);
-                    } else {
-                        if (inputValue.toLowerCase().startsWith("ftp.")) {
-                            curUrl = new URL("ftp://" + inputValue);
-                        } else if (inputValue.toLowerCase().startsWith("gopher.")) {
-                            curUrl = new URL("gopher://" + inputValue);
-                        } else {
-                            curUrl = new URL("http://" + inputValue);
-                        }
+                    } catch (MalformedURLException e) {
+                            if (inputValue.toLowerCase().startsWith("ftp.")) {
+                                curUrl = new URL("ftp://" + inputValue);
+                            } else if (inputValue.toLowerCase().startsWith("gopher.")) {
+                                curUrl = new URL("gopher://" + inputValue);
+                            } else {
+                                curUrl = new URL("http://" + inputValue);
+                            }
                     }
                 }
-
+                            
                 webBrowser.setURL(curUrl);
 
                 // Update the address text field, statusbar, and toolbar info.
                 updateStatusInfo("Loading " + curUrl.toString() + " ......");
+
             } catch (MalformedURLException mue) {
                 JOptionPane.showMessageDialog(this,
-                        "The given URL is not valid:" + inputValue, "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-            }
+                    "The given URL is not valid:" + inputValue, "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+            }                
         }
     }
 

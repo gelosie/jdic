@@ -733,13 +733,10 @@ public class FileExplorer extends JPanel {
             if (localFile != null) {
                 tempUrl = localFile.toURL();
             } else {
-                // Check if the text value starts with known protocols.
-                if (address.toLowerCase().startsWith("file:/")
-                        || address.toLowerCase().startsWith("http://")
-                        || address.toLowerCase().startsWith("ftp://")
-                        || address.toLowerCase().startsWith("gopher://")) {
+                // Check if the text value is a valid URL.
+                try {
                     tempUrl = new URL(address);
-                } else {
+                } catch (MalformedURLException e) {
                     if (address.toLowerCase().startsWith("ftp.")) {
                         tempUrl = new URL("ftp://" + address);
                     } else if (address.toLowerCase().startsWith("gopher.")) {
