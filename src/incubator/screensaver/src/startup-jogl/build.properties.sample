@@ -21,10 +21,5 @@
 # See http://jdic.dev.java.net/
 saverbeans.path=/opt/saverbeans
 
-# You must download JOGL to build this screensaver.
-# Set this to the installation directory containing jogl.jar
-# See http://jogl.dev.java.net/
-jogl.path=/opt/jogl
-                                                                                
 # Parameters to pass to screensaver during debugging
 debug.params=
