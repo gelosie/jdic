@@ -68,6 +68,7 @@ import org.xml.sax.SAXException;
  *   <li>[[exes]] - List of exes generated in a Makefile.</li>
  *   <li>[[all]] - List of targets to build in a Makefile.</li>
  *   <li>[[targets]] - Actual expanded targets for Makefile.</li>
+ *   <li>[[name]] - Name of screensaver bin, in a unix Makefile.</li>
  * </ul>
  *
  * The tasks in the body of the <foreachscreensaver> task are executed
@@ -318,6 +319,7 @@ public class ForEachScreensaver
                     ".o ${linkobj}\n" + 
                 "\t${strip} " + value + "\n" +
                 "\tchmod a+x " + key + "\n\n");
+            substitute.setProperty("name", key);
         }
         if(jogl) {
             targets.append("linkjogl:\n").
