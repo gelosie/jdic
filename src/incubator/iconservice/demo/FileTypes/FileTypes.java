@@ -350,9 +350,9 @@ public class FileTypes extends JDialog {
 
         }
 
-        jIconFileTextField.setText(assoc.getIconFileName());
-
-        Image img= IconService.getIcon(assoc.getIconFileName(), 24);
+        String iconSpec= assoc.getIconFileName();
+        jIconFileTextField.setText(iconSpec);
+        Image img= iconSpec==null ?null :IconService.getIcon(iconSpec, 24);
         jIconFileLabel.setIcon(img==null ?null :new ImageIcon(img));
 
         // Clear the old action list first before adding new actions.
