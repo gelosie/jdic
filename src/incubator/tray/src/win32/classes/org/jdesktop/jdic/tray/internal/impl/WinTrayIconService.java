@@ -22,7 +22,7 @@ package org.jdesktop.jdic.tray.internal.impl;
 
 
 /**
- *  The <code>WinTrayIconService</code> interface is the contract for a Windows 
+ *  The <code>WinTrayIconService</code> interface is the contract for a Windows
  *  <code>TrayIcon</code> implementation.
  *
  */
@@ -42,7 +42,7 @@ import sun.awt.image.IntegerComponentRaster;
 public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
     private JPopupMenu menu;
-    private Icon icon;        
+    private Icon icon;
     private boolean autoSize;
     private boolean isShowing;
     private String caption = "Hello";
@@ -61,7 +61,9 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
     Component observer;
 
-    JWindow popupParentFrame;
+    // JDialog is required because we dont want window to show on
+    // task bar, but it cant be JWindow since JWindow is not activatable.
+    JDialog popupParentFrame;
 
     boolean created;
 
@@ -183,7 +185,7 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
         case 2:
             if (!isShowing) {
                 isShowing = true;
-                popupParentFrame = new JWindow();
+                popupParentFrame = new JDialog();
                 popupParentFrame.setBounds(x, y, 1, 1);
                 popupParentFrame.setVisible(true);
                 menu.show(popupParentFrame, 0, 0);
