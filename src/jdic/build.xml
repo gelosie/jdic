@@ -213,13 +213,13 @@ Top-level target:
     <!-- build jdic.dll -->
     <exec dir="${win32.native.jni.dir}" executable="nmake" 
       failonerror="yes" >
-      <arg line="/f jdic.mak"/>
+      <arg line="/f jdic.mak CFG='jdic - Win32 Release'"/>
     </exec>                   
 
     <!-- build tray.dll containing the Tray Icon native code -->
     <exec dir="${win32.native.jni.dir}" executable="nmake" 
       failonerror="yes" >
-      <arg line="/f jdic.mak CFG='jdic - Win32 TRAY'"/>
+      <arg line="/f jdic.mak CFG='jdic - Win32 Tray'"/>
     </exec>                   
 
     <!-- copy generated .dll file -->
@@ -239,11 +239,11 @@ Top-level target:
     </exec>
 
     <exec dir="${win32.native.ie.dir}" executable="nmake" failonerror="yes">
-      <arg line="/f IeEmbed.mak"/>
+      <arg line="/f IeEmbed.mak CFG='IeEmbed - Win32 Release'"/>
     </exec>
 
     <exec dir="${win32.native.mozilla.dir}" executable="nmake" failonerror="yes">
-      <arg line="/f MozEmbed.mak"/>
+      <arg line="/f MozEmbed.mak CFG='MozEmbed - Win32 Release'"/>
     </exec>
     
     <!-- copy the embeded IE and Mozilla executable -->
@@ -530,7 +530,7 @@ Top-level target:
 
     <exec dir="${win32.native.jni.dir}" executable="nmake" 
       failonerror="yes" >
-      <arg line="/f jdic.mak CFG=TRAY"/>
+      <arg line="/f jdic.mak CFG='jdic - Win32 Tray'"/>
     </exec>                   
 
     <!-- copy generated .dll file -->
