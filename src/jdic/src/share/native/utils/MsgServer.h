@@ -31,10 +31,11 @@
 
 #define MAX_FD      2
 
-#define BUFFER_SIZE     1024
-#define MAX_TRIGGER     20
-#define EMPTY_TRIGGER   -1111
-#define MAX_WAIT        100
+#define BUFFER_SIZE      2048
+#define BUFFER_SIZE_HALF BUFFER_SIZE / 2
+#define MAX_TRIGGER      20
+#define EMPTY_TRIGGER    -1111
+#define MAX_WAIT         100
 
 typedef void (*MsgHandler)(const char *);
 
@@ -50,7 +51,12 @@ private:
     unsigned int mCounter;
 
     char *mSendBuffer;
-    char *mRecvBuffer;
+    // message buffer receiving the short (<= BUFFER_SIZE) messages.
+    char *mRecvBuffer;    
+    // message buffer storing the received message pieces for a 
+    // long (> BUFFER_SIZE) message.
+    char *mLongRecvBuffer; 
+    int mLongRecvBufferSize; 
 
     struct Trigger {
         int mInstance;

@@ -431,7 +431,7 @@ PRBool GetGREPath(char* pathBuf, size_t pathBufSize)
 }
 
 BOOL MozEmbedApp::InitMozilla()
-{
+{   
     nsresult rv;
 
     TCHAR greDirPath[_MAX_PATH+1] = "\0";
@@ -728,6 +728,43 @@ void MozEmbedApp::MessageReceived(const char * msg)
         break;
     case JEVENT_FOCUSLOST:
         //((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.Activate(WA_INACTIVE, 0, 0);
+        break;
+    case JEVENT_GETCONTENT:
+        {
+        nsIWebNavigation* mWebNav =
+            ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.mWebNav;
+
+        // JavaScript to return the content of the currently loaded URL 
+        // in *Mozilla*, which is different from the JavaScript for IE.
+        char* MOZ_GETCONTENT_SCRIPT 
+            = "(new XMLSerializer()).serializeToString(document);";
+        char *retStr = ExecuteScript(mWebNav, MOZ_GETCONTENT_SCRIPT);
+        if (retStr == NULL)
+            SendSocketMessage(instance, CEVENT_GETCONTENT, "");
+        else 
+            SendSocketMessage(instance, CEVENT_GETCONTENT, retStr);
+        }
+        break;
+    case JEVENT_SETCONTENT:
+        {
+        ASSERT(i == 3);
+        nsIWebNavigation* mWebNav =
+            ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.mWebNav;
+        SetContent(mWebNav, mMsgString);
+        }
+        break;
+    case JEVENT_EXECUTESCRIPT:
+        {
+        ASSERT(i == 3);
+        nsIWebNavigation* mWebNav =
+            ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.mWebNav;
+       
+        char *retStr = ExecuteScript(mWebNav, mMsgString);
+        if (retStr == NULL)
+            SendSocketMessage(instance, CEVENT_EXECUTESCRIPT, "");
+        else 
+            SendSocketMessage(instance, CEVENT_EXECUTESCRIPT, retStr);
+        }
         break;
     }
 }

@@ -32,25 +32,100 @@ import org.jdesktop.jdic.browser.*;
  */
 
 public class SimpleBrowser {
+    // Below method reads, changes javascript variables and attributes of DOM elements.
+    private static void testDOMAPI(WebBrowser webBrowser) {           
+        System.out.println("===========================================================");
+        System.out.println("=== Test setContent()/getContent()/executeScript() APIs ===");
+        System.out.println("===========================================================");
+                       
+        String HTML_CONTENT =
+            "<html>" +
+            "<head>" +
+            "<script>" +
+                "var counter = 100;" +
+                "function scriptMethod() { " +
+                    "alert('scriptMethod() within the loaded page'); " +
+                "}" +
+            "</script>" +
+            "</head>" +
+            "" +
+            "<body>" +
+            "<div id='theDiv'>This page content is set using setContent() API</div>" +
+            "</body>" +
+            "</html>";
+
+        System.out.println("===============================");
+        System.out.println("=== To test executeScript() ===");
+        System.out.println("===============================");
+        String jscript = "alert(\"alert 'statement' test\");" +
+            "document.bgColor='blue';";        
+        String result = webBrowser.executeScript(jscript);
+        System.out.println("Execution of: " + jscript + " returns: " + result);
+                
+        jscript = "scriptMethod();";
+        System.out.println("Execute JavaScript method within the current page ...");        
+        //result = webBrowser.executeScript(jscript);        
+
+        System.out.println("============================");
+        System.out.println("=== To test getContent() ===");
+        System.out.println("============================");
+        String content = webBrowser.getContent();
+        System.out.println("getContent() returns: " + content);    
+
+        System.out.println("============================");
+        System.out.println("=== To test setContent() ===");   
+        System.out.println("============================");    
+        System.out.println("To setContent(): " + HTML_CONTENT);
+        webBrowser.setContent(HTML_CONTENT);
+        
+        String retContent = webBrowser.getContent();
+        System.out.println("getContent() returns: " + retContent);        
+        
+        // getContent may return the same content in different upper/lower 
+        // case or single/double quotation mark.
+        // Here we assume the content is equal if the content lengh is equal.        
+        if (retContent.length() == HTML_CONTENT.length()) {
+            System.out.println("=== SUCCEED: getContent() correctly returns "
+                + "the content set by setContent() !!!");
+        } else {
+            System.out.println("=== ERROR: getContent() doesn't return the "
+                + "content set by setContent() ???");
+        }       
+    }
+        
     public static void main(String[] args) {
         JFrame frame = new JFrame("JDIC API Demo - SimpleBrowser");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        WebBrowser webBrowser = new WebBrowser();
+        final WebBrowser webBrowser = new WebBrowser();
         
         //Use below code to check the status of the navigation process,
         //or register a listener for the notification events.
-        //WebBrowser.Status myStatus = webBrowser.getStatus();
-        //webBrowser.addWebBrowserListener(
-        //    new WebBrowserListener() {
-        //    public void downloadStarted(WebBrowserEvent event) {;}
-        //    public void downloadCompleted(WebBrowserEvent event) {;}
-        //    public void downloadProgress(WebBrowserEvent event) {;}
-        //    public void downloadError(WebBrowserEvent event) {;}
-        //    public void documentCompleted(WebBrowserEvent event) {;}
-        //    public void titleChange(WebBrowserEvent event) {;}  
-        //    public void statusTextChange(WebBrowserEvent event) {;}        
-        //});
+        WebBrowser.Status myStatus = webBrowser.getStatus();
+        webBrowser.addWebBrowserListener(
+            new WebBrowserListener() {
+            boolean isFirstPage = true;
+                        
+            public void downloadStarted(WebBrowserEvent event) {;}
+            public void downloadCompleted(WebBrowserEvent event) {;}
+            public void downloadProgress(WebBrowserEvent event) {;}
+            public void downloadError(WebBrowserEvent event) {;}
+            public void documentCompleted(WebBrowserEvent event) {
+                // Uncomment below code to test getContent()/setContent()/
+                // executeScript() APIs.
+                // As the setContent() call will invoke this event, which falls
+                // into a loop, so check if this event is fired by the first
+                // loaded page.
+                /*
+                if (isFirstPage) {
+                    testDOMAPI(webBrowser);
+                    isFirstPage = false;
+                }
+                */
+            }
+            public void titleChange(WebBrowserEvent event) {;}  
+            public void statusTextChange(WebBrowserEvent event) {;}        
+        });
 
         try {
             webBrowser.setURL(new URL("http://java.net"));

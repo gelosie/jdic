@@ -37,6 +37,9 @@ public:
     virtual ~BrowserWindow();
 
     CComPtr<IWebBrowser2> m_pWB;
+    CComPtr<IHTMLDocument2> m_pHD2;
+    CComPtr<IHTMLDocument3> m_pHD3;
+    CComPtr<IHTMLWindow2> m_pHW;
 
     BOOL PreTranslateMessage(MSG* pMsg);
 

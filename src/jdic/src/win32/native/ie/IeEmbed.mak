@@ -1,7 +1,7 @@
 # Microsoft Developer Studio Generated NMAKE File, Based on IeEmbed.dsp
 !IF "$(CFG)" == ""
-CFG=IeEmbed - Win32 Release
-!MESSAGE No configuration specified. Defaulting to IeEmbed - Win32 Release.
+CFG=IeEmbed - Win32 Debug
+!MESSAGE No configuration specified. Defaulting to IeEmbed - Win32 Debug.
 !ENDIF 
 
 !IF "$(CFG)" != "IeEmbed - Win32 Debug" && "$(CFG)" != "IeEmbed - Win32 Release"
@@ -25,6 +25,10 @@ NULL=
 NULL=nul
 !ENDIF 
 
+CPP=cl.exe
+MTL=midl.exe
+RSC=rc.exe
+
 !IF  "$(CFG)" == "IeEmbed - Win32 Debug"
 
 OUTDIR=.\Debug
@@ -44,6 +48,7 @@ CLEAN :
 	-@erase "$(INTDIR)\MsgServer.obj"
 	-@erase "$(INTDIR)\StdAfx.obj"
 	-@erase "$(INTDIR)\Util.obj"
+	-@erase "$(INTDIR)\VariantWrapper.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(OUTDIR)\IeEmbed.exe"
@@ -53,42 +58,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP=cl.exe
 CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"$(INTDIR)\IeEmbed.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-MTL=midl.exe
-MTL_PROJ=
-RSC=rc.exe
 RSC_PROJ=/l 0x409 /fo"$(INTDIR)\IeEmbed.res" /d "_DEBUG" 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\IeEmbed.bsc" 
@@ -102,6 +72,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\MsgServer.obj" \
 	"$(INTDIR)\StdAfx.obj" \
 	"$(INTDIR)\Util.obj" \
+	"$(INTDIR)\VariantWrapper.obj" \
 	"$(INTDIR)\IeEmbed.res"
 
 "$(OUTDIR)\IeEmbed.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -113,26 +84,69 @@ LINK32_OBJS= \
 
 OUTDIR=.\Release
 INTDIR=.\Release
+# Begin Custom Macros
+OutDir=.\Release
+# End Custom Macros
 
-ALL : "$(OUTDIR)\IeEmbed.exe"
+ALL : "$(OUTDIR)\IeEmbed.exe" "$(OUTDIR)\IeEmbed.bsc"
 
 
 CLEAN :
 	-@erase "$(INTDIR)\BrowserWindow.obj"
+	-@erase "$(INTDIR)\BrowserWindow.sbr"
 	-@erase "$(INTDIR)\IeEmbed.obj"
 	-@erase "$(INTDIR)\IeEmbed.pch"
 	-@erase "$(INTDIR)\IeEmbed.res"
+	-@erase "$(INTDIR)\IeEmbed.sbr"
 	-@erase "$(INTDIR)\MsgServer.obj"
+	-@erase "$(INTDIR)\MsgServer.sbr"
 	-@erase "$(INTDIR)\StdAfx.obj"
+	-@erase "$(INTDIR)\StdAfx.sbr"
 	-@erase "$(INTDIR)\Util.obj"
+	-@erase "$(INTDIR)\Util.sbr"
+	-@erase "$(INTDIR)\VariantWrapper.obj"
+	-@erase "$(INTDIR)\VariantWrapper.sbr"
 	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(OUTDIR)\IeEmbed.bsc"
 	-@erase "$(OUTDIR)\IeEmbed.exe"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP=cl.exe
-CPP_PROJ=/nologo /ML /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"$(INTDIR)\IeEmbed.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\IeEmbed.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+RSC_PROJ=/l 0x409 /fo"$(INTDIR)\IeEmbed.res" /d "NDEBUG" /d "_AFXDLL" 
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\IeEmbed.bsc" 
+BSC32_SBRS= \
+	"$(INTDIR)\BrowserWindow.sbr" \
+	"$(INTDIR)\IeEmbed.sbr" \
+	"$(INTDIR)\MsgServer.sbr" \
+	"$(INTDIR)\StdAfx.sbr" \
+	"$(INTDIR)\Util.sbr" \
+	"$(INTDIR)\VariantWrapper.sbr"
+
+"$(OUTDIR)\IeEmbed.bsc" : "$(OUTDIR)" $(BSC32_SBRS)
+    $(BSC32) @<<
+  $(BSC32_FLAGS) $(BSC32_SBRS)
+<<
+
+LINK32=link.exe
+LINK32_FLAGS=$(MOZILLA_SRC_HOME)/dist/lib/nspr4.lib /nologo /subsystem:windows /incremental:no /pdb:"$(OUTDIR)\IeEmbed.pdb" /machine:I386 /out:"$(OUTDIR)\IeEmbed.exe" 
+LINK32_OBJS= \
+	"$(INTDIR)\BrowserWindow.obj" \
+	"$(INTDIR)\IeEmbed.obj" \
+	"$(INTDIR)\MsgServer.obj" \
+	"$(INTDIR)\StdAfx.obj" \
+	"$(INTDIR)\Util.obj" \
+	"$(INTDIR)\VariantWrapper.obj" \
+	"$(INTDIR)\IeEmbed.res"
+
+"$(OUTDIR)\IeEmbed.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ENDIF 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -164,31 +178,7 @@ CPP_PROJ=/nologo /ML /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_
    $(CPP_PROJ) $< 
 <<
 
-MTL=midl.exe
 MTL_PROJ=
-RSC=rc.exe
-RSC_PROJ=/l 0x409 /fo"$(INTDIR)\IeEmbed.res" /d "NDEBUG" 
-BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\IeEmbed.bsc" 
-BSC32_SBRS= \
-	
-LINK32=link.exe
-LINK32_FLAGS=$(MOZILLA_SRC_HOME)/dist/lib/nspr4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:no /pdb:"$(OUTDIR)\IeEmbed.pdb" /machine:I386 /out:"$(OUTDIR)/IeEmbed.exe" 
-LINK32_OBJS= \
-	"$(INTDIR)\BrowserWindow.obj" \
-	"$(INTDIR)\IeEmbed.obj" \
-	"$(INTDIR)\MsgServer.obj" \
-	"$(INTDIR)\StdAfx.obj" \
-	"$(INTDIR)\Util.obj" \
-	"$(INTDIR)\IeEmbed.res"
-
-"$(OUTDIR)/IeEmbed.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
-    $(LINK32) @<<
-  $(LINK32_FLAGS) $(LINK32_OBJS)
-<<
-
-!ENDIF 
-
 
 !IF "$(NO_EXTERNAL_DEPS)" != "1"
 !IF EXISTS("IeEmbed.dep")
@@ -202,13 +192,35 @@ LINK32_OBJS= \
 !IF "$(CFG)" == "IeEmbed - Win32 Debug" || "$(CFG)" == "IeEmbed - Win32 Release"
 SOURCE=.\BrowserWindow.cpp
 
+!IF  "$(CFG)" == "IeEmbed - Win32 Debug"
+
+
 "$(INTDIR)\BrowserWindow.obj" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\IeEmbed.pch"
 
 
+!ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
+
+
+"$(INTDIR)\BrowserWindow.obj"	"$(INTDIR)\BrowserWindow.sbr" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\IeEmbed.pch"
+
+
+!ENDIF 
+
 SOURCE=.\IeEmbed.cpp
+
+!IF  "$(CFG)" == "IeEmbed - Win32 Debug"
+
 
 "$(INTDIR)\IeEmbed.obj" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\IeEmbed.pch"
 
+
+!ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
+
+
+"$(INTDIR)\IeEmbed.obj"	"$(INTDIR)\IeEmbed.sbr" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\IeEmbed.pch"
+
+
+!ENDIF 
 
 SOURCE=.\IeEmbed.rc
 
@@ -230,9 +242,9 @@ CPP_SWITCHES=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /
 
 !ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
 
-CPP_SWITCHES=/nologo /ML /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_SWITCHES=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /FR"$(INTDIR)\\" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 
-"$(INTDIR)\MsgServer.obj" : $(SOURCE) "$(INTDIR)"
+"$(INTDIR)\MsgServer.obj"	"$(INTDIR)\MsgServer.sbr" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<
   $(CPP_SWITCHES) $(SOURCE)
 <<
@@ -254,9 +266,9 @@ CPP_SWITCHES=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /
 
 !ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
 
-CPP_SWITCHES=/nologo /ML /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"$(INTDIR)\IeEmbed.pch" /Yc"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_SWITCHES=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\IeEmbed.pch" /Yc"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 
-"$(INTDIR)\StdAfx.obj"	"$(INTDIR)\IeEmbed.pch" : $(SOURCE) "$(INTDIR)"
+"$(INTDIR)\StdAfx.obj"	"$(INTDIR)\StdAfx.sbr"	"$(INTDIR)\IeEmbed.pch" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<
   $(CPP_SWITCHES) $(SOURCE)
 <<
@@ -278,12 +290,28 @@ CPP_SWITCHES=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /
 
 !ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
 
-CPP_SWITCHES=/nologo /ML /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_SWITCHES=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /FR"$(INTDIR)\\" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 
-"$(INTDIR)\Util.obj" : $(SOURCE) "$(INTDIR)"
+"$(INTDIR)\Util.obj"	"$(INTDIR)\Util.sbr" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<
   $(CPP_SWITCHES) $(SOURCE)
 <<
+
+
+!ENDIF 
+
+SOURCE=.\VariantWrapper.cpp
+
+!IF  "$(CFG)" == "IeEmbed - Win32 Debug"
+
+
+"$(INTDIR)\VariantWrapper.obj" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\IeEmbed.pch"
+
+
+!ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
+
+
+"$(INTDIR)\VariantWrapper.obj"	"$(INTDIR)\VariantWrapper.sbr" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\IeEmbed.pch"
 
 
 !ENDIF 

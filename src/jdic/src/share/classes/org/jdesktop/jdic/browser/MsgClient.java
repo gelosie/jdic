@@ -35,7 +35,17 @@ import java.util.*;
  */ 
 class MsgClient {
     private static final int MAX_RETRY = 30;
-    private static final int BUFFERSIZE = 1024;
+    private static final int BUFFERSIZE = 2048;
+
+    // socket message delimiter.
+    // use these delimiters assuming they won't appear in the message itself.
+    private static final String MSG_DELIMITER = "</html><body></html>";
+    // a long message may be devided into several pieces: 
+    // a head piece, multiple middle pieces and an end piece.
+    private static final String MSG_DELIMITER_ = MSG_DELIMITER + "_";
+    private static final String MSG_DELIMITER_HEAD = MSG_DELIMITER + "_head";
+    private static final String MSG_DELIMITER_MIDDLE = MSG_DELIMITER + "_middle";
+    private static final String MSG_DELIMITER_END = MSG_DELIMITER + "_end";
 
     private Selector selector = null;
     private SocketChannel channel = null;
@@ -49,6 +59,10 @@ class MsgClient {
 
     private String sendBuffer = new String();
     private String recvBuffer = new String();
+    
+    // cached long message pieces, once a complete message is received, it will
+    // be handled and removed from the set.
+    private static Set msgPieces = new HashSet();    
 
     MsgClient() {
         Charset charset = Charset.forName("ISO-8859-1");
@@ -129,19 +143,75 @@ class MsgClient {
     }
 
     void sendMessage(String msg) {
-        sendBuffer += msg + "\n";
+    	sendBuffer += msg + MSG_DELIMITER;
     }
-
+   
     String getMessage() {
-        int pos = recvBuffer.indexOf("\n");
-        if (pos >= 0) {
-            String msg = recvBuffer.substring(0, pos);
-            recvBuffer = recvBuffer.substring(pos + 1);
-            return msg;
-        }
-        else {
+        int pos = recvBuffer.indexOf(MSG_DELIMITER);
+        if (pos < 0)
             return null;
-        }
+
+        String msg = recvBuffer.substring(0, pos);
+        if (pos != recvBuffer.indexOf(MSG_DELIMITER_)) {
+            // a short message. 
+            recvBuffer = recvBuffer.substring(pos + 
+                    (new String(MSG_DELIMITER).length()));
+            WebBrowser.trace("get a complete short message: " + msg);            
+            return msg;            
+        } 
+
+        NativeEventData eventData = NativeEventThread.parseIncomingMessage(msg);
+
+        // receive a long message, consisting of one head message piece, 
+        // multiple middle message pieces and one end message piece.
+        if (pos == recvBuffer.indexOf(MSG_DELIMITER_HEAD)) {
+            // The head piece of a long message.
+            // Each head piece contains the instance and type information 
+            // identifying a long message.        
+            msgPieces.add(new NativeEventData(eventData.instance, 
+                    eventData.type, eventData.stringValue));
+            recvBuffer = recvBuffer.substring(pos + 
+                    (new String(MSG_DELIMITER_HEAD).length()));
+            WebBrowser.trace("get a head message piece: " 
+                    + eventData.stringValue);            
+            return null;
+        } else {           
+            Iterator it = msgPieces.iterator();
+            while (it.hasNext()) {
+                NativeEventData element = (NativeEventData)it.next();
+                if ((element.instance == eventData.instance) && 
+                    (element.type == eventData.type)) {
+                    if (pos == recvBuffer.indexOf(MSG_DELIMITER_MIDDLE)) {
+                        NativeEventData newElement = new NativeEventData(
+                                eventData.instance, eventData.type, 
+                                element.stringValue + eventData.stringValue);
+                        msgPieces.remove(element);
+                        msgPieces.add(newElement);
+                        recvBuffer = recvBuffer.substring(pos + 
+                                (new String(MSG_DELIMITER_MIDDLE).length()));                       
+                        WebBrowser.trace("got a middle message piece: " + 
+                                eventData.stringValue);
+                        return null;
+                    } else if (pos == recvBuffer.indexOf(MSG_DELIMITER_END)) {
+                        // The end piece of a long message. Concat the complete
+                        // message and return it.  
+                        msg = eventData.instance + "," + eventData.type + "," 
+                            + element.stringValue + eventData.stringValue;
+                        msgPieces.remove(element);
+                        recvBuffer = recvBuffer.substring(pos + 
+                                (new String(MSG_DELIMITER_END).length()));
+                        WebBrowser.trace("got an end message piece: " + 
+                                eventData.stringValue);
+                        WebBrowser.trace("got a complete long message: " + 
+                                element.stringValue + eventData.stringValue);
+                                                
+                        return (msg);                        
+                    }                    
+                }
+            }
+           
+            return null;
+        }        
     }
 
     void portListening() throws IOException, InterruptedException {
@@ -160,6 +230,7 @@ class MsgClient {
                     decoder.decode(buffer, charBuffer, false);
                     charBuffer.flip();
                     recvBuffer += charBuffer;
+                    WebBrowser.trace("read data from socket: " + recvBuffer);
                 }
                 else if (key.isWritable()) {
                     if (sendBuffer.length() > 0) {

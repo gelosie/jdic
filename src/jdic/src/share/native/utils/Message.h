@@ -39,6 +39,9 @@
 #define JEVENT_GETURL            12
 #define JEVENT_FOCUSGAINED       13
 #define JEVENT_FOCUSLOST         14
+#define JEVENT_GETCONTENT        15
+#define JEVENT_SETCONTENT        16
+#define JEVENT_EXECUTESCRIPT     17
 
 // C++ -> Java, must keep same with WebBrowserEvent.java
 #define CEVENT_BEFORE_NAVIGATE	    3001
@@ -54,9 +57,22 @@
 #define CEVENT_TITLE_CHANGE         3023
 #define CEVENT_STATUSTEXT_CHANGE    3024
 
-#define CEVENT_INIT_FAILED          3040
-#define CEVENT_INIT_WINDOW_SUCC     3041
+#define CEVENT_INIT_FAILED          3041
+#define CEVENT_INIT_WINDOW_SUCC     3042
 
-#define CEVENT_FOCUS_REQUEST        3042
+#define CEVENT_FOCUS_REQUEST        3043
+
+#define CEVENT_GETCONTENT           3061
+#define CEVENT_SETCONTENT           3062
+#define CEVENT_EXECUTESCRIPT        3063
+
+// Socket message delimiters, must keep same with MsgClient.java
+#define MSG_DELIMITER         "</html><body></html>"
+// a long message may be devided into several pieces: 
+// a head piece, multiple middle pieces and an end piece.
+#define MSG_DELIMITER_        "</html><body></html>_"
+#define MSG_DELIMITER_HEAD    "</html><body></html>_head"
+#define MSG_DELIMITER_MIDDLE  "</html><body></html>_middle"
+#define MSG_DELIMITER_END     "</html><body></html>_end"
 
 #endif

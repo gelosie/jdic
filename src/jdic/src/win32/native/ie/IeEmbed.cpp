@@ -17,15 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  */ 
-
+#include <Ole2.h>
 #include "stdafx.h"
 #include "MsgServer.h"
 #include "BrowserWindow.h"
 #include "resource.h"
 #include "Message.h"
 #include "prthread.h"
+#include "VariantWrapper.h"
 #include "Util.h"
-
 #define WM_SOCKET_MSG   WM_USER + 1
 
 CComModule _Module;
@@ -35,14 +35,177 @@ HWND gMainWnd;
 //array of browserwindow
 WBArray ABrowserWnd;
 
-void SocketMsgHandler(const char *pMsg)
+void SocketMsgHandler(const char* pMsg)
 {
-    char *msg = new char[strlen(pMsg) + 1];
+    char* msg = new char[strlen(pMsg) + 1];
     strcpy(msg, pMsg);
     ::PostMessage(gMainWnd, WM_SOCKET_MSG, 0, (long)msg);
 }
 
-void CommandProc(char * pInputChar)
+HRESULT LoadWebBrowserFromStream(BrowserWindow* pBrowserWnd, IStream* pStream)
+{
+    HRESULT hr;
+    CComPtr<IDispatch> pHTMLDoc;
+    CComPtr<IPersistStreamInit> pPersistStreamInit;
+
+    hr = pBrowserWnd->m_pWB->get_Document(&pHTMLDoc);
+    if (SUCCEEDED(hr))
+    {
+        hr = pHTMLDoc->QueryInterface(IID_IPersistStreamInit, (void**)&pPersistStreamInit);
+        if (SUCCEEDED(hr))
+        {
+            hr = pPersistStreamInit->Load(pStream);
+        }
+    }
+    return hr;
+}
+
+void setContent(BrowserWindow* pBrowserWnd, char* pContent)
+{
+    if (pContent == NULL)
+    {
+        return;
+    }
+    CComPtr<IStream> pStream;
+    size_t contentLen = strlen(pContent);
+    HGLOBAL hHTMLText;
+    hHTMLText = GlobalAlloc(GPTR, contentLen);
+    if (hHTMLText)
+    {
+        strcpy((char *) hHTMLText, pContent);
+        HRESULT hr = CreateStreamOnHGlobal(hHTMLText, TRUE, &pStream);
+        if (SUCCEEDED(hr))
+        {
+            LoadWebBrowserFromStream(pBrowserWnd, pStream);
+        }
+    }
+    GlobalFree(hHTMLText);
+}
+
+LPSTR executeScript(BrowserWindow* pBrowserWnd, char* scriptCode)
+{
+    //Get the IHTMLDocument Interface
+    CComPtr<IDispatch> pIDDispatch;
+    HRESULT hRes;
+    hRes = pBrowserWnd->m_pWB->get_Document((struct IDispatch **)&pIDDispatch);
+    if (SUCCEEDED(hRes))
+    {
+        WBTRACE("IWebBrowser::get_Document()...");
+    }
+    else 
+    {
+        return NULL;
+    }
+    hRes = pIDDispatch->QueryInterface(IID_IHTMLDocument2, (void **)&(pBrowserWnd->m_pHD2));
+    if (SUCCEEDED(hRes))
+    {
+        WBTRACE("IDispatch::QueryInterface(IID_IHTMLDocument2, void**)...");
+    }
+    else 
+    {
+        return NULL;
+    }
+    hRes = pIDDispatch->QueryInterface(IID_IHTMLDocument3, (void **)&(pBrowserWnd->m_pHD3));
+    if (SUCCEEDED(hRes))
+    {
+        WBTRACE("IDispatch::QueryInterface(IID_IHTMLDocument3, void**)...");
+    }
+    else 
+    {
+        return NULL;
+    }
+    //Get the IHTMLWindow2
+    hRes = pBrowserWnd->m_pHD2->get_parentWindow((struct IHTMLWindow2 **)&(pBrowserWnd->m_pHW));
+    if (SUCCEEDED(hRes))
+    {
+        WBTRACE("IHTMLDocument2::get_ParentWindow()...");
+    }
+    else 
+    {
+        return NULL;
+    }
+    //Execute the script with IHTMLWindow2::execScript()
+    CComVariant varResult;
+    CComBSTR vtCode;
+    CComBSTR vtLanguage;
+    varResult.Clear();
+    
+    // Tune the given jscript to assign the returned value to a predefine 
+    // DOM property of the currently loaded webapge:
+    //     JDIC_BROWSER_INTERMEDIATE_PROP
+    vtCode.Append(TuneJavaScript(scriptCode));
+    vtLanguage.Append("javascript");
+    hRes = pBrowserWnd->m_pHW->execScript((BSTR)vtCode, (BSTR)vtLanguage, &varResult);
+    if (FAILED(hRes))
+    {
+        void* pMsgBuf;
+        ::FormatMessage(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+            NULL,
+            hRes, 
+            MAKELANGID(LANG_ENGLISH,SUBLANG_ENGLISH_US),
+            (LPTSTR) &pMsgBuf,
+            0,
+            NULL);
+        WBTRACE((LPSTR)(pMsgBuf));
+        LocalFree(pMsgBuf);
+    }
+    //Try to get the return value of the script
+    CComBSTR elementTag;
+    //1. Get the head elements collection
+    elementTag.Append("head");
+    CComPtr<IHTMLElementCollection> pElementCollection;
+    hRes = pBrowserWnd->m_pHD3->getElementsByTagName(elementTag, (IHTMLElementCollection **)&pElementCollection);
+    if (SUCCEEDED(hRes))
+    {
+        WBTRACE("IHTMLDocument3::getElementsByTagName()...");
+    }
+    else 
+    {
+        return NULL;
+    }
+    //2. Get the # 0 element
+    CComPtr<IDispatch> pElementDispatch;
+    CComPtr<IHTMLElement> pHTMLElement;
+    VARIANT itemIndex;
+    itemIndex.vt = VT_I4;
+    itemIndex.lVal = 0;
+    hRes = pElementCollection->item(itemIndex, itemIndex, &pElementDispatch);
+    if (SUCCEEDED(hRes))
+    {
+        WBTRACE("IHTMLElementCollection::item()...");
+    }
+    else 
+    {
+        return NULL;
+    }
+    hRes = pElementDispatch->QueryInterface(IID_IHTMLElement, (void **)&pHTMLElement);
+    if (SUCCEEDED(hRes))
+    {
+        WBTRACE("IDispatch::QueryInterface(IID_IHTMLElement, void**)...");
+    }
+    else 
+    {
+        return NULL;
+    }
+    //3. Get the pre-defined attribute value
+    CComBSTR attribName;
+    CComVariant varValue;
+    attribName.Append(JDIC_BROWSER_INTERMEDIATE_PROP);
+    hRes = pHTMLElement->getAttribute(attribName, 0, &varValue);
+    if (SUCCEEDED(hRes))
+    {
+        WBTRACE("IHTMLElement::getAttribute()");
+    }
+    else 
+    {
+        return NULL;
+    }
+    VariantWrapper varWrapper(&varValue);
+    return varWrapper.ToString();
+}
+
+void CommandProc(char* pInputChar)
 {
     BrowserWindow * pBrowserWnd;
     HRESULT hRes;
@@ -51,8 +214,19 @@ void CommandProc(char * pInputChar)
     char eventMessage[1024];
 
     int i = sscanf(pInputChar, "%d,%d,%s", &instanceNum, &eventID, &eventMessage);
-    delete pInputChar;
-    if (i < 2) return;
+    if (i < 2) 
+    {
+        delete pInputChar;
+        return;
+    }
+
+    // In case that the last message string argument contains spaces, sscanf 
+    // returns before the first space. Below line returns the complete message
+    // string.
+    char* mMsgString = (char *)strchr(pInputChar, ',');
+    mMsgString++;
+    mMsgString = (char*)strchr(mMsgString, ',');
+    mMsgString++;
 
     switch (eventID)
     {
@@ -68,7 +242,7 @@ void CommandProc(char * pInputChar)
         RECT rect;
         if (i != 3) 
 			break;
-		HWND hWnd = (HWND) atoi(eventMessage);
+		HWND hWnd = (HWND) atoi(mMsgString);
         pBrowserWnd = new BrowserWindow();
         if (!pBrowserWnd) 
 			break;
@@ -84,6 +258,7 @@ void CommandProc(char * pInputChar)
             WBTRACE("Failed to query pBrowserWnd->m_pWB!");
             break;
         }
+
         hRes = pBrowserWnd->DispEventAdvise(pBrowserWnd->m_pWB);
 
         pBrowserWnd->SetReady(instanceNum);
@@ -111,7 +286,7 @@ void CommandProc(char * pInputChar)
         {
         if (i != 3) break;
         int x, y, w, h;
-        i = sscanf(eventMessage, "%d,%d,%d,%d", &x, &y, &w, &h);
+        i = sscanf(mMsgString, "%d,%d,%d,%d", &x, &y, &w, &h);
         if (i == 4) {
             pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
             ATLASSERT(pBrowserWnd != NULL);
@@ -123,7 +298,7 @@ void CommandProc(char * pInputChar)
     case JEVENT_NAVIGATE:
         pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
         ATLASSERT(pBrowserWnd != NULL);
-        pBrowserWnd->m_pWB->Navigate(CComBSTR(eventMessage), NULL, NULL, NULL, NULL);
+        pBrowserWnd->m_pWB->Navigate(CComBSTR(mMsgString), NULL, NULL, NULL, NULL);
         break;
 
     case JEVENT_GOBACK:
@@ -150,6 +325,34 @@ void CommandProc(char * pInputChar)
         pBrowserWnd->m_pWB->Stop();
         break;
 
+    case JEVENT_GETCONTENT:
+        {
+            pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
+
+            // JavaScript to return the content of the currently loaded URL 
+            // in *IE*, which is different from the JavaScript for Mozilla.
+            char* IE_GETCONTENT_SCRIPT 
+                = "(document.documentElement||document.body).outerHTML;";
+            LPSTR exeResult = executeScript(pBrowserWnd, IE_GETCONTENT_SCRIPT);
+            SendSocketMessage(instanceNum, CEVENT_GETCONTENT, (LPSTR)(exeResult));
+            delete [] exeResult;
+            break;
+        }
+
+    case JEVENT_EXECUTESCRIPT:
+        {
+            pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
+            LPSTR exeResult = executeScript(pBrowserWnd, mMsgString);
+            SendSocketMessage(instanceNum, CEVENT_EXECUTESCRIPT, (LPSTR)(exeResult));
+            delete [] exeResult;
+            break;
+        }
+
+    case JEVENT_SETCONTENT:
+        pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
+        setContent(pBrowserWnd, mMsgString);
+        break;
+
     case JEVENT_GETURL:
         USES_CONVERSION;
         BSTR bsUrl;
@@ -160,6 +363,8 @@ void CommandProc(char * pInputChar)
         SysFreeString(bsUrl);
         break;
     }
+    delete pInputChar;
+    return;
 }
 
 

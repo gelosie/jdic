@@ -24,6 +24,7 @@
 #include "nsIFile.h"
 #include "nsEmbedString.h"
 #include "nsID.h"
+#include "nsIWebNavigation.h"
 
 nsresult InitializeProfile();
 void ReportError(const char* msg);
@@ -42,5 +43,11 @@ nsresult GetService(const char *aContractID, const nsIID &aIID, void **aResult);
 
 // helper function for instantiating xpcom components
 nsresult CreateInstance(const char *aContractID, const nsIID &aIID, void **aResult);
+
+// helper function for seting the HTML page content.
+nsresult SetContent(nsIWebNavigation *aWebNav, const char *htmlContent);
+
+// helper function for executing javascript string
+char* ExecuteScript(nsIWebNavigation *aWebNav, const char *jscript);
 
 #endif

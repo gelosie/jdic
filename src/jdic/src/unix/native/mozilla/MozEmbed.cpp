@@ -423,9 +423,13 @@ HandleSocketMessage(gpointer data, gpointer user_data)
     char *msg = (char *)data;
 
     int i = sscanf(msg, "%d,%d,%s", &instance, &type, buf);
-    delete msg;
 
     NS_ASSERTION(i >= 2, "Wrong message format\n");
+
+    // In case that the last message string argument contains spaces, sscanf
+    // returns before the first space. Below line returns the complete message
+    // string.
+    char* mMsgString = (char*)(strrchr(msg, ',') + 1);
 
     GtkBrowser *pBrowser;
     switch (type) {
@@ -571,7 +575,38 @@ HandleSocketMessage(gpointer data, gpointer user_data)
                             (widget, (GdkEventFocus *)&event);
             }
         }
-
+        break;
+    case JEVENT_SETCONTENT:
+        {
+            NS_ASSERTION(i == 3, "Wrong message format\n");
+            pBrowser = (GtkBrowser *)gBrowserArray[instance];
+            NS_ASSERTION(pBrowser, "Can't get native browser instance\n");
+            nsCOMPtr<nsIWebBrowser> webBrowser;
+            gtk_moz_embed_get_nsIWebBrowser(GTK_MOZ_EMBED(pBrowser->mozEmbed), 
+                    getter_AddRefs(webBrowser));
+            nsCOMPtr<nsIWebNavigation> 
+                webNavigation(do_QueryInterface(webBrowser));
+            
+            SetContent(webNavigation, mMsgString);
+        }
+        break;
+    case JEVENT_EXECUTESCRIPT:
+        {
+            NS_ASSERTION(i == 3, "Wrong message format\n");
+            pBrowser = (GtkBrowser *)gBrowserArray[instance];
+            NS_ASSERTION(pBrowser, "Can't get native browser instance\n");
+            nsCOMPtr<nsIWebBrowser> webBrowser;
+            gtk_moz_embed_get_nsIWebBrowser(GTK_MOZ_EMBED(pBrowser->mozEmbed), 
+                    getter_AddRefs(webBrowser));
+            nsCOMPtr<nsIWebNavigation> 
+                webNavigation(do_QueryInterface(webBrowser));
+                                                                                                            
+            char *retStr = ExecuteScript(webNavigation, mMsgString);
+            if (retStr == NULL)
+                SendSocketMessage(instance, CEVENT_EXECUTESCRIPT, "");
+            else
+                SendSocketMessage(instance, CEVENT_EXECUTESCRIPT, retStr);
+        } 
         break;
     }
 }

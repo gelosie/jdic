@@ -48,7 +48,10 @@ class NativeEventData
     final static int EVENT_GETURL            = 12;
     final static int EVENT_FOCUSGAINED       = 13;
     final static int EVENT_FOCUSLOST         = 14;
-
+    final static int EVENT_GETCONTENT        = 15;
+    final static int EVENT_SETCONTENT        = 16;
+    final static int EVENT_EXECUTESCRIPT     = 17;
+    
     int instance;
     int type;
     Rectangle rectValue;
@@ -72,5 +75,5 @@ class NativeEventData
         this.instance = instance;
         this.type = type;
         this.stringValue = stringValue;
-    }
+    }    
 } // end of class NativeEventData

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  */ 
-
+#include <afx.h>
 #ifndef _util_h
 #define _util_h
 
@@ -79,6 +79,18 @@ protected:
     int m_nMaxSize;  // max allocated
 };
 
+class LogFile
+{
+private:
+    CFile _logFile;
+public:
+    LogFile();
+    ~LogFile();
+public:
+    void addLogInfo(char* logInfo);
+    void addLogInfo(CString logInfo);
+};
+
 inline int WBArray::GetSize() const
     { return m_nSize; }
 
@@ -97,4 +109,18 @@ inline void* WBArray::operator[](int nIndex) const
 inline void*& WBArray::operator[](int nIndex)
     { return ElementAt(nIndex); }
 
+// helper function for tuning the given JavaScript string to assign 
+// the ultimate returned value to a predefined property of the currently 
+// loaded webpage. And then DOM APIs of Mozilla or IE will be used to
+// retrieve the property value. 
+// 
+// As there is no public/frozen APIs for both IE and Mozilla to execute the 
+// given JavaScript and return the execution value, this helper function is 
+// used by ExecuteScript(javaScript) function.
+#define JDIC_BROWSER_INTERMEDIATE_PROP "JDIC_BROWSER_INTERMEDIATE_PROP"
+char* TuneJavaScript(const char* javaScript);
+
 #endif // _util_h
+
+
+

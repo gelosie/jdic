@@ -27,6 +27,7 @@
 #include "ProfileDirServiceProvider.h"
 #include "MsgServer.h"
 #include "Message.h"
+#include "Util.h"
 
 // from the Gecko SDK
 #include "nsXPCOM.h"
@@ -39,6 +40,10 @@
 #include "nsIPrefService.h"
 #include "nsILocalFile.h"
 #include "plstr.h"
+#include "nsIDOMDocument.h"
+#include "nsIDOMNodeList.h"
+#include "nsIDOMElement.h"
+#include "nsIDOMHTMLDocument.h"
 
 // below files are copied from the mozilla source tree (not part of the Gecko 
 // SDK and subject to change in future versions of Mozilla)
@@ -351,4 +356,111 @@ CreateInstance(const char *aContractID, const nsIID &aIID, void **aResult)
         return rv;
 
     return compMgr->CreateInstanceByContractID(aContractID, nsnull, aIID, aResult);
+}
+
+// helper function for seting the HTML page content.
+nsresult 
+SetContent(nsIWebNavigation *aWebNav, const char *htmlContent) 
+{
+    nsCOMPtr<nsIDOMDocument> domDoc;
+    aWebNav->GetDocument(getter_AddRefs(domDoc));
+
+    nsCOMPtr<nsIDOMHTMLDocument> domHtmlDoc(do_QueryInterface(domDoc)); 
+    domHtmlDoc->Open();
+
+    nsEmbedString unicodeContent;
+    ConvertAsciiToUtf16(htmlContent, unicodeContent);
+    domHtmlDoc->Write(unicodeContent);
+
+    domHtmlDoc->Close();
+
+    return NS_OK;
+}
+
+// helper function for executing javascript string
+char* 
+ExecuteScript(nsIWebNavigation *aWebNav, const char *jscript)
+{   
+    // Use JavaScript command 
+    //     eval("<the user input JavaScript string>"); 
+    // to evaluate the JavaScript contained within the brackets, in some cases 
+    // it may return a value. 
+    // 
+    // To execute this "eval" command and retrieve its returned value, 
+    // nsIWebNavigation::LoadURI() is used to load below complete URI:
+    //    javascript:var retValue = eval("<the user input JavaScript string>"); \
+    //        var heads = document.getElementsByTagName('head');"); \
+    //        heads[0].setAttribute(<JDIC_BROWSER_INTERMEDIATE_PROP>, retValue); \
+    //        ;void(0);
+    const int MAX_JSCRIPTURI_LENGTH = 8192; 
+    char jscriptURI[MAX_JSCRIPTURI_LENGTH];
+    memset(jscriptURI, '\0', MAX_JSCRIPTURI_LENGTH);
+
+    strcat(jscriptURI, "javascript:");       
+    // Tune the given jscript to assign the returned value to a predefine 
+    // DOM property of the currently loaded webapge:
+    //     JDIC_BROWSER_INTERMEDIATE_PROP
+    strcat(jscriptURI, TuneJavaScript(jscript));
+    strcat(jscriptURI, ";void(0);");
+
+    nsEmbedString unicodeURI;
+    ConvertAsciiToUtf16(jscriptURI, unicodeURI);
+    aWebNav->LoadURI(unicodeURI.get(), 
+                   nsIWebNavigation::LOAD_FLAGS_NONE,
+                   nsnull, 
+                   nsnull, 
+                   nsnull); 
+
+    // Retrieve the returned value of eval command.
+    nsCOMPtr<nsIDOMDocument> doc;
+    aWebNav->GetDocument(getter_AddRefs(doc));
+        
+    nsIDOMNodeList* elements = nsnull;
+    nsCOMPtr<nsIDOMNode> node;
+        
+    nsEmbedString unicodeTag;
+    char *elementTag = "head";
+    ConvertAsciiToUtf16(elementTag, unicodeTag);
+    nsresult rv = doc->GetElementsByTagName(unicodeTag, &elements);  
+    if (NS_FAILED(rv)) {
+        return NULL;
+    }        
+ 
+    rv = elements->Item(0, getter_AddRefs(node));
+    nsCOMPtr<nsIDOMElement> elt(do_QueryInterface(node, &rv));
+    if (NS_FAILED(rv)) {
+        return NULL;
+    }        
+
+    nsEmbedString attrValue;
+    nsEmbedString unicodeProp;
+    char *attrProp = JDIC_BROWSER_INTERMEDIATE_PROP;
+    ConvertAsciiToUtf16(attrProp, unicodeProp);
+    rv = elt->GetAttribute(unicodeProp, attrValue);
+    if (attrValue.IsEmpty()) 
+        return NULL;
+
+    const PRUnichar *attrStr = attrValue.get();
+
+    // XXX insert proper UTF-16 to UTF-8 conversion here
+    // XXX for now, we just do a lossy conversion to ASCII
+    char *resultBuf;
+    int len = 0;
+    for (const PRUnichar *p = attrStr; *p; ++p)
+       ++len;
+
+    resultBuf = (char *) malloc(len * sizeof(char));
+    for (int j = 0; j < len; j++) {
+        resultBuf[j] = (char) attrStr[j];
+        if (((unsigned char ) resultBuf[j]) & 0x80) {
+            fprintf(stderr, "FIXME: lossy conversion!!\n");
+            resultBuf[j] = '?';
+        }
+    }
+    resultBuf[len] = '\0';
+
+    if (strncmp(resultBuf, "undefined", len))
+        return resultBuf;
+    else
+        return NULL;
 }

@@ -32,8 +32,8 @@ import org.jdesktop.jdic.init.JdicInitException;
 import org.jdesktop.jdic.init.JdicManager;
 
 /**
- * A <code>WebBrowser</code> component represents a blank rectangular area of the
- * screen onto which the application can display webpages or from which the
+ * A <code>WebBrowser</code> component represents a blank rectangular area of 
+ * the screen onto which the application can display webpages or from which the
  * application can trap events from the browser window. In order to show WebBrowser
  * component in GUI, user need to add WebBrowser to a top-level container, such as
  * <code>Frame</code>.
@@ -394,6 +394,57 @@ public class WebBrowser extends Canvas
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_STOP);
     }
 
+    /**
+     * Sets new HTML content. 
+     * 
+     * @param htmlContent the HTML content to set.
+     */
+    public void setContent(String htmlContent) {
+        eventThread.fireNativeEvent(instanceNum, 
+                NativeEventData.EVENT_SETCONTENT, htmlContent);
+    }
+
+    /**
+     * Returns the HTML content of a document, opened in a browser.
+     * 
+     * @return the HTML content of a document, opened in a browser.
+     */
+    public String getContent() {
+        eventThread.fireNativeEvent(instanceNum, 
+                                    NativeEventData.EVENT_GETCONTENT);
+
+        if (waitForResult() == true) {
+            try {
+                return eventThread.eventRetString;
+            }
+            catch (Exception e) {
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Executes specified JavaScript code in a currently opened document.
+     * This should not be called until after a documentComplete event is 
+     * fired in <code>WebBrowserListener</code>. 
+     *
+     * @return the result of JavaScript execution, if there is any.
+     */
+    public String executeScript(java.lang.String javaScript) {
+        eventThread.fireNativeEvent(instanceNum, 
+                                    NativeEventData.EVENT_EXECUTESCRIPT, 
+                                    javaScript);
+
+        if (waitForResult() == true) {
+            try {
+                return eventThread.eventRetString;
+            }
+            catch (Exception e) {
+            }
+        }
+        return null;
+    }
+    
     /**
      * Sets trace messages on or off. If on, the trace messages will be printed
      * out in the console.

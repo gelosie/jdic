@@ -27,7 +27,8 @@ import java.security.*;
 import java.io.*;
 
 /**
- * An internal class for dealing with the communication between WebBrowser & native browser.
+ * An internal class for dealing with the communication between WebBrowser 
+ * & native browser.
  *
  * @see WebBrowser
  * 
@@ -66,9 +67,11 @@ class NativeEventThread extends Thread
                 return;
             }     
             String jvmVendor = System.getProperty("java.vm.vendor");
-            if (WebBrowser.getBrowserBinary().endsWith("IeEmbed.exe") && jvmVendor.startsWith("Sun"))
+            if (WebBrowser.getBrowserBinary().endsWith("IeEmbed.exe") 
+                    && jvmVendor.startsWith("Sun"))
                 WebBrowserUtil.nativeSetEnv();
-            final String cmd = WebBrowser.getBrowserBinary() + " -port=" + messenger.getPort();
+            final String cmd = WebBrowser.getBrowserBinary() + " -port=" 
+                + messenger.getPort();
             WebBrowser.trace("Executing " + cmd);
             AccessController.doPrivileged(
                 new PrivilegedExceptionAction() {
@@ -121,7 +124,8 @@ class NativeEventThread extends Thread
             try {
                 processEvents();
             } catch (Exception e) {
-                WebBrowser.trace("Exception occured when processEvent: " + e.getMessage());
+                WebBrowser.trace("Exception occured when processEvent: " 
+                        + e.getMessage());
                 return;
             }
 
@@ -129,7 +133,8 @@ class NativeEventThread extends Thread
                 messenger.portListening();
                 processIncomingMessage(messenger.getMessage());
             } catch (Exception e) {
-                WebBrowser.trace("Exception occured when portListening: " + e.getMessage());
+                WebBrowser.trace("Exception occured when portListening: " 
+                        + e.getMessage());
                 return;
             }
         }
@@ -175,7 +180,8 @@ class NativeEventThread extends Thread
             return false;
         }
 
-        WebBrowser.trace("Got event: type = " + nativeEvent.type + " instance = " + nativeEvent.instance);
+        WebBrowser.trace("Got event: type = " + nativeEvent.type + 
+                " instance = " + nativeEvent.instance);
 
         String msg = nativeEvent.instance + "," + nativeEvent.type + ",";
         switch (nativeEvent.type) {
@@ -188,6 +194,7 @@ class NativeEventThread extends Thread
             case NativeEventData.EVENT_GETURL:
             case NativeEventData.EVENT_FOCUSGAINED:
             case NativeEventData.EVENT_FOCUSLOST:
+            case NativeEventData.EVENT_GETCONTENT:
                 messenger.sendMessage(msg);
                 break;
             case NativeEventData.EVENT_SHUTDOWN:
@@ -195,7 +202,9 @@ class NativeEventThread extends Thread
             case NativeEventData.EVENT_CREATEWINDOW:
                 int nativeWindow = browser.getNativeWindow();
                 if (0 == nativeWindow) {
-                    WebBrowser.trace("Can't get native window handle, please make sure the env variable JAVA_HOME has been set.");
+                    WebBrowser.trace("Can't get native window handle, " +
+                            "please make sure the env variable JAVA_HOME has " +
+                            "been set.");
                 }
                 else {
                     msg += nativeWindow;
@@ -210,6 +219,8 @@ class NativeEventThread extends Thread
                 messenger.sendMessage(msg);
                 break;
             case NativeEventData.EVENT_NAVIGATE:
+            case NativeEventData.EVENT_SETCONTENT:
+            case NativeEventData.EVENT_EXECUTESCRIPT:                
                 msg += nativeEvent.stringValue;
                 messenger.sendMessage(msg);
                 break;
@@ -218,13 +229,13 @@ class NativeEventThread extends Thread
         return true;
     }
 
-    private void processIncomingMessage(String msg) {
+    static NativeEventData parseIncomingMessage(String msg) {
         if (null == msg || 0 == msg.length()) {
-            return;
+            return null;
         }
 
         int eventType = -1;
-        String eventData = null;
+        String stringValue = null;
 
         int pos1 = msg.indexOf(",", 0);
         int instance = Integer.parseInt(msg.substring(0, pos1));
@@ -235,38 +246,51 @@ class NativeEventThread extends Thread
         else {
             eventType = Integer.parseInt(msg.substring(pos1 + 1, pos2));
             if (pos2 + 1 < msg.length())
-                eventData = msg.substring(pos2 + 1);
+                stringValue = msg.substring(pos2 + 1);
         }
-        WebBrowser.trace("Got event from browser " + instance + ", " + eventType + ", " + eventData);
 
-        if (WebBrowserEvent.WEBBROWSER_INIT_FAILED == eventType) {
-            setBrowsersInitFailReason(eventData);
+        return new NativeEventData(instance, eventType, stringValue);
+    }
+
+    private void processIncomingMessage(String msg) {
+        NativeEventData eventData = parseIncomingMessage(msg);
+        if (eventData == null) 
+            return;
+
+        WebBrowser.trace("Got event from browser " + eventData.instance + ", " 
+                + eventData.type + ", " + eventData.stringValue);
+
+        if (WebBrowserEvent.WEBBROWSER_INIT_FAILED == eventData.type) {
+            setBrowsersInitFailReason(eventData.stringValue);
             return;
         }
 
-        if (instance < 0) {
+        if (eventData.instance < 0) {
             return;
         }
 
-        if (WebBrowserEvent.WEBBROWSER_RETURN_URL == eventType) {
-            eventRetString = eventData;
-            notifyWebBrowser(instance);
+        if (WebBrowserEvent.WEBBROWSER_RETURN_URL == eventData.type ||
+            WebBrowserEvent.WEBBROWSER_GETCONTENT == eventData.type ||
+            WebBrowserEvent.WEBBROWSER_EXECUTESCRIPT == eventData.type) {
+            eventRetString = eventData.stringValue;
+            notifyWebBrowser(eventData.instance);
             return;
         }
 
         // anonymous inner class can only access final local variable
-        final WebBrowser browser = getWebBrowserFromInstance(instance);
+        final WebBrowser browser = getWebBrowserFromInstance(eventData.instance);
         if (null == browser) {
             return;
         }
         
-        if (WebBrowserEvent.WEBBROWSER_INIT_WINDOW_SUCC == eventType) {
+        if (WebBrowserEvent.WEBBROWSER_INIT_WINDOW_SUCC == eventData.type) {
             browser.getStatus().setInitStatus(true);
             browser.getStatus().setInitFailReason("");
             return;
         }
 
-        final WebBrowserEvent event = new WebBrowserEvent(browser, eventType, eventData);
+        final WebBrowserEvent event = new WebBrowserEvent(browser, 
+                eventData.type, eventData.stringValue);
 
         Runnable dispatchEvent = new Runnable() {
             public void run() {
@@ -277,7 +301,8 @@ class NativeEventThread extends Thread
         try {
             SwingUtilities.invokeLater(dispatchEvent);
         } catch (Exception e) {
-            WebBrowser.trace("Exception occured when invokeLater. ErrMsg is " + e.getMessage());
+            WebBrowser.trace("Exception occured when invokeLater. ErrMsg is " 
+                    + e.getMessage());
         }
     }
 

@@ -18,29 +18,19 @@
  * USA.
  */ 
 
-// stdafx.h : include file for standard system include files,
-//      or project specific include files that are used frequently,
-//      but are changed infrequently
+#ifndef _VariantWrapper_H_
+#define _VariantWrapper_H_
 
-#if !defined(AFX_STDAFX_H__7A8FB3A2_754B_401D_87E6_A7056AD5069C__INCLUDED_)
-#define AFX_STDAFX_H__7A8FB3A2_754B_401D_87E6_A7056AD5069C__INCLUDED_
+class VariantWrapper : public VARIANT
+{
+public:
+					VariantWrapper();
+                    VariantWrapper(VARIANT *pV);
+					~VariantWrapper(void);
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+	VARIANT			*operator&()		{ return this; }
 
-#include <stdio.h>
+	LPSTR			ToString();
+};
 
-#define STRICT
-
-#include <afxwin.h>
-
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0400
 #endif
-#define _ATL_APARTMENT_THREADED
-#include <atlbase.h>
-extern CComModule _Module;
-#include <atlcom.h>
-
-#endif // !defined(AFX_STDAFX_H__7A8FB3A2_754B_401D_87E6_A7056AD5069C__INCLUDED)

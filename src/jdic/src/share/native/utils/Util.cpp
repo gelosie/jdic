@@ -166,3 +166,87 @@ void WBArray::RemoveAt(int nIndex, int nCount)
 			nMoveCount * sizeof(void*));
 	m_nSize -= nCount;
 }
+
+//////////////////////////////////////////////////////////////////
+LogFile::LogFile()
+{
+    char* pszFileName = "log.txt";
+    CFileException fileException;
+
+    if ( !_logFile.Open( pszFileName, CFile::modeCreate |   
+          CFile::modeReadWrite, &fileException ) )
+    {
+        TRACE( "Can't open file %s, error = %u\n",
+            pszFileName, fileException.m_cause );
+    }
+}
+
+LogFile::~LogFile()
+{
+    _logFile.Close();
+}
+
+void LogFile::addLogInfo(CString logInfo)
+{
+    LPTSTR strBuffer = logInfo.GetBuffer(1);
+    _logFile.Write(strBuffer, strlen(strBuffer));
+    char linebreak[2] = "\n";
+    _logFile.Write(linebreak, 2);
+    logInfo.ReleaseBuffer();
+}   
+
+void LogFile::addLogInfo(char* logInfo)
+{
+    _logFile.Write(logInfo, strlen(logInfo));
+    char linebreak[2] = "\n";
+    _logFile.Write(linebreak, 2);
+}
+
+// helper function for tuning the given JavaScript string to assign 
+// the ultimate returned value to a predefined property of the currently 
+// loaded webpage. And then DOM APIs of Mozilla or IE will be used to
+// retrieve the property value. 
+// 
+// As there is no public/frozen APIs for both IE and Mozilla to execute the 
+// given JavaScript and return the execution value, this helper function is 
+// used by ExecuteScript(javaScript) function.
+char* TuneJavaScript(const char* javaScript)
+{
+    // Tune the JavaScript into below format:
+    //     var retValue = eval("<the user input JavaScript string>"); \
+    //     var heads = document.getElementsByTagName('head');"); \
+    //     heads[0].setAttribute(<JDIC_BROWSER_INTERMEDIATE_PROP>, retValue);   
+    
+    // Alloc double space of the given JavaScript string plus enough space
+    // for additional script content.
+    int resultJScriptLen = strlen(javaScript) * 2 + 1024;
+    char* resultJScript 
+        = new char[resultJScriptLen];
+    memset(resultJScript, '\0', resultJScriptLen);
+
+    strcat(resultJScript, "var retValue = eval(\"");
+
+    // Escape all the '\'', '\"' and '\\'s in the JavaScript string.        
+    for (int i = 0; i < (int)strlen(javaScript); i++) {
+        char c = javaScript[i];
+    
+        if (c == '\'' || c == '\"' || c == '\\')
+            resultJScript[strlen(resultJScript)] = '\\';
+    
+        resultJScript[strlen(resultJScript)] = c;
+    }
+    
+    strcat(resultJScript, "\")");
+    strcat(resultJScript, ";");
+    
+    // Store the returned value of eval command as the "head" element property
+    // JDIC_BROWSER_INTERMEDIATE_PROP.
+    strcat(resultJScript, "var heads = document.getElementsByTagName('head');");
+    strcat(resultJScript, "heads[0].setAttribute('");
+    strcat(resultJScript, JDIC_BROWSER_INTERMEDIATE_PROP);
+    strcat(resultJScript, "', retValue);");  
+
+    char* retJScript = strdup(resultJScript);
+    delete [] resultJScript;    
+    return retJScript;
+}
