@@ -3,9 +3,7 @@
     * Release 0.8.5
     
     * Fixed issue list:   
-      Note: 
-      - All the feature enhancements are handled via the reported issues.
-      - For all the reported issues, refer to https://jdic.dev.java.net/servlets/ProjectIssues.
+      Note: All the feature enhancements are handled via the reported issues.
 
       ID  Pri  Summary
       ==  ===  =======   
@@ -30,6 +28,12 @@
       79  P3   Exception java.lang.UnsatisfiedLinkError with liblinc.so link error
       83  P2   Packager can not get remote file through a proxy
       86  P3   Browser component doesn't work with mozilla 1.4.1
+
+    * Known issue list:   
+      Below are some of the most frequently mentioned known issues.
+      Any fixes or contributions to these issues are welcome!
+
+      87  P3   Browser component doesn't work with mozilla 1.7.
 
 2004-07-07 George Zhang <georgez@dev.java.net>
 
