@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+subject to license terms.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the Lesser GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+USA
+-->
+
+<!--
+  - Main build file for screensaver
+  -
+  - Author: Mark Roth
+  -->
+
+<project basedir="." default="init" name="screensaver">
+
+  <target name="properties">
+    <property file="${user.home}/build.properties" />
+    <property file="build.properties" />
+    
+    <property name="build" value="build" />
+    <property name="dist" value="dist" />
+    <property name="release" value="release" />
+    <property name="src" value="src" />
+    
+    <property name="release-version" value="saverbeans-sdk-0_1" />
+  </target>
+  
+  <target name="init" depends="properties" />
+  
+  <!--
+    - Batch targets
+    -->
+  <target name="dist" depends="dist-ant,dist-api,dist-startup">
+    <copy todir="${dist}">
+      <fileset dir="${basedir}">
+        <include name="COPYING" />
+        <include name="README.txt" />
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="release" depends="dist" 
+          description="Build release zip for SaverBeans SDK">
+    <mkdir dir="${release}" />
+    <mkdir dir="${build}/${release-version}" />
+    <copy todir="${build}/${release-version}">
+      <fileset dir="${dist}" />
+    </copy>
+    <zip destfile="${release}/${release-version}.zip">
+      <fileset dir="${build}">
+        <include name="${release-version}/**" />
+      </fileset>
+    </zip>
+  </target>
+    
+  <target name="clean" depends="init" 
+          description="Cleans all generated files">
+    <delete dir="${release}"/>
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <!--
+    - Saver Beans Ant Tasks
+    -->
+  <target name="compile-ant" depends="init"
+          description="Compile Saver Beans ant task">
+      <mkdir dir="${build}/ant" />
+      <javac debug="on" destdir="${build}/ant" srcdir="${src}/ant" 
+             classpath="${ant.home}/lib/ant.jar" />
+      <copy todir="${build}/ant">
+        <fileset dir="${src}/ant">
+          <include name="**/*.template" />
+          <include name="**/*.rc" />
+          <include name="**/*.ico" />
+        </fileset>
+      </copy>
+  </target>
+  
+  <target name="dist-ant" depends="init,compile-ant"
+          description="Distribute Saver Beans ant task">
+      <mkdir dir="${dist}" />
+      <jar destfile="${dist}/saverbeans-ant.jar">
+        <fileset dir="${build}/ant" />
+      </jar>
+  </target>
+    
+  <!--
+    - Saver Beans APIs
+    -->
+  <target name="compile-api" depends="init"
+          description="Compile Saver Beans APIs">
+      <mkdir dir="${build}/api" />
+      <javac debug="on" destdir="${build}/api" srcdir="${src}/api" />
+  </target>
+  
+  <target name="javadoc-api" depends="init"
+          description="Generate javadocs for Screensaver API">
+    <mkdir dir="${dist}/javadoc" />
+    <javadoc packagenames="org.jdesktop.jdic.screensaver"
+             sourcepath="${src}/api"
+             destdir="${dist}/javadoc"
+             author="false"
+             version="false"
+             use="true"
+             Windowtitle="SaverBeans API"
+             Header="SaverBeans API">
+             <docTitle><![CDATA[SaverBeans API (Screensaver)
+               <br>API Specification]]></docTitle>
+             <bottom><![CDATA[<font size="-1">For more information and documentation on JDIC, 
+               see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That documentation 
+               contains more detailed, developer-targeted descriptions, with conceptual 
+               overviews, working code examples, license terms and bug report information.
+               <p>Copyright 2003 Contributors. All rights reserved. Use is subject to 
+               license terms. </font>]]></bottom>
+    </javadoc>
+  </target>
+  
+  <target name="dist-api" depends="init,compile-api,javadoc-api"
+          description="Distribute Saver Beans API JAR">
+    <mkdir dir="${dist}" />
+    <jar destfile="${dist}/saverbeans-api.jar">
+      <fileset dir="${build}/api" />
+    </jar>
+  </target>
+    
+  <!--
+    - Saver Beans Startup Kit
+    -->
+  <target name="compile-startup" depends="init">
+    <mkdir dir="${build}/saverbeans-startup" />
+    <copy todir="${build}/saverbeans-startup">
+      <fileset dir="${src}/startup">
+        <include name="**/*.txt" />
+        <include name="**/*.xml" />
+        <include name="**/*.java" />
+        <include name="**/*.sample" />
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="dist-startup" depends="init,compile-startup">
+    <mkdir dir="${dist}" />
+    <zip destfile="${dist}/saverbeans-startup.zip">
+      <fileset dir="${build}">
+        <include name="saverbeans-startup/**" />
+      </fileset>
+    </zip>
+  </target>
+</project>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+subject to license terms.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the Lesser GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+USA
+-->
+
+<!--
+  - Main build file for bouncingline.
+  - 
+  - Generated with SaverBeans SDK Startup Kit
+  - http://jdic.dev.java.net/
+  -->
+
+<project basedir="." default="dist-unix" name="bouncingline">
+
+  <target name="properties">
+    <property file="${user.home}/build.properties" />
+    <property file="build.properties" />
+    
+    <property name="build" value="build" />
+    <property name="dist" value="dist" />
+    <property name="src" value="src" />
+    <property name="screensaver" value="bouncingline" />
+  </target>
+  
+  <target name="check" description="Check to make sure properties are set">
+    <fail unless="saverbeans.path">
+      Property saverbeans.path not found.  Please copy
+      build.properties.x.sample to build.properties and
+      follow the instructions in that file.
+    </fail>
+    <available file="${saverbeans.path}" property="saverbeans.present" />
+    <fail unless="saverbeans.present">
+      Property saverbeans.path is invalid.  Please set
+      it to the installation path of the SaverBeans SDK.
+    </fail>
+  </target>
+  
+  <target name="define" description="Define custom tasks">
+    <taskdef name="foreachscreensaver" 
+      classname="org.jdesktop.jdic.screensaver.autogen.ForEachScreensaver"
+      classpath="${saverbeans.path}/saverbeans-ant.jar" />
+  </target>
+    
+  <target name="init" depends="properties,check,define" />
+  
+  <target name="compile-share" depends="init"
+          description="Compile the screensaver">
+    <mkdir dir="${build}/share" />
+    <mkdir dir="${build}/${os}" />
+    <javac debug="on" destdir="${build}/share" srcdir="${src}/java" 
+           classpath="${saverbeans.path}/saverbeans-api.jar" />
+    <copy todir="${build}/share">
+      <fileset dir="${src}/java">
+        <exclude name="**/CVS" />
+        <exclude name="**/*.java" />
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="dist-share" depends="compile-share">
+    <mkdir dir="${dist}/${os}" />
+    <jar destfile="${dist}/${os}/${screensaver}.jar">
+      <fileset dir="${build}/share" />
+    </jar>
+    <copy todir="${dist}/${os}">
+      <fileset dir="${saverbeans.path}">
+        <include name="saverbeans-api.jar" />
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean" depends="init" 
+          description="Cleans all generated files">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <!--
+    - TARGETS FOR UNIX DISTRIBUTION
+    -->
+  <target name="compile-unix" depends="init,compile-share"
+          description="Compile the distribution for Unix">
+    <!-- Generate and build native code for each screensaver in src/conf -->
+    <foreachscreensaver confDir="${src}/conf" outDir="${build}/${os}" 
+                        os="${os}">
+      <!-- Build [[source]].o -->
+      <exec dir="${build}/${os}" executable="${cc}" failonerror="true">
+        <arg line="${cc.args}" />
+        <arg line="-o ${basedir}/${build}/${os}/[[source]].o" />
+        <arg line="[[source]].c" />
+      </exec>
+      <!-- Link [[exe]] -->
+      <exec dir="${build}/${os}" executable="${link}" failonerror="true">
+        <arg line="${link.args}" />
+        <arg line="-o ${basedir}/${build}/${os}/[[exe]]" />
+        <arg line="${basedir}/${build}/${os}/[[source]].o" />
+        <arg line="${link.obj}" />
+      </exec>
+      <!-- Strip extra bits off [[exe]] -->
+      <exec dir="${basedir}/${build}/${os}" executable="${strip}" 
+            failonerror="true">
+        <arg line="[[exe]]" />
+      </exec>
+    </foreachscreensaver>
+  </target>
+    
+  <target name="dist-unix" depends="init,dist-share,compile-unix"
+          description="Creates target jar and distribution for Unix">
+    <copy todir="${dist}/${os}">
+      <fileset dir="${build}/${os}">
+        <exclude name="*.c" />
+        <exclude name="*.o" />
+      </fileset>
+      <fileset dir="${src}/conf">
+        <include name="*.xml" />
+      </fileset>
+      <fileset dir="${src}/doc/unix">
+        <include name="README.txt" />
+      </fileset>
+    </copy>
+    <chmod dir="${dist}/${os}" excludes="*.xml,*.jar,*.txt" perm="a+x" />
+  </target>
+  
+  <!--
+    - TARGETS FOR WINDOWS DISTRIBUTION
+    -->
+  <target name="compile-win32" depends="init,compile-share"
+          description="Compile the distribution for Windows">
+    <!-- Generate and build native code for each screensaver in src/conf -->
+    <foreachscreensaver confDir="${src}/conf" outDir="${build}/${os}"
+                        os="${os}">
+      <!-- Build resource [[source]].res -->
+      <exec dir="${build}/${os}" executable="${rc}" failonerror="true">
+        <arg line="/Fo${basedir}\${build}\${os}\[[source]].res" />
+        <arg line="saverbeans.rc" />
+      </exec>
+      
+      <!-- Build [[source]].obj -->
+      <exec dir="${build}/${os}" executable="${cc}" failonerror="true">
+        <arg line="${cc.args}" />
+        <arg line="-DPLATFORM_WIN32" />
+        <arg line="/Fo${basedir}\${build}\${os}\[[source]].obj" />
+        <arg line="-c [[source]].cpp" />
+      </exec>
+      <!-- Link [[source]].scr -->
+      <exec dir="${build}/${os}" executable="${link}" failonerror="true">
+        <arg line="${link.args}" />
+        <arg line="/out:${basedir}\${build}\${os}\[[source]].scr" />
+        <arg line="${basedir}\${build}\${os}\[[source]].res" />
+        <arg line="${basedir}\${build}\${os}\[[source]].obj" />
+        <arg line="${link.obj}" />
+      </exec>
+    </foreachscreensaver>
+  </target>
+
+  <target name="dist-win32" depends="init,dist-share,compile-win32"
+          description="Creates target jar and distribution for Windows">
+    <copy todir="${dist}/${os}">
+      <fileset dir="${build}/${os}">
+        <include name="*.scr" />
+      </fileset>
+      <fileset dir="${src}/doc/win32">
+        <include name="README.txt" />
+      </fileset>
+    </copy>
+  </target>
+</project>

@@ -1,0 +1,56 @@
+# Copyright © 2004 Sun Microsystems, Inc. All rights reserved. Use is
+# subject to license terms.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the Lesser GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+# USA
+
+# You must download the SaverBeans SDK to build this screensaver.
+# Set this to the installation directory for the SaverBeans SDK.
+saverbeans.path=/opt/saverbeans
+
+# Set this to your Java home directory
+jdk.path=/usr/java/j2sdk1.5.0
+
+# Set this to the installed location of the xscreensaver source bundle
+xscreensaver.path=/opt/xscreensaver-4.14
+
+# You should not need to adjust any of the settings below this line.
+os=solaris
+cc=gcc
+link=gcc
+strip=strip
+gcc.args=-Wall -Wstrict-prototypes -Wnested-externs -std=c89 -U__STRICT_ANSI__
+cc.args=${gcc.args} \
+        -c \
+        -I . \
+        -I ${xscreensaver.path}/hacks \
+        -I ${xscreensaver.path}/utils \
+        -I ${xscreensaver.path} \
+        -I ${jdk.path}/include \
+        -I ${jdk.path}/include/solaris \
+        -DPLATFORM_SOLARIS \
+        -DSTANDALONE -g -O2
+link.args=${gcc.args} \
+        -L/usr/local/lib \
+        -L/usr/X11R6/lib \
+        -L${jdk.path}/jre/lib/sparc \
+        -L${jdk.path}/jre/lib/sparc/client \
+        -ljvm -lSM -lICE -lXm -lXt -lX11 -lXmu -lXext -lm
+
+link.obj=${xscreensaver.path}/hacks/screenhack.o \
+          ${xscreensaver.path}/utils/resources.o \
+          ${xscreensaver.path}/utils/visual.o \
+          ${xscreensaver.path}/utils/usleep.o \
+          ${xscreensaver.path}/utils/yarandom.o
