@@ -22,6 +22,8 @@ package org.jdesktop.jdic.tray.internal;
 
 
 import org.jdesktop.jdic.tray.internal.impl.ServiceManagerStub;
+import org.jdesktop.jdic.init.JdicInitException;
+import org.jdesktop.jdic.init.JdicManager;
 
 
 /**
@@ -54,6 +56,18 @@ public class ServiceManager {
      */
     private ServiceManager() {}
   
+    // Add the initialization code from package org.jdesktop.jdic.init.
+    // To set the environment variables or initialize the set up for 
+    // native libraries and executable files.
+    static {
+        try {
+            JdicManager jm = JdicManager.getManager();
+            jm.initShareNative();
+        } catch (JdicInitException e){
+            e.printStackTrace();
+        }
+    }
+      
     /**
      * Gets a service object with the given name. The given service name should be one 
      * of the pre-defined service names.

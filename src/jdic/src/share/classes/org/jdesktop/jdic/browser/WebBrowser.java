@@ -75,7 +75,9 @@ public class WebBrowser extends Canvas
     private static boolean isDebugOn = false;
 
     static {
-        // Add the initialization code from org.jdesktop.jdic.init
+        // Add the initialization code from package org.jdesktop.jdic.init.
+        // To set the environment variables or initialize the set up for 
+        // native libraries and executable files.
         try {
             JdicManager jm = JdicManager.getManager();
             jm.initShareNative();

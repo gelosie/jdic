@@ -58,8 +58,10 @@ public class ServiceManager {
      */
     private ServiceManager() {}
     
+    // Add the initialization code from package org.jdesktop.jdic.init.
+    // To set the environment variables or initialize the set up for 
+    // native libraries and executable files.
     static {
-        // Add the initialization code from org.jdesktop.jdic.init
         try {
             JdicManager jm = JdicManager.getManager();
             jm.initShareNative();
