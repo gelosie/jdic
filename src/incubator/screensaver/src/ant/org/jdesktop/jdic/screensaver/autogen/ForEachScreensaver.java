@@ -65,7 +65,9 @@ import org.xml.sax.SAXException;
  *   <li>[[options]] - Xrm options string for xscreensaver.</li>
  *   <li>[[exe]] - The name of the final executable.</li>
  *   <li>[[source]] - Filename of source file, without extension.</li>
- *   <li>[[joglsettings]] - For Makefile, settings section for jogl.</li>
+ *   <li>[[exes]] - List of exes generated in a Makefile.</li>
+ *   <li>[[all]] - List of targets to build in a Makefile.</li>
+ *   <li>[[targets]] - Actual expanded targets for Makefile.</li>
  * </ul>
  *
  * The tasks in the body of the <foreachscreensaver> task are executed
@@ -274,9 +276,6 @@ public class ForEachScreensaver
         String jarArg, String classArg, String exeName ) 
         throws IOException
     {
-        // Include jogl.jar in the path if this is a JOGL screensaver.
-        if(jogl) jarArg += ":jogl.jar";
-        
         File outFile = new File( outDir, filename );
         Properties substitute = new Properties();
         substitute.setProperty("jar", jarArg);
@@ -302,16 +301,11 @@ public class ForEachScreensaver
             exes.append(value);
             exes.append(' ');
         }
-        if(jogl) exes.append("linkjogl ");
         substitute.setProperty("exes", exes.toString());
-        
-        String joglSettings = "";
-        if(jogl) {
-            joglSettings = 
-                "# Set this to the location of jogl.jar and obj/libjogl.so\n" +
-                "joglhome=/opt/jogl";
-        }
-        substitute.setProperty("joglsettings", joglSettings);
+
+        String all = exes.toString();
+        if(jogl) all += " linkjogl";
+        substitute.setProperty("all", all);
         
         iter = savers.keySet().iterator();
         while(iter.hasNext()) {
@@ -326,10 +320,12 @@ public class ForEachScreensaver
                 "\tchmod a+x " + key + "\n\n");
         }
         if(jogl) {
-            targets.append("linkjogl:\n");
-            targets.append(
-                "\tln -s ${joglhome}/jogl.jar .\n" +
-                "\tln -s ${joglhome}/obj/libjogl.so .\n");
+            targets.append("linkjogl:\n").
+                append("\t@if [ \"${platform}\" = \"Linux\" ]; then \\\n").
+                append("\t    ln -s i386/*.so . ; \\\n").
+                append("\telif [ \"${platform}\" = \"SunOS\" ]; then \\\n").
+                append("\t    ln -s solsparc/*.so . ; \\\n").
+                append("\tfi;");
         }
         substitute.setProperty("targets", targets.toString());
         Utilities.copyFileAndSubstitute(outFile, 
@@ -342,9 +338,6 @@ public class ForEachScreensaver
         ArrayList options )
         throws IOException
     {
-        // Include jogl.jar in the path if this is a JOGL screensaver.
-        if(jogl) jarArg += ":jogl.jar";
-        
         // Go through all options and create a list of valid
         // commandline parameters:
         ArrayList allParams = new ArrayList();

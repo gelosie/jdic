@@ -1,5 +1,5 @@
 /*
- * Copyright © 2004 Sun Microsystems, Inc. All rights reserved. Use is
+ * Copyright ï¿½ 2004 Sun Microsystems, Inc. All rights reserved. Use is
  * subject to license terms.
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -460,8 +460,11 @@ jboolean InitializeJavaVM(void) {
     JavaVMInitArgs vm_args;
     JavaVMOption options[1];
     options[0].optionString = malloc( 320 + strlen(jarName) );
-    sprintf( options[0].optionString, "-Djava.class.path=%s%c%s", jarName,
-        PATH_SEPARATOR, "saverbeans-api.jar" );
+    /* Not all screensavers use JOGL, but it doesn't hurt to add it 
+     * to the classpath. 
+     */
+    sprintf( options[0].optionString, "-Djava.class.path=%s%c%s%c%s", jarName,
+        PATH_SEPARATOR, "saverbeans-api.jar", PATH_SEPARATOR, "jogl.jar" );
     vm_args.version = 0x00010002;
     vm_args.options = options;
     vm_args.nOptions = 1;

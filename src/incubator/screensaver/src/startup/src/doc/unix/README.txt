@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
-Copyright © 2004 Sun Microsystems, Inc. All rights reserved. Use is
+Copyright ï¿½ 2004 Sun Microsystems, Inc. All rights reserved. Use is
 subject to license terms.
 
 This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,6 @@ SaverBeans Screensaver Pack Unix README
 
 Requirements:
   * Administrator access
-  * lesstif (provides /usr/X11R6/lib/libXm.so)
-    Any version will do - you may need an older version if you don't 
-    have glibc2.3; such is the case with Java Desktop System for example.
   * xscreensaver (any version should do, 4-14 and greater is known to work)
   * Java VM 1.5 Beta or higher (Get at http://java.sun.com/).  
 

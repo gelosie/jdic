@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 SaverBeans Screensaver Pack License:
 -------------------------------------------------------------------------------
-Copyright © 2004 Sun Microsystems, Inc. All rights reserved. Use is
+Copyright ï¿½ 2004 Sun Microsystems, Inc. All rights reserved. Use is
 subject to license terms.
 
 This program is free software; you can redistribute it and/or modify
@@ -70,16 +70,12 @@ SaverBeans Screensaver Pack with JOGL Support Unix README
 
 Requirements:
   * Administrator access
-  * lesstif (provides /usr/X11R6/lib/libXm.so)
-    Any version will do - you may need an older version if you don't 
-    have glibc2.3; such is the case with Java Desktop System for example.
   * xscreensaver (any version should do, 4-14 and greater is known to work)
   * Java VM 1.5 Beta or higher (Get at http://java.sun.com/).  
   * JOGL (included with this distribution)
 
 To Install:
-  * Edit Makefile and set jdkhome, xscreensaverhome and joglhome to valid 
-    directories
+  * Edit Makefile and set jdkhome, xscreensaverhome to valid directories
   * Run 'make' to build the screensaver binaries for your platform
   * In the future, there will be a 'make install' task (contributions welcome).
     For now this has to be done manually:

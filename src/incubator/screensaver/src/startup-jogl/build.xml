@@ -140,7 +140,16 @@ USA
       <fileset dir="${src}/doc/unix">
         <include name="README.txt" />
       </fileset>
+      <fileset dir="${saverbeans.path}/lib/jogl">
+        <include name="jogl.jar" />
+      </fileset>
     </copy>
+    <mkdir dir="${dist}/${screensaver}-unix/i386" />
+    <unjar dest="${dist}/${screensaver}-unix/i386"
+           src="${saverbeans.path}/lib/jogl/jogl-natives-linux.jar"/>
+    <mkdir dir="${dist}/${screensaver}-unix/solsparc" />
+    <unjar dest="${dist}/${screensaver}-unix/solsparc"
+           src="${saverbeans.path}/lib/jogl/jogl-natives-solsparc.jar"/>
     <zip destfile="${dist}/${screensaver}-unix.zip" basedir="${dist}"
          includes="${screensaver}-unix/**" />
   </target>
@@ -154,11 +163,9 @@ USA
   <target name="debug" depends="compile">
     <mkdir dir="${build}/jogl-natives"/>
     <unzip dest="${build}/jogl-natives"
-           src="${saverbeans.path}/lib/jogl/jogl-natives-linux.jar"/>
+           src="${saverbeans.path}/lib/jogl/jogl-natives-${arch}.jar"/>
     <unzip dest="${build}/jogl-natives"
            src="${saverbeans.path}/lib/jogl/jogl-natives-win32.jar"/>
-    <unzip dest="${build}/jogl-natives"
-           src="${saverbeans.path}/lib/jogl/jogl-natives-solsparc.jar"/>
     <java classname="org.jdesktop.jdic.screensaver.ScreensaverFrame" 
           fork="true">
       <classpath>
