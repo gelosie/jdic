@@ -18,8 +18,10 @@
 
 package org.jdesktop.jdic.screensaver.autogen;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -82,6 +84,102 @@ public final class Utilities {
                 }
                 out.println( result.toString() );
             }
+        }
+        finally {
+            if( out != null ) out.close();
+            if( in != null ) in.close();
+        }
+    }
+    
+    /**
+     * Copies the given source resource (must be in classpath) to the 
+     * given destination file, substituting all occurrences of 
+     * [[x      ]] with
+     * substitute.getProperty("x").  There can be an arbitrary number
+     * of spaces between the delimeters.  Only Strings can be substituted.
+     * An ASCII 0 will be inserted after the end of the string.
+     *
+     * @param dest The destination file
+     * @param source the source resource
+     * @param substitute The map of keys and values
+     * @throws IOException if an error occurs while copying
+     */
+    public static void copyBinaryFileAndSubstitute(File dest, String source, 
+        Properties substitute)
+        throws IOException
+    {
+        BufferedInputStream in = new BufferedInputStream(
+            Utilities.class.getResourceAsStream(source));
+        FileOutputStream out = null;
+        
+        try {
+            out = new FileOutputStream(dest);
+            int c;
+            while((c = in.read()) != -1) {
+                if(c == '[') {
+                    c = in.read();
+                    if(c == '[') {
+                        // Read until ]]
+                        StringBuffer buffer = new StringBuffer();
+                        do {
+                            c = in.read();
+                            if(c == ']') {
+                                c = in.read();
+                                if(c == ']') {
+                                    break;
+                                }
+                                else if(c == -1) {
+                                    throw new IOException("Unterminated [[");
+                                }
+                                else {
+                                    buffer.append(']');
+                                    buffer.append((char)c);
+                                }
+                            }
+                            else if(c == -1) {
+                                throw new IOException("Unterminated [[");
+                            }
+                            else {
+                                buffer.append((char)c);
+                            }
+                        } while(true);
+                        String tag = buffer.toString().trim();
+                        String value = substitute.getProperty(tag);
+                        if(value == null) {
+                            // no match
+                            out.write('[');
+                            out.write('[');
+                            out.write(buffer.toString().getBytes());
+                            out.write(']');
+                            out.write(']');
+                        }
+                        else {
+                            out.write(value.getBytes());
+                            out.write(0);
+                            long len = 4 + buffer.length() - value.length();
+                            if(len < 0) {
+                                throw new IOException(
+                                  "String for tag ('" + tag + 
+                                  "') is too long for buffer: '" + value + "'");
+                            }
+                            for(int i = 0; i < len; i++) {
+                                out.write(0);
+                            }
+                        }
+                    }
+                    else {
+                        out.write('[');
+                        out.write(c);
+                    }
+                }
+                else {
+                    out.write(c);
+                }
+            }
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+            throw e;
         }
         finally {
             if( out != null ) out.close();

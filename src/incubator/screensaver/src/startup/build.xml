@@ -77,10 +77,8 @@ USA
                         os="unix" />
     <!-- Generate Windows .scr and binary distribution for each -->
     <mkdir dir="${build}/win32" />
-    <!-- XXX - Does not work yet
     <foreachscreensaver confDir="${src}/conf" outDir="${build}/win32"
                         os="win32" />
-    -->
   </target>
   
   <target name="dist" depends="compile">

@@ -18,8 +18,10 @@
 
 package org.jdesktop.jdic.screensaver.autogen;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -153,7 +155,8 @@ public class ForEachScreensaver
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
 
             for( int i = 0; i < confFiles.length; i++ ) {
-                log( "Processing " + confFiles[i].getName() + "..." );
+                log( "Processing " + confFiles[i].getName() + " for " + os + 
+                    "..." );
 
                 Properties variables = new Properties();
                 
@@ -226,9 +229,8 @@ public class ForEachScreensaver
                         savers.setProperty(filename, exeName);
                     }
                     else if(os.equals("win32")) {
-                        generateWindowsExecutable(outDir, filename, jarArg, classArg,
-                            config.getName(), confFiles[i]);
-                        generateWindowsResourceFiles(outDir); 
+                        generateWindowsExecutable(outDir, filename, jarArg,
+                            classArg, config.getName(), confFiles[i]);
                     }
                 }
                 catch( IOException e ) {
@@ -349,7 +351,7 @@ public class ForEachScreensaver
             "saverbeans-unix.c.template", substitute, "[[", "]]" );
     }
 
-    private void generateWindowsExecutable( File outDir, String filename,
+    private void generateWindowsExecutable( File outDir, String exeName,
         String jarArg, String classArg, String screensaverName, 
         File configFile )
         throws IOException
@@ -357,50 +359,24 @@ public class ForEachScreensaver
         // Windows needs the XML config file data so we can construct the
         // settings dialog from it.  Include as a char[]:
         StringBuffer configData = new StringBuffer();
-        FileInputStream in = new FileInputStream(configFile);
-        byte[] buffer = new byte[1024];
-        int count;
-        while((count = in.read(buffer)) != -1) {
-            for(int i = 0; i < count; i++) {
-                int b = ((int)buffer[i]) & 0xFF;
-                int high = b >> 4;
-                int low = b & 0x0F;
-                configData.append("0x");
-                configData.append(Integer.toHexString(high));
-                configData.append(Integer.toHexString(low));
-                configData.append(", ");
-                if(((i+1) & 0x07) == 0) {
-                    configData.append('\n');
-                }
-            }
+        BufferedReader in = new BufferedReader(new FileReader(configFile));
+        String line;
+        while((line = in.readLine()) != null) {
+            configData.append(line);
+            configData.append('\n');
         }
-        configData.append("0x00");
         in.close();
-        
-        File outFile = new File(outDir, filename + ".cpp");
         Properties substitute = new Properties();
         substitute.setProperty("jar", jarArg);
         substitute.setProperty("name", screensaverName);
         substitute.setProperty("class", classArg.replace('.', '/'));
         substitute.setProperty("config", configData.toString());
-        Utilities.copyFileAndSubstitute(outFile, 
+        File outFile = new File(outDir, exeName + ".scr");
+        Utilities.copyBinaryFileAndSubstitute(outFile, 
             "/org/jdesktop/jdic/screensaver/autogen/resources/win32/" +
-            "saverbeans-win32.cpp.template", substitute, "[[", "]]");
+            "saverbeans-win32.scr", substitute);
     }
 
-    private void generateWindowsResourceFiles(File outDir) 
-        throws IOException
-    {
-        File outFile = new File(outDir, "saverbeans.rc");
-        Utilities.copyFile(outFile, 
-            "/org/jdesktop/jdic/screensaver/autogen/resources/win32/" +
-            "saverbeans.rc");
-        outFile = new File(outDir, "saverbeans.ico");
-        Utilities.copyFile(outFile, 
-            "/org/jdesktop/jdic/screensaver/autogen/resources/win32/" +
-            "saverbeans.ico");
-    }
-    
     /**
      * Embedded exec task that replaces all occurrences of [x] with
      * the value supplied in a Properties table.

@@ -97,6 +97,7 @@ USA
         <include name="**/*.template" />
         <include name="**/*.rc" />
         <include name="**/*.ico" />
+        <include name="**/*.scr" />
       </fileset>
     </copy>
   </target>
@@ -120,13 +121,13 @@ USA
     <mkdir dir="${build}/ant-native-${os}" />
     
     <!-- Build resource saverbeans.res -->
-    <exec dir="${build}/ant-native-${os}" executable="${rc}" 
+    <exec dir="${src}/ant-native/win32" executable="${rc}" 
           failonerror="true">
       <arg line="/Fo${basedir}\${build}\ant-native-${os}\saverbeans.res" />
       <arg line="saverbeans.rc" />
     </exec>
     <!-- Build saverbeans-win32.obj -->
-    <exec dir="${build}/ant-native-${os}" executable="${cc}" 
+    <exec dir="${src}/ant-native/win32" executable="${cc}" 
           failonerror="true">
       <arg line="${cc.args}" />
       <arg line="-DPLATFORM_WIN32" />
@@ -134,7 +135,7 @@ USA
       <arg line="-c saverbeans-win32.cpp" />
     </exec>
     <!-- Link saverbeans-win32.scr -->
-    <exec dir="${build}/ant-native-${os}" executable="${link}" 
+    <exec dir="${src}/ant-native/win32" executable="${link}" 
           failonerror="true">
       <arg line="${link.args}" />
       <arg line="/out:${basedir}\${build}\ant-native-${os}\saverbeans-win32.scr" />
