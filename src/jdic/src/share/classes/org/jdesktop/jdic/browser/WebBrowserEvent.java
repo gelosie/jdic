@@ -85,6 +85,8 @@ public class WebBrowserEvent extends EventObject
     
     /**
      * Event fired when the document has loaded completely.
+     * 
+     * @since 0.9
      */
     public static final int WEBBROWSER_DOCUMENT_COMPLETED      
         = 7 + WEBBROWSER_FIRST;

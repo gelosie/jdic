@@ -70,6 +70,7 @@ public interface WebBrowserListener extends java.util.EventListener
      * Invoked when the document loading has been completed.
      *
      * @param event the WebBrowserEvent fired.
+     * @since 0.9
      */
     void documentCompleted(WebBrowserEvent event);
     
