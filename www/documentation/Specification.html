@@ -1,0 +1,660 @@
+<html>
+<head>
+	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<title>JDIC API Readme</title>
+	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+	<meta NAME="AUTHOR" CONTENT=" ">
+	<meta NAME="CREATED" CONTENT="20000519;14440300">
+	<meta NAME="CHANGEDBY" CONTENT=" ">
+	<meta NAME="CHANGED" CONTENT="20000901;17584900">
+</head>
+
+<body>
+<table WIDTH="100%"  height="25" BORDER=0 CELLPADDING=4 CELLSPACING=0 bordercolor="#FFFFCC" BGCOLOR="#99CCFF" >
+  <tr> 
+    <td><p><strong><font face="sans-serif" size="3">Package
+      org.jdesktop.jdic.browser (Browser API) Specification</font></strong></p></td>
+  </tr>
+</table>
+<h2><b>Table of Contents</b></h2>
+<ul>
+  <li><a href="#1. Requirement Specification">1. Requirement Specification</a>
+    <ul>
+      <li><a href="#1.1 Background">1.1 Background</a></li>
+      <li><a href="#1.2 User Objectives">1.2 User Objectives</a></li>
+      <li><a href="#1.3 Functional Requirements">1.3 Functional Requirements</a></li>
+      <li><a href="#1.4 Performance Requirements">1.4 Performance Requirements</a></li>
+      <li><a href="#1.5 Operational Scenarios">1.5 Operational Scenarios</a></li>
+    </ul>
+  </li>
+  <li><a href="#2. Design Specification">2. Design Specification</a>
+    <ul>
+      <li><a href="#2.1 Assumptions and Dependencies">2.1 Assumptions and
+        Dependencies</a></li>
+      <li><a href="#2.2 End-user Characteristics">2.2 End-user characteristics</a></li>
+      <li><a href="#2.3 Goals and Guideline">2.3 Goals and Guideline</a></li>
+      <li><a href="#2.4 Development Method">2.4 Development Method</a></li>
+      <li><a href="#2.5 Architectural Strategies">2.5 Architectural Strategies</a></li>
+      <li><a href="#2.6 System Architecture">2.6 System Architecture</a></li>
+    </ul>
+  </li>
+  <li><a href="#3. Detailed Design">3. Detailed Design</a>
+    <ul>
+      <li><a href="#3.1 Object Hierarchy">3.1 Object Hierarchy</a></li>
+      <li><a href="#3.2 The Event Model">3.2 The Event Model</a></li>
+      <li><a href="#3.3 UML Class Diagrams">3.3 UML Class Diagrams</a></li>
+      <li><a href="#3.4 UML Sequence Diagrams">3.4 UML Sequence Diagrams</a></li>
+    </ul>
+  </li>
+  <li><a href="#4. Related Project">4. Related Projects</a>
+  </li>
+</ul>
+<h3><a name="1. Requirement Specification">1. Requirement Specification</a></h3>
+<blockquote>
+  <p>This section gives a high level overview of the system, performance and functional requirements for
+  the Browser API.</p>
+</blockquote>
+<h4><a name="1.1 Background">1.1 Background</a></h4>
+<blockquote>
+  <p>As HTML is a very popular format of file, the requirement to display HTML or XML file inside Java GUI application is increasing.
+  Unfortunately, so far, in terms of capability, the existing Java API doesn't compete with what modern browsers offer. The goal of
+  Browser API is to provide a simple AWT component which enables Java applications and applets to access basic featured web browsing capability. These basic functionalities include creating browser window, web content rendering, navigation, a basic history mechanism (back &amp; forward), and progress notification.</p>
+</blockquote>
+<h4><a name="1.2 User Objectives">1.2 User Objectives</a></h4>
+<ul>
+  <li> Atomic AWT component which shall be easily incorporated in Java application and applets.</li>
+  <li> The component shall be created and painted as a rectangle area where the browsing content is displayed. In other words, the browser window will look like a rectangle with displayed content, there is no menu, button, taskbar,
+    location bar or status bar that a normal browser window has.</li>
+  <li> The component shall provide Interfaces for simple navigation functions defined in the following section “Functional Requirements”.</li>
+  <li> The component shall send event to listeners about the progress of navigation.</li>
+</ul>
+<h4><a name="1.3 Functional Requirements">1.3 Functional Requirements</a></h4>
+<ul>
+  <li><b>Brower Window Creation</b><br>
+    <br>
+    User shall be able to initialize either a blank browser component or a browser component
+    with a given an URL string. The browser component should appear as a rectangle area where the browsing content shall be rendered. If the size of the html file is bigger than the screen size, the browser component shall display the html file correctly with scroll bar.</li>
+</ul>
+<ul>
+  <li><b>Web Content rendering</b><br>
+    <br>
+    The content of html file should be rendered correctly as in a normal browser.<br>
+    <br>
+    Supported Dynamic content: JavaScript, Netscape plug-ins, ActiveX, Java Plug-in.<br>
+    <br>
+    Supported file types: HTML , XML, JPEG, GIF, PNG, MNG, XBM, RMP.</li>
+</ul>
+<ul>
+  <li><b>Navigation</b><br>
+    <br>
+    User shall be able to browse html files from both web or local location. When user clicks the html link inside the html file displayed, there should be no new window created, the link should be displayed in the current browser window instead.</li>
+</ul>
+<ul>
+  <li><b>Basic History Mechanism</b><br>
+    <br>
+    The component shall keep history of web pages and support navigating back and forward, returning current
+    URL, boolean value indicating if it can navigate back or forward.</li>
+</ul>
+<ul>
+  <li><b>Progress Notification</b><br>
+    <br>
+    The component shall notify progress messages by events. The component shall provide APIs for user to register or unregister as listener. As long as a user is a registered event listener, the component should notify the user the following events when occurs:<br>
+    DownloadStarted: when browser component starts to load a new file.<br>
+    DownloadCompleted: when browser component successfully completed loading a new
+    file.<br>
+    DownloadProgress: when a loading operation is updated.<br>
+    DownloadError: when browser component fail in or abrupt loading new file.</li>
+</ul>
+<h4><a name="1.4 Performance Requirements">1.4 Performance Requirements</a></h4>
+<blockquote>
+  <p>The component performance should not slow down the Java application. For instance, while the component is invoked by loading, reloading or dispatching events, the Java program don't have to wait if it takes long time in practice.</p>
+</blockquote>
+<h4><a name="1.5 Operational Scenarios">1.5 Operational Scenarios</a></h4>
+<ul>
+  <li>Case 1<br>
+    <br>
+    There is the rich web services client use case. This is a swing application that talks to web services via SOAP or similar and displays the results in a rich and interactive way. Often these UIs provide a rich UI to some part of the service and then at some point cross the boundary to the html based web displaying a URL in a browser control.<br>
+    <br>
+    An example of this is grokker (www.groxis.com). This client e.g. can be used to search Amazon. When an article is selected it is displayed in an embedded browser control - one of the reasons grokker currently only runs on windows.<br>
+    <br>
+    On the requirements side this at least demands loading URLs into a swing browser control. These pages will include links which the user will navigate. For basic history support the control will need to support
+    navigating links, navigating back and forward, and querying the currently displayed URL.</li>
+</ul>
+<ul>
+  <li>Case 2:<br>
+    <br>
+    Second use case is an email client (or calendaring, collaboration etc). Html attachments are common and need to be displayed within the body part of the message window. Links are usually followed in another browser window for this application (e.g. see
+    Mozilla).<br>
+    <br>
+    In addition to the above a way to intercept the users browsing actions to dispatch URLs into a separate browser window is needed in this case.</li>
+</ul>
+<hr>
+<h3><a name="2. Design Specification">2. Design Specification</a></h3>
+     
+<blockquote>
+  <p style="font-style: normal; ">This section provides
+ detailed, adequate    information      about the design of the Browser API.  It covers  not  only the system      architecture and UML analyze,
+but also  design considerations  and decisions. </p>
+     
+</blockquote>
+     
+<h4><a name="2.1 Assumptions and Dependencies">2.1 Assumptions and Dependencies</a></h4>
+     
+<blockquote>
+     
+<p>Describe any assumptions or dependencies regarding the software and its
+ use. These may concern such issues as:  </p>
+     
+</blockquote>
+<ul>
+  <li><b>Operating Systems</b>
+    <ul>
+      <li>Win98/ME/NT/2000/XP/2003, Linux SuSE 7.1 or later, RedHat 8 or later, Solaris 8 or later.</li>
+    </ul>
+  </li>
+      <li> <b> Java Environment</b>
+        <ul>
+          <li>J2SE v1.4.2 or later.</li>
+        </ul>
+      </li>
+  <li><b>Browser Environment</b>
+    <ul>
+      <li>Mozilla 1.4 or later.</li>
+      <li>Internet Explorer 5 or later.</li>
+    </ul>
+  </li>
+</ul>
+         
+<h4><a name="2.2 End-user Characteristics">2.2 End-user Characteristics</a></h4>
+     
+<blockquote>
+     
+<p>                   The end-user is defined as Java developer who is in
+ need  of  a  basic    featured   browser component in their Java application.</p>
+     
+</blockquote>
+<h4><a name="2.3 Goals and Guideline">2.3 Goals and Guideline</a></h4>
+     
+<ul>
+       <li>               
+    <p style="margin-bottom: 0cm; ">Simple 	and         only necessary browser
+ functionalities support</p>
+       </li>
+       <li>               
+    <p style="margin-bottom: 0cm; ">Widely 	content         rendering capability</p>
+       </li>
+       <li>               
+    <p style="margin-bottom: 0cm; ">Brower 	neutral</p>
+       </li>
+       <li>               
+    <p style="margin-bottom: 0cm; ">Working,          	looking, or "feeling"
+ like an existing Java APIs</p>
+       </li>
+       <li>               
+    <p> Acceptable performance</p>
+       </li>
+     
+</ul>
+     
+<h4><a name="2.4 Development Method">2.4 Development Method</a></h4>
+     
+<blockquote>
+                    In order to support Java applets, we implement Browser API
+  using an out-process approach. In other words, the native browser implemented
+  in C++ actually runs as a standalone process, outside the Java VM process
+  which Browser API is running in. Socket is used for communication between these two processes.
+</blockquote>
+     
+<h4><a name="2.5 Architectural Strategies">2.5 Architectural Strategies</a></h4>
+     
+<ul>
+  <li>
+     
+<h4> Embedding Browsers</h4>
+     
+  </li>
+</ul>
+<blockquote>
+     
+<p>We provide Java APIs for developer to access         browser capability,
+ but actually the Java code does not implement any    function     of browser.
+ Instead, we embed a real stand alone web browser,    like Mozilla     or
+IE, which serves as a standalone application. The custom app  doesn't know
+which     browser is embed, it can only see the Browser API. The Browser   API  is responsible for calling the native implementation  
+ code and communicate     with native embed browser.</p>
+     
+</blockquote>
+<ul>
+  <li>
+     
+<h4> Extend  from java.awt.Canvas</h4>
+     
+  </li>
+</ul>
+<blockquote>
+     
+<p>The Java browser component is inherited         from java.awt.Canvas. 
+                The AWT Native Interface     enables     rendering libraries
+ compiled to native code to draw directly    to a Java                  Canvas 
+                  drawing surface. This means that such libraries can be used
+   without     being    converted to Java first and without significant impact
+   on performance.     The  Java browser component extends from Canvas and
+ overwrites  the paint    method.</p>
+     
+</blockquote>
+<h4><a name="2.6 System Architecture">2.6 System Architecture</a></h4>
+     
+<blockquote>
+     
+<p> <img src="../../../../java_integration/project_document/design_document/webbrowser/architecture.gif" align="Left" width="584" height="173">
+     <br>
+     <br>
+     </p>
+     
+</blockquote>
+     
+<h2><br>
+    </h2>
+     
+<h2><br>
+    </h2>
+     
+<p>&nbsp;
+    </p>
+     
+<p>&nbsp;
+    </p>
+     
+<p>&nbsp;
+    </p>
+     
+<hr>
+     
+<h3><a name="3. Detailed Design">3. Detailed Design</a></h3>
+     
+<h4><a name="3.1 Object Hierarchy">3.1 Object Hierarchy</a></h4>
+     
+<blockquote>
+     
+<p>This section covers the interface and implementation         object hierarchies.
+  </p>
+     
+<p>From the custom app developer's perspective, there are two parts to the system: the WebBrowser APIs and the event system. The programmatic interface to WebBrowser is a Java class that is implemented by WebBrowser and callable from the custom app. See also the EventListener  interface, which are implemented by the custom app and are called by WebBrowser.
+  </p>
+     
+</blockquote>
+     
+<h4><b>3.1.1 Public Interfaces and Classes</b></h4>
+     
+<blockquote>
+     
+<h4>a) WebBrowser class</h4>
+     
+<p>This class derives from java.awt.Canvas and         overrides the
+Canvas.paint()
+ method so that the native browser can  render       its content over the
+canvas. Applications hosting this class  will support       browsing sites
+on the World Wide Web, as well as directories/files  on   the    local computer
+and on network servers.  </p>
+     
+</blockquote>
+
+<blockquote>    
+<table border="1" width="100%" cellpadding="3" cellspacing="0" summary="">
+  <tbody>
+    <tr bgcolor="#ccccff" class="TableHeadingColor">
+      <td colspan="2"><font size="+2"><b>class WebBrowser </b></font>extends 
+      java.awt.Canvas<br>
+      </td>
+      <td valign="Top"><br>
+      </td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1"><code> <font color="#000000">
+void</font></code></font></td>
+      <td><b><font color="#000000"><code>addNotify</code></font></b><font color="#000000"><code>
+()</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000">Creates the peer of the WebBrowser.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+ void</code></font></td>
+      <td><b><font color="#000000"><code>addWebBrowserEventListener</code></font></b><font color="#000000"><code>
+(WebBrowserListener listener)</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000">Adds an event listener for WebBrowser
+events.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+ void</code></font></td>
+      <td><b><font color="#000000"><code>back</code></font></b><font color="#000000"><code>
+()</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000">Navigate to the previous session
+history item.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+ void</code></font></td>
+      <td><b><font color="#000000"><code>forward</code></font></b><font color="#000000"><code>
+()</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000">Navigate to the next session
+history item.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+&nbsp;WebBrowser.Status</code></font></td>
+      <td><b><font color="#000000"><code>getStatus</code></font></b><font color="#000000"><code>
+()</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000">Return a Status object.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+&nbsp;java.net.URL</code></font></td>
+      <td><b><font color="#000000"><code>getURL</code></font></b><font color="#000000"><code>
+()</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000">Retrieves the URL of the resource
+that is currently displaying.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+ void</code></font></td>
+      <td><b><font color="#000000"><code>paint</code></font></b><font color="#000000"><code>
+(java.awt.Graphics g)</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000"><br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+ void</code></font></td>
+      <td><b><font color="#000000"><code>refresh</code></font></b><font color="#000000"><code>
+()</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000">Reloads the file that is currently
+displayed in the object.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+ void</code></font></td>
+      <td><b><font color="#000000"><code>removeWebBrowserEventListener</code></font></b><font color="#000000"><code>
+(WebBrowserListener listener)</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000">Removes an event listener for
+WebBrowser events.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+ void</code></font></td>
+      <td><b><font color="#000000"><code>setBounds</code></font></b><font color="#000000"><code>
+(int x,           int y,           int w,           int h)</code></font><b><font color="#000000"><code>
+ </code></font></b></td>
+      <td valign="Top"><font color="#000000">Moves and resizes this component.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+ void</code></font></td>
+      <td><b><font color="#000000"><code>setURL</code></font></b><font color="#000000"><code>
+(java.net.URL url)</code></font><b><font color="#000000"><br>
+ </font></b></td>
+      <td valign="Top"><font color="#000000">Navigates to a resource identified
+by a URL or to the file identified  by a full path.<br>
+      </font></td>
+    </tr>
+    <tr bgcolor="white" class="TableRowColor">
+      <td align="Right" valign="Top" width="1%"><font size="-1" color="#000000"><code>
+ void</code></font></td>
+      <td><b><font color="#000000"><code>stop</code></font></b><font color="#000000"><code>
+()</code></font><b><br>
+      </b> </td>
+      <td valign="Top">Stops loading of current URL.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</blockquote>
+     
+<blockquote>
+     
+<h4>b) WebBrowserListener interface</h4>
+     
+<p>For the more than minimal browser, it is necessary to get event notifications 
+          from the native browser. Hence, WebBrowser will surface event listener 
+       APIs.   The custom app developer would implement these APIs in the
+ app,     and  register   their implementations with WebBrowser so that the
+ appropriate      callback methods   in the custom app would be invoked.</p>
+     
+</blockquote>
+<blockquote>     
+<table cellspacing="0" cellpadding="3" border="1" style="border-collapse: collapse; " bordercolor="#111111" width="100%">
+       <tbody>
+         <tr class="TableHeadingColor" bgcolor="#ccccff">
+           <td colspan="3"><b><font size="+2">     interface     WebBrowserListener</font></b>
+                     extends      java.util.EventListener     </td>
+         </tr>
+         <tr>
+           <td align="Right"><font size="-1"><tt>void</tt></font></td>
+           <td><tt><b>downloadStarted</b>(</tt><code>WebBrowserEvent    
+event</code><tt>           )</tt></td>
+           <td>Fires when a download operation is beginning.</td>
+         </tr>
+         <tr>
+           <td align="Right"><font size="-1"><tt>void</tt></font></td>
+           <td><tt><b>downloadCompleted</b>(</tt><code>  WebBrowserEvent
+event</code><tt>        )</tt></td>
+           <td>Fires when a download operation finishes, is halted, or fails.</td>
+         </tr>
+         <tr>
+           <td align="Right"><font size="-1"><tt>void</tt></font></td>
+           <td><tt><b>downloadProgress</b>(</tt><code> WebBrowserEvent  
+  event</code><tt>       )</tt></td>
+           <td>Fires when the progress of a download operation is updated.</td>
+         </tr>
+         <tr>
+           <td align="Right"><font size="-1"><tt>void</tt></font></td>
+           <td><tt><b>downloadError</b>(</tt><code>WebBrowserEvent     event</code><tt>
+           )</tt></td>
+           <td>Fires when an error occurs during download.</td>
+         </tr>
+           
+  </tbody>   
+</table>
+</blockquote>     
+<blockquote>
+     
+<h4>c) WebBrowserEvent class</h4>
+     
+<p>The WebBrowerEvent is a subclass of java.awt.AWTEvent.         It defines
+ the ID representing specified WebBrowser event and provide     constructor
+    function.   </p>
+     
+</blockquote>
+<blockquote>     
+<table cellspacing="0" cellpadding="3" border="1" style="border-collapse: collapse; " bordercolor="#111111" width="100%">
+      <tbody>
+       <tr class="TableHeadingColor" bgcolor="#ccccff">
+        <td colspan="3"><font size="+2"><b>class</b></font><b><font size="+2">
+         WebBrowserEvent</font></b> extends      java.util.EventObject</td>
+      </tr>
+      <tr>
+        <td align="Right"> </td>
+        <td><tt><b>WebBrowserEvent</b></tt><code>(WebBrowser source)</code></td>
+        <td>Constructor.</td>
+      </tr>
+      <tr>
+        <td align="Right"><font size="-1"><tt>int</tt></font></td>
+        <td><tt><b>getID</b>()</tt></td>
+        <td>Gets the event ID.</td>
+      </tr>
+      <tr>
+        <td align="Right"><font size="-1"><tt>String</tt></font></td>
+        <td><tt><b>getData</b>()</tt></td>
+        <td>Gets the event data, if any.</td>
+      </tr>
+           
+  </tbody>   
+</table>
+</blockquote>     
+<blockquote>
+     
+<h4>d) WebBrowserStatus class</h4>
+     
+<p>This is an inner class which is used for retrieving the WebBrowser's property,
+ such as initialization status, command status.</p>
+     
+</blockquote>
+<blockquote>     
+<table cellspacing="0" cellpadding="3" border="1" style="border-collapse: collapse; " bordercolor="#111111" width="100%">
+       <tbody>
+         <tr class="TableHeadingColor" bgcolor="#ccccff">
+           <td colspan="3"><b><font size="+2">     class Status</font></b></td>
+         </tr>
+         <tr>
+           <td align="Right"><code>boolean</code></td>
+           <td><tt><b>isInitialized</b>()</tt></td>
+           <td>Indicates whether the WebBrowser object is successfully initialized.</td>
+         </tr>
+         <tr>
+           <td align="Right"><code>boolean</code></td>
+           <td><tt><b>isBackEnabled</b>()</tt></td>
+           <td>Indicates whether the back() method is enabled.</td>
+         </tr>
+         <tr>
+           <td align="Right"><code>boolean</code></td>
+           <td><tt><b>isForwardEnabled</b>()</tt></td>
+           <td>Indicates whether the forward() method is enabled.</td>
+         </tr>
+           
+  </tbody>   
+</table>
+</blockquote>     
+<h4>3.1.2 Private Classes</h4>
+     
+<ul>
+  <li><b>NativeEventThread</b></li>
+</ul>
+<blockquote>
+     
+<p>NativeEventThread is a java.lang.Thread subclass.         It is created
+ when the first WebBrowser created. When run, this thread      goes   into
+ an infinite loop that executes the native event loop once  and    process
+   the events came from custom app. There is only one instance  of   NativeEventThread
+   for all WebBrowser.</p>
+     
+<p>NativeEventThread has three purposes:</p>
+     
+  <ul>
+     <li>to give the browser a chance to process         its own native events
+ (mouse, keypress, paint, etc.)</li>
+     <li>to process events from the java to the         browser.</li>
+     <li>to process events from the browser to java.</li>
+     
+  </ul>
+</blockquote>
+<ul>
+  <li><b>NativeEventData</b></li>
+</ul>
+<blockquote>
+     
+<p>NativeEventData is the event object which         transfers the call from
+ custom app to NativeEventThread. It has two   important      attributes:
+instance and type. The instance attribute indicates    to which    WebBrowser
+ the event is related; the type attribute indicate   ID of  the  event  type.
+NativeEventData  holds a vector of NativeEventData   named nativeEvents.
+   When WebBrowser gets  a method call from custom app,   a corresponding
+NativeEventData     will be created  and added to nativeEvents.   NativeEventThread
+process the    events from nativeEvents  continuously.      </p>
+     
+</blockquote>
+     
+<h4><a name="3.2 The Event Model">3.2 The Event Model</a></h4>
+     
+<blockquote>
+     
+<p>The details of sending an event from java         to the browser are as
+ follows.  </p>
+     
+<p>When the custom app calls WebBrowser method,         say setURL, WebBrowser
+ makes a new NativeEventData, which includes   the    detail  event type
+&amp;  data, and add it to the NativeEventThread's   private    event  queue
+- nativeEvents.  NativeEventThread peeks the event   from nativeEvents  
+   in run(), and send the message to native browser through  two instance
+ which    communicate  through socket: MsgServer and MsgClient.</p>
+     
+<p>The details of sending an event from the browser to java are as follows.
+  </p>
+     
+  <p>When a browser event occurrs, it sends out         the event through socket,
+ NativeEventThread get this event   through            MsgClient and then
+process this event. Due to the thread-safety     reason, it invokes  the 
+dispatchWebBrowserEvent method of WebBrowser . WebBrowser.dispatchWebBrowserEvent
+analyzes the WebBrowseEvent and passes them   to <span style="font-style: normal; ">
+                  the  registered WebBrowserListerner.</span></p>
+     
+</blockquote>
+     
+<h4><b><a name="3.3 UML Class Diagrams">3.3 UML Class Diagrams</a>   </b></h4>
+     
+<blockquote>
+     
+<h4><b>
+     <i>   <img src="../../../../java_integration/project_document/design_document/webbrowser/Class.gif" alt="" width="1040" height="552">
+     <br>
+     </i>   </b></h4>
+     
+</blockquote>
+<h4><a name="3.4 UML Sequence Diagrams">3.4 UML Sequence Diagrams</a></h4>
+<ul>
+  <li>
+     <b>Graph 1</b>. Initialization<br>
+     <br>
+     <img src="../../../../java_integration/project_document/design_document/webbrowser/Seq-3.gif" alt="" width="770" height="907">
+     <br>
+     <br>
+     <br>
+     
+  </li>
+  <li><b>Graph 2</b>. A call of loadURL (example:         invocation of function
+    loadURL)</li>
+</ul>
+<blockquote>
+  <p><img src="../../../../java_integration/project_document/design_document/webbrowser/Seq-1.gif" alt="" width="887" height="398">
+     <br>
+     <br>
+  </p>
+</blockquote>
+<ul>
+  <li><b>Graph 3. </b>Native Event Handling</li>
+</ul>
+<blockquote>
+     
+<p><br>
+     <img src="../../../../java_integration/project_document/design_document/webbrowser/Seq-2.gif" alt="" width="887" height="398">
+     <br>
+     </p>
+     
+</blockquote>
+<hr>
+<h3><a name="4. Related Project">4. Related Project</a></h3>
+<blockquote>
+  <p>Browser API learns some ideas from <a href="http://www.mozilla.org/projects/blackwood/webclient/index.html">Webclient</a>.
+  But unlike Webclient, Browser API targets to provide the full capability to
+  build up a Java GUI's embedded browser, it's more likely a HTML/XML viewer
+  that can be embedded into any Java application as an AWT component.</p>
+</blockquote>
+</body>
+</html>
