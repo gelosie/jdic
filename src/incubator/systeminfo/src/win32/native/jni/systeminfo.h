@@ -14,7 +14,13 @@ extern "C" {
  */
 JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_systeminfo_SystemInfo_nativeGetSessionIdleTime
   (JNIEnv *, jclass);
-
+/*
+ * Class:     org_jdesktop_jdic_systeminfo_SystemInfo
+ * Method:    nativeIsSessionLocked
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_systeminfo_SystemInfo_nativeIsSessionLocked
+  (JNIEnv *, jclass);
 #ifdef __cplusplus
 }
 #endif

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  */
- 
+#include <stdio.h>
 #include <windows.h>
 #include <jni.h>
 #include "systeminfo.h"
@@ -33,3 +33,31 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_systeminfo_SystemInfo_nativeGetSe
 
   return (jlong)(tickCount - lastInputInfo.dwTime);
 }
+
+JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_systeminfo_SystemInfo_nativeIsSessionLocked
+  (JNIEnv *, jclass) {
+  
+  HDESK hDesktop;
+
+  
+   // Try to open the desktop that user is currently on. This
+   // desktop will return a zero for access error which means 
+   // windows workstation is locked.
+   hDesktop = OpenInputDesktop(0, // DWORD dwFlags
+                               0, // BOOL fInherit
+                               0  // ACCESS_MASK dwDesiredAccess
+                               );
+                        
+   if(hDesktop == 0L)
+   {
+      // If the call fails due to access denied, the windowslogon
+      // is running because the specified desktop exists you just
+      // don't have any access.
+      return JNI_TRUE;      
+   }
+
+   CloseDesktop(hDesktop);
+   return JNI_FALSE;
+
+}
+
