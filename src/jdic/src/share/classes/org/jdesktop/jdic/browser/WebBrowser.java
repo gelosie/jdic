@@ -59,7 +59,7 @@ public class WebBrowser extends Canvas
     // eventThread should be initialized after JdicManager.initShareNative() 
     // in static block.
     private static NativeEventThread eventThread; 
-    private Vector webclientListeners = new Vector();
+    private Vector webBrowserListeners = new Vector();
     private int instanceNum;
     private static int lastInstanceNum = 0;
     private static boolean isRunningOnWindows = false;
@@ -218,12 +218,12 @@ public class WebBrowser extends Canvas
         int size;
         Vector tl;
         synchronized (this) {
-            size = webclientListeners.size();
+            size = webBrowserListeners.size();
             if (size == 0) {
                 return;
             }
 
-            tl = (Vector) webclientListeners.clone();
+            tl = (Vector) webBrowserListeners.clone();
         }
 
         for (int i = 0; i < size; ++i) {
@@ -262,8 +262,8 @@ public class WebBrowser extends Canvas
      */
     public synchronized void addWebBrowserListener(
             WebBrowserListener listener) {
-        if (! webclientListeners.contains(listener)) {
-            webclientListeners.addElement(listener);
+        if (! webBrowserListeners.contains(listener)) {
+            webBrowserListeners.addElement(listener);
         }
     }
 
@@ -280,7 +280,18 @@ public class WebBrowser extends Canvas
         if (listener == null) 
             return;
         
-        webclientListeners.removeElement(listener);
+        webBrowserListeners.removeElement(listener);
+    }
+
+    /**
+     * Returns an array of all the registered WebBrowser listeners.
+     *
+     * @return all of this component's <code>WebBrowserListener</code>s or an 
+     *         empty array if no component listeners are currently registered.
+     * @since 0.9 
+     */
+    public WebBrowserListener[] getWebBrowserListeners() {
+        return (WebBrowserListener[])webBrowserListeners.toArray();
     }
 
     /**
