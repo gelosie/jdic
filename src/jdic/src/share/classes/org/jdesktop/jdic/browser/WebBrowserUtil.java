@@ -38,6 +38,7 @@ public class WebBrowserUtil {
     
     /* native functions */
     private static native String nativeGetBrowserPath();
+    private static native String nativeGetMozillaGreHome();    
     static native void nativeSetEnv();
     
     /**
@@ -70,4 +71,12 @@ public class WebBrowserUtil {
             }
         }
     }
+
+    /**
+     *  Gets the native Mozilla GRE home directory installed with a .exe package.
+     *  @return the GRE home directory of the currently installed Mozilla.
+     */
+    public static String getMozillaGreHome() {
+        return nativeGetMozillaGreHome();
+    }    
 }

@@ -56,7 +56,10 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
     
     cb = sizeof(browserPath);
     if (RegQueryValueEx(hkey, "", 0, &type, (LPBYTE)browserPath, &cb) != ERROR_SUCCESS)
+    {
+        RegCloseKey(hkey);    
         return 0;
+    }
     //remove the trailing part after the first space character at the rear of .exe
     char* lwrBrowserPath = _strlwr(_strdup(browserPath));
     char* exeStr = strstr(lwrBrowserPath, ".exe");
@@ -95,6 +98,64 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeSetEn
     _putenv("JAVA_PLUGIN_WEBCONTROL_ENABLE=1");
 }
 
+/*
+ * Class:     org_jdesktop_jdic_browser_WebBrowserUtil
+ * Method:    nativeGetMozillaGreHome
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGetMozillaGreHome
+  (JNIEnv *env, jobject)
+{
+    const char* greParentKey = "Software\\mozilla.org\\GRE\\";
+
+    HKEY  hKey = NULL;
+    DWORD loop = 0;
+    char  greVersionKey[256];   
+    DWORD greVersionKeyLen = 256;
+    char *lastVersionKey;
+
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, greParentKey, 0, KEY_READ, &hKey) 
+        == ERROR_SUCCESS)
+    {
+        while(RegEnumKeyEx(hKey, loop++, greVersionKey, &greVersionKeyLen,
+                           NULL, NULL, NULL, NULL) != ERROR_NO_MORE_ITEMS)
+        {
+#ifdef DEBUG
+    printf("One GRE version key value: %s\n", greVersionKey);
+#endif
+
+            lastVersionKey = strdup(greVersionKey);
+            greVersionKeyLen = 256;
+        }
+      RegCloseKey(hKey);     
+    }
+
+    // !!!Note: here it returns the latest GRE directory, which should be 
+    // fixed to return the GRE directory matching the currently running
+    // Mozilla binary.
+    if (lastVersionKey == NULL) {
+        return NULL;
+    }
+    
+    char szKey[256], greHome[256];
+    strcpy(szKey, greParentKey);
+    strcat(szKey, lastVersionKey);
+    DWORD cb;   
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, szKey, 0, KEY_QUERY_VALUE, &hKey) 
+        != ERROR_SUCCESS) {
+        return 0;
+     }
+     
+     if (RegQueryValueEx(hKey, "GreHome", NULL, NULL, (BYTE *)greHome,
+            &cb) != ERROR_SUCCESS) {
+          RegCloseKey(hKey); 
+          return 0;
+      } 
+          
+      RegCloseKey(hKey); 
+
+      return env->NewStringUTF(greHome);
+}
 #ifdef __cplusplus
 }
 #endif

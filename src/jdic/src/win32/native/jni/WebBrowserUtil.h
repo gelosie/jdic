@@ -24,6 +24,14 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeSetEnv
   (JNIEnv *, jclass);
 
+/*
+ * Class:     org_jdesktop_jdic_browser_WebBrowserUtil
+ * Method:    nativeGetMozillaGreHome
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGetMozillaGreHome
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

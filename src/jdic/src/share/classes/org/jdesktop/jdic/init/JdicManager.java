@@ -58,7 +58,7 @@ public class JdicManager {
     /** The environment variable for library path setting */
     String libPathEnv = isWindows ? "PATH" : "LD_LIBRARY_PATH";
     
-    /** The path for the native files */ 
+    /** The path for the JDIC native files (jdic.dll/libjdic.so, etc) */ 
     String binaryPath = null;
 
     /**  Singleton instance of this class */
@@ -146,18 +146,30 @@ public class JdicManager {
         }
 
         try {
-            // Pre-append the binary path to PATH(on Windows) or LD_LIBRARY_PATH 
-            // (on Unix).                     
+            // Pre-append the JDIC binary path to PATH(on Windows) or 
+            // LD_LIBRARY_PATH(on Unix).                     
             InitUtility.appendEnv(libPathEnv, binaryPath); 
-            // Check and set MOZILLA_FIVE_HOME, add it to PATH(on Windows) or 
-            // LD_LIBRARY_PATH (on Unix). 
+
             String browserPath = WebBrowserUtil.getBrowserPath();
             if (browserPath == null) {
                 throw new JdicInitException(
                     "Can't locate the native browser path!");
             }
-        
-            if (WebBrowserUtil.isDefaultBrowserMozilla()) {
+
+            // Mozilla is the default/embedded browser.
+            if (WebBrowserUtil.isDefaultBrowserMozilla()) {                   
+                // Use the user defined env variable or the mozilla binary
+                // path as the default MOZILLA_FIVE_HOME value.
+                String envMFH = InitUtility.getEnv("MOZILLA_FIVE_HOME");
+                if (envMFH == null) {
+                    File browserFile = new File(browserPath);
+                    if (browserFile.isDirectory()) {
+                        envMFH = browserFile.getCanonicalPath();
+                    } else {
+                        envMFH = browserFile.getCanonicalFile().getParent();
+                    }
+                }
+                
                 if (!isWindows) {
                     // On Unix, add the binary path to PATH.
                     InitUtility.appendEnv("PATH", binaryPath);
@@ -165,35 +177,38 @@ public class JdicManager {
                     // "x" permission after extracted from .jar file.
                     String browserBinary = WebBrowser.getBrowserBinary();
                     Runtime.getRuntime().exec("chmod a+x "+ 
-                            binaryPath+File.separator+browserBinary);                    
-                }               
-                    
-                String envMFH = InitUtility.getEnv("MOZILLA_FIVE_HOME");
-                if (envMFH == null) {
-                    // If MOZILLA_FIVE_HOME not set, set it and add it to PATH
-                    // (on Windows) or LD_LIBRARY_PATH(on Unix). 
-                    File browserFile = new File(browserPath);
-                    if (browserFile.isDirectory()) {
-                        envMFH = browserFile.getCanonicalPath();
-                    } else {
-                        envMFH = browserFile.getCanonicalFile().getParent();
+                            binaryPath + File.separator + browserBinary);                    
+                } else {               
+                    // Mozilla on Windows, 
+                    // - first reset MOZILLA_FIVE_HOME to the GRE directory path 
+                    //   [Common Files]\mozilla.org\GRE\1.x_BUILDID, 
+                    //   if Mozilla installs from a .exe package.
+                    //  
+                    // - then copy MozEmbed.exe to %MOZILLA_FIVE_HOME% directory.               
+                    String xpcomPath = envMFH + File.separator + "xpcom.dll";                        
+                    if (!(new File(xpcomPath).isFile())) {
+                        // Mozilla installs from a .exe package. Check the 
+                        // installed GRE directory.
+                        String mozGreHome 
+                            = WebBrowserUtil.getMozillaGreHome();
+                        if (mozGreHome == null) {
+                            throw new JdicInitException(
+                                "Can't locate the GRE directory of the " +
+                                "installed Mozilla binary: " + envMFH);
+                        }                       
+                        envMFH = mozGreHome;
                     }
-                        
-                    InitUtility.appendEnv("MOZILLA_FIVE_HOME", envMFH);
-                    InitUtility.appendEnv(libPathEnv, envMFH);
-                }
-                
-                // For Mozilla 1.4 on Windows, copy MozEmbed.exe to 
-                // MOZILLA_FIVE_HOME.
-                if (isWindows) {
+                    
                     String sourceFileName = binaryPath + File.separator 
-                        + "MozEmbed.exe";
+                        + "MozEmbed.exe";                      
                     String destFileName = envMFH + File.separator 
-                        + "MozEmbed.exe";
-    
-                    InitUtility.copyFile(sourceFileName, destFileName);    
+                        + "MozEmbed.exe";                    
+                    InitUtility.copyFile(sourceFileName, destFileName);                   
                 }
-            }
+
+                InitUtility.appendEnv("MOZILLA_FIVE_HOME", envMFH);
+                InitUtility.appendEnv(libPathEnv, envMFH);
+            } // end - Mozilla is the default/embedded browser.
         } catch (Throwable e) {
             throw new JdicInitException(e);
         }
