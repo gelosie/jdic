@@ -73,7 +73,7 @@ public class GnomeSystemTrayService implements SystemTrayService {
 
         t.sync();
 
-        System.loadLibrary("tray");
+        System.loadLibrary("jdic");
         if (!locateSystemTray()) {
             throw new Error("System Tray not Found !");
         }
