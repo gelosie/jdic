@@ -38,19 +38,22 @@ public class SimpleBrowser {
         System.out.println("=== Test setContent()/getContent()/executeScript() APIs ===");
         System.out.println("===========================================================");
                        
+        // Chinese characters contained to test unicode support.
         String HTML_CONTENT =
             "<html>" +
             "<head>" +
-            "<script>" +
+              "<script>" +
                 "var counter = 100;" +
                 "function scriptMethod() { " +
                     "alert('scriptMethod() within the loaded page'); " +
                 "}" +
-            "</script>" +
+              "</script>" +
             "</head>" +
+            "<title>Test Page for JDIC Browser Component</title>" +
             "" +
             "<body>" +
             "<div id='theDiv'>This page content is set using setContent() API</div>" +
+            "本页内容由setContent()方法设置。" +
             "</body>" +
             "</html>";
 
@@ -61,12 +64,12 @@ public class SimpleBrowser {
             "document.bgColor='blue';";        
         String result = webBrowser.executeScript(jscript);
         System.out.println("Execution of: " + jscript + " returns: " + result);
-                
+
         System.out.println("============================");
         System.out.println("=== To test getContent() ===");
         System.out.println("============================");
         String content = webBrowser.getContent();
-        System.out.println("getContent() returns: " + content);    
+        System.out.println("getContent() returns: " + content);           
 
         System.out.println("============================");
         System.out.println("=== To test setContent() ===");   
@@ -92,6 +95,7 @@ public class SimpleBrowser {
             System.out.println("=== ERROR: getContent() doesn't return the "
                 + "content set by setContent() ???");
         }       
+
     }
         
     public static void main(String[] args) {
@@ -130,6 +134,9 @@ public class SimpleBrowser {
 
         try {
             webBrowser.setURL(new URL("http://java.net"));
+            // Below Chinese website tests unicode support.
+            //webBrowser.setURL(new URL("http://www.google.com/intl/zh-CN/"));
+            
             // Print out debug messages in the command line.
             //webBrowser.setDebug(true);
         } catch (MalformedURLException e) {
