@@ -64,6 +64,11 @@ and the effect will become clear.&nbsp; The beans at the top of the
 screen are going in a circle that's bigger than the screen and the
 beans on the bottom of the screen are simply a reflection.<br>
 <br>
+<span style="font-weight: bold;">Q.</span> Is it possible to change whcih Java Virtual Machine (JVM) the screensaver will use?<br>
+<span style="font-weight: bold;">A.</span> On Unix, the virtual machine
+is automatically detected using the steps outlined in the README.&nbsp;
+If this automatic detection fails, you can override it by passing <code>-jdkhome</code> to the screensaver.&nbsp; On Windows, the screensaver will use the "<code>HKEY_LOCAL_MACHINE\Software\JavaSoft\Java Runtime Environment\JavaHome</code>" registry setting to determine which JVM to use.&nbsp; This is automatically set by the JVM installer.<br>
+<br>
 <br>
 
 </body></html>
