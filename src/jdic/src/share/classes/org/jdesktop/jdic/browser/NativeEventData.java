@@ -23,7 +23,8 @@ package org.jdesktop.jdic.browser;
 import java.awt.Rectangle;
 
 /**
- * An internal class that declares an event class used to be dispatched from WebBrowser to NativeEventThread.
+ * An internal class that declares an event class used to be dispatched 
+ * from <code>WebBrowser</code> to <code>NativeEventThread</code>.
  *
  * @see WebBrowser
  * @see NativeEventThread

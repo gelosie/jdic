@@ -22,10 +22,13 @@ package org.jdesktop.jdic.browser;
 
 /**
  * The listener interface for receiving WebBrowser events. The class that is
- * interested in processing a WebBrowser event implements this interface.
- * The object created with that class is registered with a WebBrowser component,
- * using the <code>addWebBrowserListener</code> method. When the WebBrowser 
- * event occurs, that object's corresponding method is invoked.
+ * interested in processing a WebBrowser event implements this interface or 
+ * inherits the <code>WebBrowserAdapter</code> abstract class.
+ * <p>
+ * The object created with that class is registered with a <code>
+ * WebBrowser</code> component, using the <code>addWebBrowserListener</code> 
+ * method. When the WebBrowser event occurs, that object's corresponding method 
+ * is invoked.
  *
  * @see WebBrowserEvent
  * @see WebBrowser 
@@ -71,14 +74,14 @@ public interface WebBrowserListener extends java.util.EventListener
     void documentCompleted(WebBrowserEvent event);
     
     /**
-     * Invoked when the title of a document changes.
+     * Invoked when the title of a document is changed.
      * 
      * @param event the WebBrowserEvent fired.
      */
     void titleChange(WebBrowserEvent event);
 
     /**
-     * Invoked when the status bar text changes.
+     * Invoked when the status bar text is changed.
      * 
      * @param event the WebBrowserEvent fired.
      */

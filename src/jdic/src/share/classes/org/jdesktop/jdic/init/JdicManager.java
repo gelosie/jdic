@@ -187,9 +187,9 @@ public class JdicManager {
                     InitUtility.preAppendEnv("PATH", binaryPath);
                     // When running on webstart, the browser binary will lose
                     // "x" permission after extracted from .jar file.
-                    String browserBinary = WebBrowser.getBrowserBinary();
+                    String embedBinary = WebBrowser.getEmbedBinaryName();
                     Runtime.getRuntime().exec("chmod a+x "+ 
-                            binaryPath + File.separator + browserBinary);                    
+                            binaryPath + File.separator + embedBinary);                    
                 } else {               
                     // Mozilla on Windows, reset MOZILLA_FIVE_HOME to the GRE 
                     // directory path:  

@@ -61,16 +61,17 @@ class NativeEventThread extends Thread
     public void run() {
         // create native browser process
         try {
-            if (WebBrowser.getBrowserBinary() == null) { 
-                setBrowsersInitFailReason("BrowserBinary not set");
-                WebBrowser.trace("browserBinary not set, system exit");
+            if (WebBrowser.getEmbedBinaryName() == null) { 
+                setBrowsersInitFailReason("Embedding browser binary is not set");
+                WebBrowser.trace("Embedding browser binary is not set, " +
+                        "system exit");
                 return;
             }     
             String jvmVendor = System.getProperty("java.vm.vendor");
-            if (WebBrowser.getBrowserBinary().endsWith("IeEmbed.exe") 
+            if (WebBrowser.getEmbedBinaryName().endsWith("IeEmbed.exe") 
                     && jvmVendor.startsWith("Sun"))
                 WebBrowserUtil.nativeSetEnv();
-            final String cmd = WebBrowser.getBrowserBinary() + " -port=" 
+            final String cmd = WebBrowser.getEmbedBinaryName() + " -port=" 
                 + messenger.getPort();
             WebBrowser.trace("Executing " + cmd);
             AccessController.doPrivileged(
@@ -310,16 +311,20 @@ class NativeEventThread extends Thread
         nativeEvents.addElement(new NativeEventData(instance, type));
     }
 
-    synchronized void fireNativeEvent(int instance, int type, Rectangle rectValue) {
+    synchronized void fireNativeEvent(int instance, int type, 
+            Rectangle rectValue) {
         nativeEvents.addElement(new NativeEventData(instance, type, rectValue));
     }
 
-    synchronized void fireNativeEvent(int instance, int type, String stringValue) {
-        nativeEvents.addElement(new NativeEventData(instance, type, stringValue));
+    synchronized void fireNativeEvent(int instance, int type, 
+            String stringValue) {
+        nativeEvents.addElement(
+                new NativeEventData(instance, type, stringValue));
     }
 
     void setBrowsersInitFailReason(String msg) {
-        ((WebBrowser)webBrowsers.elementAt(0)).getStatus().setInitFailReason(msg);
+        ((WebBrowser)webBrowsers.elementAt(0)).getStatus().
+        setInitFailReason(msg);
     }
 
     class StreamGobbler extends Thread {
