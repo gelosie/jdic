@@ -67,6 +67,8 @@ nsresult GetMozillaVersion(char* versionBuf, size_t versionBufSize)
 
     // UserAgent string looks like:
     //   Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7) Gecko/20040616 
+    // or:
+    //   Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040616
     //
     // Extract the "rv" field, which is returned by the GetMisc method.
 
@@ -76,9 +78,20 @@ nsresult GetMozillaVersion(char* versionBuf, size_t versionBufSize)
         return rv;
     }        
 
-    const char* miscString = misc.get(); 
-    if (miscString[0] != 'r' || miscString[1] != 'v' || miscString[2] != ':')
-        return NS_ERROR_UNEXPECTED;
+    // As verified with Mozilla 1.4, the returned UserAgent string is:
+    //   Mozilla/5.0 (Windows; ; Windows NT 5.1) Gecko/20030624
+    // the "rv" field is not included in it. Which is fixed in 
+    //   https://bugzilla.mozilla.org/show_bug.cgi?id=220220
+    // and checked into Mozilla 1.6a. If misc is empty, assume it's 1.4, as 
+    // we just need to identify if the Mozilla version is above 1.7 or not.
+    const char* miscString;
+    if (misc.IsEmpty()) {
+        miscString = "1.4";
+    } else {
+        miscString = misc.get(); 
+        if (miscString[0] != 'r' || miscString[1] != 'v' || miscString[2] != ':')
+            return NS_ERROR_UNEXPECTED;
+    }
 
     PL_strncpyz(versionBuf, &miscString[3], versionBufSize);
     return NS_OK;
