@@ -26,12 +26,13 @@ import java.util.logging.Logger;
 
 /**
  * Base class for screensavers written in Java.
- * For now, all developers should extend <code>SimpleScreensaver</code>.  
- * This base class makes it possible to offer different types of 
- * screensavers in future versions of this API, such as those that can 
- * control their own rendering frequency.
+ * All developers should extend either <code>SimpleScreensaver</code>
+ * or <code>JOGLScreensaver</code>.  This base class makes it possible to 
+ * offer different types of screensavers in the future, such as those that 
+ * can control their own rendering frequency.
  *
  * @see SimpleScreensaver
+ * @see JOGLScreensaver
  * @author Mark Roth
  */
 public abstract class ScreensaverBase {
@@ -55,6 +56,20 @@ public abstract class ScreensaverBase {
     public final void baseInit( ScreensaverContext context ) {
         this.context = context;
         reinit();
+    }
+    
+    /**
+     * Called from native code to destroy the screensaver.  Subclasses 
+     * should override the destroy() method to provide any cleanup behavior.
+     */
+    public final void baseDestroy() {
+        try {
+            destroy();
+        }
+        catch(Throwable t) {
+            logger.log(Level.WARNING, 
+                "Exception occurred during screensaver destroy()", t);
+        }
     }
     
     /**
@@ -104,6 +119,17 @@ public abstract class ScreensaverBase {
      * (for example if the resolution changed).
      */
     protected void init() {
+    }
+    
+    /**
+     * Subclasses can optionally override this method to perform any
+     * cleanup before the screensaver is destroyed.  Default does nothing.
+     * <p>
+     * Destroy will be called at most once.  After a call to this
+     * method, the screensaver should not expect the ScreensaverContext
+     * to be valid any longer.
+     */
+    protected void destroy() {
     }
     
 }
