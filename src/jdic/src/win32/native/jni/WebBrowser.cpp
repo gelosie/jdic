@@ -29,10 +29,10 @@ extern "C" {
 /*
  * Class:     org_jdesktop_jdic_browser_WebBrowser
  * Method:    nativeGetWindow
- * Signature: ()I
+ * Signature: (Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
-  (JNIEnv *env, jobject canvas)
+  (JNIEnv *env, jobject canvas, jstring javaHome)
 {
     typedef jboolean (JNICALL *PJAWT_GETAWT)(JNIEnv*, JAWT*);
     HMODULE _hAWT;     // JAWT module handle
@@ -43,32 +43,20 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
     jboolean result;
     jint lock;
     HWND hWnd = 0;
-    
-    char dllLocation[500] = {0};
-    char* buf;
 
-    // Try to find JAVA_HOME
-	buf = getenv("JAVA_HOME");
-	if (buf == NULL)
-	{
-	    return -1;   
-	}
-
-	// Try to load jawt.dll from %JAVA_HOME%\bin
-	sprintf(dllLocation, "%s%s", buf, "\\bin\\jawt.dll");
+    // Load jawt.dll from <java.home>\bin    
+    char dllLocation[MAX_PATH] = {0};   
+    const char* javaHomeStr = env->GetStringUTFChars(javaHome, NULL);
+	sprintf(dllLocation, "%s%s", javaHomeStr, "\\bin\\jawt.dll");
+	env->ReleaseStringUTFChars(javaHome, javaHomeStr);
+		
 	_hAWT = LoadLibrary((LPCTSTR)dllLocation);
-    if (!_hAWT) 
-    {	
-        // Try to load jawt.dll from %java_home%\jre\bin
-        sprintf(dllLocation, "%s%s", buf, "\\jre\\bin\\jawt.dll");
-	    _hAWT = LoadLibrary((LPCTSTR)dllLocation);
-    }
 	if (!_hAWT) 
 	{
 	    return -1;
-	}	
-    if (_hAWT)
-    {
+	}
+	else 
+	{	
         PJAWT_GETAWT JAWT_GetAWT = (PJAWT_GETAWT)GetProcAddress(_hAWT, "_JAWT_GetAWT@8");
         if (JAWT_GetAWT)
         {

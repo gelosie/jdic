@@ -479,7 +479,8 @@ public class WebBrowser extends Canvas
     }
 
     int getNativeWindow() {
-        return nativeGetWindow();
+        // The java.home property value is required to load jawt.dll on Windows.         
+        return nativeGetWindow(System.getProperty("java.home"));
     }
 
     /* only used for GTK */
@@ -504,7 +505,7 @@ public class WebBrowser extends Canvas
     }
     
     /* native functions */
-    private native int nativeGetWindow();
+    private native int nativeGetWindow(String javaHome);
     
     /* debug helper */
     static void trace(String msg) {

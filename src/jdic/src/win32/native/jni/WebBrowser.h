@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_jdesktop_jdic_browser_WebBrowser
  * Method:    nativeGetWindow
- * Signature: ()I
+ * Signature: (Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus
 }
