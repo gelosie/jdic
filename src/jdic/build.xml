@@ -108,7 +108,7 @@ Top-level target:
     </condition> 
 
     <condition property="webstart.native.dir" value="jdic-solaris-native">
-      <os name="solaris" arch="sparc"/>      
+      <os name="sunos" arch="sparc"/>      
     </condition> 
 
     <condition property="dist.dir" value="dist/solaris_x86">
@@ -120,7 +120,7 @@ Top-level target:
     </condition> 
 
     <condition property="webstart.native.dir" value="jdic-solaris-native">
-      <os name="solaris" arch="x86"/>      
+      <os name="sunos" arch="x86"/>      
     </condition> 
 
     <condition property="dist.dir" value="dist/freebsd">
