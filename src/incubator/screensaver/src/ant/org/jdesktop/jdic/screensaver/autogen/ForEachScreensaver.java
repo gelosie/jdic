@@ -323,9 +323,9 @@ public class ForEachScreensaver
         }
         if(jogl) {
             targets.append("linkjogl:\n").
-                append("\t@if [ \"${platform}\" = \"Linux\" ]; then \\\n").
+                append("\t@if [ \"${PLATFORM}\" = \"Linux\" ]; then \\\n").
                 append("\t    ln -s i386/*.so . ; \\\n").
-                append("\telif [ \"${platform}\" = \"SunOS\" ]; then \\\n").
+                append("\telif [ \"${PLATFORM}\" = \"SunOS\" ]; then \\\n").
                 append("\t    ln -s solsparc/*.so . ; \\\n").
                 append("\tfi;");
         }
