@@ -121,11 +121,13 @@ public final class Jnlp2Package {
                 throw new IOException("invalid local jnlp file: " +
                         jnlpFile.getPath());   
             }
-            
-            String resourcePath = getValidFileArgument(System.getProperty(
-                    "JnlpConstants.PROPERTY_NAME_RESOURCEDIR"), "resource path", 
-                    false);
-            pkgInfo.setResourcePath(resourcePath);
+
+            String resourceDir = System.getProperty(
+            		JnlpConstants.PROPERTY_NAME_RESOURCEDIR);
+            if (resourceDir == null) {
+            	resourceDir = jnlpFile.getParent();
+            }
+            pkgInfo.setResourcePath(resourceDir);
             pkgInfo.parseLocalJnlpInfo(jnlpFile.toURL());
         }
         /* Set Localized information as titles, descriptions, etc. */

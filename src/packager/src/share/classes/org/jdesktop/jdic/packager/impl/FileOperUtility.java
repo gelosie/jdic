@@ -180,6 +180,14 @@ public class FileOperUtility {
     public static String getRelativePath(String path, String base) {
         if (path == null || base == null) 
             return null;
+        if (path.lastIndexOf(base) < 0) {
+            int index = path.lastIndexOf("/");
+        	if (index < 0) {
+        		return path;
+        	} else {
+        		return path.substring(index + 1);
+        	}
+        }
         String relPath = path.substring(path.lastIndexOf(base) + base.length());
         StringTokenizer st = new StringTokenizer(relPath, "/", false);
         String nativeRelPath = "";
@@ -209,6 +217,12 @@ public class FileOperUtility {
         if (!sourceFile.exists()) 
             return;
         
+        /* return if source and dest are pointing at the same path */
+        if (destFile.exists() && sourceFile.getPath().
+        		equals(destFile.getPath())) {
+        	return;
+        }
+        
         if (sourceFile.isFile()) { 
             if (destFile.isDirectory()) {
                 destFile = new File(destFile.getPath() + File.separator +
@@ -228,6 +242,7 @@ public class FileOperUtility {
                         "is a file with the same name in destination: " +
                         destFile.getPath());   
             }
+            
             try {
                 if (!destFile.exists() && !destFile.mkdirs()) {
                     throw new IOException("cannot create local directory: " + 
@@ -238,6 +253,9 @@ public class FileOperUtility {
                 if (filelist == null)
                     return;
                 for (int i = 0; i < filelist.length; i++) {
+                	if (filelist[i].getPath().equals(destFile.getPath())) {
+                		return;
+                	}
                     String destName = destFileName + File.separator +
                             getRelativePath(filelist[i].getCanonicalPath(),
                                     sourceFile.getCanonicalPath());
@@ -326,10 +344,12 @@ public class FileOperUtility {
         try {     
             LaunchDesc laDesc = LaunchDescFactory.buildDescriptor(jnlp);
             codebase = laDesc.getCodebase();
-            urlFile2LocalFile(jnlp, codebase, localBase);
-            String relPath = getRelativePath(jnlp.toString(), 
-                    codebase.toString());
-            File localJnlpFile = new File(localBase + File.separator + relPath);
+            String jnlpName = jnlp.getFile().substring(
+            		jnlp.getFile().lastIndexOf("/") + 1);
+            File localJnlpFile = new File(localBase + 
+            		File.separator + jnlpName);
+            copyRemoteFile(jnlp, localJnlpFile);
+ 
             if (localJnlpFile == null || !localJnlpFile.exists()) {
                  throw new IOException("Cannot copy remote jnlp file to " +
                         "local");   
@@ -437,8 +457,10 @@ class JDICPackagerResourceCopyVisitor implements ResourceVisitor {
     
     public void visitExtensionDesc(ExtensionDesc ed) {
         try {
+/*
             FileOperUtility.urlFile2LocalFile(ed.getLocation(),
                     codebase, localBase);
+*/
             FileOperUtility.getRemoteResource(ed.getLocation(),
                     localBase);
         } catch (IOException ioE) {
