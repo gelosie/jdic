@@ -50,6 +50,7 @@ typedef struct tagBitmapheader  {
 }   Bitmapheader, *LPBITMAPHEADER;
 
 jmethodID notifyEventMID;
+jmethodID restartTaskbarMID;
 jclass peerCls;
 
 int Initialize(JNIEnv *env) {
@@ -86,7 +87,7 @@ int Initialize(JNIEnv *env) {
     peerCls = env->FindClass("org/jdesktop/jdic/tray/internal/impl/WinTrayIconService");
     
     notifyEventMID = env->GetStaticMethodID(peerCls, "notifyEvent", "(IIII)V");
-    
+	restartTaskbarMID = env->GetStaticMethodID(peerCls, "restartTaskbar", "()V");
 	
 	return (messageWindow != NULL); 
 }
@@ -125,9 +126,19 @@ JNU_GetEnv(JavaVM *vm, jint version)
     return env;
 }
 
-
+static UINT msgRestartTaskbar = 0;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (msgRestartTaskbar == 0 && uMsg == WM_CREATE)
+        {
+            msgRestartTaskbar = RegisterWindowMessage("TaskbarCreated");
+        }
+	if (msgRestartTaskbar != 0 && uMsg == msgRestartTaskbar)
+        {
+            JNIEnv *env = (JNIEnv *)JNU_GetEnv(jvm, JNI_VERSION_1_2);
+            env->CallStaticVoidMethod(peerCls,restartTaskbarMID);
+            return 1;
+        }
 	if (uMsg >=  TRAY_NOTIFYICON)
         {
             POINT pt;

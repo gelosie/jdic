@@ -305,5 +305,14 @@ public class WinTrayIconService implements TrayIconService{
         }
         created = false;
     }
-
+    private static void restartTaskbar() {
+            Iterator keyiterator = map.keySet().iterator();
+            while (keyiterator.hasNext()) {
+                WinTrayIconService iconService = (WinTrayIconService)map.get(keyiterator.next());
+                if (iconService.created) { 
+                    iconService.remove();
+                    iconService.addNotify();
+                }
+            }
+        }
 }
