@@ -86,7 +86,7 @@ public class FloatingDock {
     }
  
     /**
-     *  Get the visibilty of the Floating Dock window
+     *  Get the visibility of the Floating Dock window
      *
      * @return boolean visibility
      *
@@ -174,7 +174,7 @@ public class FloatingDock {
     /**
      *  Get the location of the Floating Dock window
      *
-     * @retrun location
+     * @return location
      *     
      *  Please refer to location constants.
      */
@@ -187,7 +187,7 @@ public class FloatingDock {
     /**
      *  Set the auto hide property of the Floating Dock window
      *
-     * @param autohide boolean value of auto hide property
+     * @param hide boolean value of auto hide property
      */
     public void setAutoHide(boolean hide) {
         ds.setAutoHide(hide);  
