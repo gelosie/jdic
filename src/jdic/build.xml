@@ -75,15 +75,7 @@ Top-level target:
 
     <!-- Set platform-dependent distribution directory -->
     <!-- ${file.separator} is "\" on Windows, and "/" on Unix -->
-    <condition property="dist.dir" value="dist/windows">
-      <os family="windows" />      
-    </condition> 
-
-    <condition property="native.dir" value="windows">
-      <os family="windows" />      
-    </condition> 
-
-    <condition property="webstart.native.dir" value="jdic-windows-native">
+    <condition property="dist.dir" value="dist${file.separator}windows">
       <os family="windows" />      
     </condition> 
 
@@ -91,23 +83,7 @@ Top-level target:
       <os name="linux"/>      
     </condition> 
 
-    <condition property="native.dir" value="linux">
-      <os name="linux"/>      
-    </condition> 
-
-    <condition property="webstart.native.dir" value="jdic-linux-native">
-      <os name="linux"/>      
-    </condition> 
-
     <condition property="dist.dir" value="dist/solaris_sparc">
-      <os name="sunos" arch="sparc"/>      
-    </condition> 
-
-    <condition property="native.dir" value="solaris">
-      <os name="sunos" arch="sparc"/>      
-    </condition> 
-
-    <condition property="webstart.native.dir" value="jdic-solaris-native">
       <os name="sunos" arch="sparc"/>      
     </condition> 
 
@@ -115,23 +91,7 @@ Top-level target:
       <os name="sunos" arch="x86"/>      
     </condition> 
 
-    <condition property="native.dir" value="solaris">
-      <os name="sunos" arch="x86"/>      
-    </condition> 
-
-    <condition property="webstart.native.dir" value="jdic-solaris-native">
-      <os name="sunos" arch="x86"/>      
-    </condition> 
-
     <condition property="dist.dir" value="dist/freebsd">
-      <os name="freebsd"/>      
-    </condition> 
-
-    <condition property="native.dir" value="freebsd">
-      <os name="freebsd"/>      
-    </condition> 
-
-    <condition property="webstart.native.dir" value="jdic-freebsd-native">
       <os name="freebsd"/>      
     </condition> 
 
@@ -139,18 +99,8 @@ Top-level target:
       <os name="Mac OS X"/>
     </condition> 
 
-    <condition property="native.dir" value="mac">
-      <os name="Mac OS X"/>
-    </condition> 
-
-    <condition property="webstart.native.dir" value="jdic-mac-native">
-      <os name="Mac OS X"/>
-    </condition> 
-
     <!-- Create the distribution directory -->
     <mkdir dir="${dist.dir}" />   
-    <mkdir dir="${dist.dir}/${native.dir}" />   
-    <mkdir dir="${dist.dir}/${webstart.native.dir}" />
 
     <echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
     <echo>+ JDIC API build version ${version} release ${release}</echo>
@@ -170,7 +120,7 @@ Top-level target:
 
   <!-- *** Top-level target *** -->
   <!-- *** Build a JDIC API distribution for the current platform *** -->
-  <target name="buildall" depends="clean"
+  <target name="buildall"
           description="build a distribution for the current platform.">
     <!-- Set the platform-dependent buildall target -->
     <condition property="platform.target" value="buildwin32">
@@ -229,7 +179,7 @@ Top-level target:
   </target>
 
   <!-- *** Build Win32 jar file *** -->  
-  <target name="buildwin32jar" depends="init, buildwin32jni, buildwin32embed"
+  <target name="buildwin32jar" depends="init"
           description="build the classes and jar file." >
     <javac srcdir="${share.classes.dir}:${win32.classes.dir}"
            destdir="${dist.dir}"
@@ -237,18 +187,13 @@ Top-level target:
     />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
-         <fileset dir="${dist.dir}" includes="org/**/*.class,${native.dir}/*.*"/>
+         <fileset dir="${dist.dir}" includes="org/**/*.class"/>
     </jar>
 
     <!-- remove the generated "org" directory -->
     <delete includeEmptyDirs="true" failonerror="false">
       <fileset dir="${dist.dir}/org"/>
     </delete>
-    <!-- remove the generated native directory -->
-    <delete includeEmptyDirs="true" failonerror="false">
-      <fileset dir="${dist.dir}/${native.dir}"/>
-    </delete>
-    
   </target>
 
   <!-- *** Build Win32 native JNI code *** -->
@@ -261,8 +206,7 @@ Top-level target:
     </exec>                   
 
     <!-- copy generated .dll file -->
-    <copy file="${win32.native.jni.dir}/release/jdic.dll" todir="${dist.dir}/${webstart.native.dir}" />
-    <copy file="${win32.native.jni.dir}/release/jdic.dll" todir="${dist.dir}/${native.dir}" />
+    <copy file="${win32.native.jni.dir}/Release/jdic.dll" todir="${dist.dir}" />
   </target>
 
   <!-- *** Build Win32 native embeded browser code *** -->
@@ -285,14 +229,11 @@ Top-level target:
     </exec>
     
     <!-- copy the embeded IE and Mozilla executable -->
-    <copy file="${win32.native.ie.dir}/release/IeEmbed.exe" todir="${dist.dir}/${webstart.native.dir}" />
-    <copy file="${win32.native.ie.dir}/release/IeEmbed.exe" todir="${dist.dir}/${native.dir}" />
-    <copy file="${win32.native.mozilla.dir}/release/MozEmbed.exe" todir="${dist.dir}/${webstart.native.dir}" />
-    <copy file="${win32.native.mozilla.dir}/release/MozEmbed.exe" todir="${dist.dir}/${native.dir}" />
+    <copy file="${win32.native.ie.dir}/Release/IeEmbed.exe" todir="${dist.dir}" />
+    <copy file="${win32.native.mozilla.dir}/Release/MozEmbed.exe" todir="${dist.dir}" />
 
     <!-- copy the bundled dll used by embeded IE executable -->
-    <copy file="${win32.native.ie.dir}/nspr4.dll" todir="${dist.dir}/${webstart.native.dir}" />
-    <copy file="${win32.native.ie.dir}/nspr4.dll" todir="${dist.dir}/${native.dir}" />
+    <copy file="${win32.native.ie.dir}/nspr4.dll" todir="${dist.dir}" />
   </target>
 
   <!--
@@ -322,22 +263,15 @@ Top-level target:
     - SHARED TARGETS FOR UNIX DISTRIBUTIONS
     -->
   <!-- *** Build Unix jar file *** -->  
-  <target name="buildunixjar" depends="init, buildunixjni, buildunixembed"
+  <target name="buildunixjar" depends="init"
           description="build the classes and jar file." >
     <javac srcdir="${share.classes.dir}:${unix.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
     />
 
-    <!-- !!! As an additional operation, copy defmailer.properties file 
-         defining the default mailer location to the same location !!! -->
-    <copy file="${unix.classes.defmailer.dir}/defmailer.properties" 
-          todir="${dist.dir}/${webstart.native.dir}" />
-    <copy file="${unix.classes.defmailer.dir}/defmailer.properties" 
-          todir="${dist.dir}/${native.dir}" />
-
     <jar destfile="${dist.dir}/${jar.file}" update="false">
-         <fileset dir="${dist.dir}" includes="org/**/*.class, ${native.dir}/*"/>
+         <fileset dir="${dist.dir}" includes="org/**/*.class"/>
     </jar>
 
     <!-- remove the generated "org" directory -->
@@ -345,10 +279,10 @@ Top-level target:
       <fileset dir="${dist.dir}/org"/>
     </delete>
 
-    <delete includeEmptyDirs="true" failonerror="false">
-      <fileset dir="${dist.dir}/${native.dir}"/>
-    </delete>
-
+    <!-- !!! As an additional operation, copy defmailer.properties file 
+         defining the default mailer location to the same location !!! -->
+    <copy file="${unix.classes.defmailer.dir}/defmailer.properties" 
+          todir="${dist.dir}" />
   </target>
 
   <!-- *** Build BSD native JNI code *** -->
@@ -357,8 +291,7 @@ Top-level target:
     <exec dir="${unix.native.jni.dir}" executable="gmake" failonerror="yes" />
 
     <!-- copy generated .so file -->
-    <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}/${webstart.native.dir}" />
-    <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}/${native.dir}" />
+    <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}" />
   </target>
 
   <!-- *** Build BSD native embeded browser code *** -->
@@ -374,11 +307,7 @@ Top-level target:
 
     <exec os="FreeBSD" executable="cp" failonerror="yes">
       <arg value="${unix.native.mozilla.dir}/mozembed-freebsd-gtk2" />
-      <arg value="${dist.dir}/${webstart.native.dir}/." />
-    </exec>
-    <exec os="FreeBSD" executable="cp" failonerror="yes">
-      <arg value="${unix.native.mozilla.dir}/mozembed-freebsd-gtk2" />
-      <arg value="${dist.dir}/${native.dir}/." />
+      <arg value="${dist.dir}/." />
     </exec>
   </target>  
 
@@ -388,8 +317,7 @@ Top-level target:
     <exec dir="${unix.native.jni.dir}" executable="make" failonerror="yes" />
 
     <!-- copy generated .so file -->
-    <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}/${webstart.native.dir}" />
-    <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}/${native.dir}" />
+    <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}" />
   </target>
 
   <!-- *** Build Unix native embeded browser code *** -->
@@ -406,22 +334,12 @@ Top-level target:
     <!-- copy the embeded Mozilla executable -->
     <exec os="Linux" executable="cp" failonerror="yes">
       <arg value="${unix.native.mozilla.dir}/mozembed-linux-gtk2" />
-      <arg value="${dist.dir}/${webstart.native.dir}/." />
-    </exec>
-
-    <exec os="Linux" executable="cp" failonerror="yes">
-      <arg value="${unix.native.mozilla.dir}/mozembed-linux-gtk2" />
-      <arg value="${dist.dir}/${native.dir}/." />
+      <arg value="${dist.dir}/." />
     </exec>
 
     <exec os="SunOS" executable="cp" failonerror="yes">
       <arg value="${unix.native.mozilla.dir}/mozembed-solaris-gtk2" />
-      <arg value="${dist.dir}/${webstart.native.dir}/." />
-    </exec>
-
-    <exec os="SunOS" executable="cp" failonerror="yes">
-      <arg value="${unix.native.mozilla.dir}/mozembed-solaris-gtk2" />
-      <arg value="${dist.dir}/${native.dir}/." />
+      <arg value="${dist.dir}/." />
     </exec>
 
   </target>
@@ -452,7 +370,7 @@ Top-level target:
     <exec dir="${mac.native.jni.dir}" executable="make" failonerror="yes" />
 
     <!-- copy generated .jnilib file -->
-    <copy file="${mac.native.jni.dir}/libjdic.jnilib" todir="${dist.dir}/${webstart.native.dir}" />
+    <copy file="${mac.native.jni.dir}/libjdic.jnilib" todir="${dist.dir}" />
   </target>
 
 </project>
