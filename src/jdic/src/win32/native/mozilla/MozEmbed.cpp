@@ -630,13 +630,21 @@ NS_IMETHODIMP MozEmbedApp::CreateChromeWindow(nsIWebBrowserChrome *parent,
 void MozEmbedApp::MessageReceived(const char * msg)
 {
     int instance, type;
-    char buf[1024];
+    char mMsgBuf[1024];
 
     if (mInitFailed)
         return;
 
-    int i = sscanf(msg, "%d,%d,%s", &instance, &type, buf);
+    int i = sscanf(msg, "%d,%d,%s", &instance, &type, mMsgBuf);
     ASSERT(i >= 2);
+
+    // In case that the last message string argument contains spaces, sscanf 
+    // returns before the first space. Below line returns the complete message
+    // string.
+    char* mMsgString = (char*)strchr(msg, ',');
+    mMsgString++;
+    mMsgString = (char*)strchr(mMsgString, ',');
+    mMsgString++;
 
     switch (type) {
     case JEVENT_INIT:
@@ -657,7 +665,7 @@ void MozEmbedApp::MessageReceived(const char * msg)
 
         if (i != 3) 
             break;
-        HWND hWnd = (HWND) atoi(buf);
+        HWND hWnd = (HWND) atoi(mMsgString);
         CBrowserFrame *pBrowserFrame = CreateEmbeddedBrowserFrame(hWnd);
         if (pBrowserFrame) {
             m_FrameWndArray.SetAtGrow(instance, pBrowserFrame);
@@ -676,22 +684,22 @@ void MozEmbedApp::MessageReceived(const char * msg)
         {
         ASSERT(i == 3);
         int x, y, w, h;
-        i = sscanf(buf, "%d,%d,%d,%d", &x, &y, &w, &h);
+        i = sscanf(mMsgString, "%d,%d,%d,%d", &x, &y, &w, &h);
         if (i == 4)
             ((CBrowserFrame *)m_FrameWndArray[instance])->SetWindowPos(NULL, x, y, w, h, SWP_NOMOVE | SWP_NOZORDER);
         }
         break;
     case JEVENT_NAVIGATE:
         ASSERT(i == 3);
-        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.OpenURL(buf);
+        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.OpenURL(mMsgString);
         break;
     case JEVENT_NAVIGATE_POST:
         ASSERT(i == 3);
-        mURL = buf;
+        mURL = mMsgString;
         break;
     case JEVENT_NAVIGATE_POSTDATA:
         ASSERT(i == 3);
-        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.OpenURL(mURL, buf, POST_HEADER);
+        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.OpenURL(mURL, mMsgString, POST_HEADER);
         break;
     case JEVENT_GOBACK:
         ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_BACK);
