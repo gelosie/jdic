@@ -17,6 +17,7 @@
       19  P3   Windows] -msd option is not easy to use
       51  P2   Packager cannot get javaws path correctly from /etc/mailcap
       52  P3   typos in browser.jnlp of the online JNLP Browser demo.
+      54  P3   Embeded browser component in Java WebStart doesn't work.
       56  P3   The demo jnlp file need support jdk1.5
       58  P4   Update packager .jar file name and -enableassociation option
       59  P4   COPYING file update.
