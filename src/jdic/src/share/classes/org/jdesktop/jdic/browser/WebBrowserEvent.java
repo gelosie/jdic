@@ -23,14 +23,16 @@ package org.jdesktop.jdic.browser;
 import java.util.EventObject;
 
 /**
- * A <code>WebBrowserEvent</code> is dispatched by a <code>WebBrowser</code> object to 
- * indicate a defined WebBrowser event occured. The event is passed to every
- * <code>WebBrowserListener</code> object that registered to receive such events using 
- * WebBrowser's <code>addWebBrowserListener</code> method.
+ * A <code>WebBrowserEvent</code> is dispatched by a <code>WebBrowser</code> 
+ * object to indicate a defined WebBrowser event occured. The event is passed 
+ * to every <code>WebBrowserListener</code> object that was registered to 
+ * receive such events using WebBrowser's <code>addWebBrowserListener</code> 
+ * method.
  * <p>
- * The object that implements the <code>WebBrowserListener</code> interface gets this 
- * <code>WebBrowserEvent</code> when the event occurs. The listener is therefore spared 
- * the details of processing individual WebBrowser events.
+ * The object that implements the <code>WebBrowserListener</code> interface or 
+ * inherits the <code>WebBrowserAdapter</code> class gets this 
+ * <code>WebBrowserEvent</code> when the event occurs. The listener is 
+ * therefore spared the details of processing individual WebBrowser events.
  * 
  * @see WebBrowserListener
  * @see WebBrowser
@@ -45,13 +47,13 @@ public class WebBrowserEvent extends EventObject
      * Event fired before a navigation occurs in the given object 
      * (on either a window or frameset element).
      */
-    public static final int WEBBROWSER_BEFORE_NAVIGATE         
+    static final int WEBBROWSER_BEFORE_NAVIGATE         
         = 1 + WEBBROWSER_FIRST;
 
     /**
      * Event fired when a new window is to be created. 
      */
-    public static final int WEBBROWSER_BEFORE_NEWWINDOW        
+    static final int WEBBROWSER_BEFORE_NEWWINDOW        
         = 2 + WEBBROWSER_FIRST;
     
     /**
@@ -91,13 +93,13 @@ public class WebBrowserEvent extends EventObject
      * Event fired when the current URL is requested by a <code>WebBrowser</code>
      * object's <code>getURL</code> method. 
      */
-    public static final int WEBBROWSER_RETURN_URL              
+    static final int WEBBROWSER_RETURN_URL              
         = 21 + WEBBROWSER_FIRST;
 
     /**
      * Event fired when the enabled state of a command changes.
      */
-    public static final int WEBBROWSER_COMMAND_STATE_CHANGE    
+    static final int WEBBROWSER_COMMAND_STATE_CHANGE    
         = 22 + WEBBROWSER_FIRST;
     /**
      * Event fired when the title of a document changes.
@@ -113,36 +115,36 @@ public class WebBrowserEvent extends EventObject
     /**
      * Event fired when initialization of WebBrowser fails.
      */
-    public static final int WEBBROWSER_INIT_FAILED             
+    static final int WEBBROWSER_INIT_FAILED             
         = 41 + WEBBROWSER_FIRST;    
     /**
      * Event fired when initialization of WebBrowser Window succeeds.
      */
-    public static final int WEBBROWSER_INIT_WINDOW_SUCC        
+    static final int WEBBROWSER_INIT_WINDOW_SUCC        
         = 42 + WEBBROWSER_FIRST;    
     /**
      * Event fired when WebBrowser need to get Focus.
      */
-    public static final int WEBBROWSER_FOCUS_REQUEST           
+    static final int WEBBROWSER_FOCUS_REQUEST           
         = 43 + WEBBROWSER_FIRST;
 
     /**
      * Event fired when the content of the currently loaded page is requested 
      * by a WebBrowser object's getContent method. 
      */
-    public static final int WEBBROWSER_GETCONTENT
+    static final int WEBBROWSER_GETCONTENT
         = 61 + WEBBROWSER_FIRST;
     /**
      * Event fired when the content of the currently loaded page is requested 
      * to be set by a WebBrowser object's setContent() method. 
      */
-    public static final int WEBBROWSER_SETCONTENT
+    static final int WEBBROWSER_SETCONTENT
         = 62 + WEBBROWSER_FIRST;
     /**
      * Event fired when a javascript string is requrested to be executed 
      * by a WebBrowser object's executeScript method. 
      */
-    public static final int WEBBROWSER_EXECUTESCRIPT           
+    static final int WEBBROWSER_EXECUTESCRIPT           
         = 63 + WEBBROWSER_FIRST;
     
     /**
@@ -165,7 +167,8 @@ public class WebBrowserEvent extends EventObject
     }
 
     /**
-     * Constructs a <code>WebBrowserEvent</code> object with source, event id and event data.
+     * Constructs a <code>WebBrowserEvent</code> object with source, event id 
+     * and event data.
      *
      * @param source the WebBrowser which owns this event.
      * @param id the id of the event.
