@@ -269,7 +269,7 @@ public class ForEachScreensaver
         substitute.setProperty("exe", exeName);
         Utilities.copyFileAndSubstitute(outFile, 
             "/org/jdesktop/jdic/screensaver/autogen/resources/unix/" +
-            "saverbeans.sh.template", substitute, "[[", "]]");
+            "saverbeans.sh.template", substitute, "[[", "]]", false);
     }
 
     private void generateUnixMakefile(File outDir, Properties savers)
@@ -303,7 +303,7 @@ public class ForEachScreensaver
         substitute.setProperty("targets", targets.toString());
         Utilities.copyFileAndSubstitute(outFile, 
             "/org/jdesktop/jdic/screensaver/autogen/resources/unix/" +
-            "Makefile.template", substitute, "[[", "]]");
+            "Makefile.template", substitute, "[[", "]]", false);
     }
     
     private void generateUnixSource( File outDir, String filename,
@@ -350,7 +350,7 @@ public class ForEachScreensaver
         substitute.setProperty( "options", optionsBuffer.toString() );
         Utilities.copyFileAndSubstitute( outFile, 
             "/org/jdesktop/jdic/screensaver/autogen/resources/unix/" +
-            "saverbeans-unix.c.template", substitute, "[[", "]]" );
+            "saverbeans-unix.c.template", substitute, "[[", "]]", false);
     }
 
     private void generateWindowsExecutable( File outDir, String exeName,

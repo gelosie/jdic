@@ -52,10 +52,13 @@ public final class Utilities {
      * @param substitute The map of keys and values
      * @param startDelimeter The start delimeter
      * @param endDelimeter The end delimeter
+     * @param dosFormat If true, uses DOS-style line terminators.  Else
+     *     uses Unix-style line terminators.
      * @throws IOException if an error occurs while copying
      */
     public static void copyFileAndSubstitute( File dest, String source, 
-        Properties substitute, String startDelimeter, String endDelimeter )
+        Properties substitute, String startDelimeter, String endDelimeter,
+        boolean dosFormat)
         throws IOException
     {
         PrintWriter out = null;
@@ -82,7 +85,13 @@ public final class Utilities {
                     }
                     index += 1;
                 }
-                out.println( result.toString() );
+                out.print( result.toString() );
+                if(dosFormat) {
+                    out.print("\r\n");
+                }
+                else {
+                    out.print("\n");
+                }
             }
         }
         finally {
