@@ -256,6 +256,13 @@ The Microsoft Visual C++ 6.0 Professional Edition compiler is required.</li>
           <li>Microsoft Platform Software Development Kit (SDK)<b><br>
             </b>It can be downloaded from <a
  href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">here</a>.</li>
+      <li>Get and build Mozilla 1.4 or later source code. Please refer
+to <a href="http://www.mozilla.org/">http://www.mozilla.org/</a>, and <a
+ href="http://www.mozilla.org/build/">http://www.mozilla.org/build/</a>
+for where to download and how to build it.&nbsp;Setup the environment
+variable <code> <b> MOZILLA_SRC_HOME</b></code> to the top directory
+of Mozilla source code. This step is required to build the native code for
+        package <code>org.jdesktop.jdic.browser.</code> </li>
         </ul>
       </li>
       <li><b>Linux:</b>
@@ -270,6 +277,12 @@ from <a href="http://gcc.gnu.org/">GCC home page</a>.</li>
           <li>pkg-config<br>
 pkg-config version 0.15.0 or later is required, which can be downloaded
 from <a href="http://www.freedesktop.org/Software/pkgconfig">here</a>.</li>
+          <li>Mozilla distribution<br>
+Mozilla release 1.4 or later is required, which can be downloaded from
+<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set MOZILLA_DIST to the directory.</li>
+          <li> Gecko SDK<br>
+Mozilla Gecko SDK is required, which can be downloaded from
+<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set GECKO_SDK to the direcotory.</li>
         </ul>
       </li>
       <li><b>Solaris:</b>
@@ -287,17 +300,14 @@ ONE Studio Developer Tools web site</a>.</li>
           <li>pkg-config<br>
 pkg-config version 0.15.0 or later is required, which can be downloaded
 from <a href="http://www.freedesktop.org/Software/pkgconfig">here</a>.</li>
+          <li>Mozilla distribution<br>
+Mozilla release 1.4 or later is required, which can be downloaded from
+<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set MOZILLA_DIST to the directory.</li>
+          <li> Gecko SDK<br>
+Mozilla Gecko SDK is required, which can be downloaded from
+<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set GECKO_SDK to the direcotory.</li>
         </ul>
       </li>
-    </ul>
-    <ul>
-      <li>Get and build Mozilla 1.4 or later source code. Please refer
-to <a href="http://www.mozilla.org/">http://www.mozilla.org/</a>, and <a
- href="http://www.mozilla.org/build/">http://www.mozilla.org/build/</a>
-for where to download and how to build it.&nbsp;Setup the environment
-variable <code> <b> MOZILLA_SRC_HOME</b></code> to the top directory
-of Mozilla source code. This step is required to build the native code for
-        package <code>org.jdesktop.jdic.browser.</code> </li>
     </ul>
     <ul>
       <li><b>Note: </b>If only build the tray icon API (package <code>org.jdesktop.jdic.tray</code>)
