@@ -478,7 +478,7 @@ Top-level target:
            classpath="${dist.dir}" debug="true"
     />
 
-    <jar destfile="${dist.dir}/${tray.jar.file}" update="false">
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
          <fileset dir="${dist.dir}" includes="org/**/*.class"/>
     </jar>
 
