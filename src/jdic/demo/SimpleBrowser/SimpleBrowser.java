@@ -51,6 +51,8 @@ public class SimpleBrowser {
 
         try {
             webBrowser.setURL(new URL("http://java.net"));
+            // Print out debug messages in the command line.
+            //webBrowser.setDebug(true);
         } catch (MalformedURLException e) {
             System.out.println(e.getMessage());
             return;
