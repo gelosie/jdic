@@ -40,13 +40,15 @@ public class Tray implements ActionListener, ItemListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        menu = new JPopupMenu("A Menu");
 
+        System.setProperty("javax.swing.adjustPopupLocationToFit", "false");
+        menu = new JPopupMenu("A Menu");
+        
         // a group of JMenuItems
         menuItem = new JMenuItem("A text-only menu item", KeyEvent.VK_T);
         // menuItem.setMnemonic(KeyEvent.VK_T); //used constructor instead
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
-                ActionEvent.ALT_MASK));
+                ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription("This doesn't really do anything");
         menuItem.addActionListener(this);
         menu.add(menuItem);
@@ -100,7 +102,7 @@ public class Tray implements ActionListener, ItemListener {
 
         menuItem = new JMenuItem("An item in the submenu");
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2,
-                ActionEvent.ALT_MASK));
+                ActionEvent.CTRL_MASK));
         menuItem.addActionListener(this);
         submenu.add(menuItem);
 
@@ -114,7 +116,7 @@ public class Tray implements ActionListener, ItemListener {
         menuItem = new JMenuItem("Quit");
         menuItem.addActionListener(this);
         menu.add(menuItem);
-
+        
         // ImageIcon i = new ImageIcon("duke.gif");
         ImageIcon i = new ImageIcon(Tray.class.getResource("images/duke.gif"));
 
