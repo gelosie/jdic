@@ -28,12 +28,13 @@ extern "C" {
 #endif
 
 /*
- * Class:     org_jdesktop_jdic_browser_WebBrowserUtil
+ * Class:     org_jdesktop_jdic_browser_internal_WebBrowserUtil
  * Method:    nativeGetBrowserPath
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGetBrowserPath
-  (JNIEnv *env, jobject)
+JNIEXPORT jstring JNICALL 
+Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
+  (JNIEnv *env, jclass)
 {
     HKEY hkey;
     DWORD type, cb;
@@ -88,23 +89,13 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
 }
 
 /*
- * Class:     org_jdesktop_jdic_browser_WebBrowserUtil
- * Method:    nativeSetEnv
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeSetEnv
-  (JNIEnv *env, jclass)
-{
-    _putenv("JAVA_PLUGIN_WEBCONTROL_ENABLE=1");
-}
-
-/*
- * Class:     org_jdesktop_jdic_browser_WebBrowserUtil
+ * Class:     org_jdesktop_jdic_browser_internal_WebBrowserUtil
  * Method:    nativeGetMozillaGreHome
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGetMozillaGreHome
-  (JNIEnv *env, jobject)
+JNIEXPORT jstring JNICALL 
+Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetMozillaGreHome
+  (JNIEnv *env, jclass)
 {
     const char* greParentKey = "Software\\mozilla.org\\GRE\\";
 
@@ -155,6 +146,18 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
     RegCloseKey(hKey); 
 
     return env->NewStringUTF(greHome);
+}
+
+/*
+ * Class:     org_jdesktop_jdic_browser_internal_WebBrowserUtil
+ * Method:    nativeSetEnv
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL 
+Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeSetEnv
+  (JNIEnv *env, jclass)
+{
+    _putenv("JAVA_PLUGIN_WEBCONTROL_ENABLE=1");
 }
 #ifdef __cplusplus
 }
