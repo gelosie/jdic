@@ -129,24 +129,6 @@ BOOL TrayMessage(HWND hWnd, DWORD dwMessage, UINT uID, HICON hIcon, PSTR pszTip)
 	return res;
 }
 
-UINT GetMouseKeyState()
-{
-    static BOOL mbSwapped = ::GetSystemMetrics(SM_SWAPBUTTON);
-    UINT mouseKeyState = 0;
-	
-    if (HIBYTE(::GetKeyState(VK_CONTROL)))
-        mouseKeyState |= MK_CONTROL;
-    if (HIBYTE(::GetKeyState(VK_SHIFT)))
-        mouseKeyState |= MK_SHIFT;
-    if (HIBYTE(::GetKeyState(VK_LBUTTON)))
-        mouseKeyState |= (mbSwapped ? MK_RBUTTON : MK_LBUTTON);
-    if (HIBYTE(::GetKeyState(VK_RBUTTON)))
-        mouseKeyState |= (mbSwapped ? MK_LBUTTON : MK_RBUTTON);
-    if (HIBYTE(::GetKeyState(VK_MBUTTON)))
-        mouseKeyState |= MK_MBUTTON;
-    return mouseKeyState;
-}
-
 JNIEXPORT void * JNICALL
 JNU_GetEnv(JavaVM *vm, jint version)
 {
@@ -159,14 +141,13 @@ JNU_GetEnv(JavaVM *vm, jint version)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg >=  TRAY_NOTIFYICON)
-    {
-        POINT pt;
-        UINT state = GetMouseKeyState();
-        ::GetCursorPos(&pt);
-   		JNIEnv *env = (JNIEnv *)JNU_GetEnv(jvm, JNI_VERSION_1_2);
-        env->CallStaticVoidMethod(peerCls,notifyEventMID, uMsg-TRAY_NOTIFYICON, state,pt.x,pt.y);
-		return 1;
-	}
+        {
+            POINT pt;
+            ::GetCursorPos(&pt);
+            JNIEnv *env = (JNIEnv *)JNU_GetEnv(jvm, JNI_VERSION_1_2);
+            env->CallStaticVoidMethod(peerCls,notifyEventMID, uMsg-TRAY_NOTIFYICON, lParam,pt.x,pt.y);
+            return 1;
+        }
 	
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }

@@ -53,6 +53,8 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
     private LinkedList actionList = new LinkedList();
 
+    private Point lastLocation = null;
+
     static int noIcons;
 
     int iconID;
@@ -159,12 +161,12 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
     }
 
     public void processEvent(int mouseState, int x, int y) {
-
+        
         switch (mouseState) {
-        case 0:
+        case 0x200: // WM_MOUSEMOVE
             break;
 
-        case 1:
+        case 0x202: // WM_LBUTTONUP
             if (!isShowing) {
                 ListIterator li = actionList.listIterator(0);
                 ActionListener al;
@@ -181,7 +183,7 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
             }
             break;
 
-        case 2:
+        case 0x205: // WM_RBUTTONUP
             if (!isShowing) {
                 isShowing = true;
                 popupParentFrame = new JDialog();
@@ -202,6 +204,7 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
             popupParentFrame.toFront();
             break;
         }
+        lastLocation = new Point(x,y);
     }
 
     public synchronized static void notifyEvent(int id, final int mouseState, final int x, final int y) {
@@ -306,10 +309,11 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
     }
 
     public Point getLocationOnScreen() {
-        Point p = null;
-
-        // PENDING implement me.
-        return p;
+        // Currently the only way I know how to do this is to 
+        // return the location of the last reported mouse event.
+        // Since Windows tray icons are not real windows, we cannot 
+        // query its location !
+        return lastLocation;
     }
 
     void remove() {
