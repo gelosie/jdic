@@ -1,10 +1,23 @@
+
 /*
- * Created on Jan 13, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-//package Browser;
+ * Copyright (C) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+ * subject to license terms.
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA.
+ */ 
 
 import org.jdesktop.jdic.browser.WebBrowser;
 import org.jdesktop.jdic.browser.WebBrowserUtil;
@@ -19,19 +32,13 @@ import java.net.MalformedURLException;
 import java.awt.event.ActionListener; 
 import java.awt.event.ActionEvent; 
 
-/**
- * @author Conny
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 
 // This test case is to start two browser instances by using different constructors within one frame.
 
 public class WebBrowserTest implements ActionListener 
 {
 	WebBrowser wb1;
-	MyBrowser wb2;
+	WebBrowser wb2;
 	TextField tfURL2;
 	JButton b2;
 	
@@ -49,14 +56,13 @@ public class WebBrowserTest implements ActionListener
 	
 		try
 		{
-			wb1 = new WebBrowser(new URL("http://java.sun.com"));
+			wb1 = new WebBrowser(new URL("http://java.net"));
 			wb1.setVisible(true);
 			wb1.setSize(600, 1000);
 			
 			System.out.println(WebBrowserUtil.getBrowserPath());
-			System.out.println(WebBrowserUtil.isDefaultBrowserMozilla());
 			
-			wb2 = new MyBrowser();
+			wb2 = new WebBrowser();
 			wb2.setVisible(true);
 			wb2.setSize(590, 1000);
 					
@@ -93,7 +99,6 @@ public class WebBrowserTest implements ActionListener
 			System.out.println("Go To...");
 			try
 			{
-				wb2.willOpenURL(sURL);
 				wb2.setURL(new URL(sURL));
 			} catch (MalformedURLException mue)
 			{
@@ -106,7 +111,6 @@ public class WebBrowserTest implements ActionListener
 			System.out.println("Go To...");
 			try
 			{
-				wb2.willOpenURL(sURL);
 				wb2.setURL(new URL(sURL));
 			} catch (MalformedURLException mue)
 			{
@@ -119,12 +123,4 @@ public class WebBrowserTest implements ActionListener
 	{
 		WebBrowserTest wet = new WebBrowserTest();
 	} 
-	
-	class MyBrowser extends WebBrowser
-	{
-		protected void willOpenURL(String s)
-		{
-			System.out.println(s);
-		}
-	}
 }

@@ -1,30 +1,32 @@
-//package trayicon;
 
 /*
- * Created on Dec 30, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-//package trayicon;
-
-/**
- * @author Conny
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+ * Copyright (C) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+ * subject to license terms.
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA.
+ */ 
 
 import java.awt.Point;
 import java.awt.Dimension; 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-//import java.awt.event.ItemListener;
 import javax.swing.*;
 import java.net.*;
 
-import org.jdesktop.jdic.tray.TrayIcon;
-import org.jdesktop.jdic.tray.SystemTray;
+import org.jdesktop.jdic.tray.*;
 import org.jdesktop.jdic.desktop.Desktop;
 import org.jdesktop.jdic.desktop.DesktopException;
 
@@ -34,8 +36,7 @@ public class TrayIconTest implements ActionListener
 	
 	ImageIcon icon = new ImageIcon("./images/man1.gif");
 	TrayIcon ti = new TrayIcon(icon);
-    	TrayIcon tmp;
-	//TrayIcon ti;
+    TrayIcon tmp;
 	
 	private static final String URL = "http://java.sun.com";
 	
@@ -58,7 +59,7 @@ public class TrayIconTest implements ActionListener
 		menuItem.addActionListener(this);
 		menu.add(menuItem);               
 
-        	menuItem = new JMenuItem("Get Location");
+        menuItem = new JMenuItem("Get Location");
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
 		
@@ -72,17 +73,17 @@ public class TrayIconTest implements ActionListener
 		
 		menuItem = new JMenuItem("Quit");
 		menuItem.addActionListener(this);
-	    	menu.add(menuItem);
+	    menu.add(menuItem);
 
-        	menuItem = new JMenuItem("Remove (É¾³ý)");
+        menuItem = new JMenuItem("Remove (??)");
 		menuItem.addActionListener(this);
-	        menu.add(menuItem);
+	    menu.add(menuItem);
                 
-        	menuItem = new JMenuItem("Add (Ìí¼Ó)");
+        menuItem = new JMenuItem("Add (??)");
 		menuItem.addActionListener(this);
-		menu.add(menuItem);
+	    menu.add(menuItem);
 				
-	        //ti = new TrayIcon(icon, "Hello", menu);
+	    //ti = new TrayIcon(icon, "Hello", menu);
 		ti.setIconAutoSize(true);
 		ti.setCaption("Hello!");
 		ti.setPopupMenu(menu);
@@ -109,13 +110,13 @@ public class TrayIconTest implements ActionListener
 			System.out.println("Quit item is selected!");
 			System.exit(0);
 		}
-	        if ( s.equalsIgnoreCase("Remove (É¾³ý)"))
+	        if ( s.equalsIgnoreCase("Remove (??)"))
 		{
 			System.out.println("Remove item is selected!");
 			tray.removeTrayIcon(tmp);
 		}
 
-                if ( s.equalsIgnoreCase("Add (Ìí¼Ó)"))
+                if ( s.equalsIgnoreCase("Add (??)"))
 		{
 			System.out.println("Add item is selected!");
                         tmp = new TrayIcon(new ImageIcon("./images/duke.gif"),"Test",null);
@@ -148,11 +149,11 @@ public class TrayIconTest implements ActionListener
 		if (s.equalsIgnoreCase("Get Location"))
 		{
 			System.out.println("Get Location is selected");
-			Point p;
+			//Point p;
 			
 			if (ti.getLocationOnScreen() instanceof Point)
 			{
-				p = new Point(ti.getLocationOnScreen());
+				Point p = new Point(ti.getLocationOnScreen());
 				System.out.println(p.toString());
 			}
 			else
@@ -205,9 +206,7 @@ public class TrayIconTest implements ActionListener
 		
 		f.add(pane);		
 		
-		//f.setSize(new Dimension(500, 400));   
-		f.setSize(500,400);
-		f.pack();
+		f.setSize(new Dimension(500, 400));   
 		f.setVisible(true);
 		
 	}
