@@ -94,9 +94,13 @@ char *copyright =
  * for all platforms from one platform.
  */
 
-char *jarName="[[jar                                                     ]]";
-char *className="[[class                                                 ]]";
-char *screensaverName="[[name                                            ]]";
+char *jarName=
+"[[jar                                                                   ]]";
+char *className=
+"[[class                                                                   "
+"                                                                        ]]";
+char *screensaverName=
+"[[name                                                                  ]]";
 /* Config files can be about 30K max, for now */
 char *configData = {
 "[[config                                                                  "
