@@ -149,7 +149,7 @@ public class JdicManager {
         try {
             // Pre-append the JDIC binary path to PATH(on Windows) or 
             // LD_LIBRARY_PATH(on Unix).                     
-            InitUtility.appendEnv(libPathEnv, binaryPath); 
+            InitUtility.preAppendEnv(libPathEnv, binaryPath); 
 
             String browserPath = WebBrowserUtil.getBrowserPath();
             if (browserPath == null) {
@@ -165,7 +165,7 @@ public class JdicManager {
                     // the bundled, IeEmbed.exe dependent library nspr4.dll.
                     // NOTE: if nspr4.dll is put under any other path, it needs
                     //       to be added to PATH.
-                    InitUtility.appendEnv(libPathEnv, binaryPath 
+                    InitUtility.preAppendEnv(libPathEnv, binaryPath 
                                           + File.separator + "ielib"); 
                  }                
             } else {
@@ -184,7 +184,7 @@ public class JdicManager {
                 
                 if (!isWindows) {
                     // On Unix, add the binary path to PATH.
-                    InitUtility.appendEnv("PATH", binaryPath);
+                    InitUtility.preAppendEnv("PATH", binaryPath);
                     // When running on webstart, the browser binary will lose
                     // "x" permission after extracted from .jar file.
                     String browserBinary = WebBrowser.getBrowserBinary();
@@ -210,9 +210,9 @@ public class JdicManager {
                         envMFH = mozGreHome;
                     }
                 }
-                
-                InitUtility.appendEnv("MOZILLA_FIVE_HOME", envMFH);
-                InitUtility.appendEnv(libPathEnv, envMFH);
+              
+                InitUtility.preAppendEnv("MOZILLA_FIVE_HOME", envMFH);
+                InitUtility.preAppendEnv(libPathEnv, envMFH);
             } // end - Mozilla is the default/embedded browser.
         } catch (Throwable e) {
             throw new JdicInitException(e);

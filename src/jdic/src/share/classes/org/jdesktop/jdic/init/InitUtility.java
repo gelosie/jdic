@@ -52,12 +52,12 @@ public class InitUtility {
     public static native void setEnv(String envVarName, String envValue);
     
     /**
-     * Appends the value to the environment variable.
+     * Pre-appends the value to the environment variable.
      *
      * @param envVarName environment variable name.
      * @param appendValue new value to be appended.
      */
-    public static void appendEnv(String envVarName, String appendValue) {
+    public static void preAppendEnv(String envVarName, String appendValue) {
         String originalValue = getEnv(envVarName);
         String newValue = appendValue;
         if (originalValue != null) {
