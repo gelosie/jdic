@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <gtypes.h>
+#include <glib.h>
 #include <gconf/gconf-client.h>
   
 #define GCONF_URL_HANDLER_PATH "/desktop/gnome/url-handlers/"

@@ -43,6 +43,10 @@ Top-level target:
       <os name="sunos" arch="x86"/>      
     </condition> 
 
+    <condition property="dist.dir" value="dist/freebsd">
+      <os name="freebsd"/>      
+    </condition> 
+
     <!-- Create the distribution directory -->
     <mkdir dir="${dist.dir}" />   
 
@@ -73,6 +77,10 @@ Top-level target:
 
     <exec os="SunOS" executable="chmod">
       <arg line="+x ${dist.dir}/mozembed-solaris-gtk2" />   
+    </exec>
+
+    <exec os="FreeBSD" executable="chmod">
+      <arg line="+x ${dist.dir}/mozembed-freebsd-gtk2" />   
     </exec>
 
     <!-- Copy JDIC API demo applications -->

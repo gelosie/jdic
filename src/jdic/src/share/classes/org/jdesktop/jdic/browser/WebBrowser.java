@@ -56,6 +56,8 @@ public class WebBrowser extends Canvas
     private static final String binary_windows_mozilla = "MozEmbed.exe";
     private static final String binary_linux_gtk1 = "mozembed-linux-gtk1.2";
     private static final String binary_linux_gtk2 = "mozembed-linux-gtk2";
+    private static final String binary_freebsd_gtk1 = "mozembed-freebsd-gtk1.2";
+    private static final String binary_freebsd_gtk2 = "mozembed-freebsd-gtk2";
     private static final String binary_solaris_gtk1 = "mozembed-solaris-gtk1.2";
     private static final String binary_solaris_gtk2 = "mozembed-solaris-gtk2";
 
@@ -144,6 +146,9 @@ public class WebBrowser extends Canvas
                 else if (osname.indexOf("SunOS") >= 0) {
                     browserBinary = binary_solaris_gtk1;
                 }
+                else if (osname.indexOf("FreeBSD") >= 0) {
+                    browserBinary = binary_freebsd_gtk1;
+                }
             }
             else {
                 if (osname.indexOf("Linux") >= 0) {
@@ -151,6 +156,9 @@ public class WebBrowser extends Canvas
                 }
                 else if (osname.indexOf("SunOS") >= 0) {
                     browserBinary = binary_solaris_gtk2;
+                }
+                else if (osname.indexOf("FreeBSD") >= 0) {
+                    browserBinary = binary_freebsd_gtk2;
                 }
             }
         }

@@ -53,6 +53,7 @@ REQUIRES = xpcom \
            widget \
            pref \
            profile \
+	   nspr \
            $(NULL)
 
 ifdef NS_TRACE_MALLOC
@@ -82,6 +83,14 @@ PROGRAM = mozembed-solaris-gtk1.2$(BIN_SUFFIX)
 endif
 ifdef MOZ_ENABLE_GTK2
 PROGRAM = mozembed-solaris-gtk2$(BIN_SUFFIX)
+endif
+endif
+ifeq ($(OS_ARCH), FreeBSD)
+ifdef MOZ_ENABLE_GTK
+PROGRAM = mozembed-freebsd-gtk1.2$(BIN_SUFFIX)
+endif
+ifdef MOZ_ENABLE_GTK2
+PROGRAM = mozembed-freebsd-gtk2$(BIN_SUFFIX)
 endif
 endif
 

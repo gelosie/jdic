@@ -36,6 +36,7 @@ public interface DesktopConstants {
     static final String OS_LINUX = "linux";
     static final String OS_SOLARIS = "sunos";
     static final String OS_WINDOWS = "windows";
+    static final String OS_FREEBSD = "freebsd";
 
     // Mailer properties.
     static final String MOZ_MAILER = "mozilla";

@@ -13,6 +13,7 @@ Top-level target:
     buildwin32:     on Windows to build a Windows distribuition.
     buildlinux:     on Linux to build a Linux distribuition.
     buildsolaris:   on Solaris to build a Solaris distribuition.
+    buildfreebsd:   on FreeBSD to build a FreeBSD distribuition.
   clean:            Remove the generated distribution (including files and directories).
 
 -->
@@ -79,6 +80,10 @@ Top-level target:
       <os name="sunos"/>      
     </condition> 
 
+    <condition property="dist.dir" value="dist/freebsd">
+      <os name="freebsd"/>
+    </condition> 
+
     <!-- Create the distribution directory -->
     <mkdir dir="${dist.dir}" />   
 
@@ -103,6 +108,10 @@ Top-level target:
     <condition property="platform.target" value="buildsolaris">
       <os name="sunos"/>      
     </condition>  
+
+    <condition property="platform.target" value="buildfreebsd">
+      <os name="freebsd"/>
+    </condition> 
   </target>
 
   <!-- *** Top-level target *** -->
@@ -119,7 +128,7 @@ Top-level target:
   <target name="buildall" depends="setplatformtarget"
           description="build a distribution for the current platform.">
     <!-- Execute the ${platform.target} target in this file,
-         which is buildwin32, buildlinux, or buildsolaris. -->
+         which is buildwin32, buildlinux, buildsolaris or buildfreebsd. -->
     <ant target="${platform.target}"/>
   </target>
 
@@ -253,6 +262,13 @@ Top-level target:
     <delete includeEmptyDirs="true" failonerror="false">
       <fileset dir="${dist.dir}/org"/>
     </delete>
+  </target>
+
+  <!--
+    - FREEBSD DISTRIBUTION
+    -->
+  <target name="buildfreebsd" depends="buildsolaris"
+          description="build all the class and native source code" >
   </target>
 
   <!-- Copy the command-line packaging script -->

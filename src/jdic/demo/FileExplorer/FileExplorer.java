@@ -247,7 +247,8 @@ public class FileExplorer extends JPanel {
             // By default, use the first non-floppy disk here.
             selectedTreeNode = rootNode;
             selectedFile = null;
-        } else if (osName.startsWith("linux") || osName.startsWith("sunos")) {
+        } else if (osName.startsWith("linux") || osName.startsWith("sunos") 
+            || osName.startsWith("freebsd")) {
             File rootFile = new File("/");
 
             rootNode = new MyTreeNode(rootFile);

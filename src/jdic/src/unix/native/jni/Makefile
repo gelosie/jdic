@@ -19,7 +19,8 @@
 # 
 
 # 
-# Makefile for building JDIC native libraries(*.so) on Linux and Solaris.
+# Makefile for building JDIC native libraries(*.so) on Unix platforms
+# (Linux/Solaris/FreeBSD).
 # *** This makefile must be built using GNU Make ***
 # JAVA_HOME must be set before using this script.
 #
@@ -30,13 +31,19 @@ ifeq ($(UNAME), SunOS)
   PLATFORM = solaris
   CXX = CC
   CXXFLAGS = -c
-  LDFLAGS = -G
+  LDFLAGS = -G -ldl -lrt
 else 
   ifeq ($(UNAME), Linux)
     PLATFORM = linux
     CXX = g++
     CXXFLAGS = -c
-    LDFLAGS = -shared -fPIC
+    LDFLAGS = -shared -fPIC -ldl -lrt
+  endif
+  ifeq ($(UNAME), FreeBSD)
+    PLATFORM = freebsd
+    CXX = g++
+    CXXFLAGS = -c -I/usr/local/include -I/usr/X11R6/include
+    LDFLAGS = -shared -fPIC -L/usr/local/lib -L/usr/X11R6/lib
   endif
 endif
 
@@ -46,37 +53,29 @@ USR_LIB_DIR = /usr/lib
 INCLUDES = -I$(JAVA_HOME)/include \
            -I$(JAVA_HOME)/include/$(PLATFORM)
 
-EXTRA_INCLUDES = -I$(USR_INCLUDE_DIR)/libgnome-2.0 \
-                 -I$(USR_INCLUDE_DIR)/gnome-vfs-2.0/libgnomevfs \
-                 -I$(USR_INCLUDE_DIR)/gnome-vfs-2.0 \
-                 -I$(USR_INCLUDE_DIR)/gnome-vfs-module-2.0 \
-                 -I$(USR_INCLUDE_DIR)/gnome-vfs-module-2.0/libgnomevfs \
-                 -I$(USR_INCLUDE_DIR)/glib-2.0 \
-                 -I$(USR_INCLUDE_DIR)/glib-2.0/glib \
-                 -I$(USR_LIB_DIR)/glib-2.0/include \
-                 -I$(USR_INCLUDE_DIR)/bonobo-activation-2.0 \
-                 -I$(USR_INCLUDE_DIR)/libbonobo-2.0 \
-                 -I$(USR_INCLUDE_DIR)/orbit-2.0 \
-                 -I$(USR_INCLUDE_DIR)/linc-1.0 \
-                 -I$(USR_INCLUDE_DIR)/gconf/2
+EXTRA_INCLUDES = `pkg-config --cflags glib-2.0` \
+		 `pkg-config --cflags libgnome-2.0` \
+                 `pkg-config --cflags gnome-vfs-2.0`\
+                 `pkg-config --cflags gnome-vfs-module-2.0` \
+                 `pkg-config --cflags bonobo-activation-2.0` \
+                 `pkg-config --cflags libbonobo-2.0` \
+                 `pkg-config --cflags ORBit-2.0` \
+                 `pkg-config --cflags linc` \
+                 `pkg-config --cflags gconf-2.0`
 
 LIBS = -L$(USR_LIB_DIR) \
-       -lgnome-2 \
-       -lgnomevfs-2 \
-       -lbonobo-activation \
        -lz \
-       -lgconf-2 \
-       -lORBit-2 \
        -lm \
-       -llinc \
-       -lgmodule-2.0 \
-       -ldl \
-       -lgobject-2.0 \
-       -lgthread-2.0 \
-       -lpthread \
-       -lglib-2.0 \
-       -lpopt \
-       -lrt
+       `pkg-config --libs glib-2.0` \
+       `pkg-config --libs libgnome-2.0` \
+       `pkg-config --libs gnome-vfs-2.0`\
+       `pkg-config --libs gnome-vfs-module-2.0` \
+       `pkg-config --libs glib-2.0` \
+       `pkg-config --libs bonobo-activation-2.0` \
+       `pkg-config --libs libbonobo-2.0` \
+       `pkg-config --libs ORBit-2.0` \
+       `pkg-config --libs linc` \
+       `pkg-config --libs gconf-2.0`
 
 EXTRA_BROWSER_LIBS = \
     -L$(JAVA_HOME)/jre/lib/sparc \

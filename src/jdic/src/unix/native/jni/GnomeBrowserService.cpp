@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <gtypes.h>
+#include <glib.h>
 #include <glib-object.h>
 #include <libgnome/libgnome.h>
 #include <gconf/gconf-client.h>

@@ -13,6 +13,7 @@ Top-level target:
     buildwin32:     on Windows to build a Windows distribuition.
     buildlinux:     on Linux to build a Linux distribuition.
     buildsolaris:   on Solaris to build a Solaris distribuition.
+    buildfreebsd:   on FreeBSD to build a FreeBSD distribuition.
   clean:            Remove the generated distribution (including files and directories).
 
 -->
@@ -30,7 +31,7 @@ Top-level target:
   <property name="win32.classes.dir" value="${src.dir}/win32/classes" />
 
   <!-- the path of file defmailer.properties defining the default mailer 
-       location on Linux/Solaris -->
+       location on Linux/Solaris/FreeBSD -->
   <property name="unix.classes.defmailer.dir"  
             value="${src.dir}/unix/classes/org/jdesktop/jdic/desktop/internal/impl/" />
 
@@ -60,7 +61,7 @@ Top-level target:
   </target>
 
   <!--
-    - SHARED TARGETS FOR WIN32/LINUX/SOLARIS DISTRIBUTIONS
+    - SHARED TARGETS FOR WIN32/UNIX DISTRIBUTIONS
     -->
   <target name="init" description="the init target">
     <!-- Create the time stamp -->
@@ -82,6 +83,10 @@ Top-level target:
 
     <condition property="dist.dir" value="dist/solaris_x86">
       <os name="sunos" arch="x86"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/freebsd">
+      <os name="freebsd"/>      
     </condition> 
 
     <!-- Create the distribution directory -->
@@ -119,6 +124,10 @@ Top-level target:
     <condition property="platform.target" value="buildsolaris">
       <os name="sunos"/>      
     </condition>  
+
+    <condition property="platform.target" value="buildfreebsd">
+      <os name="freebsd"/>      
+    </condition> 
 
     <antcall target="${platform.target}" />
   </target>
@@ -212,7 +221,7 @@ Top-level target:
     <!-- copy the bundled dll used by embeded IE executable -->
     <copy file="${win32.native.ie.dir}/nspr4.dll" todir="${dist.dir}" />
   </target>
- 
+
   <!--
     - LINUX DISTRIBUTION
     -->
@@ -229,7 +238,15 @@ Top-level target:
   </target>
 
   <!--
-    - SHARED TARGETS FOR LINUX/SOLARIS DISTRIBUTIONS
+    - FREEBSD DISTRIBUTION
+    -->
+  <!-- This target is the same with buildlinux. -->
+  <target name="buildfreebsd" depends="buildlinux"
+          description="build java and native source code for FreeBSD platform" >
+  </target>
+
+  <!--
+    - SHARED TARGETS FOR UNIX DISTRIBUTIONS
     -->
   <!-- *** Build Unix jar file *** -->  
   <target name="buildunixjar" depends="init"
@@ -282,6 +299,11 @@ Top-level target:
 
     <exec os="SunOS" executable="cp" failonerror="yes">
       <arg value="${unix.native.mozilla.dir}/mozembed-solaris-gtk2" />
+      <arg value="${dist.dir}/." />
+    </exec>
+
+    <exec os="FreeBSD" executable="cp" failonerror="yes">
+      <arg value="${unix.native.mozilla.dir}/mozembed-freebsd-gtk2" />
       <arg value="${dist.dir}/." />
     </exec>
   </target>
