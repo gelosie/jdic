@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 SaverBeans Screensaver Pack Windows License:
 -------------------------------------------------------------------------------
-Copyright © 2004 Sun Microsystems, Inc. All rights reserved. Use is
+Copyright (c) 2004-2005 Sun Microsystems, Inc. All rights reserved. Use is
 subject to license terms.
 
 This program is free software; you can redistribute it and/or modify
