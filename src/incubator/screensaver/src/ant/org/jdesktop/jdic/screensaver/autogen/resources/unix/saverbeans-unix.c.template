@@ -28,7 +28,10 @@
 
 #include <jni.h>
 #include <dlfcn.h>
+#include <signal.h>
 #include "screenhack.h"
+
+typedef void (*sighandler_t)(int);
 
 #define PATH_SEPARATOR ':' /* UNIX */
 
@@ -115,6 +118,9 @@ unsigned long fg, bg;
 int npixels;
 int prev_width = 0, prev_height = 0;
 char *realClassName;
+jobject saver = 0; /* the screen saver instance */
+sighandler_t prev_termination_handler = 0;
+int terminated = 0;
 
 void
 init_saverbeans(Display *dpy, Window window) {
@@ -470,6 +476,67 @@ jboolean InitializeJavaVM(void) {
     return valid;
 }
 
+/* Called when we are to shut down the screensaver */
+void on_destroy(void) {
+    jmethodID destroy_mid;
+    jclass cls = NULL;
+    int valid = 1;
+
+    /* If destroy was already called, return immediately */
+    if( terminated ) return;
+
+    /* Notify main loop to stop iterating */
+    terminated = 1;
+
+    /* First, invoke destroy() on the screensaver */
+    if( env ) {
+        /* Find the screensaver class */
+        if( valid ) {
+            cls = (*env)->FindClass(env, realClassName);
+            if (cls == NULL) {
+                fprintf( stderr, "Can't find class %s\n", realClassName );
+                valid = 0;
+            }
+        }
+
+        /* Find the destroy() method */
+        if( valid ) {
+            destroy_mid = (*env)->GetMethodID( env, cls, "baseDestroy", 
+                "()V" );
+            if (destroy_mid == NULL) {
+                fprintf( stderr, "Can't find baseDestroy() method\n" );
+                valid = 0;
+            }
+        }
+
+        /* Invoke destroy() */
+        if( valid ) {
+            (*env)->CallVoidMethod( env, saver, destroy_mid );
+        }
+
+        /* Output any exceptions before we quit */
+        if ((*env)->ExceptionOccurred(env)) {
+            (*env)->ExceptionDescribe(env);
+        }
+    }
+}
+
+/* Invoked when screensaver receives a SIGTERM */
+void termination_handler(int signum) {
+    on_destroy();
+
+    if( (prev_termination_handler != 0) && 
+        (prev_termination_handler != SIG_DFL) ) 
+    {
+        /* Call previously registered termination handler */
+        (*prev_termination_handler)(signum);
+    }
+}
+
+/* Invoked when exit() is called  */
+void atexit_handler(void) {
+    on_destroy();
+}
 
 /* Main entry point called from screenhack.c */
 void screenhack(Display *dpy, Window window) {
@@ -478,7 +545,6 @@ void screenhack(Display *dpy, Window window) {
     jclass class_embedded_frame;
     jclass cls;
     jmethodID constructor;
-    jobject saver = 0; /* the screen saver instance */
     jobject context;
     jobject frame;
     jmethodID mid;
@@ -576,6 +642,24 @@ void screenhack(Display *dpy, Window window) {
             (*env)->CallVoidMethod( env, saver, mid, context );
         }
     }
+
+    /* Call destroy() on the screensaver before we exit */
+    atexit(atexit_handler);
+    if( (prev_termination_handler = signal(SIGTERM, termination_handler)) ==
+        SIG_IGN )
+    {
+        /*
+         * If the signal was previously set to be ignored, this code 
+         * avoids altering that setting. This is because non-job-control 
+         * shells often ignore certain signals when starting children, 
+         * and it is important for the children to respect this.
+         * Source: http://www.linuxselfhelp.com/gnu/glibc/html_chapter/libc_24.html
+         * Note that the side effect is that destroy() may not be called.
+         */
+        signal(SIGTERM, SIG_IGN);
+        fprintf( stderr, "WARNING: Could not register SIGTERM handler.  "
+            "Screensaver destroy() method may not be called\n" );
+    }
     
     /* Find renderFrame() method */
     if( valid ) {
@@ -590,7 +674,7 @@ void screenhack(Display *dpy, Window window) {
     /* Start render loop */
     tick = 60;
     if( valid ) {
-        while (1) {
+        while (!terminated) {
             tick++;
             if( tick > 30 ) {
                 /* Update width and height every 30 frames */
@@ -605,15 +689,5 @@ void screenhack(Display *dpy, Window window) {
             screenhack_handle_events(dpy);
             if (delay) usleep(delay);
         }
-    }
-    
-    /* destroy (never reached unless invalid) */
-    if( env ) {
-        if ((*env)->ExceptionOccurred(env)) {
-            (*env)->ExceptionDescribe(env);
-        }
-    }
-    if( jvm ) {
-        (*jvm)->DestroyJavaVM(jvm);
     }
 }
