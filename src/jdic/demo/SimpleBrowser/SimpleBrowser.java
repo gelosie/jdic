@@ -38,7 +38,8 @@ public class SimpleBrowser {
         System.out.println("=== Test setContent()/getContent()/executeScript() APIs ===");
         System.out.println("===========================================================");
                        
-        // Chinese characters contained to test unicode support.
+        // Add Chinese/Korean/Japan characters to the content to test unicode 
+        // support.
         String HTML_CONTENT =
             "<html>" +
             "<head>" +
@@ -53,7 +54,6 @@ public class SimpleBrowser {
             "" +
             "<body>" +
             "<div id='theDiv'>This page content is set using setContent() API</div>" +
-            "本页内容由setContent()方法设置。" +
             "</body>" +
             "</html>";
 
