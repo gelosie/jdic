@@ -79,7 +79,7 @@ void __stdcall BrowserWindow::OnBeforeNavigate(IDispatch *pDisp,VARIANT *URL,
 {
     char url[1024];
     int len = wcslen(URL->bstrVal);
-    WideCharToMultiByte(CP_ACP, 0, URL->bstrVal, -1, url, len*2, NULL, NULL);
+    WideCharToMultiByte(CP_ACP, 0, URL->bstrVal, -1, url, sizeof(url) - 1, NULL, NULL);
 
     int bCmdCanceled = -1, waitCount = 0;
     AddTrigger(m_InstanceID, CEVENT_BEFORE_NAVIGATE, &bCmdCanceled); 
@@ -134,4 +134,24 @@ void __stdcall BrowserWindow::OnNavigateError(IDispatch *pDisp,VARIANT *URL,VARI
                                               VARIANT *StatusCode,VARIANT_BOOL *Cancel)
 {
     SendSocketMessage(m_InstanceID, CEVENT_DOWNLOAD_ERROR);
+}
+
+void __stdcall BrowserWindow::OnTitleChange(BSTR Text)
+{
+    char buf[1024];
+    int len = wcslen(Text);
+	if (len > 0) {
+		if (WideCharToMultiByte(CP_ACP, 0, Text, -1, buf, sizeof(buf) - 1, NULL, NULL) > 0)
+			SendSocketMessage(m_InstanceID, CEVENT_TITLE_CHANGE, buf);
+	}
+}
+
+void __stdcall BrowserWindow::OnStatusTextChange(BSTR Text)
+{
+    char buf[1024];
+    int len = wcslen(Text);
+	if (len > 0) {
+		if (WideCharToMultiByte(CP_ACP, 0, Text, -1, buf, sizeof(buf) - 1, NULL, NULL) > 0)
+			SendSocketMessage(m_InstanceID, CEVENT_STATUSTEXT_CHANGE, buf);
+	}
 }

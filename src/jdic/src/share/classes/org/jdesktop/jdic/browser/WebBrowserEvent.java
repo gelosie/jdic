@@ -76,6 +76,14 @@ public class WebBrowserEvent extends EventObject
      */
     public static final int WEBBROWSER_COMMAND_STATE_CHANGE    = 8 + WEBBROWSER_FIRST;
     /**
+     * Event fired when the title of a document changes.
+     */
+    public static final int WEBBROWSER_TITLE_CHANGE            = 10 + WEBBROWSER_FIRST;
+    /**
+     * Event fired when the status bar text changes.
+     */
+    public static final int WEBBROWSER_STATUSTEXT_CHANGE       = 11 + WEBBROWSER_FIRST;
+    /**
      * Event fired when initialization of WebBrowser fails.
      */
     public static final int WEBBROWSER_INIT_FAILED             = 20 + WEBBROWSER_FIRST;

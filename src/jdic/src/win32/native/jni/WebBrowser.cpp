@@ -83,6 +83,7 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetBro
     DWORD type, cb;
     char *p, value[256] = "\0";
     
+#ifdef DEBUG
     // use mozilla if MOZILLA_FIVE_HOME defined (this is useful for debugging)
     p = getenv("MOZILLA_FIVE_HOME");
     if (p) {
@@ -90,6 +91,7 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetBro
         strcat(value, "\\mozilla.exe");
         return env->NewStringUTF(value);
     }
+#endif
 
     // get the default http protocol handler
     if (RegOpenKey(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", &hkey) != ERROR_SUCCESS)

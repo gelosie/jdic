@@ -25,9 +25,12 @@
 #include "stdafx.h"
 
 #ifdef _ATL_STATIC_REGISTRY
-#include <statreg.h>
-#include <statreg.cpp>
+  #if _MSC_VER < 1300
+    #include <statreg.h>
+    #include <statreg.cpp>
+  #endif
 #endif
 
-#include <atlimpl.cpp>
-
+#if _MSC_VER < 1300
+  #include <atlimpl.cpp>
+#endif

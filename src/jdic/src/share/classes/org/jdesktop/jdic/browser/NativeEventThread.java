@@ -111,7 +111,7 @@ class NativeEventThread extends Thread
 
             try {
                 int exitValue = nativeBrowser.exitValue();
-                WebBrowser.trace("Native browser died. We are going to quit now.");
+                WebBrowser.trace("Native browser died.");
                 return;
             } catch (IllegalThreadStateException e) {
             }

@@ -62,4 +62,18 @@ public interface WebBrowserListener extends java.util.EventListener
      * @param event the WebBrowserEvent fired.
      */
     void downloadError(WebBrowserEvent event);
+
+    /**
+     * Invoked when the title of a document changes.
+     * 
+     * @param event the WebBrowserEvent fired.
+     */
+    void titleChange(WebBrowserEvent event);
+
+    /**
+     * Invoked when the status bar text changes.
+     * 
+     * @param event the WebBrowserEvent fired.
+     */
+    void statusTextChange(WebBrowserEvent event);
 }

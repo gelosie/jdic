@@ -259,6 +259,12 @@ public class WebBrowser extends Canvas
                 case WebBrowserEvent.WEBBROWSER_DOWNLOAD_ERROR:
                     listener.downloadError(e);
                     break;
+                case WebBrowserEvent.WEBBROWSER_TITLE_CHANGE:
+                    listener.titleChange(e);
+                    break;
+                case WebBrowserEvent.WEBBROWSER_STATUSTEXT_CHANGE:
+                    listener.statusTextChange(e);
+                    break;
             }
         }
     }

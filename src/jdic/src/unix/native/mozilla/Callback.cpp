@@ -92,6 +92,11 @@ install_mozembed_cb(GtkBrowser *browser)
     // hookup to when the window is destroyed
     gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "destroy",
         GTK_SIGNAL_FUNC(destroy_cb), browser);
+    // title and status text change
+	gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "title",
+        GTK_SIGNAL_FUNC(title_change_cb), browser);
+    gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "status_change",
+        GTK_SIGNAL_FUNC(status_text_change_cb), browser);
 }
 
 void
@@ -467,6 +472,21 @@ void new_window_orphan_cb(GtkMozEmbedSingle *embed,
     GtkBrowser *newBrowser = new_gtk_browser(chromemask);
     *retval = GTK_MOZ_EMBED(newBrowser->mozEmbed);
     WBTRACE("new browser is %p\n", (void *)*retval);
+}
+
+void title_change_cb(GtkMozEmbed *embed, GtkBrowser *browser)
+{
+    char buf[1024];
+    sprintf(buf, "%s", NS_ConvertUCS2toUTF8(gtk_moz_embed_get_title_unichar(embed)).get());
+    SendSocketMessage(browser->id, CEVENT_TITLE_CHANGE, buf);
+}
+
+void status_text_change_cb(GtkMozEmbed *embed, gpointer request,
+				gint status, gpointer message, GtkBrowser *browser)
+{
+    char buf[1024];
+    sprintf(buf, "%s", NS_ConvertUCS2toUTF8(message).get());
+    SendSocketMessage(browser->id, CEVENT_STATUSTEXT_CHANGE, buf);
 }
 
 // utility functions

@@ -249,12 +249,12 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance,
 #endif
 
     ATLASSERT(SUCCEEDED(hRes));
-    _Module.Init(NULL, hInstance);
+    _Module.Init(NULL, hInstance, &LIBID_SHDocVw);
 
     //create hidden window for purpose of handling messages
     CreateHiddenWnd();
 
-    //ini new thread for communication
+    //init new thread for communication
     PRThread *socketListenThread = NULL;
     socketListenThread = PR_CreateThread(PR_USER_THREAD,
                                         PortListening,

@@ -30,7 +30,7 @@
 
 class BrowserWindow:
     public CAxWindow,
-    public IDispEventImpl<1, BrowserWindow, &DIID_DWebBrowserEvents2,&LIBID_SHDocVw, 1, 0>
+    public IDispEventImpl<1, BrowserWindow, &DIID_DWebBrowserEvents2, &LIBID_SHDocVw, 1, 0>
 {
 public:
     BrowserWindow();
@@ -52,6 +52,8 @@ public:
     void __stdcall OnNavigateProgress(long Progress,long ProgressMax);
     void __stdcall OnNavigateError(IDispatch *pDisp,VARIANT *URL,VARIANT *TargetFrameName,
                                    VARIANT *StatusCode,VARIANT_BOOL *Cancel);
+	void __stdcall OnTitleChange(BSTR Text);
+	void __stdcall OnStatusTextChange(BSTR Text);
 
     BEGIN_SINK_MAP(BrowserWindow)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_COMMANDSTATECHANGE, OnCommandStateChange)
@@ -60,7 +62,8 @@ public:
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_NEWWINDOW2, OnNewWindow2)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_NAVIGATECOMPLETE2, OnNavigateComplete)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_PROGRESSCHANGE, OnNavigateProgress)
-        //SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_NAVIGATEERROR, OnNavigateError)
+        SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_TITLECHANGE, OnTitleChange)
+        SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_STATUSTEXTCHANGE, OnStatusTextChange)
     END_SINK_MAP()
 
 protected:

@@ -383,6 +383,11 @@ NS_IMETHODIMP CBrowserImpl::SetTitle(const PRUnichar* aTitle)
 
     m_pBrowserFrame->SetBrowserFrameTitle(aTitle);
 
+	char buf[1024];
+    PRInt32 id = m_pBrowserFrame->GetBrowserId();
+    sprintf(buf, "%s", NS_ConvertUCS2toUTF8(aTitle).get());
+    SendSocketMessage(id, CEVENT_TITLE_CHANGE, buf);
+
     return NS_OK;
 }
 
@@ -581,8 +586,14 @@ CBrowserImpl::OnStatusChange(nsIWebProgress* aWebProgress,
                                  nsresult aStatus,
                                  const PRUnichar* aMessage)
 {
-    if (m_pBrowserFrame)
+    if (m_pBrowserFrame) {
         m_pBrowserFrame->UpdateStatusBarText(aMessage);
+
+        char buf[1024];
+        PRInt32 id = m_pBrowserFrame->GetBrowserId();
+        sprintf(buf, "%s", NS_ConvertUCS2toUTF8(aMessage).get());
+        SendSocketMessage(id, CEVENT_STATUSTEXT_CHANGE, buf);
+    }
 
     return NS_OK;
 }
