@@ -118,13 +118,13 @@ public class Tray implements ActionListener, ItemListener {
         // ImageIcon i = new ImageIcon("duke.gif");
         ImageIcon i = new ImageIcon(Tray.class.getResource("images/duke.gif"));
 
-        TrayIcon ti = new TrayIcon(i, "JDIC Incubator Project Tray Demo - TrayIcon", menu);
+        TrayIcon ti = new TrayIcon(i, "JDIC Tray Icon API Demo - TrayIcon", menu);
 
         ti.setIconAutoSize(true);
         ti.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(null, 
-                    "JDIC Incubator Project Tray Demo - TrayIcon", "About",
+                    "JDIC Tray Icon API Demo - TrayIcon", "About",
                     JOptionPane.INFORMATION_MESSAGE);
             }
         });
