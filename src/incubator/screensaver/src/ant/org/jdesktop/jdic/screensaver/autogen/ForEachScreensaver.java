@@ -246,7 +246,9 @@ public class ForEachScreensaver
                     t.execute();
                 }
             }
-            generateUnixMakefile(outDir, savers);
+            if(os.equals("unix")) {
+                generateUnixMakefile(outDir, savers);
+            }
         }
         catch( ParserConfigurationException e ) {
             throw new BuildException( e );
