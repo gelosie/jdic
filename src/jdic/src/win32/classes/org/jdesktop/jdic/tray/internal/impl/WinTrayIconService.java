@@ -86,7 +86,8 @@ public class WinTrayIconService implements TrayIconService{
         map.put(new Integer(iconID), this);
 
         popupParentFrame = new JDialog();
-        popupParentFrame.setAlwaysOnTop(true);
+        if( Integer.parseInt(System.getProperty("java.version").substring(2,3)) >=5 )
+        	popupParentFrame.setAlwaysOnTop(true);
         popupParentFrame.setUndecorated(true);
         popupParentFrame.setBounds(0, 0, 0, 0);
         popupParentFrame.setVisible(true);
@@ -171,16 +172,12 @@ public class WinTrayIconService implements TrayIconService{
 
         case 0x205: // WM_RBUTTONUP
             if (menu != null) {
-                // Fix for bug 25 
-                GraphicsConfiguration gc = popupParentFrame.getGraphicsConfiguration();
-                Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
-                if (x < screenInsets.left) {
-                 x = screenInsets.left;
-                }
-                if (y < screenInsets.top) {
-                 y = screenInsets.top;
-                }
-                menu.show(popupParentFrame, x, y);
+            	Point p = new Point(x, y);
+            	Dimension d = menu.getPreferredSize();
+                Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
+                p.x = p.x + d.width > s.width ? p.x - d.width : p.x;
+                p.y = p.y + d.height > s.height ? p.y - d.height : p.y;
+                menu.show(popupParentFrame, p.x, p.y);
                 popupParentFrame.toFront();
             }
             break;
