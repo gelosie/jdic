@@ -23,6 +23,9 @@
 #include "WebBrowserUtil.h"
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
  * Class:     org_jdesktop_jdic_browser_WebBrowserUtil
@@ -91,3 +94,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeSetEn
 {
     _putenv("JAVA_PLUGIN_WEBCONTROL_ENABLE=1");
 }
+
+#ifdef __cplusplus
+}
+#endif
