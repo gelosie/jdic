@@ -1,3 +1,32 @@
+2004-08-30 George Zhang <georgez@dev.java.net>
+
+    * Release 0.8.5
+    
+    * Fixed issue list:   
+      Note: All the feature enhancements are handled via the reported issues.
+
+      ID  Pri  Summary
+      ==  ===  =======   
+      9   P3   [Windows] jnlp2msi reports "Create Native process failed"
+      12  P3   [Windows] Can't find packager.jar when it is put as the first item in classpath
+      13  P3   [windows] can't install into system cache unless javaws system cache gets set
+      14  P3   [windows] exception was thrown by using -ld
+      16  P3   [Windows] Ambiguous Error Msg by using -pn
+      17  P3   [Windows] Ambiguous error info by using -od
+      18  P3   [Windows] No exception for invalide version value
+      19  P3   Windows] -msd option is not easy to use
+      51  P2   Packager cannot get javaws path correctly from /etc/mailcap
+      52  P3   typos in browser.jnlp of the online JNLP Browser demo.
+      56  P3   The demo jnlp file need support jdk1.5
+      58  P4   Update packager .jar file name and -enableassociation option
+      59  P4   COPYING file update.
+      60  P3   Browser demo doesn't handle "https" protocol correctly.
+      65  P3   Support TitleChange and StatusTextChange event
+      68  P3   Getting Default Browser from Windows Registry Table
+      71  P4   WebBrowser.willOpenURL(URL url) throws Null Pointer with Files
+      79  P3   Exception java.lang.UnsatisfiedLinkError with liblinc.so link error
+      83  P2   Packager can not get remote file through a proxy
+
 2004-07-07 George Zhang <georgez@dev.java.net>
 
     * Release 0.8.4.1
