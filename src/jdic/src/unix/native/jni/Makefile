@@ -70,16 +70,7 @@ EXTRA_INCLUDES = `pkg-config --cflags glib-2.0` \
 LIBS = -L$(USR_LIB_DIR) \
        -lz \
        -lm \
-       -lgnome-2 \
-       -lgnomevfs-2 \
-       -lbonobo-activation \
-       -lgconf-2 \
-       -lORBit-2 \
-       -lgmodule-2.0 \
-       -lgobject-2.0 \
-       -lgthread-2.0 \
-       -lglib-2.0 \
-       -lpopt
+       -lgnome-2 
 
 EXTRA_BROWSER_LIBS = \
     -L$(JAVA_HOME)/jre/lib/sparc \
