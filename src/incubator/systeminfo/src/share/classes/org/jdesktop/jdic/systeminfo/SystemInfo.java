@@ -21,7 +21,16 @@ package org.jdesktop.jdic.systeminfo;
 
 
 /**
- * Provide information concerning the current user's desktop session
+ * Provide information concerning the current user's desktop session.
+ * 
+ *<p>
+ * Windows Usage:<br>
+ * For Windows, most information is queried from info variables available thru 
+ * the Win32 API. Older Windows versions, however, don't support these methods
+ * so callbacks into event handlers must be inserted.<br>
+ * This can cause dll locking (which in turn can mess up some multiuser
+ * instances), but offers more backwards-compatibility.<br>
+ * If you want to force callbacks code to be used, 
  */
 public class SystemInfo
 {
@@ -33,11 +42,15 @@ public class SystemInfo
      */
     static
     {
-        boolean useCallbacks = System.getProperty("os.name").matches("Windows (95|98|NT).*");
-
+        String operatingSystem = System.getProperty("os.name");
+        boolean oldWindows = operatingSystem.matches("Windows (95|98|NT).*");
+        
+        String callbacksFlag = System.getProperty("systeminfo.callbacks");
+        boolean forceCallbacks = "true".equals(callbacksFlag);
+        
         try
         {
-            if(useCallbacks)
+            if(oldWindows || forceCallbacks)
             {
                 System.loadLibrary("systemcallback");
             }

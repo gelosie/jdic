@@ -17,79 +17,89 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  */
-#include <stdio.h>
+
 #include <windows.h>
+#include <stdio.h>
 #include <jni.h>
 #include "systeminfo.h"
 
-HHOOK 	keyboardHook = NULL;
-HHOOK 	mouseHook = NULL;
-LONG	mouseX = -1;
-LONG	mouseY = -1;
-DWORD	lastEvent = 0;
-
-HINSTANCE handleInstance = NULL;
+static DWORD lastEvent = 0;
+static HHOOK keyboardHook = NULL;
+static HHOOK mouseHook = NULL;
+static HINSTANCE handleInstance = NULL;
+static POINT mousePos;
 
 LRESULT CALLBACK KeyboardTracker(int code, WPARAM wParam, LPARAM lParam)
 {
-	if (code==HC_ACTION) lastEvent = GetTickCount();
-	return ::CallNextHookEx(keyboardHook, code, wParam, lParam);
+  if (code==HC_ACTION) lastEvent = GetTickCount();
+  
+  return CallNextHookEx(keyboardHook, code, wParam, lParam);
 }
 
 LRESULT CALLBACK MouseTracker(int code, WPARAM wParam, LPARAM lParam)
 {
-	if (code==HC_ACTION) {
-		MOUSEHOOKSTRUCT* pointer = (MOUSEHOOKSTRUCT*)lParam;
-		if (pointer->pt.x != mouseX || pointer->pt.y != mouseY) {
-			mouseX = pointer->pt.x;
-			mouseY = pointer->pt.y;
-			lastEvent = GetTickCount();
-		}
-	}
-	return ::CallNextHookEx(mouseHook, code, wParam, lParam);
+  if (code==HC_ACTION) 
+  {
+    MOUSEHOOKSTRUCT* pointer = (MOUSEHOOKSTRUCT*)lParam;
+    if (pointer->pt.x != mousePos.x || pointer->pt.y != mousePos.y) 
+    {
+      mousePos = pointer->pt;
+      lastEvent = GetTickCount();
+    }
+  }
+  return CallNextHookEx(mouseHook, code, wParam, lParam);
 }
 
 __declspec(dllexport) BOOL load()
 {
-	if (keyboardHook == NULL)
-		keyboardHook = SetWindowsHookEx(WH_KEYBOARD, KeyboardTracker, handleInstance, 0);
-	if (mouseHook == NULL)
-		mouseHook = SetWindowsHookEx(WH_MOUSE, MouseTracker, handleInstance, 0);
+  lastEvent = GetTickCount();
 
-	lastEvent = GetTickCount();
-
-	if (!keyboardHook || !mouseHook) return FALSE;
-	else return TRUE;
+  if (keyboardHook == NULL) 
+  {
+    keyboardHook = SetWindowsHookEx(WH_KEYBOARD, KeyboardTracker, handleInstance, 0);
+  }
+  
+  if (mouseHook == NULL)
+  {
+    mouseHook = SetWindowsHookEx(WH_MOUSE, MouseTracker, handleInstance, 0);
+  }
+  
+  return keyboardHook && mouseHook;
 }
 
 __declspec(dllexport) void unload()
 {
-	if (keyboardHook) {
-		UnhookWindowsHookEx(keyboardHook);
-		keyboardHook = NULL;
-	}
-	if (mouseHook) {
-		UnhookWindowsHookEx(mouseHook);
-		mouseHook = NULL;
-	}
+  if (keyboardHook)
+  {
+    UnhookWindowsHookEx(keyboardHook);
+    keyboardHook = NULL;
+  }
+  
+  if (mouseHook)
+  {
+    UnhookWindowsHookEx(mouseHook);
+    mouseHook = NULL;
+  }
 }
 
-int WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
+extern "C"
+BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
-	switch(dwReason) {
-		case DLL_PROCESS_ATTACH:
-			handleInstance = hInstance;
-			DisableThreadLibraryCalls(handleInstance);
-			load();
-			break;
-		case DLL_PROCESS_DETACH:
-			unload();
-			break;
-	}
-	return TRUE;
+  switch(dwReason) 
+  {
+    case DLL_PROCESS_ATTACH:
+      handleInstance = hInstance;
+      DisableThreadLibraryCalls(handleInstance);
+      return load();
+      break;
+    case DLL_PROCESS_DETACH:
+      unload();
+      break;
+  }
+  
+  return TRUE;
 }
 
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_systeminfo_SystemInfo_nativeGetSessionIdleTime
-  (JNIEnv *, jclass) {
-	return (GetTickCount() - lastEvent);
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_systeminfo_SystemInfo_nativeGetSessionIdleTime (JNIEnv *, jclass) {
+  return GetTickCount() - lastEvent;
 }

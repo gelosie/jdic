@@ -24,22 +24,23 @@ XCOMPILE_DIR = /usr/local/cross-compile/$(TARGET_ALIAS)
 CC = $(TARGET_ALIAS)-c++
 AS = $(TARGET_ALIAS)-as
 DLLWRAP = $(TARGET_ALIAS)-dllwrap
+DLLTOOL = $(TARGET_ALIAS)-dlltool
 
 INCLUDE = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -I.
 LDFLAGS = -L$(XCOMPILE_DIR)/lib -lm -lmingwex -lsupc++ -lstdc++
-CFLAGS =  -g -O2 -c $(INCLUDE) -g 
-DLLWRAP_FLAGS = --as=$(AS) --driver-name=$(CC) --add-stdcall-alias -s
+CFLAGS =  -O2 -Wall -mno-cygwin -mms-bitfields -c $(INCLUDE)
+DLLWRAP_FLAGS = --as $(AS) --driver-name $(CC) --dlltool-name $(DLLTOOL) --target $(TARGET_ALIAS) --mno-cygwin --add-stdcall-alias -s
 
 all: systeminfo.dll systemcallback.dll
 
 systeminfo.dll: systeminfo.o
-	$(DLLWRAP) $(DLLWRAP_FLAGS) --output-def info.def -o $@ $^
+	$(DLLWRAP) $(DLLWRAP_FLAGS) -o $@ $^
 
 systeminfo.o: systeminfo.cpp
 	$(CC) $(CFLAGS) $^
 
 systemcallback.dll: systemcallback.o
-	$(DLLWRAP) $(DLLWRAP_FLAGS) --output-def callback.def -o $@ $^
+	$(DLLWRAP) $(DLLWRAP_FLAGS) -o $@ $^
 
 systemcallback.o: systemcallback.cpp
 	$(CC) $(CFLAGS) $^
