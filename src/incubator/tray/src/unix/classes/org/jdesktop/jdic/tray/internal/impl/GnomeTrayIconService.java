@@ -135,6 +135,11 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
 
     public void setIcon(Icon i) {
         icon = i;
+        if (icon != null) {
+            int w = icon.getIconWidth();
+            int h = icon.getIconHeight();
+            reshape(0,0,w,h);
+        }
         iconPanel.repaint();
     }
 
@@ -185,25 +190,21 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         }
 
         public void paint(Graphics g) {
-            Rectangle r = g.getClipBounds();
+            Rectangle r = getBounds();
 
             g.clearRect(r.x, r.y, r.width, r.height);
 
             if (!autoSize) {
                 icon.paintIcon(this, g, r.x, r.y);
             } else {
-
                 /* Scale to the right size */
-                if (img != null) {
-                    icon.paintIcon(this, img.getGraphics(), 0, 0);
-                    g.drawImage(img, r.x, r.y, r.width, r.height, this);
-
-                } else {
+                if (img == null) {
                     int w = icon.getIconWidth();
                     int h = icon.getIconHeight();
-
                     img = createImage(w, h);
                 }
+                icon.paintIcon(this, img.getGraphics(), 0, 0);
+                g.drawImage(img, r.x, r.y, r.width, r.height, this);
             }
         }
 
@@ -217,6 +218,8 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         JToolTip label; 
         public HWToolTip(String caption, Window parent) {
             super(parent);
+            setFocusableWindowState(false);
+            setName("###overrideRedirect###");
             label = new JToolTip();
             label.setTipText(caption);
             getContentPane().add(label);

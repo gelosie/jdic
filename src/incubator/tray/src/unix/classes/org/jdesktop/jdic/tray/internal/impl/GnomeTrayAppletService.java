@@ -63,6 +63,7 @@ public class GnomeTrayAppletService implements TrayAppletService {
     native long createAppletWindow();
 
     native long getWidget(long window, int widht, int height, int x, int y);
+    native void adjustSizeHints (long window, int width, int height);
 
     long window_id;
    
@@ -210,6 +211,7 @@ public class GnomeTrayAppletService implements TrayAppletService {
     }
 
     public void  reshape(int x, int y, int width, int height) {
+        adjustSizeHints(getWindow(),width,height);
         frame.reshape(x, y, width, height);
     }
 

@@ -388,7 +388,7 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeSystem
     /*  Connect to X server  */
     if ( (display = XOpenDisplay(NULL)) == NULL ) {
         fprintf(stderr, "Couldn't connect to X server !\n");
-        exit(EXIT_FAILURE);
+        return JNI_FALSE;
     }
 
 
@@ -413,10 +413,37 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeSystem
 }
 
 
+/*
+ * Class:     GnomeTrayAppletService
+ * Method:    asjustSizeHints
+ * Signature: (JII)V
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayAppletService_adjustSizeHints (JNIEnv *env, jobject obj, jlong win, jint width, jint height) {
 
+    XSizeHints *  size_hints;
+
+    (*LockIt)(env);	
+    
+    if (!(size_hints  = XAllocSizeHints())) {
+        fprintf(stderr, "Couldn't allocate memory.\n");
+        (*UnLockIt)(env);	
+        return;
+    }
+
+    size_hints->flags       = PSize | PMinSize;
+    size_hints->min_width   = width;
+    size_hints->min_height  = height;
+
+
+    XSetWMProperties(display, win, NULL, NULL, NULL, 0,
+            size_hints, NULL, NULL);
+
+    (*UnLockIt)(env);	
+
+}
 
 /*
- * Class:     GnomeTrayIconService
+ * Class:     GnomeTrayAppletService
  * Method:    createIconWindow
  * Signature: ()J
  */
@@ -428,8 +455,8 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayApple
     XClassHint *  class_hints;
     XTextProperty windowName, iconName;
 
-    char *       window_name = "Hello!";
-    char *       icon_name   = "Hello";
+    char *       window_name = "JDIC Tray Icon";
+    char *       icon_name   = "JDIC Tray Icon";
 
     unsigned int *data =  (unsigned int *) malloc(6*4);
 
@@ -440,6 +467,7 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayApple
             !( wm_hints    = XAllocWMHints()   ) ||
             !( class_hints = XAllocClassHint() )    ) {
         fprintf(stderr, "Couldn't allocate memory.\n");
+        (*UnLockIt)(env);	
         return 0;
     }
 
@@ -456,25 +484,27 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayApple
     if ( XStringListToTextProperty(&window_name, 1, &windowName) == 0 ) {
         fprintf(stderr, "%s: structure allocation for windowName failed.\n",
                 appname);
-        exit(EXIT_FAILURE);
+        (*UnLockIt)(env);	
+        return 0;
     }
 
     if ( XStringListToTextProperty(&icon_name, 1, &iconName) == 0 ) {
         fprintf(stderr, "%s: structure allocation for iconName failed.\n",
                 appname);
-        exit(EXIT_FAILURE);
+        (*UnLockIt)(env);	
+        return 0;
     }
 
     size_hints->flags       = PPosition | PSize | PMinSize;
-    size_hints->min_width   = 40;
-    size_hints->min_height  = 40;
+    size_hints->min_width   = 1;
+    size_hints->min_height  = 1;
 
     wm_hints->flags         = StateHint | InputHint;
     wm_hints->initial_state = NormalState;
     wm_hints->input         = True;
 
-    class_hints->res_name   = "hellox";
-    class_hints->res_class  = "hellox";
+    class_hints->res_name   = "JDIC Tray Icon";
+    class_hints->res_class  = "JDIC Tray Icon";
 
     XSetWMProperties(display, win, &windowName, &iconName, NULL, 0,
             size_hints, wm_hints, class_hints);
@@ -507,6 +537,8 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayApple
 
     return (jlong) win;
 }
+
+
 
 /*
  * Class:     GnomeSystemTrayService
