@@ -18,7 +18,7 @@
 </tbody></table>
 <p>For an introduction to using the JDIC software, see <a href="http://">The JDIC 
   Project: Native Desktop Integration Made Easy</a> <font color="#FF0000">[PENDING: 
-  not published yet; the name is not decided yet]</font>.</p>
+  not published yet; name TBD]</font>.</p>
 <p>The documentation for the JDIC project falls into two categories:</p>
 <ul>
   <li><a href="#api">JDIC API</a></li>
@@ -26,6 +26,7 @@
 </ul>
 <hr>
 <h3>JDIC API<a name="api"></a></h3>
+<p>The JDIC API provides an interface from applications to the native desktop.</p>
 <ul>
  <li><a target="_blank" href="http://javadesktop.org/jdesktop/jdic/javadoc-0.5/index.html">API 
     Documentation (javadoc)</a>: Browsable API specification. You can also <a target="_blank" href="https://jdic.dev.java.net/servlets/ProjectDocumentList?folderID=738">download</a> 
@@ -37,26 +38,29 @@
         applications and applets. The API supports URL navigation, a basic history 
         mechanism, and progress notification.&nbsp;&nbsp; 
       <li><a target="_blank" href="http://javadesktop.org/jdesktop/jdic/javadoc-0.5/org/jdesktop/jdic/desktop/package-summary.html">org.jdesktop.jdic.desktop</a>: 
-        An API to automate native applications, including the document viewer 
-        applications associated with a particular file type, the system browser 
-        and the system mailer. 
+        An API to automate <font color="#FF0000">[PENDING: words seem to be missing 
+        here: &quot;communicating with&quot;? &quot;using services of&quot;?] 
+        </font>native applications, including the document viewer applications 
+        associated with a particular file type, the system browser, and the system 
+        mailer. 
       <li><a target="_blank" href="http://javadesktop.org/jdesktop/jdic/javadoc-0.5/org/jdesktop/jdic/filetypes/package-summary.html">org.jdesktop.jdic.filetypes</a>: 
         An API to associate document viewer applications with file types. 
     </ul>
   <li><a href="Specification.html">Other Specifications</a>: Detailed requirement 
     and implementation specifications. </li>
   <li><a href="README.html">README.html</a>: Complete installation and configuration 
-    notes for JDIC API. <font color="#FF0000">[PENDING: included in the JDIC downloadable 
-    package?]</font></li>
-  <li><a href="Examples.html">API Examples</a>: Examples of how to use JDIC API.</li>
+    notes for the JDIC API. <font color="#FF0000">[PENDING: included in the JDIC 
+    downloadable package?]</font></li>
+  <li><a href="Examples.html">API Examples</a>: Examples of how to use the JDIC 
+    API.</li>
   <li><a href="deployment.html">Deployment</a>: Tips for using Java Web Start 
     to deploy an application that uses the JDIC API. </li>
  </ul>
 <hr>
 <h3>JDIC Packager<a name="packager"></a></h3>  
 <blockquote> JDIC Packager is<b> </b>a tool for putting JNLP applications into 
-  installable packages of MSI/RPM/PKG format, the standard Windows/Linux/Solaris 
-  package format (respectively). </blockquote>
+  installable packages of the standard Windows, Linux, and Solaris formats &#151; MSI, 
+  RPM, and PKG, respectively.</blockquote>
 <ul>
   <li><a href="packager/README.html">README.html</a>: Complete installation and 
     configuration notes for JDIC Packager.</li>
