@@ -43,8 +43,40 @@ checkpaths:
             fi; \
         fi;
 
+check_install_paths:
+	@if [ ! -d "${SCREENSAVER_BIN}" ]; then \
+            echo "Directory ${SCREENSAVER_BIN} not found."; \
+            echo "Please set SCREENSAVER_BIN to the install directory "; \
+            echo "for screensavers (see README.txt)."; \
+            false; \
+        fi;
+	@if [ ! -d "${SCREENSAVER_CONF}" ]; then \
+            echo "Directory ${SCREENSAVER_CONF} not found."; \
+            echo "Please set SCREENSAVER_CONF to the install directory for "; \
+            echo "screensavers (see README.txt)."; \
+            false; \
+        fi;
+
 [[targets]]
 
+install: check_install_paths
+	install *.jar ${SCREENSAVER_BIN}
+	install [[name]] ${SCREENSAVER_BIN}
+	install [[name]]-bin ${SCREENSAVER_BIN}
+	install *.xml ${SCREENSAVER_CONF}
+
+uninstall: check_install_paths
+	@for f in `ls *.jar`; do \
+            if [ "$$f" != "saverbeans-api.jar" ]; then \
+                rm -f ${SCREENSAVER_BIN}/$$f; \
+            fi; \
+	done;
+	rm -f ${SCREENSAVER_BIN}/[[name]]
+	rm -f ${SCREENSAVER_BIN}/[[name]]-bin
+	@for f in `ls *.xml`; do \
+            rm -f ${SCREENSAVER_BIN}/$$f; \
+	done
+
 clean:
-	rm [[exes]] *.o *.so
+	rm -f [[exes]] *.o *.so
 
