@@ -10,6 +10,7 @@
        97 P3   Embedded IE has problem with some https sites
       126 P2   Browser component can not resolve the symbolic link
       125 P2   Failed to generate msi package when speicfy the rd paramter 
+      123 P1   Packager can not generate packages
       136 P3   Update init package implementation.  
       138 P3   Dependence on libpopt.so.0
       139 P3   Tray requires setting JAVA_HOME to work.
