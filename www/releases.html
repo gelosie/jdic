@@ -90,19 +90,29 @@ features may change in the final release.<br>
 <p><a href="distribution.html#CVS_tags">Log of cvs tags for major
 public releases</a></p>
 <p>&nbsp;</p>
-<hr>
-<h4><font color="#808080" style="font-weight: bold;"><a name="JDIC 0.8.7">JDIC 0.8.7</a> -
-Release date TBD.</font><span style="font-weight: bold;"> </span></h4>
+<hr><!-- Begin releases block -->
+<h4><a name="JDIC 0.8.7">JDIC 0.8.7</a> - Released Dec. 17, 2004</h4>
 <ul>
-  <li>What's New - outlines some of the new features implemented in
-this release and important bugfixes.
+  <li><a
+ href="https://jdic.dev.java.net/servlets/ProjectDocumentList?folderID=2495&expandFolder=2495&folderID=1955">Download</a>
+- the release includes the source, and binary builds for Windows/Linux/Solaris. </li>
+  <li>The <a href="documentation/README.html">README</a> file contains
+installation instructions, system requirements, license terms, and
+instructions to pull the JDIC source from CVS and build it. </li>
+  <li>See the <a
+ href="https://jdic.dev.java.net/source/browse/jdic/src/ChangeLog">ChangeLog</a>
+file for a comprehensive list of fixes and known issues, which includes
+all of the new features and fixes from 0.8.4 (the initial release). </li>
+  <li>What is new - 
     <ul>
-      <li>Fix the Mozilla version dependency problem: the Browser
-component will work through 1.4 to 1.7+. (issue#87)</li>
-      <li>Provide a new component to retrieve Icon image, icon theme
-representing a file type. (issue#74-78)
-      </li>
-      <li>Refactored and consolidated JDIC source code. (issue#74-78) </li>
+        <li>Desktop Mailer support Mozilla Thunderbird on Windows/Linux/Solaris</li>
+        <li>WebBrowser works fine when browsing https web site.</li>
+        <li>Automatically set JAVA_HOME and java.library.path property for TrayIcon.</li>
+        <li>Environment variables are setted by code automatically, you just need to add the jdic.jar to your classpath.</li>
+        <li>Fix several critical bugs of TrayIcon.</li>
+        <li>Fix several critical bugs of Packager.</li>
+        <li>Remove several unnecessary linked library to build jdic.</li>
+        <li>Refine code for init package.</li>
     </ul>
   </li>
 </ul>
