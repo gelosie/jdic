@@ -188,11 +188,18 @@ public class TrayIcon {
     public static final int NONE_MESSAGE_TYPE = 3;
 
     /**
+     * Displays a popup message near the tray icon. 
+     * The message will disappear after a timeout or if user clicks on it. 
+     * Either the caption or the text may be null, 
+     * but an NullPointerException is thrown if both are null.
      * 
-     * @param caption - the caption displayed above the text, usually in bold; may be null
-     * @param text - the text displayed for the particular message; may be null
-     * @param type - indicating the message type
-     * @throws NullPointerException  - if both caption and text are null
+     * Note: Some platforms may not support showing a message.
+     * 
+     * @param caption the caption displayed above the text, usually in bold; may be null
+     * @param text the text displayed for the particular message; may be null
+     * @param type indicating the message type
+     *   
+     * @throws NullPointerException if both caption and text are null
      */
     public void displayMessage(String caption, String text, int type)throws NullPointerException{
     	if(tis != null)
