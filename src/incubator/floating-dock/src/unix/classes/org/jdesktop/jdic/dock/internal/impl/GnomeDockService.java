@@ -39,6 +39,7 @@ public class GnomeDockService implements DockService {
 
     EmbeddedFrame frame;
     Dimension size;
+    boolean visible = false;
     static long window_id;
     static GnomeDockService gds;
 
@@ -47,6 +48,7 @@ public class GnomeDockService implements DockService {
     native void adjustSizeHints (long window, int width, int height);
     static native boolean  locateDock();
     static native void eventLoop();
+    static native void mapWindow(long window, boolean b);
 
     static Thread display_thread;
 
@@ -188,12 +190,14 @@ public class GnomeDockService implements DockService {
 
     public void setVisible(boolean b)
     {
-	 frame.setVisible(b);
+	visible = b;
+	mapWindow(window_id, b);	
+	frame.setVisible(b);
     }
 
     public boolean getVisible()
     {
-	return true;
+	return visible;
     }
 
     long getWindow() {

@@ -253,7 +253,6 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServic
         XNextEvent(display, &report);
         (*UnLockIt)(env);
 
-        dprintf("type = %x\n",report.type);
         switch ( report.type ) {
 
             case Expose:
@@ -271,13 +270,22 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServic
 
                 break;
             case ConfigureNotify:
-                dprintf("ConfigureNotify x = %s y=%d w=%d h=%d\n",report.xconfigure.x,report.xconfigure.y, report.xconfigure.width, report.xconfigure.height);
+                dprintf("ConfigureNotify x = %d y=%d w=%d h=%d\n",report.xconfigure.x,report.xconfigure.y, report.xconfigure.width, report.xconfigure.height);
 
                 configureNotify(env,report.xconfigure.window,report.xconfigure.x,report.xconfigure.y, report.xconfigure.width, report.xconfigure.height);
 
                 break;
             case ButtonPress:
                 dprintf("ButtonPress\n");
+                break;
+	    case MapRequest:
+		dprintf("MapRequest\n");
+		break;
+	    case MapNotify:
+                dprintf("MapNotify\n");
+                break;
+	    case UnmapNotify:
+                dprintf("UnmapNotify\n");
                 break;
 
 
@@ -308,18 +316,7 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockSe
     }
 
     /*  Get screen number from display structure macro  */
-
     screen_num     = DefaultScreen(display);
-
-/*    net_system_tray = XInternAtom(display,"_NET_SYSTEM_TRAY_S0",False);
-    embed_type = XInternAtom(display,"_XEMBED_INFO",False);
-
-    _NET_WM_ICON = XInternAtom(display,"_NET_WM_ICON", False);
-
-
-    tray_owner = XGetSelectionOwner(display,net_system_tray);
-
-    dprintf("Tray Owner = %x \n",tray_owner); */
 
     dprintf("Dock initialized\n");
 
@@ -396,7 +393,7 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServi
     size_hints->x = 0;
     size_hints->y = 0;
     size_hints->min_width   = 10;
-    size_hints->width   = 46;
+    size_hints->width   = 10;
     size_hints->min_height  = display_height;
     size_hints->height  = display_height;
     size_hints->win_gravity  = NorthWestGravity;
@@ -431,17 +428,13 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServi
                     (unsigned char *)&_NET_WM_WINDOW_TYPE_DOCK, 1);
     XChangeProperty(display, win, _NET_WM_STATE,XA_ATOM , 32, PropModeReplace,
                     (unsigned char *)&_NET_WM_STATE_STICKY, 1);
-    insets[0]=46;
+    insets[0]=10;
     insets[1]=0;
     insets[2]=0;
     insets[3]=0;
 
     XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
                     (unsigned char *)insets, 4);
-
-    /*  Display Window  */
-
-    XMapWindow(display, win); 
 
     dprintf("Window ID = %x \n",win);
 
@@ -488,3 +481,21 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServic
     (*UnLockIt)(env);
 
 }
+
+/*
+ * Class:     org_jdesktop_jdic_dock_internal_impl_GnomeDockService
+ * Method:    mapWindow
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockService_mapWindow(JNIEnv *env, jobject obj, jlong win, jboolean b)
+{
+    if (b) {
+	dprintf("mapped window id is %x\n", win);
+	XMapWindow(display, win);
+    }
+    else {
+	dprintf("unmapped window id is %x\n", win);	
+	XUnmapWindow(display, win);
+    }
+}
+

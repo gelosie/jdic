@@ -47,6 +47,14 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockSe
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockService_eventLoop
   (JNIEnv *, jclass);
 
+/*
+ * Class:     org_jdesktop_jdic_dock_internal_impl_GnomeDockService
+ * Method:    mapWindow
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockService_mapWindow
+  (JNIEnv *, jclass, jlong, jboolean);
+
 #ifdef __cplusplus
 }
 #endif
