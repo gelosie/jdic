@@ -54,8 +54,6 @@ public class WinTrayIconService implements TrayIconService{
 
     private LinkedList actionList = new LinkedList();
 
-    private Point lastLocation = null;
-
     static int noIcons;
 
     int iconID;
@@ -112,6 +110,8 @@ public class WinTrayIconService implements TrayIconService{
     private native void showBalloonMessage(long hIcon, int id, byte[] caption, byte[] text, int type);
     
     private native void deleteHIcon(long hIcon);
+    
+    private native int[] getRectangleOnScreen(int id);
 
     private static native void removeIcon(int id);
     
@@ -221,7 +221,6 @@ public class WinTrayIconService implements TrayIconService{
             }
             break;
         }
-        lastLocation = new Point(x,y);
     }
 
     public synchronized static void notifyEvent(int id, final int mouseState, final int x, final int y) {
@@ -329,11 +328,8 @@ public class WinTrayIconService implements TrayIconService{
     }
 
     public Point getLocationOnScreen() {
-        // Currently the only way I know how to do this is to 
-        // return the location of the last reported mouse event.
-        // Since Windows tray icons are not real windows, we cannot 
-        // query its location !
-        return lastLocation;
+        int[] rect = this.getRectangleOnScreen(iconID);
+        return new Point(rect[0], rect[1]);
     }
 
     void remove() {

@@ -54,6 +54,14 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_removeIcon
   (JNIEnv *, jclass, jint);
 
+/*
+ * Class:     org_jdesktop_jdic_tray_internal_impl_WinTrayIconService
+ * Method:    getRectangleOnScreen
+ * Signature: (I)[I
+ */
+JNIEXPORT jintArray JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_getRectangleOnScreen
+  (JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif

@@ -19,7 +19,9 @@
  */ 
  
 #include <windows.h>
-#include <windowsx.h> 
+#include <windowsx.h>
+#include <commctrl.h>
+#include <shlwapi.h>
 #include "WinTrayIconService.h"
 #include "DisplayThread.h"
 #include "JNIloader.h"
@@ -139,7 +141,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             env->CallStaticVoidMethod(peerCls,restartTaskbarMID);
             return 1;
         }
-	if (uMsg >=  TRAY_NOTIFYICON)
+	if (uMsg >=  TRAY_NOTIFYICON && lParam != WM_MOUSEMOVE)
         {
             POINT pt;
             ::GetCursorPos(&pt);
@@ -150,9 +152,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
-
-
-
 
 extern "C" BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_for_call, 
                                  LPVOID)
@@ -239,10 +238,196 @@ void destroy_BMP(HBITMAP hBMP)
     }
 }
 
+/******************************************************************************
+ * The following code is used to calculate the Rectangle of trayicon on screen
+ ******************************************************************************/
+BOOL CALLBACK FindTrayNotifyWnd(HWND hwnd, LPARAM lParam)
+{    
+	TCHAR szClassName[256];
+    GetClassName(hwnd, szClassName, 255); 
+	if (strcmp(szClassName, "TrayNotifyWnd") == 0)    
+	{        
+		HWND* pWnd = (HWND*)lParam;
+		*pWnd = hwnd;
+        return FALSE;    
+	}    
+	return TRUE;
+}
+BOOL CALLBACK FindToolBarInTrayWnd(HWND hwnd, LPARAM lParam)
+{    
+	TCHAR szClassName[256];
+    GetClassName(hwnd, szClassName, 255);
+	if (strcmp(szClassName, "ToolbarWindow32") == 0)    
+	{        
+		HWND* pWnd = (HWND*)lParam;
+		*pWnd = hwnd;
+        return FALSE;    
+	}    
+	return TRUE;
+}
+
+// return HWND of the window which is used to place the tray icons.
+HWND FindTrayWnd(){
+	HWND hWndShellTrayWnd = NULL;
+	HWND hWndTrayNotifyWnd = NULL;
+	HWND hWndTrayIconOwnerWnd = NULL;
+	
+	// find the window whose class name is "Shell_TrayWnd". --- Taskbar
+	hWndShellTrayWnd = FindWindow(("Shell_TrayWnd"), NULL);
+	if( hWndShellTrayWnd == NULL )
+		return NULL;
+
+	// find the window whose class name is "TrayNotifyWnd" --- Notification Area.
+	EnumChildWindows(hWndShellTrayWnd, FindTrayNotifyWnd, (LPARAM)&hWndTrayNotifyWnd); 
+	if( !hWndTrayNotifyWnd || !IsWindow(hWndTrayNotifyWnd))
+		return hWndShellTrayWnd;
+
+	// find the window whose class name is "ToolbarWindow32" --- The window used to place the tray icons.
+	EnumChildWindows(hWndTrayNotifyWnd, FindToolBarInTrayWnd, (LPARAM)&hWndTrayIconOwnerWnd);   
+	if( !hWndTrayIconOwnerWnd || !IsWindow(hWndTrayIconOwnerWnd))
+		return hWndShellTrayWnd;
+
+	return hWndTrayIconOwnerWnd;
+}
+
+BOOL GetTrayIconRect(HWND hWnd, int iconID, RECT *rect){
+	HWND hWndTrayWnd = FindTrayWnd();
+	if(hWndTrayWnd == NULL)
+		return FALSE;
+
+	GetWindowRect(hWndTrayWnd, rect); // Get the Rectangle of the Tray Icon owner window.
+	
+	// Check how many buttons there are - should be more than 0
+	int iButtonsCount = SendMessage(hWndTrayWnd, TB_BUTTONCOUNT, 0, 0);
+	// Get an ID of the parent process for system tray
+	DWORD dwTrayProcessID = -1;
+	GetWindowThreadProcessId(hWndTrayWnd, &dwTrayProcessID);
+	if(dwTrayProcessID <= 0)
+	{
+		return FALSE;
+	}
+	HANDLE hTrayProc = OpenProcess(PROCESS_ALL_ACCESS, 0, dwTrayProcessID);
+	if(hTrayProc == NULL)
+	{
+		return FALSE;
+	}
+
+	LPVOID lpData = VirtualAllocEx(hTrayProc, NULL, sizeof(TBBUTTON), MEM_COMMIT, PAGE_READWRITE);
+	if( lpData == NULL || iButtonsCount < 1 )
+	{
+		CloseHandle(hTrayProc);
+		return FALSE;
+	}
+	
+	BOOL bIconFound = FALSE;
+	for(int iButton=0; iButton<iButtonsCount; iButton++)
+	{
+		// Read TBUTTON information about each button in a task bar of tray
+		DWORD dwBytesRead = -1;
+		TBBUTTON buttonData;
+		SendMessage(hWndTrayWnd, TB_GETBUTTON, iButton, (LPARAM)lpData);
+		ReadProcessMemory(hTrayProc, lpData, &buttonData, sizeof(TBBUTTON), &dwBytesRead);
+		if(dwBytesRead < sizeof(TBBUTTON))
+		{
+			continue;
+		}
+
+		// Read extra data associated with each button: there will be a HWND of the window that created an icon and icon ID
+		DWORD dwExtraData[2] = { 0,0 };
+		ReadProcessMemory(hTrayProc, (LPVOID)buttonData.dwData, dwExtraData, sizeof(dwExtraData), &dwBytesRead);
+		if(dwBytesRead < sizeof(dwExtraData))
+		{
+			continue;
+		}
+
+		HWND hWndOfIconOwner = (HWND) dwExtraData[0];
+		int  iIconId		 = (int)  dwExtraData[1];
+		
+		if(hWndOfIconOwner != hWnd || iIconId != iconID)
+		{
+			continue;
+		}
+		
+		// Found our icon - in WinXP it could be hidden - let's check it:
+		if( buttonData.fsState & TBSTATE_HIDDEN )
+		{
+			break;
+		}
+
+		// Convert the point from the owner window to screen.
+		SendMessage(hWndTrayWnd, TB_GETITEMRECT, iButton, (LPARAM)lpData);
+		ReadProcessMemory(hTrayProc, lpData, rect, sizeof(RECT), &dwBytesRead);
+
+		if(dwBytesRead < sizeof(RECT))
+		{
+			continue;
+		}
+
+		MapWindowPoints(hWndTrayWnd, NULL, (LPPOINT)rect, 2);
+		bIconFound = TRUE;
+		break;
+	}
+	VirtualFreeEx(hTrayProc, lpData, NULL, MEM_RELEASE);
+	CloseHandle(hTrayProc);
+	return TRUE;
+}
+
+DWORD GetDllVersion(LPCTSTR lpszDllName)
+{
+    HINSTANCE hinstDll;
+    DWORD dwVersion = 0;
+
+    hinstDll = LoadLibrary(lpszDllName);
+	
+    if(hinstDll)
+    {
+        DLLGETVERSIONPROC pDllGetVersion;
+        pDllGetVersion = (DLLGETVERSIONPROC)GetProcAddress(hinstDll, 
+                          "DllGetVersion");
+
+        /* Because some DLLs might not implement this function, you
+        must test for it explicitly. Depending on the particular 
+        DLL, the lack of a DllGetVersion function can be a useful
+        indicator of the version. */
+
+        if(pDllGetVersion)
+        {
+            DLLVERSIONINFO dvi;
+            HRESULT hr;
+
+            ZeroMemory(&dvi, sizeof(dvi));
+            dvi.cbSize = sizeof(dvi);
+
+            hr = (*pDllGetVersion)(&dvi);
+
+            if(SUCCEEDED(hr))
+            {
+ 				dwVersion = dvi.dwMajorVersion;
+            }
+        }
+
+        FreeLibrary(hinstDll);
+    }
+    return dwVersion;
+}
+
 
 /************************************************************************
 * WCustomCursor native methods
 */
+
+JNIEXPORT jintArray JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_getRectangleOnScreen
+(JNIEnv *env , jobject obj, jint id) 
+{
+	jintArray result = env->NewIntArray(4);
+	
+	RECT rect;
+	GetTrayIconRect(messageWindow, id, &rect);
+	jint rect_int[] = { rect.left, rect.top, rect.right, rect.bottom };
+	env->SetIntArrayRegion(result, 0, 4, rect_int);
+
+	return result;
+}
 
 JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_createIconIndirect(
 																										   JNIEnv *env, jobject self, jintArray intRasterData, jbyteArray andMask, 
@@ -333,8 +518,11 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
 (JNIEnv *env , jobject obj, jlong icon, jint id, jbyteArray title, jbyteArray message, jint type)
 {
 	NOTIFYICONDATA tnd;
-	::ZeroMemory(&tnd, sizeof(tnd));
-	tnd.cbSize		= sizeof(tnd);
+	DWORD dll_version = GetDllVersion("Shell32.dll");
+	int tnd_size = dll_version >= 5 ? sizeof(tnd) : NOTIFYICONDATA_V1_SIZE;
+
+	::ZeroMemory(&tnd, tnd_size);
+	tnd.cbSize		= tnd_size;
 	tnd.hWnd		= messageWindow;
 	tnd.uID			= id;
 	tnd.uFlags		= NIF_INFO;
