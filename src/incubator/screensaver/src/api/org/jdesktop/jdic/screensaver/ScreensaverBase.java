@@ -54,6 +54,7 @@ public abstract class ScreensaverBase {
      * @param context Context information for this screensaver (eg window size)
      */
     public final void baseInit( ScreensaverContext context ) {
+        logger.log(Level.FINEST, "Screensaver starting up.");
         this.context = context;
         reinit();
     }
@@ -63,6 +64,7 @@ public abstract class ScreensaverBase {
      * should override the destroy() method to provide any cleanup behavior.
      */
     public final void baseDestroy() {
+        logger.log(Level.FINEST, "Screensaver shutting down.");
         try {
             destroy();
         }
