@@ -28,26 +28,26 @@ import java.awt.event.*;
 import java.security.*;
 import java.io.File;
 
+import org.jdesktop.jdic.browser.internal.WebBrowserUtil; 
 import org.jdesktop.jdic.init.JdicInitException;
 import org.jdesktop.jdic.init.JdicManager;
 
 /**
- * A <code>WebBrowser</code> component represents a blank rectangular area of the
- * screen onto which the application can display webpages or from which the
- * application can trap events from the browser window. In order to show WebBrowser
- * component in GUI, user need to add WebBrowser to a top-level container, such as
- * <code>Frame</code>.
+ * A <code>WebBrowser</code> component represents a blank rectangular area of 
+ * the screen onto which the application can display webpages or from which the
+ * application can trap events from the browser window. In order to show <code>
+ * WebBrowser</code> component in GUI, users need to add <code>WebBrowser</code> 
+ * to a top-level container, such as <code>Frame</code>.
  * <p>
- * The class that is interested in processing a WebBrowser event should implement
- * interface <code>WebBrowserListener</code>, and the object created with that class
- * should use WebBrowser's <code>addWebBrowserListener</code> method to register
- * as a listener.
+ * The class that is interested in processing a <code>WebBrowser</code> event 
+ * should implement interface <code>WebBrowserListener</code>, and the object 
+ * created with that class should use WebBrowser's <code>addWebBrowserListener
+ * </code> method to register as a listener.
  * <p>
- * The <code>WebBrowser</code> class has an inner class <code>Status</code>. User can use
- * <code>getStatus</code> method to retrieve the <code>Status</code> object of the
- * WebBrowser object. Querying status of this WebBrowser can be done by calling methods
- * provided by the <code>Status</code> class.
- *
+ * As an AWT component, a <code>WebBrowser</code> component must be hosted by 
+ * a native container somewhere higher up in the component tree (for example, 
+ * by a JPanel object).
+ * 
  * @see WebBrowserEvent
  * @see WebBrowserListener
  *
@@ -56,24 +56,31 @@ import org.jdesktop.jdic.init.JdicManager;
  */
 public class WebBrowser extends Canvas
 {
-    private static final String binary_windows_ie = "IeEmbed.exe";
-    private static final String binary_windows_mozilla = "MozEmbed.exe";
-    private static final String binary_linux_gtk1 = "mozembed-linux-gtk1.2";
-    private static final String binary_linux_gtk2 = "mozembed-linux-gtk2";
-    private static final String binary_freebsd_gtk1 = "mozembed-freebsd-gtk1.2";
-    private static final String binary_freebsd_gtk2 = "mozembed-freebsd-gtk2";
-    private static final String binary_solaris_gtk1 = "mozembed-solaris-gtk1.2";
-    private static final String binary_solaris_gtk2 = "mozembed-solaris-gtk2";
+    private static final String BINARY_WINDOWS_IE = "IeEmbed.exe";
+    private static final String BINARY_WINDOWS_MOZILLA = "MozEmbed.exe";
+    private static final String BINARY_LINUX_GTK1 = "mozembed-linux-gtk1.2";
+    private static final String BINARY_LINUX_GTK2 = "mozembed-linux-gtk2";
+    private static final String BINARY_FREEBSD_GTK1 = "mozembed-freebsd-gtk1.2";
+    private static final String BINARY_FREEBSD_GTK2 = "mozembed-freebsd-gtk2";
+    private static final String BINARY_SOLARIS_GTK1 = "mozembed-solaris-gtk1.2";
+    private static final String BINARY_SOLARIS_GTK2 = "mozembed-solaris-gtk2";
 
-    private static String browserBinary;
-    private Status status = new Status();
+    // Native browser embedding binary: IeEmbed.exe or MozEmbed.exe on Windows, 
+    // mozembed-<os>-gtk<version> on Linux/Unix.
+    private static String embedBinary;
     private MyFocusListener focusListener = new MyFocusListener();
     private static NativeEventThread eventThread = new NativeEventThread();
     private Vector webclientListeners = new Vector();
     private int instanceNum;
     private static int lastInstanceNum = 0;
     private static boolean isRunningOnWindows = false;
-    private static boolean isDebugOn = false;
+    private static boolean isDebugEnabled = false;
+    
+    // WebBrowser states.
+    private boolean isInitialized = false;
+    private boolean isBackEnabled = false;
+    private boolean isForwardEnabled = false;
+    private String initFailureMessage = "WebBrowser is not initialized.";   
 
     static {
         // Add the initialization code from package org.jdesktop.jdic.init.
@@ -95,50 +102,23 @@ public class WebBrowser extends Canvas
                     }
                 }
             );
-        isRunningOnWindows = System.getProperty("os.name").indexOf("Windows") >= 0;
+        isRunningOnWindows = System.getProperty("os.name").indexOf("Windows") 
+            >= 0;
     }
 
     /**
-     * Constructs a new <code>WebBrowser</code> object with no URL specified.
+     * Returns the name of the native browser embedding binary. If no default
+     * browser is set, null is returned.  
      */
-    public WebBrowser() {
-        this(null);
-    }
+    private static String getEmbedBinaryName() {
+        if (embedBinary != null && embedBinary.length() > 0)
+            return embedBinary;
 
-    /**
-     * Constructs a new <code>WebBrowser</code> with an URL specified.
-     */
-    public WebBrowser(URL url) {
-        synchronized(this) {
-            instanceNum = lastInstanceNum;
-            lastInstanceNum++;
-        }
-        eventThread.attachWebBrowser(this);
-
-        if (0 == instanceNum) {
-            setBinaryName();
-            eventThread.start();
-            eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_INIT);
-        }
-
-        if (null != url) {
-            setURL(url);
-        }
-
-        setFocusable(true);
-        addFocusListener(focusListener);
-    }
-
-    private static void setBinaryName() {
-        if (browserBinary != null && browserBinary.length() > 0)
-            return;
-
+        String embedBin = null;
         String nativePath = WebBrowserUtil.getBrowserPath();
         if (null == nativePath) {
-            WebBrowser.trace("Cant find default browser if you are on windows!");
-            WebBrowser.trace("Or environment variable MOZILLA_FIVE_HOME not set if you are on linux/unix!");
-            browserBinary = null;
-            return;
+            WebBrowser.trace("No default browser is found. ");
+            embedBin = null;
         }
 
         String osname = System.getProperty("os.name");
@@ -146,66 +126,129 @@ public class WebBrowser extends Canvas
             String windowspath = nativePath;
             int index = windowspath.indexOf("mozilla.exe");
             if (index >= 0)
-                browserBinary = binary_windows_mozilla;
+                embedBin = BINARY_WINDOWS_MOZILLA;
             else
-                browserBinary = binary_windows_ie;
+                embedBin = BINARY_WINDOWS_IE;
         }
         else {
             String libwidgetpath = nativePath + File.separator +
-                                   "components" + File.separator + "libwidget_gtk2.so";
+                                   "components" + File.separator + 
+                                   "libwidget_gtk2.so";
             File file = new File(libwidgetpath);
             if (!file.exists()) {
                 if (osname.indexOf("Linux") >= 0) {
-                    browserBinary = binary_linux_gtk1;
+                    embedBin = BINARY_LINUX_GTK1;
                 }
                 else if (osname.indexOf("SunOS") >= 0) {
-                    browserBinary = binary_solaris_gtk1;
+                    embedBin = BINARY_SOLARIS_GTK1;
                 }
                 else if (osname.indexOf("FreeBSD") >= 0) {
-                    browserBinary = binary_freebsd_gtk1;
+                    embedBin = BINARY_FREEBSD_GTK1;
                 }
             }
             else {
                 if (osname.indexOf("Linux") >= 0) {
-                    browserBinary = binary_linux_gtk2;
+                    embedBin = BINARY_LINUX_GTK2;
                 }
                 else if (osname.indexOf("SunOS") >= 0) {
-                    browserBinary = binary_solaris_gtk2;
+                    embedBin = BINARY_SOLARIS_GTK2;
                 }
                 else if (osname.indexOf("FreeBSD") >= 0) {
-                    browserBinary = binary_freebsd_gtk2;
+                    embedBin = BINARY_FREEBSD_GTK2;
                 }
             }
         }
+        
+        return embedBin;
     }
 
+    static String getEmbedBinary() {
+        return embedBinary;
+    }
+
+    void setInitialized(boolean b) {
+        isInitialized = b;
+    }
+
+    void setInitFailureMessage(String msg) {
+        initFailureMessage = msg;
+    }    
+    
     /**
-     * Overrides the same method of <code>java.awt.Canvas</code> in order to
-     * paint the browser window. On Windows system it is invoked by the system
-     * automatically, users are not recommended to call it.
+     * Constructs a new <code>WebBrowser</code> object with no URL specified.
+     * 
+     * @throws WebBrowserException if a <code>WebBrowser</code> instance fails
+     *         to be created.
      */
-    public void addNotify() {
-        super.addNotify();
-        if (isRunningOnWindows) {
-            eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_CREATEWINDOW);
-        }
+    public WebBrowser() throws WebBrowserException {        
+        this(null);
     }
 
     /**
-     * Moves and resizes this component. The new location of the top-left corner is
-     * specified by x and y, and the new size is specified by width and height.
+     * Constructs a new <code>WebBrowser</code> with an URL specified.
+     * 
+     * @param url the given URL to be loaded in the constructed 
+     *        <code>WebBrowser</code> instance.
+     * 
+     * @throws WebBrowserException if a <code>WebBrowser</code> instance fails 
+     *         to be created.
+     */
+    public WebBrowser(URL url) throws WebBrowserException {
+        synchronized(this) {
+            instanceNum = lastInstanceNum;
+            lastInstanceNum++;
+        }
+        eventThread.attachWebBrowser(this);
+
+        if (0 == instanceNum) {
+            embedBinary = getEmbedBinaryName();
+            if (embedBinary == null) {
+                throw new WebBrowserException("No default browser is found.");
+            }
+                
+            eventThread.start();
+            eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_INIT);
+        }
+
+        if (null != url) {
+            loadURL(url);
+        }
+
+        setFocusable(true);
+        addFocusListener(focusListener);
+    }
+
+    /**
+     * Creates the peer for this WebBrowser component. The peer allows us to 
+     * modify the appearance of the WebBrowser component without changing its 
+     * functionality.
+     */
+    public void addNotify() {        
+        super.addNotify();
+        
+        eventThread.fireNativeEvent(instanceNum, 
+                NativeEventData.EVENT_CREATEWINDOW);
+    }
+
+    /**
+     * Moves and resizes this component. The new location of the top-left 
+     * corner is specified by <code>x</code> and <code>y</code>, and the new 
+     * size is specified by <code>width</code> and <code>height</code>.
      *
      * @param x - the new x-coordinate of this component
      * @param y - the new y-coordinate of this component
-     * @param w - the new width of this component
-     * @param h - the new height of this component
+     * @param width - the new width of this component
+     * @param height - the new height of this component
      */
-    public void setBounds(int x, int y, int w, int h) {
-        super.setBounds(x, y, w, h);
-        eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_SET_BOUNDS, new Rectangle(x, y, w, h));
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
+        eventThread.fireNativeEvent(instanceNum, 
+                NativeEventData.EVENT_SET_BOUNDS, 
+                new Rectangle(x, y, width, height));
     }
 
-    // dispatch a WebBrowserEvent to the embeddor, called by NativeEventThread.processIncomingMessage.
+    // dispatch a WebBrowserEvent to the embeddor, called by 
+    // NativeEventThread.processIncomingMessage.
     void dispatchWebBrowserEvent(WebBrowserEvent e) {
         int eid = e.getID();
 
@@ -237,12 +280,12 @@ public class WebBrowser extends Canvas
         else if (WebBrowserEvent.WEBBROWSER_COMMAND_STATE_CHANGE == eid) {
             String data = e.getData();
             if (data.startsWith("forward")) {
-                status.forwardEnabled = data.substring(8).equals("1");
-                WebBrowser.trace("Forward State changed = " + status.forwardEnabled);
+                isForwardEnabled = data.substring(8).equals("1");
+                WebBrowser.trace("Forward State changed = " + isForwardEnabled);
             }
             else if (data.startsWith("back")) {
-                status.backEnabled = data.substring(5).equals("1");
-                WebBrowser.trace("Back State changed = " + status.backEnabled);
+                isBackEnabled = data.substring(5).equals("1");
+                WebBrowser.trace("Back State changed = " + isBackEnabled);
             }
             return;
         }
@@ -274,50 +317,97 @@ public class WebBrowser extends Canvas
                     listener.downloadCompleted(e);
                     break;
                 case WebBrowserEvent.WEBBROWSER_DOWNLOAD_PROGRESS:
-                    listener.downloadProgress(e);
+                    listener.downloadProgressChanged(e);
                     break;
                 case WebBrowserEvent.WEBBROWSER_DOWNLOAD_ERROR:
                     listener.downloadError(e);
                     break;
                 case WebBrowserEvent.WEBBROWSER_TITLE_CHANGE:
-                    listener.titleChange(e);
+                    listener.titleChanged(e);
                     break;
                 case WebBrowserEvent.WEBBROWSER_STATUSTEXT_CHANGE:
-                    listener.statusTextChange(e);
+                    listener.statusTextChanged(e);
                     break;
             }
         }
     }
 
     /**
-     * Adds a <code>WebBrowserEvent</code> listener.
+     * Adds a <code>WebBrowserEvent</code> listener to the listener list. 
+     * If listener is null, no exception is thrown and no action is performed.
      *
-     * @param listener object which implements WebBrowserListener interface.
+     * @param listener the WebBrowser event listener.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public synchronized void addWebBrowserListener(WebBrowserListener listener) {
+    public synchronized void addWebBrowserListener(WebBrowserListener listener)  
+        throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
+        if (listener == null)
+            return;
+        
         if (! webclientListeners.contains(listener)) {
             webclientListeners.addElement(listener);
         }
     }
 
     /**
-     * Removes a <code>WebBrowserEvent</code> listener.
+     * Removes a <code>WebBrowserEvent</code> listener from the listener list.
+     * If listener is null, no exception is thrown and no action is performed.
+     * If the listener is not in the listener list, no listener is removed.  
      *
-     * @param listener object which implements WebBrowserListener interface.
-     * If the listener was not in the listeners list, then no listener will be
-     * removed.
+     * @param listener the WebBrowser event listener.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public synchronized void removeWebBrowserListener(WebBrowserListener listener) {
+    public synchronized void removeWebBrowserListener(
+            WebBrowserListener listener) throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
+        if (listener == null) 
+            return;
+        
         webclientListeners.removeElement(listener);
     }
 
     /**
-     * Retrieves the URL that is currently being displayed.
+     * Returns an array of all the <code>WebBrowserListener</code>s added to 
+     * this <code>WebBrowser</code> with addWebBrowserListener().
      *
-     * @return the current URL being display, or <code>null</code> if the WebBrowser object
-     * is not ready with initialization of itself.
+     * @return all of the <code>WebBrowserListener</code>s added or an empty 
+     *         array if no listeners have been added.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public URL getURL() {
+    public WebBrowserListener[] getWebBrowserListeners()  
+        throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
+        // George Zhang's Note: to be implemented.
+        
+        return null;
+    }
+    
+    /**
+     * Returns the URL of the resource that is currently being displayed.
+     *
+     * @return the current URL being display, or <code>null</code> if no URL is
+     *         currently displayed. 
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
+     */
+    public URL getURL() throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_GETURL);
 
         if (waitForResult() == true) {
@@ -331,111 +421,193 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Sets the document to be a blank page.
+     * Loads the given URL in the browser window. If the given URL is null, 
+     * a blank page will be displayed.
      *
+     * @param url the URL of the resource to load.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public void setURL() {
-        eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_NAVIGATE, "about:blank");
+    public void loadURL(URL url) throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");  
+    
+        if (url == null )
+            eventThread.fireNativeEvent(instanceNum, 
+                    NativeEventData.EVENT_NAVIGATE, "about:blank");
+            
+        loadURL(url, null);
     }
 
     /**
-     * Navigates to a resource identified by an URL using HTTP GET method.
+     * Loads the given URL in the WebBrowser window and send the given data to 
+     * the server.
      *
-     * @param url the URL to navigate.
+     * @param url      the URL of the resource to load.
+     * @param postData data to send to the server during the HTTP POST 
+     *        transaction.
+     * @throws IllegalArgumentException if the given url is null.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public void setURL(URL url) {
-        setURL(url, null);
-    }
+    public void loadURL(URL url, String postData) 
+        throws IllegalArgumentException, WebBrowserException {
+            if (!isInitialized)
+                throw new WebBrowserException(
+                        "WebBrowser instance is not initialized.");
+            
+        if (url == null) {
+            throw new IllegalArgumentException("The given url is null.");
+        }
 
-    /**
-     * Navigates to a resource identified by an URL using HTTP POST method.
-     *
-     * @param url       the URL to navigate.
-     * @param postData  Data to send to the server during the HTTP POST transaction.
-     */
-    public void setURL(URL url, String postData) {
         if (postData == null) {
-            eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_NAVIGATE, url.toString());
-        }
-        else {
-            eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_NAVIGATE_POST, url.toString());
-            eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_NAVIGATE_POSTDATA, postData);
+            eventThread.fireNativeEvent(instanceNum, 
+                    NativeEventData.EVENT_NAVIGATE, url.toString());
+        } else {
+            eventThread.fireNativeEvent(instanceNum, 
+                    NativeEventData.EVENT_NAVIGATE_POST, url.toString());
+            eventThread.fireNativeEvent(instanceNum, 
+                    NativeEventData.EVENT_NAVIGATE_POSTDATA, postData);
         }
     }
 
     /**
-     * Navigates to the previous session history item.
+     * Navigates backward one item in the history list.
+     * 
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public void back() {
+    public void back() throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_GOBACK);
     }
 
     /**
-     *  Navigates to the next session history item.
+     *  Navigates forward one item in the history list.
+     * 
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public void forward() {
+    public void forward() throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_GOFORWARD);
     }
 
     /**
-     * Reloads the URL that is currently being displayed in the WebBrowser component.
+     * Reloads the URL that is currently displayed in the object.
+     * 
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public void refresh() {
+    public void refresh() throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_REFRESH);
     }
 
     /**
-     * Stops loading of the current URL.
+     * Stops any page loading and rendering activities. 
+     * 
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public void stop() {
+    public void stop() throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_STOP);
     }
 
     /**
-     * Sets trace messages on or off. If on, the trace messages will be printed
-     * out in the console.
+     * Enables or disables debug message output. Debug message out is disabled
+     * initially by default. Calls it via reflection when necessary.
      *
-     * @param b <code>true</code> if enable the trace messages; otherwise,
-     * <code>false</code>.
+     * @param b if true, debug message output is enabled; otherwise debug 
+     *        message output is disabled.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public static void setDebug(boolean b) {
-        isDebugOn = b;
+    private void enableDebugMessages(boolean b) 
+        throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
+        isDebugEnabled = b;
     }
 
     /**
-     * Get the boolean which indicates is debug on or off
+     * Sets new HTML content. 
+     * 
+     * @param htmlContent HTML content to set.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    static boolean getDebug () {
-        return isDebugOn;
+    public void setContent(String htmlContent) throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
+        return;
     }
 
     /**
-     * Get the pathname which points to the embedded browser's binary
+     * Returns the HTML content of the currently opened document.
+     * 
+     * @return the HTML content of the currently opened document.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public static String getBrowserBinary () {
-        if (browserBinary == null || browserBinary.length() == 0)
-            setBinaryName();
-        return browserBinary;
+    public String getContent() throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
+        return null;
     }
 
     /**
-     * Returns a <code>Status</code> object, which indicates the status of this
-     * <code>WebBrowser</code> object.
+     * Executes the specified JavaScript code in the currently opened document. 
      *
-     * @see Status
+     * @param javaScript JavaScript to execute.
+     * @return the result of JavaScript execution, if there is any.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    public Status getStatus() {
-        return status;
+    public String executeScript(java.lang.String javaScript) 
+        throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
+        return null;
     }
 
+    
     /**
      * Called before every navigation operation occurs. A subclass could override
      * this method to change or block URL loading.
      *
      * @return <code>false</code> will prevent the the navigation from starting;
      *         otherwise <code>true</code>.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    protected boolean willOpenURL(URL url) {
+    protected boolean willOpenURL(URL url) throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
         if (null == url)
             return true;
 
@@ -458,8 +630,14 @@ public class WebBrowser extends Canvas
      *
      * @return <code>false</code> will prevent the new window from popping up; otherwise
      * <code>true</code>.
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
      */
-    protected boolean willOpenWindow() {
+    protected boolean willOpenWindow() throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
         return true;
     }
 
@@ -468,7 +646,7 @@ public class WebBrowser extends Canvas
     }
 
     private boolean waitForResult() {
-        if (! status.initialized) {
+        if (! isInitialized) {
             WebBrowser.trace("You can't call this method before WebBrowser initialized!");
             return false;
         }
@@ -490,93 +668,61 @@ public class WebBrowser extends Canvas
         // The java.home property value is required to load jawt.dll on Windows.         
         return nativeGetWindow(System.getProperty("java.home"));
     }
-
-    /* only used for GTK */
-    private boolean firstTime = true;
-
-     /**
-     * Overrides the same method of <code>java.awt.Canvas</code> in order to
-     * paint the browser window. On Linux and Unix systems it is invoked by
-     * the system automatically, users are not recommended to call it.
-     *
-     * @param g the specified graphics context.
-     */
-    public void paint(Graphics g) {
-        // don't call super.paint(), we will handle the drawing by ourselves.
-        if (firstTime) {
-            // On GTK, the native window id of Canvas is only available when the first call of paint
-            firstTime = false;
-            if (! isRunningOnWindows) {
-                eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_CREATEWINDOW);
-            }
-        }
-    }
     
     /* native functions */
     private native int nativeGetWindow(String javaHome);
     
     /* debug helper */
     static void trace(String msg) {
-        if (isDebugOn)
+        if (isDebugEnabled)
             System.out.println("*** Jtrace: " + msg);
     }
 
     /**
-     * An inner class which is used for retrieving the WebBrowser's properties,
-     * such as the initialization status, back and forward status.
+     * Checks whether this <code>WebBrowser</code> object is initialized 
+     * successfully.
+     *
+     * @return <code>true</code> if the <code>WebBrowser</code> object is 
+     *         initialized successfully; otherwise, <code>false</code>.
      */
-    public static class Status {
-        private boolean initialized;
-        private boolean backEnabled;
-        private boolean forwardEnabled;
-        static private String failReason;
+    public boolean isInitialized() {
+        return isInitialized;
+    }
 
-        Status () {
-            initialized = false;
-            backEnabled = false;
-            forwardEnabled = false;
-            failReason = "WebBrowser has not finish intializing";
-        }
+    /**
+     * Checks whether this <code>WebBrowser</code> object's back command 
+     * is enabled. 
+     *
+     * @return <code>true</code> if the WebBrowser can navigate to the 
+     *         previous session history item, and <code>false</code> otherwise.
+     * @see #back
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
+     */
+    public boolean isBackEnabled() throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
+        return isBackEnabled;
+    }
 
-        /**
-         * Tests whether the <code>WebBrowser</code> object is initialized successfully.
-         *
-         * @return <code>true</code> if the <code>WebBrowser</code> object is initialized
-         * successfully; otherwise, <code>false</code>.
-         *
-         */
-        public boolean isInitialized() {
-            return initialized;
-        }
-
-        /**
-         * Tests whether the back navigation operation is enabled.
-         *
-         * @return <code>true</code> if the back navigation operation is enabled;
-         * otherwise, <code>false</code>.
-         *
-         */
-        public boolean isBackEnabled() {
-            return backEnabled;
-        }
-
-        /**
-         * Tests whether the forward navigation operation is enabled.
-         *
-         * @return <code>true</code> if the forward navigation operation is enabled;
-         * otherwise, <code>false</code>.
-         */
-        public boolean isForwardEnabled() {
-            return forwardEnabled;
-        }
-
-        void setInitStatus(boolean b) {
-            initialized = b;
-        }
-
-        void setInitFailReason(String msg) {
-            failReason = msg;
-        }
+    /**
+     * Checks whether this <code>WebBrowser</code> object's forward command 
+     * is enabled. 
+     *
+     * @return <code>true</code> if the WebBrowser can navigate to the 
+     *         next session history item, and <code>false</code> otherwise.
+     * @see #forward
+     * @throws WebBrowserException if the <code>WebBrowser</code> instance is 
+     *         not initialized.
+     */
+    public boolean isForwardEnabled() throws WebBrowserException {
+        if (!isInitialized)
+            throw new WebBrowserException(
+                    "WebBrowser instance is not initialized.");
+        
+        return isForwardEnabled;
     }
 
     class MyFocusListener implements FocusListener {
