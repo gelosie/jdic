@@ -23,6 +23,7 @@ package org.jdesktop.jdic.init;
 import java.io.File;
 import java.net.URL;
 import org.jdesktop.jdic.browser.WebBrowserUtil;
+import org.jdesktop.jdic.browser.WebBrowser;
 import java.lang.reflect.Field;
 
 
@@ -204,6 +205,11 @@ public class JdicManager {
                 if (!isWindows) {
                     // On Unix, add the binary path to PATH.
                     InitUtility.appendEnv("PATH", binaryPath);
+                    // When running on webstart, the browser binary will lose
+                    // "x" permission after extracted from .jar file.
+                    String browserBinary = WebBrowser.getBrowserBinary();
+                    Runtime.getRuntime().exec("chmod a+x "+ 
+                            binaryPath+File.separator+browserBinary);                    
                 }               
                     
                 String envMFH = InitUtility.getEnv("MOZILLA_FIVE_HOME");

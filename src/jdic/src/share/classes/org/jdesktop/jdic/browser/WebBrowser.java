@@ -128,7 +128,7 @@ public class WebBrowser extends Canvas
         addFocusListener(focusListener);
     }
 
-    private void setBinaryName() {
+    private static void setBinaryName() {
         if (browserBinary != null && browserBinary.length() > 0)
             return;
 
@@ -406,7 +406,9 @@ public class WebBrowser extends Canvas
     /**
      * Get the pathname which points to the embedded browser's binary
      */
-    static String getBrowserBinary () {
+    public static String getBrowserBinary () {
+        if (browserBinary == null || browserBinary.length() == 0)
+            setBinaryName();
         return browserBinary;
     }
 
