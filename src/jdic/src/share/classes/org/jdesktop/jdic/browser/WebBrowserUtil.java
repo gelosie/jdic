@@ -53,7 +53,7 @@ public class WebBrowserUtil {
     
     /**
      * Checks if the default browser for the current platform is Mozilla.
-     * @return true on Solaris and Linux and true on Windows platform is Mozilla
+     * @return true on Solaris and Linux and true on Windows platform if Mozilla
      * is set as the default browser.
      */
     public static boolean isDefaultBrowserMozilla() {
