@@ -112,7 +112,7 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
     DWORD loop = 0;
     char  greVersionKey[256];   
     DWORD greVersionKeyLen = 256;
-    char *lastVersionKey;
+    char *lastVersionKey = NULL;
 
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, greParentKey, 0, KEY_READ, &hKey) 
         == ERROR_SUCCESS)

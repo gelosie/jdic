@@ -98,7 +98,8 @@ public class JdicManager {
         try {
             // Find the root path of this class.            
             binaryPath = (new URL(JdicManager.class.getProtectionDomain()
-           	    .getCodeSource().getLocation(), ".")).openConnection().getPermission().getName();
+           	    .getCodeSource().getLocation(), ".")).openConnection()
+                .getPermission().getName();
            	binaryPath = (new File(binaryPath)).getCanonicalPath();
             if (System.getProperty("javawebstart.version") != null) {
                 //  We are running under WebStart.
@@ -179,12 +180,11 @@ public class JdicManager {
                     Runtime.getRuntime().exec("chmod a+x "+ 
                             binaryPath + File.separator + browserBinary);                    
                 } else {               
-                    // Mozilla on Windows, 
-                    // - first reset MOZILLA_FIVE_HOME to the GRE directory path 
+                    // Mozilla on Windows, reset MOZILLA_FIVE_HOME to the GRE 
+                    // directory path:  
                     //   [Common Files]\mozilla.org\GRE\1.x_BUILDID, 
-                    //   if Mozilla installs from a .exe package.
-                    //  
-                    // - then copy MozEmbed.exe to %MOZILLA_FIVE_HOME% directory.               
+                    // if Mozilla installs from a .exe package.
+                    //                
                     String xpcomPath = envMFH + File.separator + "xpcom.dll";                        
                     if (!(new File(xpcomPath).isFile())) {
                         // Mozilla installs from a .exe package. Check the 
@@ -198,14 +198,8 @@ public class JdicManager {
                         }                       
                         envMFH = mozGreHome;
                     }
-                    
-                    String sourceFileName = binaryPath + File.separator 
-                        + "MozEmbed.exe";                      
-                    String destFileName = envMFH + File.separator 
-                        + "MozEmbed.exe";                    
-                    InitUtility.copyFile(sourceFileName, destFileName);                   
                 }
-
+                
                 InitUtility.appendEnv("MOZILLA_FIVE_HOME", envMFH);
                 InitUtility.appendEnv(libPathEnv, envMFH);
             } // end - Mozilla is the default/embedded browser.
