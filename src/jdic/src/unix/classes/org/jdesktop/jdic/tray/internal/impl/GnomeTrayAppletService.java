@@ -55,6 +55,10 @@ public class GnomeTrayAppletService implements TrayAppletService {
     int y;
     int width;
     int height;  
+    static {
+    	System.loadLibrary("tray");
+    	GnomeSystemTrayService.initNative(System.getProperty("java.home"));
+    }
 
     public GnomeTrayAppletService() {
         init();

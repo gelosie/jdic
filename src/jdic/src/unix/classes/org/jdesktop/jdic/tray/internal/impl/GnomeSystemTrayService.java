@@ -83,6 +83,6 @@ public class GnomeSystemTrayService implements SystemTrayService {
     }
 
     static native void dockWindow(long window);
-    private static native void initNative(String javaHome);
+    static native void initNative(String javaHome);
 
 }
