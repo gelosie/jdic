@@ -284,6 +284,8 @@ forums and mailing lists available.
 Revision History
 ----------------
 Version 0.2
+    * Added JOGL (OpenGL) Screensaver Startup Kit and corresponding APIs
+      This allows developers to write OpenGL 3D screensavers in Java!
     * Added a destroy() method to the ScreensaverBase API so that
       screensavers can release resources before shutting down.
     * Screensaver now exits on Windows when cursor moves.
@@ -291,8 +293,6 @@ Version 0.2
     * Mouse cursor is no longer hidden from preview in Windows.
     * Multi-monitor support
     * Fixed bug in settings dialog when values are out of bounds
-    * Added JOGL (OpenGL) Screensaver Startup Kit and corresponding APIs
-      This allows developers to write OpenGL 3D screensavers in Java!
 
 Version 0.1.1 - June 10, 2004
     * Fixed screensavers.dev.java.net issue #1:
