@@ -20,67 +20,49 @@
 package org.jdesktop.jdic.browser;
 
 /**
- * Utility class for <code>WebBrowser</code> to check the default browser 
- * path and type. 
+ * Utility class for <code>WebBrowser</code> class.
+ * <p>
+ * Note: this class was unintentionally exposed as a public class in release 
+ * 0.8.8, which should be made internal. As from release 0.9, all the public 
+ * APIs are deprecated and are not recommended for use. This class including 
+ * all the public APIs may be removed in future releases.
  * 
- * @see WebBrowser
- * 
- * @author  Paul Huang
- * @version 0.1, August 20, 2004
  */
-public class WebBrowserUtil {
-    private static String browserPath = null;
-    private static String osName = System.getProperty("os.name").toLowerCase();
-
-    static {
-        System.loadLibrary("jdic");
-    }
-    
-    /* native functions */
-    private static native String nativeGetBrowserPath();
-    private static native String nativeGetMozillaGreHome();    
-    static native void nativeSetEnv();
-    
+public class WebBrowserUtil {    
     /**
-     *  Gets the native browser path.
-     *  @return the path of the default browser in the current system
+     * Gets the native browser path.
+     * 
+     * @deprecated This method is not recommended for use and may be removed 
+     *             in future releases.
+     * @return the path of the default browser in the current system
      */
     public static String getBrowserPath() {
-        if (browserPath == null) {
-            browserPath = nativeGetBrowserPath();
-        }
-        return browserPath;
+        return org.jdesktop.jdic.browser.internal.WebBrowserUtil.
+            getBrowserPath();
     }
     
     /**
      * Checks if the default browser for the current platform is Mozilla.
+     * 
+     * @deprecated This method is not recommended for use and may be removed 
+     *             in future releases.
      * @return true on Solaris and Linux and true on Windows platform if Mozilla
      * is set as the default browser.
      */
     public static boolean isDefaultBrowserMozilla() {
-        if ((osName.indexOf("solaris") >= 0) ||
-            (osName.indexOf("linux") >= 0) ) {
-            return true;
-        } else {
-            String nativeBrowserPath = getBrowserPath();
-            // Only when Mozilla is set as the default browser, return true. 
-            // Or else, fall back to Internet Explorer.
-            // FireFox 1.0 is statically linked into Gecko and therefore can not 
-            // be embedded. If FireFox is embeddable for some future version,
-            // we would have to explicitly check for both Mozilla and FireFox. 
-            if (nativeBrowserPath.indexOf("mozilla") >= 0) {
-            	return true;
-            } else {
-                return false;                
-            }
-        }
+        return org.jdesktop.jdic.browser.internal.WebBrowserUtil.
+            isDefaultBrowserMozilla();        
     }
 
     /**
-     *  Gets the native Mozilla GRE home directory installed with a .exe package.
-     *  @return the GRE home directory of the currently installed Mozilla.
+     * Gets the native Mozilla GRE home directory installed with a .exe package.
+     * 
+     * @deprecated This method is not recommended for use and may be removed 
+     *             in future releases.
+     * @return the GRE home directory of the currently installed Mozilla.
      */
     public static String getMozillaGreHome() {
-        return nativeGetMozillaGreHome();
+        return org.jdesktop.jdic.browser.internal.WebBrowserUtil.
+            getMozillaGreHome();    
     }    
 }
