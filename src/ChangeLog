@@ -5,6 +5,7 @@
     * Fixed issue list:   
       ID  Pri  Summary
       ==  ===  =======
+      109 P3   Desktop Mailer does not support Mozilla Thunderbird
        82 P3   Auto-check MOZILLA_FIVE_HOME setting running Browser component
        97 P3   Embedded IE has problem with some https sites
       126 P2   Browser component can not resolve the symbolic link
