@@ -9,49 +9,34 @@
   <meta name="CREATED" content="20000519;14440300">
   <meta name="CHANGEDBY" content=" ">
   <meta name="CHANGED" content="20000901;17584900">
-  <style>
-	<!--
-		@page { size: 21cm 29.7cm }
-		P { margin-left: 0.99cm; font-size: 12pt }
-		H1 { font-size: 20pt }
-		TD P { margin-left: 0.99cm; font-size: 12pt }
-		H2 { font-size: 16pt }
-		P.comment { color: #666666 }
-		P.required { color: #800000 }
-	-->
-	</style>
 </head>
 <body>
 <table WIDTH="100%"  height="25" BORDER=0 CELLPADDING=4 CELLSPACING=0 bordercolor="#FFFFCC" BGCOLOR="#99CCFF" >
   <tr> 
-    <td><strong><font face="sans-serif" size="3">Example on using JDIC Packager
+    <td><strong><font face="sans-serif" size="3">Example of using JDIC Packager
       to package a JNLP
       application</font></strong></td>
   </tr>
 </table>
-<ul><li><h3><b>Draw -  sample JNLP application to package</b></h3>
-  </li>
-</ul>
-<blockquote> We take a JNLP application such as Draw as an example to demonstrate 
-  how to use the JDIC Packager.&nbsp;&nbsp; </blockquote>
-<p>Draw is a two dimensional drawing program allowing you to create rectangles, 
-  polygons, circles, which is created&nbsp; by Sun. The binary (draw.zip) for 
-  this application is available for download <a href="draw.zip">here</a>.</p>
-<p>We will provide some sample usages to package this Webstart application into 
-  native installation packages.</p>
-<p align="center"><font size="+1"><a href="#WindowsPlatform">Windows Platform</a> 
-  | <a href="#LinuxPlatform">Linux Platform</a> | <a href="#SolarisPlatform">Solaris 
-  Platform</a> | <a href="#Verify">Verify the Installed Package</a> </font></p>
-<ul>
-  <li> 
-    <h3><b><a name="WindowsPlatform"></a>Steps </b><b>to package the Draw application 
-      into an installable package on Windows Platform</b></h3>
-  </li>
-</ul>
-<p>Below are the steps to package Draw into an MSI package (as executable bootstrapper 
+<h3><b>Draw - sample JNLP application</b></h3>
+
+<p> We'll use the JNLP application Draw to demonstrate how to use the JDIC Packager.&nbsp;&nbsp; 
+</p>
+<p>Draw is a Sun-provided two dimensional drawing program allowing you to create 
+  rectangles, polygons, and circles. The binary is here: <a href="draw.zip">draw.zip</a>.</p>
+<p>This page shows how to package JNLP applications such as Draw into native installation 
+  packages.</p>
+<p align="center"><a href="#WindowsPlatform">Windows</a> | <a href="#LinuxPlatform">Linux</a> 
+  | <a href="#SolarisPlatform">Solaris</a> | <a href="#Verify">Verify the Installed 
+  Package</a> </p>
+ 
+    
+<h3><b><a name="WindowsPlatform"></a>Steps </b><b>to package the Draw application 
+  into an installable package on Windows</b></h3>
+<p>The following steps package Draw into an MSI package (as executable bootstrapper 
   format) on Windows. </p>
-<p><b>1. Download draw.zip from the above link, and unzip it into a temporary
-directory</b><strong>.</strong></p>
+<p><b>1. Download <a href="draw.zip">draw.zip</a> and unzip it into a temporary 
+  directory</b><strong>.</strong></p>
 <blockquote>
   <p>Example:</p>
   <blockquote>
@@ -59,103 +44,106 @@ directory</b><strong>.</strong></p>
       <pre>C:\temp\draw
 +- draw.jnlp: 
 +- draw.jar: 
-+- images/: 
++- images\: 
    +- draw.jpg</pre>
     </blockquote>
   </blockquote>
 </blockquote>
-<p><span style="font-weight: bold;">2. Follow up the </span><span style="font-weight: bold">JDIC
-Packager installation</span><span style="font-weight: bold"> guideline in the <a href="../README.html">README</a>
-file to setup the running environment.</span>
+<p><span style="font-weight: bold;">2. Follow the </span><span style="font-weight: bold">JDIC 
+  Packager installation</span><span style="font-weight: bold"> guidelines in the 
+  <a href="../README.html">README</a> file to set up the running environment.</span> 
 </p>
 <p><b>3. Run jnlp2msi.exe.</b></p>
-<p>If we are currently under the directory <code>C:\temp</code>. Running &quot;<em>jnlp2msi.exe</em>&quot; 
-  without any given parameter will print help messages.</p>
-<p>Run&nbsp;- &quot;<em>jnlp2msi.exe -mssdkdir &quot;C:\Program Files\Microsoft 
-  SDK&quot; -resourcedir .\draw -packagename drawpkg -outputdir C:\ -version 2.0 
-  -release 2 .\draw\draw.jnlp</em>&quot;.</p>
-<p>There should be a new file <strong>drawpkg.exe</strong> under directory <code>C:\ 
-  </code>with version number 2.0 and release number 2.</p>
+<p>Assuming the current directory is <code>C:\temp</code>, run the following command:</p>
+<p> 
+  <blockquote><code>jnlp2msi.exe -mssdkdir &quot;C:\Program Files\Microsoft SDK&quot; 
+    -resourcedir .\draw -packagename drawpkg -outputdir C:\ -version 2.0 -release 
+    2 .\draw\draw.jnlp</code></blockquote>
+  
+<p>The result is a new file <strong><code>drawpkg.exe</code></strong> under directory 
+  <code>C:\ </code>with version number 2.0 and release number 2.</p>
+<p><b>Note: </b>Running <code>jnlp2msi.exe</code> without any parameters prints 
+  help messages.</p>
 <p><b>4. <strong>Install the generated package</strong>.</b></p>
-<p>Double clicking the generated drawpkg.exe file will install the Webstart application 
-  into the system. Snapshot below:</p>
+<p>Double clicking the generated <code>drawpkg.exe</code> file installs the JNLP 
+  application into the system, as the following snapshot shows:</p>
 <p><img border="0" src="../../resource/draw4-install.jpg" width="500" height="386"></p>
-<p>Follow up the process by pressing &quot;Next&quot;, it will finish the installation 
-  with below snapshot: </p>
+<p>Pressing Next finishes the installation, as shown in the following snapshot: 
+</p>
 <p><img border="0" src="../../resource/draw4-finish.jpg" width="500" height="386"> </p>
-<ul>
-  <li> 
-    <h3><b><a name="LinuxPlatform"></a>Steps </b><b>to package the Draw application 
-      into an installable package on Linux Platform</b></h3>
-  </li>
-</ul>
-<p>Below are the steps to package Draw into RPM format package on Linux platform. 
+<h3><b><a name="LinuxPlatform"></a>Steps </b><b>to package the Draw application 
+  into an installable package on Linux</b></h3>
+<p>The following steps package Draw into an RPM format package on the Linux platform. 
 </p>
-<p><strong>1. Download draw.zip from the above link, and unzip it into a temporary 
-  directory.</strong></p>
+<p><strong>1. <b>Download <a href="draw.zip">draw.zip</a> and unzip it into a 
+  temporary directory</b><strong>.</strong></strong></p>
 <p>Example:</p>
   <blockquote>
     <blockquote>
-      <pre>C:\temp\draw
+      
+    <pre>/temp/draw
 +- draw.jnlp: 
 +- draw.jar: 
 +- images/: 
    +- draw.jpg</pre>
     </blockquote>
   </blockquote>
-<p><strong>2. Follow up the JDIC Packager installation guideline in the <a href="../README.html">README</a> 
-  file to setup the running environment. </strong></p>
-<p><strong>3. Run jnlp2rpm</strong></p>
-<p>If we are currently under the directory /temp. Running &quot;<em>jnlp2rpm</em>&quot; 
-  without any given parameter will print help messages.</p>
-<p>Run - &quot;<em>jnlp2rpm -resourcedir ./draw -packagename drawpkg -outputdir 
-  /var -version 2.0 -release 2 ./draw/draw.jnlp</em>&quot;.</p>
-<p>There should be a new file drawpkg-2.0-2.rpm under directory /var.</p>
-<p><strong>4. Install the generated package</strong></p>
-<p>Change to root, run <em><strong>rpm</strong></em> installation command to install 
-  the generated package. For example </p>
-<p>#<em>rpm -i draw-2.0-2.rpm</em></p>
-<ul>
-  <li> 
-    <h3><b><a name="SolarisPlatform"></a>Steps </b><b>to package the Draw application 
-      into an installable package on Solaris Platform</b></h3>
-  </li>
-</ul>
-<p>Below are the steps to package Draw into PKG format package on Solaris platform. 
-</p>
-<p><strong>1. Download draw.zip from the above link, and unzip it into a temporary 
-  directory.</strong></p>
-<p>Example:</p>
-  <blockquote>
-    <blockquote>
-      <pre>C:\temp\draw
-+- draw.jnlp: 
-+- draw.jar: 
-+- images/: 
-   +- draw.jpg</pre>
-    </blockquote>
-  </blockquote>
-<p><strong>2. Follow up the JDIC Packager installation guideline in the <a href="../README.html">README</a> 
-  file to setup the running environment. </strong></p>
-<p><strong>3. Run jnlp2pkg</strong></p>
-<p>If we are currently under the directory /temp. Running &quot;<em>jnlp2pkg</em>&quot; 
-  without any given parameter will print help messages.</p>
-<p>Run - &quot;<em>jnlp2pkg -resourcedir ./draw -packagename drawpkg -outputdir 
-  /var -version 2.0 -release 2 ./draw/draw.jnlp</em>&quot;.</p>
-<p>There should be a new directory drawpkg under directory /var with version number 
-  2.0 and release number 2..</p>
-<p><strong>4. Install the generated package</strong></p>
-<p>Change to root, run <em><strong>pkgadd</strong></em> installation command to 
+<p><strong>2. Follow the JDIC Packager installation guidelines in the <a href="../README.html">README</a> 
+  file to set up the running environment. </strong></p>
+<p><strong>3. Run jnlp2rpm.</strong></p>
+<p>Assuming the current directory is <code>/temp</code>, run the following command:</p>
+<blockquote>
+  <p><code>jnlp2rpm -resourcedir ./draw -packagename drawpkg -outputdir /var -version 
+    2.0 -release 2 ./draw/draw.jnlp</code></p>
+</blockquote>
+<p>The result is a a new file <b><code>drawpkg-2.0-2.rpm</code></b> under the 
+  <code>/var</code> directory.</p>
+<p><b>Note: </b>Running <code>jnlp2rpm</code> without any parameters prints help 
+  messages.</p>
+<p><strong>4. Install the generated package.</strong></p>
+<p>Change to root, and run the <b><code>rpm</code></b> installation command to 
   install the generated package. For example </p>
-<p>#<em>pkgadd -d /var draw</em></p>
-<ul>
-  <li> 
+<blockquote> <code>#rpm -i draw-2.0-2.rpm</code></blockquote>
+    
+<h3><b><a name="SolarisPlatform"></a>Steps </b><b>to package the Draw application 
+  into an installable package on Solaris</b></h3>
+<p>The following steps package Draw into a PKG format package on the Solaris platform. 
+</p>
+<p><strong>1. <b>Download <a href="draw.zip">draw.zip</a> and unzip it into a 
+  temporary directory</b><strong>.</strong></strong></p>
+<p>Example:</p>
+  <blockquote>
+    <blockquote>
+      
+    <pre>/temp/draw
++- draw.jnlp: 
++- draw.jar: 
++- images/: 
+   +- draw.jpg</pre>
+    </blockquote>
+  </blockquote>
+<p><strong>2. Follow the JDIC Packager installation guidelines in the <a href="../README.html">README</a> 
+  file to set up the running environment. </strong></p>
+<p><strong>3. Run jnlp2pkg.</strong></p>
+<p>Assuming the current directory is <code>/temp</code>, run the following command:</p>
+<blockquote>
+  <p><code>jnlp2pkg -resourcedir ./draw -packagename drawpkg -outputdir /var -version 
+    2.0 -release 2 ./draw/draw.jnlp</code></p>
+</blockquote>
+<p>The result is a new directory <code><b>drawpkg</b></code> under the <code>/var</code> 
+  directory with version number 2.0 and release number 2.</p>
+<p><b>Note: </b>Running <code>jnlp2pkg</code> without any parameters prints help 
+  messages.</p>
+<p><strong>4. Install the generated package.</strong></p>
+<p>Change to root, and run the <b><code>pkgadd</code></b> installation command 
+  to install the generated package. For example </p>
+<blockquote>
+  <p><code>#pkgadd -d /var draw</code></p>
+</blockquote>
     <h3><b><a name="Verify"></a>Steps </b><b>to verify the installed package</b> 
     </h3>
-  </li>
-</ul>
-<p>To verify the installed packages, launch Java Web Start. Draw should be available 
-  in Java Web Start Application Manager: </p>
+<p>To verify the installed package, launch Java Web Start. Draw should be available 
+  in the Java Web Start Application Manager: </p>
 <p><img border="0" src="../../resource/draw4-javaws.jpg" width="686" height="516"></p>
 </body>
 </html>
