@@ -59,17 +59,21 @@ Top-level target:
     <!-- Build a JDIC Packager distribution -->
     <ant dir="packager" target="buildall"/>
 
-    <!-- Copy JDIC API binary files into the distribution directory -->
+    <!-- Copy JDIC API distribution files into the distribution directory -->
     <copy todir="${dist.dir}">
-      <fileset dir="jdic/${dist.dir}" casesensitive="false" >
-        <include name="javadoc/**"/>
-        <include name="*.jar"/>
-        <include name="*.dll"/>
-        <include name="*.so"/>
-        <include name="*embed*"/>
-        <include name="defmailer.properties"/>
-      </fileset>
+      <fileset dir="jdic/${dist.dir}"/>
     </copy>
+    
+    <!-- Unix Note: the executable permission of mozembed-<os>-gtk* 
+         files are not retained using Ant Copy, add executable mode.
+    -->
+    <exec os="Linux" executable="chmod">
+      <arg line="+x ${dist.dir}/mozembed-linux-gtk2" />   
+    </exec>
+
+    <exec os="SunOS" executable="chmod">
+      <arg line="+x ${dist.dir}/mozembed-solaris-gtk2" />   
+    </exec>
 
     <!-- Copy JDIC API demo applications -->
     <!-- create a demo directory -->
@@ -83,7 +87,7 @@ Top-level target:
       </fileset>
     </copy>
 
-    <!-- Copy JDIC Packager binary files -->
+    <!-- Copy JDIC Packager distribution files -->
     <copy todir="${dist.dir}">
       <fileset dir="packager/${dist.dir}" casesensitive="false" >
         <include name="*.jar"/>
@@ -92,7 +96,18 @@ Top-level target:
       </fileset>
     </copy>
 
-    <!-- Copy the README.html and LICENSE files -->
+    <!-- Unix Note: the executable permission of jnlp2rpm or jnlp2pkg 
+         files are not retained using Ant Copy, add executable mode.
+    -->
+    <exec os="Linux" executable="chmod">
+      <arg line="+x ${dist.dir}/jnlp2rpm" />   
+    </exec>
+
+    <exec os="SunOS" executable="chmod">
+      <arg line="+x ${dist.dir}/jnlp2pkg" />   
+    </exec>
+
+    <!-- Copy the documentation files -->
     <copy file="README.html" todir="${dist.dir}"/>
     <copy file="COPYING" todir="${dist.dir}"/>
     <copy file="ChangeLog" todir="${dist.dir}"/>
