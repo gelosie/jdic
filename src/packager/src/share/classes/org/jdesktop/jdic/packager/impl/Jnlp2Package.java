@@ -83,7 +83,8 @@ public final class Jnlp2Package {
      * @return The parsed JnlpPackageInfo.
      * @throws IOException If failed to parse the arguments.
      */
-    private static JnlpPackageInfo parseArguments(String[] args)
+    private static JnlpPackageInfo parseArguments(String[] args,
+        boolean isHttpJnlp, String tempDirName)
             throws IOException {
         String version = null;
         String release = null;
@@ -104,6 +105,13 @@ public final class Jnlp2Package {
         pkgInfo.setJnlpFilePath(
             getValidFileArgument(args[0], "jnlp file path", false));
         checkJnlpFilePathArgument(pkgInfo);
+
+        // Retrieve the jnlp resource files locally if the given jnlp path is an
+        // URL.
+        if (isHttpJnlp) {
+            FileOperUtility.httpJnlpRes2localRes(pkgInfo, tempDirName);
+        }
+
         /////////////////////////////////////////////////////////////
         // Check the ResourcePath property.
         // If the ResourcePath property is set, and check if it points to an
@@ -253,9 +261,7 @@ public final class Jnlp2Package {
         // Parse jnlp href information.
         String jnlpHref = JnlpParser.parseJnlpHref(jnlpFile);
         if (jnlpHref == null) {
-            throw new IOException(
-                "Cann't retrieve the href information"
-                + " from the given jnlp file.");
+            jnlpHref = jnlpFile.getName();
         } else {
             // Check if the jnlp href is the same with the given jnlp file name.
             String fileName = jnlpFile.getName();
@@ -335,6 +341,14 @@ public final class Jnlp2Package {
             File jnlpFile = new File(pkgInfo.getJnlpFilePath());
             packageName = FileOperUtility.getFileNameWithoutExt(jnlpFile);
             if (packageName == null) {
+                throw new IllegalArgumentException(
+                    "The given jnlp file name is not a valid package name.");
+            }
+        } else {
+            // User specified the packagename argument
+            // Check if the user input is valid
+            File packageFile = new File(packageName);
+            if (packageFile.isDirectory()) {
                 throw new IllegalArgumentException(
                     "The given jnlp file name is not a valid package name.");
             }
@@ -431,13 +445,7 @@ public final class Jnlp2Package {
 
         // Parse and check the command line arguments.
         JnlpPackageInfo jnlpPkgInfo = null;
-        jnlpPkgInfo = parseArguments(args);
-
-        // Retrieve the jnlp resource files locally if the given jnlp path is an
-        // URL.
-        if (isHttpJnlp) {
-            FileOperUtility.httpJnlpRes2localRes(jnlpPkgInfo, tempDirName);
-        }
+        jnlpPkgInfo = parseArguments(args, isHttpJnlp, tempDirName);
 
         // Generate the installable package with the given package info.
         PackageGenerator pkgGenerator = PackageGeneratorFactory.newInstance();

@@ -512,7 +512,7 @@ public class FileOperUtility {
         String jnlpFileName = null;
         int lastIndex = 0;
         if ((lastIndex = httpJnlpStr.lastIndexOf("/")) != 0) {
-            jnlpFileName = httpJnlpStr.substring(lastIndex,
+            jnlpFileName = httpJnlpStr.substring(lastIndex + 1,
                                                  httpJnlpStr.length());
         }
 
@@ -555,11 +555,11 @@ public class FileOperUtility {
                 remoteFilePath = codebase + curHref;
                 baseUrl = new URL(remoteFilePath);
                 // Get baseLocalFilePath
-                curHref = curHref.replace('/', '\\');
-                String localFilePath = baseLocalDir + "\\" + curHref;
+                curHref = curHref.replace('/', File.separatorChar);
+                String localFilePath = baseLocalDir + curHref;
                 baseLocalFilePath =
                 localFilePath.substring(0,
-                                        localFilePath.lastIndexOf("\\"));
+                                        localFilePath.lastIndexOf(File.separatorChar));
             } catch (MalformedURLException e) {
                 throw new IOException(
                           "Failed to construct an URL: " + remoteFilePath);

@@ -117,12 +117,7 @@ void formatPathStr(char* originalPathStr, char* formatPathStr)
     }
 
     // delete all trailing spaces in originalPathStr
-    char* pCur = originalPathStr;
-    if (0 != *pCur)
-    {
-        pCur++;
-    }
-    pCur--;
+    char* pCur = originalPathStr + strlen(originalPathStr) -1;
     while (' ' == *pCur)
     {
         *pCur = 0;
