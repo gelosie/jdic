@@ -167,6 +167,11 @@ Top-level target:
     <jar destfile="${dist.dir}/${jar.file}" update="false">
          <fileset dir="${dist.dir}" includes="org/**/*.class, org/**/files/*" />
     </jar>
+
+    <!-- remove the generated "org" directory -->
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}/org"/>
+    </delete>
   </target>
 
   <!-- ***  Build Win32 native code *** -->
@@ -213,6 +218,11 @@ Top-level target:
     <jar destfile="${dist.dir}/${jar.file}" update="false">
          <fileset dir="${dist.dir}" includes="org/**/*.class"/>
     </jar>
+
+    <!-- remove the generated "org" directory -->
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}/org"/>
+    </delete>
   </target>
 
   <!-- Copy the command-line packaging script -->
@@ -238,6 +248,11 @@ Top-level target:
     <jar destfile="${dist.dir}/${jar.file}" update="false">
          <fileset dir="${dist.dir}" includes="org/**/*.class"/>
     </jar>
+
+    <!-- remove the generated "org" directory -->
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}/org"/>
+    </delete>
   </target>
 
   <!-- Copy the command-line packaging script -->
