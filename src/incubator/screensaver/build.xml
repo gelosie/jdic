@@ -37,7 +37,9 @@ USA
     <property name="release" value="release" />
     <property name="src" value="src" />
     
-    <property name="release-version" value="saverbeans-sdk-0_1" />
+    <property name="version" value="0.1" />
+    <property name="release" value="1" />
+    <property name="packagename" value="saverbeans-sdk-${version}" />
   </target>
   
   <target name="check-win32"
@@ -68,13 +70,13 @@ USA
   <target name="release" depends="dist" 
           description="Build release zip for SaverBeans SDK">
     <mkdir dir="${release}" />
-    <mkdir dir="${build}/${release-version}" />
-    <copy todir="${build}/${release-version}">
+    <mkdir dir="${build}/${packagename}" />
+    <copy todir="${build}/${packagename}">
       <fileset dir="${dist}" />
     </copy>
-    <zip destfile="${release}/${release-version}.zip">
+    <zip destfile="${release}/${packagename}.zip">
       <fileset dir="${build}">
-        <include name="${release-version}/**" />
+        <include name="${packagename}/**" />
       </fileset>
     </zip>
   </target>
@@ -172,16 +174,18 @@ USA
              author="false"
              version="false"
              use="true"
-             Windowtitle="SaverBeans API"
-             Header="SaverBeans API">
-             <docTitle><![CDATA[SaverBeans API (Screensaver)
-               <br>API Specification]]></docTitle>
+             Windowtitle="SaverBeans API V${version} Release ${release}"
+             Header="SaverBeans API V${version} Release ${release}">
+             <docTitle><![CDATA[SaverBeans (JDesktop Integration Components Incubator) 
+               <br> API Specification, Version ${version} Release ${release}]]></docTitle>
              <bottom><![CDATA[<font size="-1">For more information and documentation on JDIC, 
                see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That documentation 
                contains more detailed, developer-targeted descriptions, with conceptual 
                overviews, working code examples, license terms and bug report information.
-               <p>Copyright 2003 Contributors. All rights reserved. Use is subject to 
-               license terms. </font>]]></bottom>
+               <p>Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is 
+               subject to <a href=
+               "https://jdic.dev.java.net/source/browse/jdic/src/COPYING">license terms</a>. 
+               </font>]]></bottom>
     </javadoc>
   </target>
   
