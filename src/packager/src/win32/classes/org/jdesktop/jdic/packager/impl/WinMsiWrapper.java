@@ -398,14 +398,6 @@ public class WinMsiWrapper {
                                                  int resID);
 
     /**
-     * Windows API wrapper to create a native process and back until
-     * the process has finished.
-     * @param processCmd The given cmd to launch the process.
-     * @return -1 if failed
-     */
-    private static native int nativeCreateProcess(byte[] processCmd);
-
-    /**
      * Returns this java string as a null-terminated byte array.
      * @param str The given string to be converted.
      * @return The bytes translated.
@@ -816,19 +808,6 @@ public class WinMsiWrapper {
         if (result != ERROR_SUCCESS) {
             throw new IOException(
                             "Windows Update Resource Binary Data Failed!");
-        }
-    }
-
-    /**
-     * Create a native process and return until it finishe.
-     * @param processCmd    The given cmd string.
-     * @throws IOException  If failed to create the process.
-     */
-    public static void winNativeCreateProcess(String processCmd)
-                       throws IOException {
-        int result = nativeCreateProcess(stringToByteArray(processCmd));
-        if (result != ERROR_SUCCESS) {
-            throw new IOException("Windows create native process failed!");
         }
     }
 

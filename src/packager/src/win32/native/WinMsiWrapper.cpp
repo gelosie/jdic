@@ -483,32 +483,6 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_packager_impl_WinMsiWrapper_msiDat
     return errorCode;
 }
 
-/*
- * Class:     org_jdesktop_jdic_packager_impl_WinMsiWrapper
- * Method:    NativeCreateProcess
- * Signature: ([B)I
- */
-JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_packager_impl_WinMsiWrapper_nativeCreateProcess
-  (JNIEnv * env, jclass jc, jbyteArray cmdString)
-{
-    //Construct the parameter
-    LPCTSTR szCmd = (LPCTSTR)env->GetByteArrayElements(cmdString, NULL);
-    STARTUPINFO stinfo = {0}; //info of the window
-    stinfo.cb = sizeof(STARTUPINFO);
-    PROCESS_INFORMATION procinfo; //info of the process
-    if(!CreateProcess(NULL, (LPSTR)szCmd, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &stinfo, &procinfo))
-    {
-        return -1;
-    }
-    // wait for the end of the process
-    WaitForSingleObject(procinfo.hProcess, INFINITE);
-    CloseHandle(procinfo.hProcess);
-    CloseHandle(procinfo.hThread);
-	env->ReleaseByteArrayElements(cmdString, (signed char*)szCmd, 0);
-    return 0;
-}
-
-
 #ifdef __cplusplus
 }
 #endif

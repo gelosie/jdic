@@ -21,16 +21,31 @@
 package org.jdesktop.jdic.packager.impl;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import com.sun.javaws.util.GeneralUtil;
-import com.sun.javaws.jnl.XMLUtils;
+import java.net.URL;
+
+import com.sun.deploy.xml.XMLEncoding;
 import com.sun.deploy.xml.XMLNode;
 import com.sun.deploy.xml.XMLParser;
-import com.sun.javaws.exceptions.MissingFieldException;
 import com.sun.javaws.exceptions.BadFieldException;
+import com.sun.javaws.exceptions.MissingFieldException;
+import com.sun.javaws.jnl.ExtensionDesc;
+import com.sun.javaws.jnl.IconDesc;
+import com.sun.javaws.jnl.InformationDesc;
+import com.sun.javaws.jnl.JARDesc;
+import com.sun.javaws.jnl.JREDesc;
+import com.sun.javaws.jnl.LaunchDesc;
+import com.sun.javaws.jnl.LaunchDescFactory;
+import com.sun.javaws.jnl.PackageDesc;
+import com.sun.javaws.jnl.PropertyDesc;
+import com.sun.javaws.jnl.ResourceVisitor;
+import com.sun.javaws.jnl.ResourcesDesc;
+import com.sun.javaws.jnl.XMLUtils;
+import com.sun.javaws.util.GeneralUtil;
 
 /**
  * This parameter class encapsulates all the description information for the
@@ -53,6 +68,7 @@ public final class JnlpPackageInfo {
         enableLocalization = false;
         bannerJpgFilePath = null;
         panelJpgFilePath = null;
+        jnlpRefFilePaths = new ArrayList();
     }
 
     /**
@@ -400,15 +416,6 @@ public final class JnlpPackageInfo {
     }
 
     /**
-     * Sets the jnlp file referenced paths.
-     * @param theFilePaths The list containing all the referenced file paths.
-     */
-    public void setJnlpRefFilePaths(List theFilePaths) {
-        // Question!!! need defensive copy here.
-        jnlpRefFilePaths = theFilePaths;
-    }
-
-    /**
      * Gets whether to create a shortcut after the installation.
      * @return True if the installation will create a shortcut.
      */
@@ -540,63 +547,289 @@ public final class JnlpPackageInfo {
         }
         return index;
     }
-
+    
     /**
-     * Parsing the jnlp info.
-     * @throws MissingFieldException If certain fields can't be located.
-     * @throws BadFieldException If undefined fields found.
+     * get remote resources to local directory, and set the related fields of
+     * the JnlpPackageInfo
+     * 
+     * @param jnlp points to the remote jnlp file
+     * @throws IOException
      */
-    public void parseJnlpInfo()
-        throws MissingFieldException, BadFieldException {
-        // Get root of XML file
-        XMLNode root;
+    public void parseRemoteJnlpInfo(URL jnlp) 
+            throws IOException {
+        if (jnlp == null) 
+            throw new IOException("url is null when trying to parse JnlpInfo");
+        String localBase = FileOperUtility.createUniqueTmpDir();
+        URL localJnlp = FileOperUtility.getRemoteResource(jnlp, localBase);
+        setResourcePath(localBase);
+        parseLocalJnlpInfo(localJnlp);
+    }
+    
+    /**
+     * add file path to JnlpRefFilePath
+     * 
+     * @param url points to the file
+     * @param codebase 
+     * @throws IOException
+     */
+    public void addJnlpRefFilePath(URL url, URL codebase) throws IOException {
+        String relPath = FileOperUtility.getRelativePath(
+                url.toString(), codebase.toString());
+
+        jnlpRefFilePaths.add(relPath);
+    }
+    
+    /**
+     * set related fields of the JnlpPackageInfo according to the local jnlp
+     * file
+     * 
+     * @param jnlp points to the local jnlp file
+     * @throws IOException
+     */
+    public void parseLocalJnlpInfo(URL jnlp) throws IOException {
+        URL codebase = null;
+        
+        if (jnlp == null) 
+            throw new IOException("url is null when trying to parse JnlpInfo");
+        
+        if (resourceDirPath == null || resourceDirPath.length() <= 0)
+            throw new IOException("resourcePath have not been set");
+        
         try {
-            File jnlpFile = new File(jnlpFilePath);
-            FileInputStream fis = new FileInputStream(jnlpFile);
-            int fLen = (int) jnlpFile.length();
-            byte[] bits = new byte[fLen];
+            File jnlpFile = new File(jnlp.toURI());
+            setJnlpFilePath(jnlpFile.getPath());
+            LaunchDesc laDesc = LaunchDescFactory.buildDescriptor(jnlp);
+            codebase = laDesc.getCodebase();
+            setJnlpFileHref(laDesc.getCanonicalHome().toString());
+            InformationDesc infoDesc = laDesc.getInformation();
+            setTitle(JnlpConstants.LOCALE_EN, infoDesc.getTitle());
+            setVendor(JnlpConstants.LOCALE_EN, infoDesc.getVendor());
+            setDescription(JnlpConstants.LOCALE_EN, 
+                    infoDesc.getDescription(InformationDesc.DESC_DEFAULT));
 
-            fis.read(bits, 0, fLen);
-            fis.close();
-
-            String content = new String(bits);
-            root = (new XMLParser(content)).parse();
+            addJnlpRefFilePaths(jnlp);
         } catch (Exception e) {
-           return;
+        	e.printStackTrace();
         }
+    }
 
-        // Give value to title[], vendor[]
-        XMLUtils.visitElements(root, "<information>",
-                new XMLUtils.ElementVisitor() {
-            public void visitElement(XMLNode e)
-                throws BadFieldException, MissingFieldException {
-                String[] localeList =
-                    GeneralUtil.getStringList(
-                        XMLUtils.getAttribute(e, "", "locale"));
-
-                // if locale="", then use NO. 1, which is "us"
-                // if locale!="", and it is not in locales list,
-                // we use NO. 0, which is "reserved"
-                int index =
-                    (localeList == null) ? 0 : getLocaleIndex(localeList[0]);
-                // If index in 10 listed languages, set the title and vendor
-                if (index != -1) {
-                    titles[index] = new String(
-                            XMLUtils.getElementContents(e, "<title>"));
-                    vendors[index] = new String(
-                            XMLUtils.getElementContents(e, "<vendor>"));
-                    descriptions[index] =
-                            XMLUtils.getElementContents(e, "<description>");
-                }
+    public void addJnlpRefFilePaths(URL jnlp) throws IOException{
+        
+        if (jnlp == null) 
+            throw new IOException("url is null when trying to parse JnlpInfo");
+        
+        if (resourceDirPath == null || resourceDirPath.length() <= 0)
+            throw new IOException("resourcePath have not been set");
+        
+        try {
+        	File jnlpFile = new File(jnlp.toURI());
+            jnlpRefFilePaths.add(FileOperUtility.getRelativePath(
+                    jnlpFile.getPath(), resourceDirPath));
+            LaunchDesc laDesc = LaunchDescFactory.buildDescriptor(jnlp);
+            URL codebase = laDesc.getCodebase();
+            InformationDesc infoDesc = laDesc.getInformation();
+            IconDesc[] iconArray = infoDesc.getIcons();
+            for (int i = 0; i < iconArray.length; i++) {
+                URL iconURL = iconArray[i].getLocation();
+                this.addJnlpRefFilePath(iconURL, codebase);
             }
-        });
-
-        // Make sure every info is filled
-        for (int i = 1; i < JnlpConstants.LOCALES.length; i++) {
-            titles[i]  = (titles[i] == null) ? titles[0] : titles[i];
-            vendors[i] = (vendors[i] == null) ? vendors[0] : vendors[i];
-            descriptions[i] = (descriptions[i] == null)
-                            ? descriptions[0] : descriptions[i];
+            ResourcesDesc reDesc = laDesc.getResources();
+            reDesc.visit(
+                    new JDICPackagerFileRefVisitor(codebase,
+                            resourceDirPath, this));
+        } catch (Exception e) {
+        	e.printStackTrace();
         }
+    }
+    /**
+     * set title in the given locale
+     * 
+     * @param index
+     * @param title
+     */
+    public void setTitle(int index, String title) {
+        titles[index] = title;   
+    }
+    
+    /**
+     * set vector in the given locale
+     * 
+     * @param index
+     * @param vendor
+     */
+    public void setVendor(int index, String vendor) {
+        vendors[index] = vendor;   
+    }
+    
+    /**
+     * set description in the give locale
+     * 
+     * @param index
+     * @param description
+     */
+    public void setDescription(int index, String description) {
+        descriptions[index] = description;   
+    }
+    
+    /**
+     * set license in the give locale
+     * 
+     * @param index
+     * @param license
+     */
+    public void setLicense(int index, String license) {
+        licenses[index] = license;   
+    }
+    
+    /**
+     * set localized information to the jnlpPackagerInfo
+     * 
+     * @throws IOException
+     */
+    public void setLocalizedInformation()
+            throws IOException {
+        File jnlpFile = null;
+        jnlpFile = new File(getJnlpFilePath());
+        
+        if (jnlpFile == null) {
+            throw new IOException("Cannot find local jnlp file: " +
+                    jnlpFile.getPath());   
+        }
+        byte[] bits;
+        try { 
+            bits = LaunchDescFactory.readBytes(new FileInputStream(jnlpFile),
+                jnlpFile.length());
+        } catch (Exception e) {
+            throw new IOException("Exception when build localized InfoDesc " +
+                    e.getMessage());   
+        }
+
+        setLocalizedInformation(bits);
+        
+        for (int i = 0; i < JnlpConstants.LOCALES.length; i++) {
+            if (titles[i] == null || titles[i].length() == 0) {
+                titles[i] = titles[JnlpConstants.LOCALE_EN];   
+            }
+            
+            if (vendors[i] == null || vendors[i].length() == 0) {
+                vendors[i] = vendors[JnlpConstants.LOCALE_EN];   
+            }
+            
+            if (descriptions[i] == null || descriptions[i].length() == 0) {
+                descriptions[i] = descriptions[JnlpConstants.LOCALE_EN];   
+            }
+        }
+    }
+    
+    private void setLocalizedInformation(byte[] bits)
+            throws IOException {
+        String source;
+        String encoding;
+        XMLNode root;
+
+        try {
+            source = XMLEncoding.decodeXML(bits);
+        } catch (Exception e) {
+            throw new IOException("exception determining encoding of jnlp " +
+                    "file: " + e.getMessage());
+        }
+
+        try {
+            root = (new XMLParser(source)).parse();
+        } catch (Exception e) {
+            throw new IOException("exception parsing jnlp file " +
+                    e.getMessage());
+        }
+        
+        try {
+            XMLUtils.visitElements(root, "<information>",
+                    new JDICPackagerInfoElementVisitor(this));
+        } catch (Exception e) {
+            throw new IOException("exception creating InformationDesc " +
+                    e.getMessage());   
+        }
+    }
+}
+
+/**
+ * ResourceVisitor to add all the local resource file paths to
+ * JnlpPackageInfo.jnlpRefFilePaths
+ */
+class JDICPackagerFileRefVisitor implements ResourceVisitor {
+    private URL codebase = null; 
+    private String localBase = null;
+    private JnlpPackageInfo pkgInfo = null;
+
+    public JDICPackagerFileRefVisitor(URL incodebase, String inlocalbase,
+            JnlpPackageInfo inpkgInfo) {
+        codebase = incodebase;
+        localBase = inlocalbase;
+        pkgInfo = inpkgInfo;
+    }
+    public void visitJARDesc(JARDesc jad) {
+        try {
+            pkgInfo.addJnlpRefFilePath(jad.getLocation(), codebase);
+        } catch (IOException ioE) {
+            ioE.printStackTrace();   
+        }
+    }
+    
+    public void visitExtensionDesc(ExtensionDesc ed) {
+        String relPath = FileOperUtility.getRelativePath(
+                ed.getLocation().toString(), codebase.toString());
+        File tmpFile = new File(pkgInfo.getResourceDirPath() + File.separator +
+                relPath);
+        try {
+            pkgInfo.addJnlpRefFilePaths(tmpFile.toURL());
+        } catch (IOException ioE) {
+            ioE.printStackTrace();   
+        }
+    }
+    
+    public void visitPropertyDesc(PropertyDesc prd) {}
+    public void visitJREDesc(JREDesc jrd) {}
+    public void visitPackageDesc(PackageDesc pad) {}
+}
+
+/**
+ * Element Visitor to set informations in different locales.
+ */
+class JDICPackagerInfoElementVisitor extends XMLUtils.ElementVisitor {
+    private JnlpPackageInfo pkgInfo;
+    
+    public JDICPackagerInfoElementVisitor(JnlpPackageInfo inpkgInfo) {
+        pkgInfo = inpkgInfo;
+    }
+    
+    public void visitElement(XMLNode e) throws BadFieldException,
+        MissingFieldException {
+        String[] locales = GeneralUtil.getStringList(
+                XMLUtils.getAttribute(e, "", "locale", null));
+        for (int i = 0; i < JnlpConstants.LOCALES.length; i++) {
+             if (matchLocale(JnlpConstants.LOCALES[i], locales)) {
+                 String title = XMLUtils.getElementContents(e, "<title>");
+                 pkgInfo.setTitle(i, title);
+                 String vendor = XMLUtils.getElementContents(e, "<vendor>");
+                 pkgInfo.setVendor(i, vendor);
+                 String description = XMLUtils.getElementContentsWithAttribute(
+                        e, "<description>", "kind", "", null);
+                 pkgInfo.setDescription(i, description);
+             }
+        }
+    }
+    
+    private boolean matchLocale(String locale, String[] locales) {
+        boolean match = false;
+        if (locales == null)
+            return match;
+        
+        for (int i = 0; i < locales.length; i++) {
+            if (locales[i] != null && locales[i].equals(locale)) {
+                match = true;
+                break;
+            }
+        }
+        
+        return match;
     }
 }

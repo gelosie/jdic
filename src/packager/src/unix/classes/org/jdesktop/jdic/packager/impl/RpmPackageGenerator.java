@@ -208,9 +208,9 @@ public class RpmPackageGenerator implements PackageGenerator {
         }
 */
         try {
-	    FileOperUtility.copyJnlpFiles(pkgInfo, buildPath + installationPath);
+	    FileOperUtility.copyLocalFile(pkgInfo.getResourceDirPath(), buildPath + installationPath);
 	    if (hasLicense) 
-	    	FileOperUtility.copyFile(licensePath, buildPath + File.separator + "License");
+	    	FileOperUtility.copyLocalFile(licensePath, buildPath + File.separator + "License");
 	} catch (IOException ioE) {
             throw new IOException("Cannot copy resource files to BuildRoot: " + ioE.getMessage());
 	}	     
@@ -364,7 +364,6 @@ public class RpmPackageGenerator implements PackageGenerator {
             }
             File specsDir = new File(specsPath);
             result = specsDir.mkdirs();
-//            System.out.println("Has created SPECS dir");
             if(result == false) {
                 result = specsDir.exists();
                 if(result == false)

@@ -128,7 +128,7 @@ public class PkgPackageGenerator implements PackageGenerator {
     /**
      * Deletes the temporarily created files and directories.
      */
-    private void deleteTempFiles() {
+    private void deleteTempFiles() throws IOException {
         if (pkginfoFile != null) pkginfoFile.delete();
         if (checkinstallFile != null) checkinstallFile.delete();
         if (postinstallFile != null) postinstallFile.delete();
@@ -359,7 +359,7 @@ public class PkgPackageGenerator implements PackageGenerator {
         // copy the required resource paths to a temp directory before packaging them.
         File tmpResourcePathFile = new File(pkgInfoFileLocation, "." + pkgInfo.getPackageName() + ".");
         tmpResourcePath = tmpResourcePathFile.toString();
-        FileOperUtility.copyJnlpFiles(pkgInfo, tmpResourcePath);     
+        FileOperUtility.copyLocalFile(pkgInfo.getResourceDirPath(), tmpResourcePath);     
 
         String licenseFilePath = pkgInfo.getLicenseDirPath ();
         if (licenseFilePath != null) {
@@ -367,7 +367,7 @@ public class PkgPackageGenerator implements PackageGenerator {
             // may contains files other than the license files.If no specified license path, return.
             File tmpCopyrightPathFile = new File(pkgInfoFileLocation, "." + FILE_NAME_COPYRIGHT + ".");
             tmpCopyrightPath = tmpCopyrightPathFile.toString();
-            FileOperUtility.copyCopyrightFiles(pkgInfo, tmpCopyrightPath);
+            FileOperUtility.copyLocalFile(pkgInfo.getLicenseDirPath(), tmpCopyrightPath);
         }
 
         // Create information files.

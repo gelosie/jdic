@@ -16,417 +16,341 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
- */ 
-
+ */
 package org.jdesktop.jdic.packager.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.StringTokenizer;
 import java.net.URL;
-import java.net.ProxySelector;
-import java.net.MalformedURLException;
 
 import com.sun.deploy.net.proxy.DeployProxySelector;
 import com.sun.deploy.net.proxy.StaticProxyManager;
 import com.sun.deploy.services.ServiceManager;
 import com.sun.deploy.services.PlatformType;
+import com.sun.javaws.jnl.ExtensionDesc;
+import com.sun.javaws.jnl.IconDesc;
+import com.sun.javaws.jnl.InformationDesc;
+import com.sun.javaws.jnl.JARDesc;
+import com.sun.javaws.jnl.JREDesc;
+import com.sun.javaws.jnl.LaunchDesc;
+import com.sun.javaws.jnl.LaunchDescFactory;
+import com.sun.javaws.jnl.PackageDesc;
+import com.sun.javaws.jnl.PropertyDesc;
+import com.sun.javaws.jnl.ResourceVisitor;
+import com.sun.javaws.jnl.ResourcesDesc;
 
 /**
- * This class provides support for utility functions of File operation.
+ * This class contains some Utilities related to File Operation.
  */
 public class FileOperUtility {
-    /**
-     * Copy the remote file with relative path to a given base url
-     * to a local specified path.
-     *
-     * @param baseUrl the base url for the specified relative file path.
-     * @param relativeFilePath the relative file path.
-     * @param baseLocalPath the local base file path for the specified file path
-     * @throws IOException If the copy failed.
-     */
-    public static void urlFile2LocalFile(
-        URL baseUrl,
-        String relativeFilePath,
-        String baseLocalPath)
-        throws IOException {
-        // Get the absolute url path to the specific file.
-        URL urlFilePath = null;
-        try {
-            // Make sure the given baseUrl ends with a "/".
-            URL newBaseUrl = null;
-            String baseUrlStr = baseUrl.toString();
-            if (!baseUrlStr.endsWith("/")) {
-                newBaseUrl = new URL(baseUrlStr.concat("/"));
-            } else {
-                newBaseUrl = baseUrl;
-            }
-
-            urlFilePath = new URL(newBaseUrl, relativeFilePath);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        // Get the absolute local path to the specific file.
-        File localFilePath = new File(baseLocalPath, relativeFilePath);
-        // Check if the parent dir of the specific file exists and is writable.
-        File parentDir = localFilePath.getParentFile();
-        if (!parentDir.exists()) {
-            // Create the parent dir with all non-existent ancestor directories
-            // are automatically created.
-            boolean mkdirSucceed = parentDir.mkdirs();
-            if (!mkdirSucceed) {
-                throw new IOException(
-                    "Failed to create local directory: " + parentDir);
-            }
-        } else {
-            // Check it the parent dir is writable.
-            if (!parentDir.canWrite()) {
-                throw new IOException(
-                    "The local directory is not writable: " + parentDir);
-            }
-
-            if (localFilePath.exists()) {
-                // The local file already exists, delete it first.
-                boolean deleteSucceed = localFilePath.delete();
-                if (!deleteSucceed) {
-                    throw new IOException(
-                        "Failed to remove the already existed local file: "
-                        + localFilePath);
-                }
-            }
-        }
-
-        // Create the new local file.
-        try {
-            boolean createSucceed = localFilePath.createNewFile();
-            if (!createSucceed) {
-                throw new IOException(
-                    "Failed to create local file: " + localFilePath);
-            }
-        } catch (IOException e) {
-            throw new IOException(
-                "Failed to create local file: " + localFilePath);
-        }
-
-        // Until now, everything is ok; copy the file from url to local.
-        DataInputStream inStream = null;
-        DataOutputStream outStream = null;
-        
+    static {
         if (System.getProperty("os.name").indexOf("Windows") != -1) {
             ServiceManager.setService(PlatformType.STANDALONE_TIGER_WIN32);
         } else {
             ServiceManager.setService(PlatformType.STANDALONE_TIGER_UNIX);
         }
-
-        ProxySelector ps = ProxySelector.getDefault();
         
         try {
             DeployProxySelector.reset();
         } catch (Throwable t) {
             StaticProxyManager.reset();
+        }   
+    }
+    
+    /**
+     * copy remote file pointed by url to a local directory 
+     * 
+     * @param url points to a remote file
+     * @param codebase remote codebase
+     * @param localbase local directory where store the file
+     * @throws IOException
+     */
+    public static void urlFile2LocalFile(URL url, URL codebase,
+            String localbase) throws IOException {
+        if (url == null || url.getFile() == null || url.getFile().length() <= 0)
+            return;
+        String relPath = getRelativePath(url.toString(), codebase.toString());
+        File localFile = new File(localbase + File.separator + relPath);
+        copyRemoteFile(url, localFile);
+    }
+    
+    private static void createLocalFile(File localFile) throws IOException {
+        if (localFile == null) 
+            return;
+        
+        if (!localFile.getParentFile().exists()) {
+            try {
+                 if (!localFile.getParentFile().mkdirs()) {
+                     throw new IOException("Cannot make parent directory " +
+                           "when trying to create local file"); 
+                 }
+            } catch (Exception e) {
+                 throw new IOException("Cannot make parent directory when " +
+                       "trying to create local file: " + e.getMessage());  
+            }
+        }
+       
+        if (localFile.exists()) {
+            try {
+                if (!localFile.delete()) {
+                     throw new IOException("Cannot delete original file when " +
+                            "trying to create local file");   
+                }
+            } catch (Exception e) {
+                throw new IOException("Cannot delete original file when " +
+                        "trying to create local file: " + e.getMessage());    
+            }
         }
 
         try {
-            inStream = new DataInputStream(urlFilePath.openStream());
-            outStream = new DataOutputStream(
-                new FileOutputStream(localFilePath));
-            byte[] byteBuffer = new byte[
-                                JnlpConstants.FILE_COPY_BLOCK_SIZE];
-            int bytesRead;
+            if (!localFile.createNewFile()) {
+                throw new IOException("Cannot create new local file");   
+            }
+        } catch (Exception e) {
+            throw new IOException("Cannot create new local file: " +
+                    e.getMessage());   
+        }
+    }
+    
+    private static void copyRemoteFile(URL url, File localFile)
+            throws IOException {
+        if (url == null || localFile == null) 
+            return;
+        
+        if (url.getFile() == "" || url.getFile() == null) 
+            return;
+        
+        if (localFile.isDirectory()) {
+            localFile = new File(localFile.getPath() + File.separator + 
+                    url.getFile());
+        }
+        
+        if (!localFile.exists()) {
+            createLocalFile(localFile);   
+        }
+     
+        DataInputStream inStream = new DataInputStream(url.openStream());
+        DataOutputStream outStream = new DataOutputStream(
+                new FileOutputStream(localFile));
 
-            while (true) {
-                bytesRead = inStream.read(byteBuffer);
-                if (bytesRead == -1) {
+        copyStream(inStream, outStream);
+    }
+    
+    private static void copyStream(InputStream inStream, 
+    		OutputStream outStream) throws IOException {
+        int readbytes = 0;
+                                
+        try {
+            do {
+                byte[] buffer = new byte[512];
+                readbytes = inStream.read(buffer, 0, 512);
+                if (readbytes <= 0) {
                     break;
                 }
-                outStream.write(byteBuffer, 0, bytesRead);
-            }
-        } catch (IOException e) {
-            throw new IOException(
-                "Failed to copy file: "
-                + urlFilePath
-                + " to file: "
-                + localFilePath);
+                
+                outStream.write(buffer, 0, readbytes);
+                outStream.flush(); 
+            } while (true);   
+        } catch (IOException ioE) {
+        	ioE.printStackTrace();
         } finally {
-            ProxySelector.setDefault(ps);
-
-            // No matter what happens, always close streams we've already opened
             if (inStream != null) {
-                try {
-                    inStream.close();
-                } catch (IOException e) {
-                    throw new IOException(
-                        "Failed to close the input stream during file copy.");
-                }
+                inStream.close();
             }
             if (outStream != null) {
-                try {
-                    outStream.close();
-                } catch (IOException e) {
-                    throw new IOException(
-                        "Failed to close the output stream during file copy.");
-                }
+                outStream.close();
             }
         }
     }
-
+    
     /**
-     * Copy the file given by a href into a local specified path.
-     *
-     * @param fileHref The give file href.
-     * @param localPath The local path for the destination file.
-     * @throws IOException If fileHref is a invalid href.
+     * get relative path according the give path and base
+     * 
+     * @param path 
+     * @param base
+     * @return relative path
      */
-    public static void urlFile2LocalFile(
-            URL fileHref, String localPath) throws IOException {
-        String fileHrefStr = fileHref.toString();
-        int index = fileHrefStr.lastIndexOf('/');
-
-        URL fileHrefBase = null;
-        try {
-            fileHrefBase = new URL(fileHrefStr.substring(0, index));
-        } catch (MalformedURLException e) {
-            throw new IOException(
-                "The given url doesn't point to a file path: " + fileHref);
+    public static String getRelativePath(String path, String base) {
+        if (path == null || base == null) 
+            return null;
+        String relPath = path.substring(path.lastIndexOf(base) + base.length());
+        StringTokenizer st = new StringTokenizer(relPath, "/", false);
+        String nativeRelPath = "";
+        while (st.hasMoreTokens()) {
+            if (nativeRelPath.length() == 0) {
+                nativeRelPath = st.nextToken();
+            } else {
+                nativeRelPath += File.separator + st.nextToken();
+            }
         }
-
-        String fileName = fileHrefStr.substring(
-                                index + 1, fileHrefStr.length());
-
-        urlFile2LocalFile(fileHrefBase, fileName, localPath);
+        
+        return nativeRelPath;
     }
-
+    
     /**
-     * Copy the file from source file to the destination file.
-     * @param sourceFileName The given source file name.
-     * @param destFileName The given destination file name.
-     * @throws IOException If the copy failed.
+     * copy source file to dest
+     * 
+     * @param sourceFileName name of the source, could be either directory or a file
+     * @param destFileName name of the dest, could be either a file or a directory
+     * @throws IOException
      */
-    public static void copyFile(String sourceFileName, String destFileName)
-        throws IOException {
+    public static void copyLocalFile(String sourceFileName, String destFileName)
+            throws IOException {
         File sourceFile = new File(sourceFileName);
         File destFile = new File(destFileName);
-
-        if (!sourceFile.isDirectory()) {
-
-        if (!FileOperUtility.isFileReadable(sourceFile)) {
-            throw new IOException(
-                "Copy file failed. The source file is not readable: "
-                + sourceFile);
-        }
-
-        // Create the parent dir with all non-existent ancestor directories
-        // are automatically created.
-        File destParentFile = destFile.getParentFile();
-        if (!destParentFile.exists()) {
-            boolean mkdirSucceed = destParentFile.mkdirs();
-            if (!mkdirSucceed) {
-                throw new IOException(
-                    "Failed to create the parent directory for: "
-                    + destFileName);
+        
+        if (!sourceFile.exists()) 
+            return;
+        
+        if (sourceFile.isFile()) { 
+            if (destFile.isDirectory()) {
+                destFile = new File(destFile.getPath() + File.separator +
+                        sourceFile.getName());   
             }
-        }
+            createLocalFile(destFile);
 
-        FileInputStream inStream = null;
-        FileOutputStream outStream = null;
-        try {
-            inStream = new FileInputStream(sourceFile);
-            outStream = new FileOutputStream(destFile);
-            byte[] byteBuffer = new byte[JnlpConstants.FILE_COPY_BLOCK_SIZE];
-            int bytesRread;
-
-            while (true) {
-                bytesRread = inStream.read(byteBuffer);
-                if (bytesRread == -1) {
-                    break;
+            DataInputStream inStream = new DataInputStream(
+                    new FileInputStream(sourceFile));
+            DataOutputStream outStream = new DataOutputStream(
+                    new FileOutputStream(destFile));
+            
+            copyStream(inStream, outStream);
+        } else if (sourceFile.isDirectory()) {
+            if (destFile.exists() && !destFile.isDirectory()) {
+                throw new IOException("cannot copy directory because there " +
+                        "is a file with the same name in destination: " +
+                        destFile.getPath());   
+            }
+            try {
+                if (!destFile.exists() && !destFile.mkdirs()) {
+                    throw new IOException("cannot create local directory: " + 
+                            destFile.getPath());   
                 }
-                outStream.write(byteBuffer, 0, bytesRread);
-            }
-        } catch (IOException e) {
-            throw new IOException(
-                        "Failed to copy file: "
-                        + sourceFile
-                        + " to file: "
-                        + destFileName);
-        } finally {
-            // No matter what happens, always close streams already opened.
-            if (inStream != null) {
-                try {
-                    inStream.close();
-                } catch (IOException e) {
-                    throw new IOException(
-                        "Failed to close the input stream during file copy.");
+                
+                File[] filelist = sourceFile.listFiles();
+                if (filelist == null)
+                    return;
+                for (int i = 0; i < filelist.length; i++) {
+                    String destName = destFileName + File.separator +
+                            getRelativePath(filelist[i].getCanonicalPath(),
+                                    sourceFile.getCanonicalPath());
+                    copyLocalFile(filelist[i].getCanonicalPath(), destName);
                 }
-            }
-            if (outStream != null) {
-                try {
-                    outStream.close();
-                } catch (IOException e) {
-                    throw new IOException(
-                        "Failed to close the ouput stream during file copy.");
-                }
-            }
-        }
-        }
-        if (sourceFile.isDirectory()) {
-            File[] fileList = sourceFile.listFiles();
-            String fileName;
-
-            if (!destFile.exists()) {
-                destFile.mkdirs();
-            }
-            for (int i = 0; i < fileList.length; i++) {
-                fileName = fileList[i].getName();
-                copyFile(fileList[i].getCanonicalPath(),
-                         destFileName + File.separator + fileName);
+            } catch (Exception e) {
+                throw new IOException("Cannot copy local directory: " +
+                        e.getMessage());   
             }
         }
     }
-
+    
     /**
-     * Copy the given file with a relative path from the source parent path to
-     * the dest parent path.
-     * @param baseSrcParentDirPath The given source parent directory.
-     * @param relativeFilePath The given relevant file path.
-     * @param baseDestParentDirPath The given desination parent directory.
-     * @throws IOException If the file copy process failed.
+     * delete the directory
+     * 
+     * @param dir directory to be deleted
+     * @throws IOException
      */
-    public static void copyFile(String baseSrcParentDirPath,
-                                String relativeFilePath,
-                                String baseDestParentDirPath)
+    public static void deleteDirTree(File dir) throws IOException {
+        if (dir == null || !dir.isDirectory())
+            return;
+        File[] filelist = dir.listFiles();
+        try {
+            if (filelist == null) {
+                if (!dir.delete()) {
+                    throw new IOException("Cannot delete directory: " +
+                            dir.getPath());
+                }
+                return;
+            }
+            for (int i = 0; i < filelist.length; i++) {
+                if (filelist[i].isFile()) {
+                    if (!filelist[i].delete()) {
+                        throw new IOException("Cannot delete file: " +
+                                filelist[i].getPath());
+                    }
+                } else if (filelist[i].isDirectory()) {
+                    deleteDirTree(filelist[i]);
+                }
+            }
+        } catch (Exception e) {
+            throw new IOException("Failed to delete directory: " + 
+                    e.getMessage());   
+        }
+    }
+    
+    /**
+     * Creates an unique local temp directory.
+     * @return The name of the created directory.
+     * @throws IOException If failed to create such a directory.
+     */
+    public static String createUniqueTmpDir()
         throws IOException {
-        File sourceFile = new File(baseSrcParentDirPath, relativeFilePath);
-        File destFile = new File(baseDestParentDirPath, relativeFilePath);
-        copyFile(sourceFile.toString(), destFile.toString());
-    }
-
-    /**
-     * Copy the jnlp file and its referenced resource files into a temporarily
-     * directory.
-     * @param pkgInfo              The parsed jnlp file information.
-     * @param tmpResourceDirPath   The temporary resource directory path.
-     * @throws IOException         If the copy process failed.
-     */
-    public static void copyJnlpFiles(JnlpPackageInfo pkgInfo,
-                                     String tmpResourceDirPath)
-                                     throws IOException {
-        File tmpResourcePathFile = new File(tmpResourceDirPath);
-        if (tmpResourcePathFile.isDirectory()) {
-            FileOperUtility.deleteDirTree(tmpResourcePathFile);
-        }
-
-        boolean createSucceed = tmpResourcePathFile.mkdirs();
-        if (!createSucceed) {
-            throw new IOException(
-                    "Failed to create the temp directory to copy jnlp files: "
-                    + tmpResourceDirPath);
-        }
-
-        String jnlpFilePath = pkgInfo.getJnlpFilePath();
-        File jnlpFile = new File(jnlpFilePath);
+        // Create a unique temp directory.
+        String tempDirPath = null;
         try {
-            // Copy the jnlp file itself first.
-            FileOperUtility.copyFile(jnlpFile.getParent(),
-                                     pkgInfo.getJnlpFileName(),
-                                     tmpResourceDirPath);
+            File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
 
-            // Copy the jnlp referenced resource files.
-            Iterator jnlpRefFilePaths = pkgInfo.getJnlpRefFilePaths();
-            String resourcePath = pkgInfo.getResourceDirPath();
-            while (jnlpRefFilePaths.hasNext()) {
-                String oneRelFilePath = (String) jnlpRefFilePaths.next();
-                if (oneRelFilePath != null) {
-                    FileOperUtility.copyFile(resourcePath,
-                                             oneRelFilePath,
-                                             tmpResourceDirPath);
-                }
-            }
+            File tempFile = File.createTempFile("jnlp", "jnlp", sysTempDir);
+
+            tempDirPath = tempFile.getPath();
+            tempFile.delete();
+            tempFile = new File(tempDirPath);
+            tempFile.mkdirs();
+            tempFile.deleteOnExit();
         } catch (IOException e) {
             throw new IOException(
-                        "Failed to copy jnlp files into the temp directory: "
-                        + tmpResourceDirPath);
+                        "Failed to create a local temp directory: "
+                        + tempDirPath);
         }
-   }
-
-   /**
-    * Copy the specified copyright file(s) into a temporarily directory.
-    * @param pkgInfo    The parsed jnlp file information.
-    * @param tmpCopyrightDirPath The given temporary directory.
-    * @throws IOException If the copy process failed.
-    */
-   public static void copyCopyrightFiles(JnlpPackageInfo pkgInfo,
-                                         String tmpCopyrightDirPath)
-                                        throws IOException {
-       File tmpCopyrightPathFile = new File(tmpCopyrightDirPath);
-       if (tmpCopyrightPathFile.isDirectory()) {
-           FileOperUtility.deleteDirTree(tmpCopyrightPathFile);
-       }
-
-       // The temp destination path for the copyright files are:
-       //   <tmpCopyrightPath>/licenses/<vendor>/<name>/<version>.<release>
-       String copyrightRelativePath =
-                "licenses"
-                + File.separator
-                + pkgInfo.getLocalizedJnlpInfo("en",
-                                    JnlpConstants.JNLP_FIELD_VENDOR)
-                + File.separator
-                + pkgInfo.getPackageName()
-                + File.separator
-                + pkgInfo.getVersion() + '.' + pkgInfo.getRelease();
-
-       // Remove the " " characters from the path string, which is illegal in
-       // the prototype file.
-       copyrightRelativePath = copyrightRelativePath.replaceAll(" ", "");
-       File tmpCompletePathFile = new File(tmpCopyrightPathFile,
-                                           copyrightRelativePath);
-       boolean createSucceed = tmpCompletePathFile.mkdirs();
-       if (!createSucceed) {
-           throw new IOException(
-               "Failed to create the temp directory to copy copyright file(s): "
-               + tmpCompletePathFile);
-       }
-
-       // Copy all the license files from the input license path to the
-       // created temporarily directory.
-       String licenseFilePath = pkgInfo.getLicenseDirPath();
-       try {
-           for (int locNum = 0; locNum < JnlpConstants.LOCALES.length; locNum++)
-           {
-               String curLicenseFileName = "LICENSE."
-                                           + JnlpConstants.LOCALES[locNum];
-               File curLicenseFile = new File(licenseFilePath
-                                              + File.separator
-                                              + curLicenseFileName);
-
-               if (FileOperUtility.isFileReadable(curLicenseFile)) {
-                   FileOperUtility.copyFile(licenseFilePath, curLicenseFileName,
-                       tmpCompletePathFile.toString());
-               }
-           }
-       } catch (IOException e) {
-           throw new IOException(
-                    "Failed to copy license files into the temp directory: "
-                    + tmpCopyrightDirPath);
-       }
-   }
-
+        return tempDirPath + File.separator;
+    }
+    
     /**
-     * Evaluate is the given file is readable.
-     * @param filePath The given file path.
-     * @return true If file is not a directory and is readable.
+     * get all the resource to local according to a remote jnlp file
+     * 
+     * @param jnlp remote jnlp file location
+     * @param localBase local directory which stores the resources
+     * @return URL points to the local jnlp file
+     * @throws IOException
      */
-    public static boolean isFileReadable(File filePath) {
-        if (filePath.isFile()) {
-            if (filePath.canRead()) {
-                return true;
+    protected static URL getRemoteResource(URL jnlp, String localBase) 
+            throws IOException {
+        URL localJnlpUrl = null;
+        URL codebase = null;
+        try {     
+            LaunchDesc laDesc = LaunchDescFactory.buildDescriptor(jnlp);
+            codebase = laDesc.getCodebase();
+            urlFile2LocalFile(jnlp, codebase, localBase);
+            String relPath = getRelativePath(jnlp.toString(), 
+                    codebase.toString());
+            File localJnlpFile = new File(localBase + File.separator + relPath);
+            if (localJnlpFile == null || !localJnlpFile.exists()) {
+                 throw new IOException("Cannot copy remote jnlp file to " +
+                        "local");   
             }
+            localJnlpUrl = localJnlpFile.toURL();
+            
+            InformationDesc infoDesc = laDesc.getInformation();
+            IconDesc[] iconArray = infoDesc.getIcons();
+            for (int i = 0; i < iconArray.length; i++) {
+                URL iconURL = iconArray[i].getLocation();
+                urlFile2LocalFile(iconURL, codebase, localBase);
+            }
+            ResourcesDesc reDesc = laDesc.getResources();
+            reDesc.visit(
+                    new JDICPackagerResourceCopyVisitor(codebase, localBase));
+        } catch (Exception e) {
+            throw new IOException("Exception when geting remote resource: " +
+                    e.getMessage());   
         }
-        return false;
+        
+        return localJnlpUrl;
     }
 
     /**
@@ -456,157 +380,75 @@ public class FileOperUtility {
         }
         return false;
     }
-
+    
     /**
-     * Delete a file or non-empty directory.
-     * @param filePath The should-be-delete path in FILE format.
+     * Evaluate if the given directory is readable.
+     * 
+     * @param filePath the given file to be evaluated
+     * @return true is the filePath is readable, otherwise, false 
      */
-    public static void deleteDirTree(File filePath) {
-        if (filePath.isDirectory()) {
-            File[] files = filePath.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                deleteDirTree(files[i]);
+    public static boolean isFileReadable(File filePath) {
+        if (filePath.isFile()) {
+            if (filePath.canRead()) {
+                return true;   
             }
-            
-            filePath.delete();
-        } else if (filePath.exists()) {
-            filePath.delete();
         }
+        return false;
     }
-
+    
     /**
-     * Gets the file name without the extension by the given file path.
-     * @param filePath The given file path.
-     * @return The file name without the extension
+     * get the file name without extension
+     * 
+     * @param filePath input file
+     * @return filename without extension
      */
     public static String getFileNameWithoutExt(File filePath) {
-        String fileNameWithoutExt = null;
-        String fileNameWithExt = filePath.getName();
-
-        if (fileNameWithExt != null) {
-            int index = fileNameWithExt.lastIndexOf('.');
-            if (index != -1 && index != fileNameWithExt.length()) {
-                fileNameWithoutExt = fileNameWithExt.substring(0, index);
-            }
-        }
-
-        return fileNameWithoutExt;
+        if (filePath == null)
+            return null;
+        
+        String fileName = filePath.getName();
+        if (fileName == null)
+            return null;
+        
+        return (fileName.substring(0, fileName.lastIndexOf(".")));
     }
+}
 
-    /**
-     * Creates an unique local temp directory.
-     * @return The name of the created directory.
-     * @throws IOException If failed to create such a directory.
-     */
-    public static String createUniqueTmpDir()
-        throws IOException {
-        // Create a unique temp directory.
-        String tempDirPath = null;
+/**
+ * Resource Visitor to copy all the remote resource files to the local base
+ */ 
+
+class JDICPackagerResourceCopyVisitor implements ResourceVisitor {
+    private URL codebase = null; 
+    private String localBase = null;
+
+    public JDICPackagerResourceCopyVisitor(URL incodebase, String inlocalbase) {
+        codebase = incodebase;
+        localBase = inlocalbase;
+    }
+    public void visitJARDesc(JARDesc jad) {
         try {
-            File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
-
-            File tempFile = File.createTempFile("jnlp", "jnlp", sysTempDir);
-            tempDirPath = FileOperUtility.formatPath(tempFile.toString());
-
-            tempFile.delete();
-            tempFile = new File(tempDirPath);
-            tempFile.mkdirs();
-            tempFile.deleteOnExit();
-        } catch (IOException e) {
-            throw new IOException(
-                        "Failed to create a local temp directory: "
-                        + tempDirPath);
+            FileOperUtility.urlFile2LocalFile(jad.getLocation(),
+                    codebase, localBase);
+        } catch (IOException ioE) {
+            ioE.printStackTrace();   
         }
-        return tempDirPath;
     }
-
-    /**
-     * Copy the http jnlp file into the given local directory.
-     * @param httpJnlp The given http jnlp file.
-     * @param baseLocalDir The given location to copy the remote jnlp file.
-     * @return The locale jnlp file copy.
-     * @throws IOException If failed to copy the remote jnlp file.
-     */
-    public static File httpJnlp2localJnlp(URL httpJnlp, String baseLocalDir)
-        throws IOException {
-        String httpJnlpStr = httpJnlp.toString();
-        // Retrieves the URL jnlp file to the created temp dir.
-        String jnlpFileName = null;
-        int lastIndex = 0;
-        if ((lastIndex = httpJnlpStr.lastIndexOf("/")) != 0) {
-            jnlpFileName = httpJnlpStr.substring(lastIndex + 1,
-                                                 httpJnlpStr.length());
-        }
-
-        File localJnlpFile = new File(baseLocalDir + jnlpFileName);
+    
+    public void visitExtensionDesc(ExtensionDesc ed) {
         try {
-            FileOperUtility.urlFile2LocalFile(httpJnlp, baseLocalDir);
-        } catch (IOException e) {
-            throw new IOException(
-                    "Failed to retrieve the http jnlp file locally: "
-                    + localJnlpFile);
-        }
-        return localJnlpFile;
-    }
-
-    /**
-     * Copy the remote jnlp resource files into locale directory.
-     * @param jnlpPkgInfo The parsed jnlp package information.
-     * @param baseLocalDir  The given locale directory.
-     * @throws IOException If failed to copy these resource files.
-     */
-    public static void httpJnlpRes2localRes(JnlpPackageInfo jnlpPkgInfo,
-                                            String baseLocalDir)
-        throws IOException {
-        // Get codebase + href as the absolute jnlp file href.
-        String jnlpFileHref = jnlpPkgInfo.getJnlpFileHref();
-        String codebase =
-            jnlpFileHref.substring(0,
-                                   jnlpFileHref.lastIndexOf("/") + 1);
-        Iterator fileIterator = jnlpPkgInfo.getJnlpRefFilePaths();
-        Iterator bakFileIterator = fileIterator;
-
-        fileIterator = bakFileIterator;
-        while (fileIterator.hasNext()) {
-            String baseLocalFilePath = null;
-            URL baseUrl = null;
-            String remoteFilePath = null;
-
-            String curHref = (String) fileIterator.next();
-            try {
-                remoteFilePath = codebase + curHref;
-                baseUrl = new URL(remoteFilePath);
-                // Get baseLocalFilePath
-                curHref = curHref.replace('/', File.separatorChar);
-                String localFilePath = baseLocalDir + curHref;
-                baseLocalFilePath =
-                localFilePath.substring(0,
-                                        localFilePath.lastIndexOf(File.separatorChar));
-            } catch (MalformedURLException e) {
-                throw new IOException(
-                          "Failed to construct an URL: " + remoteFilePath);
-            }
-
-            // Get the file locally.
-            try {
-                FileOperUtility.urlFile2LocalFile(baseUrl, baseLocalFilePath);
-            } catch (IOException e) {
-                throw new IOException(
-                        "Failed to retrieve jnlp resource file locally: "
-                        + baseUrl);
-            }
+            FileOperUtility.urlFile2LocalFile(ed.getLocation(),
+                    codebase, localBase);
+            FileOperUtility.getRemoteResource(ed.getLocation(),
+                    localBase);
+        } catch (IOException ioE) {
+            ioE.printStackTrace();   
         }
     }
-
-    /**
-     * Format the path String to be ended with "/".
-     * @param path The give directory path.
-     * @return The formatted path string.
-     */
-    public static String formatPath(String path) {
-        String resultPath = null;
-        resultPath = path
-                     + (path.endsWith(File.separator) ? "" : File.separator);
-        return resultPath;
-    }
+    
+    public void visitPropertyDesc(PropertyDesc prd) {}
+    
+    public void visitJREDesc(JREDesc jrd) {}
+    
+    public void visitPackageDesc(PackageDesc pad) {}
 }

@@ -78,7 +78,7 @@ void mkdirs(char* path)
         return;
     *slash = 0;
     mkdirs(dir);
-    mkdir(dir);
+    mkdir(path);
 }
 
 /* For documentation purposes.
@@ -101,6 +101,7 @@ struct zip_header {
 int readAndWrite()
 {
     char filename[MAX_PATH_SIZE];
+    char filepath[MAX_PATH_SIZE];
     int rc;
 
     //Note: We have already read the magic number of 4 bytes.
@@ -133,17 +134,17 @@ int readAndWrite()
     }
 
     bool isDir = (filename[filenamelen-1] == '/') ? true : false;
-
-    char *pathname = dirname(filename);
+    sprintf(filepath, "%s\\%s", g_TEMP_JAVAWS_PATH, filename);
+    char *pathname = dirname(filepath);
     if (pathname != NULL) {
-        mkdirs(filename);
+        mkdirs(pathname);
         free(pathname);
     }
 
     FILE *filefp=NULL;
 
     if (!isDir) {
-        filefp = fopen(filename,"wb+");
+        filefp = fopen(filepath,"wb+");
         if (filefp == NULL) {
             //sprintf(message,"Error:fopen: while opening file <%s>\n",filename);
             return 0;
@@ -532,7 +533,7 @@ unsigned int __stdcall InstallAction ( MSIHANDLE hModule )
     {
         return 0;
     }
-
+    
     // wait for the end of the process
     WaitForSingleObject(procinfo.hProcess, INFINITE);
     CloseHandle(procinfo.hProcess);

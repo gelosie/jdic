@@ -722,13 +722,23 @@ public class MsiPackageGenerator implements PackageGenerator {
                 msidbFullPath);
         }
         String tempCabFilePath = pkgInfo.getUniqueTmpDirPath() + "Data1.cab";
-        WinMsiWrapper.winNativeCreateProcess(
-            "\"" + makecabFullPath + "\" " + tempTxtFile.toString()
-            + " " + tempCabFilePath);
-        WinMsiWrapper.winNativeCreateProcess(
-            "\"" + msidbFullPath + "\" -d " + msiFilePath +
-            " -a " + tempCabFilePath);
-
+        Process proc = Runtime.getRuntime().exec(
+                "\"" + makecabFullPath + "\" " + tempTxtFile.toString()
+                + " " + tempCabFilePath);
+        try {
+            proc.waitFor();
+        } catch (InterruptedException e) {
+            throw new IOException(e.getMessage());
+        }
+        proc = Runtime.getRuntime().exec(
+                "\"" + msidbFullPath + "\" -d " + msiFilePath +
+                " -a " + tempCabFilePath);
+        try {
+            proc.waitFor();
+        } catch (InterruptedException e) {
+            throw new IOException(e.getMessage());
+        }
+        
         //Import the localized WelcomeMsg table into the template MSI file.
         String tempWelcomeMsgFilePath = pkgInfo.getUniqueTmpDirPath()
                                         + LOCALIZED_WELCOME_MSG_FILE_NAME;
@@ -759,7 +769,7 @@ public class MsiPackageGenerator implements PackageGenerator {
         // Copy user defined raw Msi file to the temp dir as en.msi
         String enMsiFilePath = pkgInfo.getUniqueTmpDirPath() + "en.msi";
         String rawMsiFilePath = pkgInfo.getRawMsiFilePath();
-        FileOperUtility.copyFile(rawMsiFilePath, enMsiFilePath);
+        FileOperUtility.copyLocalFile(rawMsiFilePath, enMsiFilePath);
 
         //Generate the en.msi
         createTemplateMsiFile(enMsiFilePath, pkgInfo);
@@ -778,7 +788,8 @@ public class MsiPackageGenerator implements PackageGenerator {
                     pkgInfo.getUniqueTmpDirPath()
                         + JnlpConstants.LOCALES[i]
                         + ".msi";
-                FileOperUtility.copyFile(enMsiFilePath, localizedMsiFilePath);
+                FileOperUtility.copyLocalFile(enMsiFilePath,
+                        localizedMsiFilePath);
 
                 //Import the localized tables into target MSI file
                 importLocalizedTables(localizedMsiFilePath, pkgInfo, i);
@@ -992,7 +1003,7 @@ public class MsiPackageGenerator implements PackageGenerator {
         //Copy the generated bootstrapper from temp dir to target dir
         String targetBootStrapperFilePath =
             pkgInfo.getOutputDirPath() + pkgInfo.getPackageName() + ".exe";
-        FileOperUtility.copyFile(tempBootStrapperFilePath,
+        FileOperUtility.copyLocalFile(tempBootStrapperFilePath,
                                  targetBootStrapperFilePath);
         //Indicate user where the file has been generated
         File targetFile = new File(targetBootStrapperFilePath);

@@ -183,11 +183,6 @@ public class WinUtility {
                 checkFileValid(oneFilePath);
                 putIntoZip(oneFileName, oneFilePath, out);
             }
-            //Also add the jnlp file into the jar package
-            String jnlpFilePath = pkgInfo.getJnlpFilePath();
-            String jnlpFileName = (new File(jnlpFilePath)).getName();
-            checkFileValid(jnlpFilePath);
-            putIntoZip(jnlpFileName, jnlpFilePath, out);
             //Flush and close the jar package
             out.flush();
             out.close();
