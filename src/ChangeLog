@@ -1,3 +1,31 @@
+2004-10-19 Armin Chen <armin_chen@dev.java.net>
+
+    * Release 0.8.6.2
+    
+    * Fixed issue list:   
+      ID  Pri  Summary
+      ==  ===  =======   
+      87  P3   Browser component doesn't work with mozilla 1.7 on Solaris.
+      119 P3   Build JDIC Browser component against Gecko SDK and Mozilla binary on Solaris.
+
+    * Known issue list:   
+      Below are some of the most frequently mentioned known issues.
+      118  P3   Browser component doesn't work with mozilla 1.7 on Windows.
+
+2004-10-08 George Zhang <georgez@dev.java.net>
+
+    * Release 0.8.6.1
+    
+    * Fixed issue list:   
+      ID  Pri  Summary
+      ==  ===  =======   
+      87  P3   Browser component doesn't work with mozilla 1.7 on Unix.
+      119 P3   Build JDIC Browser component against Gecko SDK and Mozilla binary on Unix.
+
+    * Known issue list:   
+      Below are some of the most frequently mentioned known issues.
+      118  P3   Browser component doesn't work with mozilla 1.7 on Windows.
+
 2004-09-27 George Zhang <georgez@dev.java.net>
 
     * Release 0.8.6
@@ -17,7 +45,7 @@
       Below are some of the most frequently mentioned known issues.
       Any fixes or contributions to these issues are welcome!
 
-      87  P3   Browser component doesn't work with mozilla 1.7.
+      87  P3   Browser component doesn't work with mozilla 1.7 on Unix.
 
 2004-09-07 George Zhang <georgez@dev.java.net>
 
