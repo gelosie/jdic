@@ -30,6 +30,7 @@ import java.io.File;
 
 import org.jdesktop.jdic.init.JdicInitException;
 import org.jdesktop.jdic.init.JdicManager;
+import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 
 /**
  * A <code>WebBrowser</code> component represents a blank rectangular area of 
@@ -435,6 +436,7 @@ public class WebBrowser extends Canvas
      * Sets new HTML content. 
      * 
      * @param htmlContent the HTML content to set.
+     * @since 0.9
      */
     public void setContent(String htmlContent) {
         eventThread.fireNativeEvent(instanceNum, 
@@ -445,6 +447,7 @@ public class WebBrowser extends Canvas
      * Returns the HTML content of a document, opened in a browser.
      * 
      * @return the HTML content of a document, opened in a browser.
+     * @since 0.9
      */
     public String getContent() {
         eventThread.fireNativeEvent(instanceNum, 
@@ -466,6 +469,7 @@ public class WebBrowser extends Canvas
      * fired in <code>WebBrowserListener</code>. 
      *
      * @return the result of JavaScript execution, if there is any.
+     * @since 0.9 
      */
     public String executeScript(java.lang.String javaScript) {
         eventThread.fireNativeEvent(instanceNum, 
