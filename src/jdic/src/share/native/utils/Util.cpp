@@ -217,3 +217,33 @@ char* TuneJavaScript(const char* javaScript)
     delete [] resultJScript;    
     return retJScript;
 }
+
+/////////////////////////////////////////////////////////////////////////////
+
+// helper function for logging the given message to the predefined,
+// log file "JDIC.log" under the *current/working* directory.
+int LogMsg(const char* logmsg) 
+{
+    if (logmsg == NULL) {
+        return 0;
+    }
+
+    // Predefined JDIC log file.
+    const char* logFilePath = "JDIC.log";
+    FILE* logFile;
+
+    // Open the log file for appending messages.
+    if((logFile = fopen(logFilePath, "at")) == NULL) {
+        // Log file doesn't exist, create it. 
+        if ((logFile = fopen(logFilePath, "wt+")) == NULL) {
+            // Error creating log file.
+            return -1;
+        }
+    }
+
+    // Append the given log message to the log file.    
+    fprintf(logFile, "*** JDIC log: %s\n", logmsg);
+    fclose(logFile);
+
+    return strlen(logmsg);
+}

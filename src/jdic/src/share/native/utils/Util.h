@@ -108,6 +108,22 @@ inline void*& WBArray::operator[](int nIndex)
 #define JDIC_BROWSER_INTERMEDIATE_PROP "JDIC_BROWSER_INTERMEDIATE_PROP"
 char* TuneJavaScript(const char* javaScript);
 
+// helper function for logging the given message to the predefined,
+// log file "JDIC.log" under the *current/working* directory.
+//
+//     #include "Util.h"
+//
+//     LogMsg("Error occured ?");
+// or
+//     char logBuf[1024];
+//     sprintf(logBuf, "Error occured with message %s", errorinfo);
+//     LogMsg(logBuf);
+//
+// Return Value:
+//   On success, the total number of characters logged is returned.
+//   On error, -1 is returned.
+int LogMsg(const char* logmsg);
+
 #endif // _util_h
 
 
