@@ -1,148 +1,283 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
 <HTML>
+
 <HEAD>
+
 	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+
 	<TITLE>Contributing Patches</TITLE>
+
 	<META NAME="GENERATOR" CONTENT="StarOffice 7  (Win32)">
+
 	<META NAME="CREATED" CONTENT="20031215;1343119">
+
 	<META NAME="CHANGEDBY" CONTENT="Roger Brinkley">
+
 	<META NAME="CHANGED" CONTENT="20040528;16471845">
+
 </HEAD>
+
 <BODY LANG="en-US" DIR="LTR">
+
 <H1><A NAME="patches"></A>Contributing Patches</H1>
-<P>Well-described, easy-to-apply patches are a pleasure for a
-developer to receive and go a long way towards making the JJDIC open
-source components more stable and powerful, so thank you in advance
-for contributing them! 
-</P>
-<P>Making and applying a patch</P>
-<P>First, make sure you are making changes in the most recent version
-of the sources - for this, it is best to use CVS to check out the
-source (usually on the CVS trunk; sometimes the most active release
-branch - ask if unsure), make your modifications (but do not check
-them in), and then run (example for Unix, other operating systems
-similar):</P>
+
+<P>Well-described, easy-to-apply patches are a pleasure for a developer to receive 
+  and go a long way towards making the JDIC more stable and powerful, so thank 
+  you in advance for contributing them! </P>
+
+<P><b>Making and applying a patch</b></P>
+
+<P>First, make sure you are making changes in the most recent version of the sources. 
+  For this, it is best to use CVS to check out the source (usually on the CVS 
+  trunk; sometimes the most active release branch - ask if unsure), make your 
+  modifications (but do not check them in), and then run (example for Unix, other 
+  operating systems similar):</P>
+
 <PRE>$ cd /sources/javadesktop
+
 $ ls
+
 shows jdic
-$ cvs update jdic ...or wherever your changes are; may be &gt;1 module
+
+$ cvs update jdic<i> ...or wherever your changes are; may be &gt;1 module</i>
+
 make sure you are working against current sources
+
 $ cvs diff jdic
+
 sanity-check the change
+
 $ cvs -f diff -u -N jdic &gt; /tmp/my-patch.diff
+
 sanity-check the patch</PRE><P>
+
 If you are adding or modifying binary files, it is best to attach the
+
 new or modified binary files separately and exclude them from the
+
 textual patch.</P>
+
 <P>Common patch mistakes include:</P>
+
 <OL>
+
 	<LI><P>Forgetting <CODE>-u</CODE>. Default-format diffs show no
+
 	context and will be <EM>hard to read and apply</EM>, especially if
+
 	they were made against somewhat out-of-date sources. <CODE>-c</CODE>
+
 	is also OK but <CODE>-u</CODE> is most common.</P>
+
 	<LI><P>Forgetting about new (added) files. Run <CODE>cvs add</CODE>
+
 	(but do not commit!) to make sure CVS thinks of them as added as
+
 	part of the patch, and remember <CODE>-N</CODE> which includes them
+
 	in the patch. Also run <CODE>cvsremove</CODE> (but do not commit)
+
 	when a patch should delete some files.</P>
+
 	<LI><P>Using other switches such as <CODE>-t</CODE> which can make
+
 	the patch difficult to apply.</P>
+
 	<LI><P>Starting from the wrong directory. <EM>Always</EM> make
+
 	patches from the root of the source tree to avoid confusion.</P>
+
 	<LI><P>Manually editing patches. You may be tempted to concatenate
+
 	patches, or manually edit them to exclude things you do not really
+
 	want to submit. <EM>Do not do this.</EM> The patch may be corrupted
+
 	as a result. Fix your sources to reflect what you want the result to
+
 	be, and run a fresh diff. Include all affected files in the diff
+
 	command, even if they are in different modules.</P>
+
 	<LI><P>Including extraneous changes. Look over your patch to make
+
 	sure every change relates to the fix you are making, and is
+
 	necessary. Remember other people will read your patch before
+
 	applying it! Do not make gratuitous whitespace changes. Do not
+
 	reformat existing code you are not modifying.</P>
+
 	<LI><P>Using the plain diff command. Use <CODE>cvs diff</CODE> to
+
 	ensure that exact information about repository path and original
+
 	version of the patched files is retained.</P>
+
 	<LI><P>Using old sources. Patches made against obsolete sources may
+
 	be hard to use. Make sure you are using recent versions of all
+
 	source file (<CODE>cvs&nbsp;update</CODE> first). If you must submit
+
 	several patches against the same files, be sure to indicate if they
+
 	must be applied in some particular order.</P>
+
 </OL>
+
 <P>A properly made patch is easy to apply by someone with commit
+
 access who has reviewed it. Use of the Unix <CODE>patch</CODE> tool
+
 is recommended; Windows users should be able to get it from the
+
 Cygwin tools distribution.</P>
+
 <PRE>save patch to disk, say /tmp/suggested-patch.diff
+
 $ cd /sources/javadesktop
+
 $ patch -p0 --dry-run &lt; /tmp/suggested-patch.diff
+
 make sure no errors are reported - this just tests the patch format
+
 $ patch -p0 &lt; /tmp/suggested-patch.diff
+
 $ cvs diff jdic/ or whatever part of sources are affected
+
 sanity-check diff, compare to patch (should be same or similar)
+
 test, do a build, commit as usual</PRE><P>
+
 If the &quot;dry run&quot; fails, you may need to use additional
+
 options to <CODE>patch</CODE>, or at worst just apply the patch
+
 manually. Do not forget to sanity-check file additions and removals!
+
 You probably need to use <CODE>cvs add</CODE> and <CODE>cvsremove</CODE>
+
 to complete these.</P>
-<P>Making a patch available and accepting it</P>
+
+<P><b>Making a patch available and accepting it</b></P>
+
 <P>The best way to submit a patch is through Issue Tracking. In some
+
 cases you could send it as a MIME attachment to the proper <A HREF="mailinglists.html">mailing
+
 list</A> if it is a short patch and you are more expecting it to
+
 looked at for comments than applied as is. But usually patches ought
+
 to be put in Issue Tracking.</P>
+
 <P>First, if an issue describing the problem (or feature) you are
+
 trying to solve already exists, use it. If it does not, create an
+
 issue, and mark it to be of type <CODE>PATCH</CODE>. The issue should
+
 include at least the following:</P>
+
 <UL>
+
 	<LI><P>The patch file itself, of course - as an Issue Tracking
+
 	attachment, <EM>not</EM> pasted into the <B>Description</B> field.
+
 	(Line-wrapped or reformatted patches are not usable. They must be
+
 	exactly as produced by <CODE>cvs diff</CODE>.)</P>
+
 	<LI><P>A description of what problem you are trying to fix, if
+
 	possible with steps to reproduce it.</P>
+
 	<LI><P>A description of what the behavior should be with the patch
+
 	in place. Ideally also steps to demonstrate that the patch fixes the
+
 	described problem.</P>
+
 	<LI><P>If reasonable, a description of how the patch works.</P>
+
 	<LI><P>If a significant amount of code is involved, it is safest to
+
 	mention in the issue comments that you agree to let the patch be
+
 	used under the project's license as part of the jdesktop component's
+
 	code. If you are adding new source files, they must be marked with
+
 	the project's license notice or the patch cannot be accepted.</P>
+
 	<LI><P>If this is your first code submission to jdesktop , you must
+
 	fill in a Joint Copyright Assignment - see <A HREF="resource/Joint_Copy_Assign_JDIC_21May2004.pdf">the
+
 	JCA Policy</A> page for more info.</P>
+
 	<LI><P>The patch submitter should be either the submitter of the
+
 	issue, or add him or herself to the CC list of the issue (format:
+
 	<CODE><I>loginname</I></CODE>). This ensures that the submitter will
+
 	see any comments or changes made to the issue and be able to respond
+
 	if needed.</P>
+
 </UL>
+
 <P>The developer responsible for the section of code affected should
+
 either apply the patch and mark the issue <CODE>FIXED</CODE>; or add
+
 a comment with an objection if the patch does not seem safe, does not
+
 appear to fix the problem, or there is not really a problem to begin
+
 with. <SPAN STYLE="background: #ffff00">Developers </SPAN><STRONG><SPAN STYLE="background: #ffff00">must
+
 remember</SPAN></STRONG><SPAN STYLE="background: #ffff00"> to record
+
 the authors of patches they apply for purposes of generating credits
+
 lists. Use the file </SPAN><SAMP><SPAN STYLE="background: #ffff00">core/release/CREDITS.html</SPAN></SAMP><SPAN STYLE="background: #ffff00">
+
 for this.</SPAN> Developers must also confirm that the contributor
+
 has filled in and submitted a JCA before commiting their patch - see
+
 <A HREF="resource/Joint_Copy_Assign_JDIC_21May2004.pdf">the JCA
+
 Policy</A> page for more info.</P>
+
 <P>Notifications of any changes to Issue Tracking, as well as CVS
+
 checkins, are automatically sent to the appropriate bug and CVS
+
 mailing lists, so you can monitor if the patch has really been
+
 applied. Make sure you subscribe to at least the CVS and bug mailing
+
 lists for the module you are working on - see the <A HREF="mailinglists.html">mailing
+
 lists</A> page for details.</P>
+
 <P>Of course, if you do not know exactly how to fix a problem, but
+
 have an idea that it is being caused by a certain section of code
+
 somehow, you can just mention what you know on the developer list and
+
 maybe someone else will know how to fix it. And please <A HREF="issues.html">report
+
 a bug</A> about it so it does not get lost.</P>
+
 </BODY>
+
 </HTML>
