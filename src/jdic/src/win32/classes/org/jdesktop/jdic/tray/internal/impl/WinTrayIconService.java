@@ -109,10 +109,17 @@ public class WinTrayIconService implements TrayIconService{
 
     private native void updateNativeIcon(long hIcon, int id, byte[] tooltip);
     
+    private native void showBalloonMessage(long hIcon, int id, byte[] caption, byte[] text, int type);
+    
     private native void deleteHIcon(long hIcon);
 
     private static native void removeIcon(int id);
-
+    
+    public void showBalloonMessage(String caption, String text, int type){
+    	byte[] batitle = caption == null ? new byte[0]: caption.getBytes();
+    	byte[] bacontent = text == null ? new byte[0] : text.getBytes();
+    	showBalloonMessage(hicon, iconID, batitle, bacontent, type);
+    }
     public void addNotify() {
         observer = new AnimationObserver();
         updateIcon(null);
@@ -133,6 +140,7 @@ public class WinTrayIconService implements TrayIconService{
 
 				public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
 					popupParentFrame.setVisible(false);
+					popupParentFrame.toBack();
 				}
 
 				public void popupMenuCanceled(PopupMenuEvent e) {

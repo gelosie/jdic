@@ -178,5 +178,24 @@ public class TrayIcon {
 
         return p;
     }
+    
+    /**
+     *  Message type, used by balloon message.
+     */
+    public static final int INFO_MESSAGE_TYPE = 0;
+    public static final int ERROE_MESSAGE_TYPE = 1;
+    public static final int WARNING_MESSAGE_TYPE = 2;
+    public static final int NONE_MESSAGE_TYPE = 3;
 
+    /**
+     * 
+     * @param caption - the caption displayed above the text, usually in bold; may be null
+     * @param text - the text displayed for the particular message; may be null
+     * @param type - indicating the message type
+     * @throws NullPointerException  - if both caption and text are null
+     */
+    public void displayMessage(String caption, String text, int type)throws NullPointerException{
+    	if(tis != null)
+    		tis.showBalloonMessage(caption, text, type);
+    }
 }
