@@ -21,21 +21,21 @@ package org.jdesktop.jdic.browser;
 
 /**
  * Utility class for webbrowser. This class will 
- * 		- Get the native browser path
- *      - Check if the default browser is Mozilla
- * 		- Set the native env variable
+ *   - Get the native browser path
+ *   - Check if the default browser is Mozilla
+ *   - Set the native env variable
  * 
  * @author  Paul Huang
  * @version 0.1, August 20, 2004
  */
 public class WebBrowserUtil {
-	private static String browserPath = null;
-	private static String osName = System.getProperty("os.name").toLowerCase();
+    private static String browserPath = null;
+    private static String osName = System.getProperty("os.name").toLowerCase();
 
-	static {
+    static {
         System.loadLibrary("jdic");
     }
-	
+    
     /* native functions */
     private static native String nativeGetBrowserPath();
     static native void nativeSetEnv();
@@ -45,10 +45,10 @@ public class WebBrowserUtil {
      *  @return the path of the default browser in the current system
      */
     public static String getBrowserPath() {
-    	if (browserPath == null) {
-    		browserPath = nativeGetBrowserPath();
-    	}
-    	return browserPath;
+        if (browserPath == null) {
+            browserPath = nativeGetBrowserPath();
+        }
+        return browserPath;
     }
     
     /**
@@ -57,17 +57,17 @@ public class WebBrowserUtil {
      * is set as the default browser.
      */
     public static boolean isDefaultBrowserMozilla() {
-    	if ((osName.indexOf("solaris") >= 0) ||
-    	    (osName.indexOf("linux") >= 0) ) {
-    		return true;
-    	} else {
-        	String nativeBrowserPath = getBrowserPath();
-        	//Check "iexplorer", as Mozilla 1.7 might be "firefox" 
-        	if (nativeBrowserPath.indexOf("iexplore") >= 0) {
-        		return false;
-        	} else {
-            	return true;        		
-        	}
-    	}
+        if ((osName.indexOf("solaris") >= 0) ||
+            (osName.indexOf("linux") >= 0) ) {
+            return true;
+        } else {
+            String nativeBrowserPath = getBrowserPath();
+            //Check "iexplorer", as Mozilla 1.7 might be "firefox" 
+            if (nativeBrowserPath.indexOf("iexplore") >= 0) {
+                return false;
+            } else {
+                return true;                
+            }
+        }
     }
 }
