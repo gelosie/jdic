@@ -154,10 +154,10 @@ directory.<br>
   </ul>
   <p> </p>
   <li><b>Create a source package.</b><br>
-Create a source zip (or tarball) package with source files with the
-release tag. One approach is to check out the JDIC source with the
-release tag to an empty local folder, then create the zip (or tarball)
-package with that folder. The source package name should be in the form
+Create a source zip (or tarball) package with source files for this release. Use
+    command &quot;<b>cvs export -r &lt;release tag&gt; jdic/src</b>&quot; to
+    export the source files from the CVS repository into an empty local folder, then create the zip (or tarball)
+package with the &quot;<b>src</b>&quot; folder. The source package name should be in the form
 "<b>jdic-major.minor.micro-src.zip</b>", such as "jdic-0.8.4-src.zip".
     <p> </p>
   </li>
