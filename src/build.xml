@@ -104,6 +104,12 @@ Top-level target:
     <delete includeEmptyDirs="true" failonerror="false">
       <fileset dir="${dist.dir}"/>
     </delete>
+
+    <!-- Clean the JDIC API distribution -->
+    <ant dir="jdic" target="clean"/>
+    
+    <!-- Clean the JDIC Packager distribution -->
+    <ant dir="packager" target="clean"/>
   </target>
 
 </project>
