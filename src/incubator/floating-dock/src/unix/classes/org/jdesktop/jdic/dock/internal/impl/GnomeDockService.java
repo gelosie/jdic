@@ -38,6 +38,7 @@ import java.lang.reflect.Constructor;
 public class GnomeDockService implements DockService {
 
     EmbeddedFrame frame;
+    Dimension size;
     static long window_id;
     static GnomeDockService gds;
 
@@ -199,14 +200,16 @@ public class GnomeDockService implements DockService {
         return window_id;
     }
 
-    public void setSize(Dimension size)
+    public void setSize(Dimension s)
     {
-	adjustSizeHints(getWindow(), size.width, size.height);
-        frame.reshape(0, 0, size.width, size.height);
+	size = s;
+	adjustSizeHints(getWindow(), s.width, s.height);
+        frame.reshape(0, 0, s.width, s.height);
     }
 
     void configureWindow(int x, int y, int w, int h) 
     {
+	size = new Dimension(w, h);
         frame.setSize(w, h);
         frame.validate();
      //   System.out.println("configureWindow: frame = " + frame + " configure width = " + width + " height = " + height);
@@ -223,7 +226,7 @@ public class GnomeDockService implements DockService {
 
     public Dimension getSize()
     {
-	return new Dimension();
+	return size;
     }
 
     public void add(Component c)
@@ -270,5 +273,4 @@ public class GnomeDockService implements DockService {
     public void removeWindowListener(WindowListener l)
     {
     }
-
 }
