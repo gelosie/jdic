@@ -20,10 +20,6 @@
 package org.jdesktop.jdic.init;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 
 /**
  * Utility class for JDIC initialization.

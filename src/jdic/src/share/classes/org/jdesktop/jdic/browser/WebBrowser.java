@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.awt.*;
 import java.awt.event.*;
 import java.security.*;
-import java.io.File;
 
 import org.jdesktop.jdic.init.JdicInitException;
 import org.jdesktop.jdic.init.JdicManager;
@@ -56,24 +55,6 @@ import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
  */
 public class WebBrowser extends Canvas
 {
-    private static final String EMBED_BINARY_WINDOWS_IE = "IeEmbed.exe";
-    private static final String EMBED_BINARY_WINDOWS_MOZILLA = "MozEmbed.exe";
-    private static final String EMBED_BINARY_LINUX_GTK1 
-        = "mozembed-linux-gtk1.2";
-    private static final String EMBED_BINARY_LINUX_GTK2 
-        = "mozembed-linux-gtk2";
-    private static final String EMBED_BINARY_FREEBSD_GTK1 
-        = "mozembed-freebsd-gtk1.2";
-    private static final String EMBED_BINARY_FREEBSD_GTK2 
-        = "mozembed-freebsd-gtk2";
-    private static final String EMBED_BINARY_SOLARIS_GTK1 
-        = "mozembed-solaris-gtk1.2";
-    private static final String EMBED_BINARY_SOLARIS_GTK2 
-        = "mozembed-solaris-gtk2";
-
-    // Native browser embedding binary: IeEmbed.exe or MozEmbed.exe on Windows, 
-    // mozembed-<os>-gtk<version> on Linux/Unix.
-    private static String embedBinary;
     private Status status = new Status();
     private MyFocusListener focusListener = new MyFocusListener();
     // eventThread should be initialized after JdicManager.initShareNative() 
@@ -83,7 +64,6 @@ public class WebBrowser extends Canvas
     private int instanceNum;
     private static int lastInstanceNum = 0;
     private static boolean isRunningOnWindows = false;
-    private static boolean isDebugOn = false;
 
     static {
         // Add the initialization code from package org.jdesktop.jdic.init.
@@ -128,7 +108,8 @@ public class WebBrowser extends Canvas
         eventThread.attachWebBrowser(this);
 
         if (0 == instanceNum) {
-            embedBinary = getEmbedBinaryName();
+            // Get and set embedded browser native binary.
+            WebBrowserUtil.getEmbedBinaryName();
             
             eventThread.start();
             eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_INIT);
@@ -142,64 +123,6 @@ public class WebBrowser extends Canvas
         addFocusListener(focusListener);
     }
 
-    /**
-     * Returns the name of the native browser embedding binary. If no default
-     * browser is set, null is returned.  
-     */
-    public static String getEmbedBinaryName() {
-        if (embedBinary != null && embedBinary.length() > 0)
-            return embedBinary;
-
-        String embedBin = null;
-        String nativePath = WebBrowserUtil.getBrowserPath();
-        if (null == nativePath) {
-            WebBrowser.trace("No default browser is found. " +
-                    "Or environment variable MOZILLA_FIVE_HOME is not set to " +
-                    "a Mozilla binary path if you are on Linux/Unix platform.");
-            return null; 
-        }
-
-        String osname = System.getProperty("os.name");
-        if (osname.indexOf("Windows") >= 0) {
-            String windowspath = nativePath;
-            int index = windowspath.indexOf("mozilla.exe");
-            if (index >= 0)
-                embedBin = EMBED_BINARY_WINDOWS_MOZILLA;
-            else
-                embedBin = EMBED_BINARY_WINDOWS_IE;
-        }
-        else {
-            String libwidgetpath = nativePath + File.separator +
-                                   "components" + File.separator + 
-                                   "libwidget_gtk2.so";
-            File file = new File(libwidgetpath);
-            if (!file.exists()) {
-                if (osname.indexOf("Linux") >= 0) {
-                    embedBin = EMBED_BINARY_LINUX_GTK1;
-                }
-                else if (osname.indexOf("SunOS") >= 0) {
-                    embedBin = EMBED_BINARY_SOLARIS_GTK1;
-                }
-                else if (osname.indexOf("FreeBSD") >= 0) {
-                    embedBin = EMBED_BINARY_FREEBSD_GTK1;
-                }
-            }
-            else {
-                if (osname.indexOf("Linux") >= 0) {
-                    embedBin = EMBED_BINARY_LINUX_GTK2;
-                }
-                else if (osname.indexOf("SunOS") >= 0) {
-                    embedBin = EMBED_BINARY_SOLARIS_GTK2;
-                }
-                else if (osname.indexOf("FreeBSD") >= 0) {
-                    embedBin = EMBED_BINARY_FREEBSD_GTK2;
-                }
-            }
-        }
-        
-        return embedBin;
-    }
-    
     /**
      * Creates the peer for this WebBrowser component. The peer allows us to 
      * modify the appearance of the WebBrowser component without changing its 
@@ -234,7 +157,7 @@ public class WebBrowser extends Canvas
     void dispatchWebBrowserEvent(WebBrowserEvent e) {
         int eid = e.getID();
 
-        WebBrowser.trace("Got event from NativeEventThread " + eid);
+        WebBrowserUtil.trace("Got event from NativeEventThread " + eid);
 
         // native browser needs immediate return value for these two events.
         String msg = "@" + instanceNum + "," + eid + ",";
@@ -263,17 +186,17 @@ public class WebBrowser extends Canvas
             String data = e.getData();
             if (data.startsWith("forward")) {
                 status.forwardEnabled = data.substring(8).equals("1");
-                WebBrowser.trace("Forward State changed = " 
+                WebBrowserUtil.trace("Forward State changed = " 
                         + status.forwardEnabled);
             }
             else if (data.startsWith("back")) {
                 status.backEnabled = data.substring(5).equals("1");
-                WebBrowser.trace("Back State changed = " + status.backEnabled);
+                WebBrowserUtil.trace("Back State changed = " + status.backEnabled);
             }
             return;
         }
         else if (WebBrowserEvent.WEBBROWSER_FOCUS_REQUEST == eid) {
-            WebBrowser.trace("Got Event from brower: Focus Rquest!");
+            WebBrowserUtil.trace("Got Event from brower: Focus Rquest!");
             requestFocus();
             return;
         }
@@ -494,14 +417,7 @@ public class WebBrowser extends Canvas
      *          otherwise debug message output is disabled.
      */
     public static void setDebug(boolean b) {
-        isDebugOn = b;
-    }
-
-    /**
-     * Gets the boolean which indicates is debug on or off
-     */
-    static boolean getDebug () {
-        return isDebugOn;
+        WebBrowserUtil.enableDebugMessages(b);        
     }
 
     /**
@@ -525,7 +441,7 @@ public class WebBrowser extends Canvas
         if (null == url)
             return true;
 
-        WebBrowser.trace("URL = " + url.toString());
+        WebBrowserUtil.trace("URL = " + url.toString());
         SecurityManager security = System.getSecurityManager();
         if (security != null) {
             try {
@@ -555,8 +471,8 @@ public class WebBrowser extends Canvas
 
     private boolean waitForResult() {
         if (! status.initialized) {
-            WebBrowser.trace("You can't call this method before WebBrowser " +
-                    "initialized!");
+            WebBrowserUtil.trace("You can't call this method before " +
+                    "WebBrowser is initialized!");
             return false;
         }
 
@@ -581,12 +497,6 @@ public class WebBrowser extends Canvas
     /* native functions */
     private native int nativeGetWindow(String javaHome);
     
-    /* debug helper */
-    static void trace(String msg) {
-        if (isDebugOn)
-            System.out.println("*** Jtrace: " + msg);
-    }
-
     /**
      * An inner class which is used for retrieving the WebBrowser's properties,
      * such as the initialization status, back and forward status.
@@ -648,13 +558,13 @@ public class WebBrowser extends Canvas
 
     class MyFocusListener implements FocusListener {
         public void focusGained(FocusEvent e) {
-            WebBrowser.trace("\nMyFocusListener: focusGained\n");
+            WebBrowserUtil.trace("\nMyFocusListener: focusGained\n");
             eventThread.fireNativeEvent(instanceNum, 
                     NativeEventData.EVENT_FOCUSGAINED);
         }
 
         public void focusLost(FocusEvent e) {
-            WebBrowser.trace("\nMyFocusListener: focusLost\n");
+            WebBrowserUtil.trace("\nMyFocusListener: focusLost\n");
             eventThread.fireNativeEvent(instanceNum, 
                     NativeEventData.EVENT_FOCUSLOST);
         }

@@ -22,10 +22,9 @@ package org.jdesktop.jdic.init;
 
 import java.io.File;
 import java.net.URL;
-import org.jdesktop.jdic.browser.WebBrowserUtil;
-import org.jdesktop.jdic.browser.WebBrowser;
 import java.lang.reflect.Field;
 
+import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 
 /**
  * Initialization manager for JDIC to set the environment variables or initialize 
@@ -187,7 +186,7 @@ public class JdicManager {
                     InitUtility.preAppendEnv("PATH", binaryPath);
                     // When running on webstart, the browser binary will lose
                     // "x" permission after extracted from .jar file.
-                    String embedBinary = WebBrowser.getEmbedBinaryName();
+                    String embedBinary = WebBrowserUtil.getEmbedBinaryName();
                     Runtime.getRuntime().exec("chmod a+x "+ 
                             binaryPath + File.separator + embedBinary);                    
                 } else {               

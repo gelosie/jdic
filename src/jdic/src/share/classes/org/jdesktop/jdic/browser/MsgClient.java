@@ -27,6 +27,8 @@ import java.nio.charset.*;
 import java.net.*;
 import java.util.*;
 
+import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
+
 /**
  * An internal class that implements a socket client.
  * 
@@ -92,7 +94,7 @@ class MsgClient {
             sc.close();
             sc = null;
             serverAddr = new InetSocketAddress("localhost", port);
-            WebBrowser.trace("found a free port: " + port);
+            WebBrowserUtil.trace("found a free port: " + port);
         } catch (Exception e) {
         }
     }
@@ -104,7 +106,7 @@ class MsgClient {
     void connect() throws IOException, InterruptedException {
         int retry;
         for (retry = 0; retry < MAX_RETRY; retry++) {
-            WebBrowser.trace("connecting ... " + retry);
+            WebBrowserUtil.trace("connecting ... " + retry);
 
             try {
                 channel = SocketChannel.open();
@@ -133,7 +135,7 @@ class MsgClient {
                 }
                 break;
             } catch (Exception e) {
-                WebBrowser.trace(e.toString());
+                WebBrowserUtil.trace(e.toString());
                 channel.close();
                 channel = null;
                 try {
@@ -148,7 +150,7 @@ class MsgClient {
             throw new InterruptedException("Maximum retry number reached!");
         }
 
-        WebBrowser.trace("connected");
+        WebBrowserUtil.trace("connected");
         channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
     }
 
@@ -166,7 +168,7 @@ class MsgClient {
             // a short message. 
             recvBuffer = recvBuffer.substring(pos + 
                     (new String(MSG_DELIMITER).length()));
-            WebBrowser.trace("get a complete short message: " + msg);            
+            WebBrowserUtil.trace("get a complete short message: " + msg);            
             return msg;            
         } 
 
@@ -182,7 +184,7 @@ class MsgClient {
                     eventData.type, eventData.stringValue));
             recvBuffer = recvBuffer.substring(pos + 
                     (new String(MSG_DELIMITER_HEAD).length()));
-            WebBrowser.trace("get a head message piece: " 
+            WebBrowserUtil.trace("get a head message piece: " 
                     + eventData.stringValue);            
             return null;
         } else {           
@@ -199,7 +201,7 @@ class MsgClient {
                         msgPieces.add(newElement);
                         recvBuffer = recvBuffer.substring(pos + 
                                 (new String(MSG_DELIMITER_MIDDLE).length()));                       
-                        WebBrowser.trace("got a middle message piece: " + 
+                        WebBrowserUtil.trace("got a middle message piece: " + 
                                 eventData.stringValue);
                         return null;
                     } else if (pos == recvBuffer.indexOf(MSG_DELIMITER_END)) {
@@ -210,9 +212,9 @@ class MsgClient {
                         msgPieces.remove(element);
                         recvBuffer = recvBuffer.substring(pos + 
                                 (new String(MSG_DELIMITER_END).length()));
-                        WebBrowser.trace("got an end message piece: " + 
+                        WebBrowserUtil.trace("got an end message piece: " + 
                                 eventData.stringValue);
-                        WebBrowser.trace("got a complete long message: " + 
+                        WebBrowserUtil.trace("got a complete long message: " + 
                                 element.stringValue + eventData.stringValue);
                                                 
                         return (msg);                        
@@ -240,11 +242,13 @@ class MsgClient {
                     decoder.decode(buffer, charBuffer, false);
                     charBuffer.flip();
                     recvBuffer += charBuffer;
-                    WebBrowser.trace("read data from socket: " + recvBuffer);
+                    WebBrowserUtil.trace("read data from socket: " 
+                            + recvBuffer);
                 }
                 else if (key.isWritable()) {
                     if (sendBuffer.length() > 0) {
-                        WebBrowser.trace("send data to socket: " + sendBuffer);
+                        WebBrowserUtil.trace("send data to socket: " 
+                                + sendBuffer);
                         ByteBuffer buf 
                             = ByteBuffer.wrap(sendBuffer.getBytes(charsetName));
                         keyChannel.write(buf);

@@ -26,6 +26,8 @@ import javax.swing.SwingUtilities;
 import java.security.*;
 import java.io.*;
 
+import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
+
 /**
  * An internal class for dealing with the communication between WebBrowser 
  * & native browser.
@@ -61,19 +63,19 @@ class NativeEventThread extends Thread
     public void run() {
         // create native browser process
         try {
-            if (WebBrowser.getEmbedBinaryName() == null) { 
+            if (WebBrowserUtil.getEmbedBinaryName() == null) { 
                 setBrowsersInitFailReason("Embedding browser binary is not set");
-                WebBrowser.trace("Embedding browser binary is not set, " +
+                WebBrowserUtil.trace("Embedding browser binary is not set, " +
                         "system exit");
                 return;
             }     
             String jvmVendor = System.getProperty("java.vm.vendor");
-            if (WebBrowser.getEmbedBinaryName().endsWith("IeEmbed.exe") 
+            if (WebBrowserUtil.getEmbedBinaryName().endsWith("IeEmbed.exe") 
                     && jvmVendor.startsWith("Sun"))
                 WebBrowserUtil.nativeSetEnv();
-            final String cmd = WebBrowser.getEmbedBinaryName() + " -port=" 
+            final String cmd = WebBrowserUtil.getEmbedBinaryName() + " -port=" 
                 + messenger.getPort();
-            WebBrowser.trace("Executing " + cmd);
+            WebBrowserUtil.trace("Executing " + cmd);
             AccessController.doPrivileged(
                 new PrivilegedExceptionAction() {
                     public Object run() throws IOException {
@@ -117,7 +119,7 @@ class NativeEventThread extends Thread
 
             try {
                 int exitValue = nativeBrowser.exitValue();
-                WebBrowser.trace("Native browser died.");
+                WebBrowserUtil.trace("Native browser died.");
                 return;
             } catch (IllegalThreadStateException e) {
             }
@@ -125,7 +127,7 @@ class NativeEventThread extends Thread
             try {
                 processEvents();
             } catch (Exception e) {
-                WebBrowser.trace("Exception occured when processEvent: " 
+                WebBrowserUtil.trace("Exception occured when processEvent: " 
                         + e.getMessage());
                 return;
             }
@@ -134,7 +136,7 @@ class NativeEventThread extends Thread
                 messenger.portListening();
                 processIncomingMessage(messenger.getMessage());
             } catch (Exception e) {
-                WebBrowser.trace("Exception occured when portListening: " 
+                WebBrowserUtil.trace("Exception occured when portListening: " 
                         + e.getMessage());
                 return;
             }
@@ -181,7 +183,7 @@ class NativeEventThread extends Thread
             return false;
         }
 
-        WebBrowser.trace("Got event: type = " + nativeEvent.type + 
+        WebBrowserUtil.trace("Got event: type = " + nativeEvent.type + 
                 " instance = " + nativeEvent.instance);
 
         String msg = nativeEvent.instance + "," + nativeEvent.type + ",";
@@ -203,7 +205,7 @@ class NativeEventThread extends Thread
             case NativeEventData.EVENT_CREATEWINDOW:
                 int nativeWindow = browser.getNativeWindow();
                 if (0 == nativeWindow) {
-                    WebBrowser.trace("Can't get native window handle, " +
+                    WebBrowserUtil.trace("Can't get native window handle, " +
                             "please make sure the env variable JAVA_HOME has " +
                             "been set.");
                 }
@@ -258,8 +260,8 @@ class NativeEventThread extends Thread
         if (eventData == null) 
             return;
 
-        WebBrowser.trace("Got event from browser " + eventData.instance + ", " 
-                + eventData.type + ", " + eventData.stringValue);
+        WebBrowserUtil.trace("Got event from browser " + eventData.instance 
+                + ", " + eventData.type + ", " + eventData.stringValue);
 
         if (WebBrowserEvent.WEBBROWSER_INIT_FAILED == eventData.type) {
             setBrowsersInitFailReason(eventData.stringValue);
@@ -302,8 +304,8 @@ class NativeEventThread extends Thread
         try {
             SwingUtilities.invokeLater(dispatchEvent);
         } catch (Exception e) {
-            WebBrowser.trace("Exception occured when invokeLater. ErrMsg is " 
-                    + e.getMessage());
+            WebBrowserUtil.trace("Exception occured when invokeLater. " +
+                    "ErrMsg is " + e.getMessage());
         }
     }
 
