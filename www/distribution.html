@@ -1,14 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
-	<title>Build A JDIC Distribution</title>
-	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
-	<meta NAME="AUTHOR" CONTENT=" ">
-	<meta NAME="CREATED" CONTENT="20000519;14440300">
-	<meta NAME="CHANGEDBY" CONTENT=" ">
-	<meta NAME="CHANGED" CONTENT="20000901;17584900">
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=iso-8859-1">
+  <title>Build A JDIC Distribution</title>
+  <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+  <meta name="AUTHOR" content=" ">
+  <meta name="CREATED" content="20000519;14440300">
+  <meta name="CHANGEDBY" content=" ">
+  <meta name="CHANGED" content="20000901;17584900">
 </head>
-
 <body>
 <!-- etracker PARAMETER 2.0.1 -->
 <script type="text/javascript">
@@ -17,10 +18,7 @@ var et_ssl = 1;
 var et_pagename = "JDIC%20Readme";
 var et_areas = "";
 var et_ilevel = 0;
-</script>
-<!-- etracker PARAMETER END -->
-
-<!-- etracker CODE 2.0.6 -->
+</script><!-- etracker PARAMETER END --><!-- etracker CODE 2.0.6 -->
 <script type="text/javascript">
 var et_server="http://www.etracker.de";
 var et_sslserver="https://www.etracker.de";
@@ -51,140 +49,176 @@ et_pagename);tc=new Date();document.write("<a target='_blank' href='"+et_referer
 param+"'><img border='0' alt='' src='"+(et_ssl==1?et_sslserver:et_server)+
 "/cnt.php?java=y&amp;tc="+tc.getTime()+"&amp;et="+param+"&amp;et_ilevel="+
 et_ilevel+et_easy+et_p+et_a+cex+et_t+et_lpage+et_sw+et_sc+et_ref+et_pl+"'/>"+
-"<\/a>");}</script><script type="text/javascript1.2">et_sw=screen.width;et_sc=
+"<\/a>");}</script>
+<script type="text/javascript1.2">et_sw=screen.width;et_sc=
 navigator.appName!='Netscape'?screen.colorDepth:screen.pixelDepth;</script>
-<script type="text/javascript">et_eC('ir339g');</script>
-
-<!-- etracker CODE NOSCRIPT -->
-<noscript>
-<a target="_blank" href="http://www.etracker.de/soverview.php?c=1&amp;et=ir339g">
-<img border="0" alt="" src="https://www.etracker.de/cnt.php?et=ir339g&amp;java=n&amp;
+<script type="text/javascript">et_eC('ir339g');</script><!-- etracker CODE NOSCRIPT -->
+<noscript><a target="_blank"
+href="http://www.etracker.de/soverview.php?c=1&amp;et=ir339g">
+<img border="0" alt=""
+src="https://www.etracker.de/cnt.php?et=ir339g&amp;java=n&amp;
 et_easy=0&amp;et_pagename=JDIC%20Readme&amp;et_areas=&amp;et_ilevel=&amp;
 et_target=&amp;et_lpage=&amp;et_trig="/></a>
 </noscript>
 <!-- etracker CODE END -->
 <h2 align="center">Build A JDIC Distribution</h2>
-This is the page for the JDIC Release Engineer to build a JDIC distribution and make
+This is the page for the JDIC Release Engineer to build a JDIC
+distribution and make
 it public. Below are the detailed steps.
 <ol>
   <li><b>Update the version and release information.<br>
-    </b>For a release with a new major or minor number, update below version and
-    release information in the CVS repository.
+    </b>For a release with a new major or minor number, update below
+version and release information in the CVS repository.
     <ul>
-      <li>Update the &quot;version&quot; and &quot;release&quot; property values in
-    <code>&lt;JDIC source directory&gt;/jdic/build.xml</code>, <code> &lt;JDIC source
-    directory&gt;/packager/build.xml</code> files.</li>
-      <li>Update the PRODUCT_VERSION and PRODUCT_RELEASE values in <code> &lt;JDIC source
-    directory&gt;/packager/src/unix/jnlp2rpm</code> and <code> &lt;JDIC source
-    directory&gt;/packager/src/solaris/jnlp2pkg</code>  script files.</li>
-      <li>Update the <code> &lt;JDIC source
-    directory&gt;/ChangeLog</code> file for the latest bug fixes and updates.
-        The bug fixes after the last release could be checked from <a href="https://jdic.dev.java.net/servlets/ProjectIssues">Issue
-        Tracker</a>.</li>
-      <li>Update the &quot;Version&quot; and &quot;Release&quot; information in <code>&lt;JDIC source
-    directory&gt;/README.html file</code>, and include any other changes.
-<p>
+      <li>Update the "version" and "release" property values in <code>&lt;JDIC
+source directory&gt;/jdic/build.xml</code>, <code> &lt;JDIC source
+directory&gt;/packager/build.xml</code> files.</li>
+      <li>Update the PRODUCT_VERSION and PRODUCT_RELEASE values in <code>
+&lt;JDIC source directory&gt;/packager/src/unix/jnlp2rpm</code> and <code>
+&lt;JDIC source directory&gt;/packager/src/solaris/jnlp2pkg</code>
+script files.</li>
+      <li>Update the <code> &lt;JDIC source directory&gt;/ChangeLog</code>
+file for the latest bug fixes and updates. The bug fixes after the last
+release could be checked from <a
+ href="https://jdic.dev.java.net/servlets/ProjectIssues">Issue Tracker</a>.</li>
+      <li>Update the "Version" and "Release" information in <code>&lt;JDIC
+source directory&gt;/README.html file</code>, and include any other
+changes.
+        <p> </p>
       </li>
     </ul>
   </li>
   <li><b>Build the source.</b><br>
-    Follow the <a href="https://jdic.dev.java.net/documentation/README.html#Build%20the%20Source">Build
-    the Source</a>  instruction to build the source, with a binary release is
-    generated under dist/&lt;platform&gt; directory.</li>
-<p>
+Follow the <a
+ href="https://jdic.dev.java.net/documentation/README.html#Build%20the%20Source">Build
+the Source</a> instruction to build the source, with a binary release
+is generated under dist/&lt;platform&gt; directory.</li>
+  <p> </p>
   <li><b>Compile the demo applications.</b><br>
-    Make sure the demo applications under dist/&lt;platform&gt;/demo directory
-    are compiled from source files (.java) into binaries (.class).&nbsp;The
-    released demo applications should include both the source files (.java) and
-    the compiled binaries (.class).
-<p>
+Make sure the demo applications under dist/&lt;platform&gt;/demo
+directory are compiled from source files (.java) into binaries
+(.class).&nbsp;The released demo applications should include both the
+source files (.java) and the compiled binaries (.class).
+    <p> </p>
   </li>
   <li><b>Create a release tag in the CVS repository.</b><br>
-    Before creating a release tag, make sure all the changes to the CVS
-    repository are checked in. The release tag should be in the form &quot;<b>JDIC_major_minor_micro</b>&quot;,
-    such as &quot;JDIC_0_8_4&quot;. If necessary, create a
-    branch with the branch name in the form &quot;<b>JDIC_major_minor_micro_BRANCH</b>&quot;,
-    such as &quot;JDIC_0_8_4_BRANCH&quot;.
-<p>
-  </li>
-  <li><b>Test.</b><br>
-    Test the package to make sure the binary works. Check the included demo applications for a preliminary test.
-<p>
+Before creating a release tag, make sure all the changes to the CVS
+repository are checked in. The release tag should be in the form "<b>JDIC_major_minor_micro</b>",
+such as "JDIC_0_8_4". If necessary, create a branch with the branch
+name in the form "<b>JDIC_major_minor_micro_BRANCH</b>", such as
+"JDIC_0_8_4_BRANCH".
+    <p> </p>
   </li>
   <li><b>Create a binary package.</b><br>
-    Create a binary zip (or tarball, msi for Windows, rpm for Linux, pkg and
-    Solaris) package with the <code>&lt;JDIC source
-    directory&gt;/dist/&lt;platform&gt; </code>directory. The binary package
-    name should be in the form &quot;<b>jdic-major.minor.micro-bin-&lt;platform&gt;.zip</b>&quot;,
-    such as &quot;jdic-0.8.4.1-bin-windows.zip&quot;.
-<p>
+Create a binary zip (or tarball, msi for Windows, rpm for Linux, pkg
+and Solaris) package with the <code>&lt;JDIC source
+directory&gt;/dist/&lt;platform&gt; </code>directory. The binary
+package name should be in the form "<b>jdic-major.minor.micro-bin-&lt;platform&gt;.zip</b>",
+such as "jdic-0.8.4.1-bin-windows.zip". </li>
+  <p> </p>
+  <li><b>Test.</b><br>
+Test the binary package to make sure it works. Check the included demo
+applications for a preliminary test. <br>
+A complete test should start from
+the a complete binary package (in the form
+"jdic-major.minor.micro-bin-&lt;platform&gt;.zip"), and include below
+tests:<br>
   </li>
+  <ul>
+    <li>The package format:<br>
+- the package can be unzipped or
+installed correctly.</li>
+    <li>The documentation:<br>
+- the <code>README.html</code> file gives all the neseasary and
+udpated
+instructions. The test should base on this file.<br>
+- javadoc is included, in the right format and updated. <br>
+- the <code>ChangeLog</code> file contains the latest updates/bug
+fixes. <br>
+- the <code>COPYING</code> file is included.<br>
+    </li>
+    <li>The demo applications under &lt;JDIC binary directory&gt;/demo
+directory.<br>
+- all the demo applications include both the source (.java) and binary
+(.class) files. <br>
+- all the demo application binaries work.<br>
+    </li>
+    <li>API test.<br>
+- all the test cases work. </li>
+  </ul>
+  <p> </p>
   <li><b>Create a source package.</b><br>
-    Create a source zip (or tarball) package with source files with the
-    release tag. One approach is to check out the JDIC source with the release
-    tag to an empty local folder, then create the zip (or tarball) package with
-    that folder. The source package name should be in the form &quot;<b>jdic-major.minor.micro-src.zip</b>&quot;,
-    such as &quot;jdic-0.8.4-src.zip&quot;.
-<p>
+Create a source zip (or tarball) package with source files with the
+release tag. One approach is to check out the JDIC source with the
+release tag to an empty local folder, then create the zip (or tarball)
+package with that folder. The source package name should be in the form
+"<b>jdic-major.minor.micro-src.zip</b>", such as "jdic-0.8.4-src.zip".
+    <p> </p>
   </li>
   <li><b>Distribute.</b><br>
- Make the created binary and source packages downloadable at the JDIC <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList"> Documents &amp; files</a>
-    page. If the distribution has a new major or minor release number,
-    create a separate download directory in the form &quot;<b>jdic-major.minor.micro</b>&quot;,
-    such as &quot;jdic-0.8.4&quot;. If the distribution only has a new micro
-    release number, put the packages under the download directory with the same
-    major and minor release numbers.
-<p>
+Make the created binary and source packages downloadable at the JDIC <a
+ href="https://jdic.dev.java.net/servlets/ProjectDocumentList">
+Documents &amp; files</a> page. If the distribution has a new major or
+minor release number, create a separate download directory in the form "<b>jdic-major.minor.micro</b>",
+such as "jdic-0.8.4". If the distribution only has a new micro release
+number, put the packages under the download directory with the same
+major and minor release numbers.
+    <p> </p>
   </li>
   <li><b>Announce.</b><br>
-    Announce the new distribution to the public:
+Announce the new distribution to the public:
     <ul>
-      <li>Give an announcement to the JDIC <a href="http://www.javadesktop.org/forums/forum.jspa?forumID=52">Forum</a>.</li>
-      <li>Give an announcement to the mailing list <a href="mailto:announce@jdic.dev.java.net">announce@jdic.dev.java.net</a>,
-        which is for the announcements of new releases and other major project events.</li>
-      <li>Give an announcement
-        to the Java <a href="http://www.javadesktop.org/forums/forum.jspa?forumID=17">Product Announcements</a>
-        page.</li>
+      <li>Give an announcement to the JDIC <a
+ href="http://www.javadesktop.org/forums/forum.jspa?forumID=52">Forum</a>.</li>
+      <li>Give an announcement to the mailing list <a
+ href="mailto:announce@jdic.dev.java.net">announce@jdic.dev.java.net</a>,
+which is for the announcements of new releases and other major project
+events.</li>
+      <li>Give an announcement to the Java <a
+ href="http://www.javadesktop.org/forums/forum.jspa?forumID=17">Product
+Announcements</a> page.</li>
       <li>Give announcements to somewhere else if necessary.
-<p>
+        <p> </p>
       </li>
     </ul>
   </li>
   <li><b>Update the JDIC website.</b>
     <ul>
-      <li>Add the new release tag or branch name created for this release to
-        below <a href="#CVS tags">CVS tags</a> table.</li>
-      <li>Update the online WebStart demos on the JDIC <a href="https://jdic.dev.java.net/">homepage</a>.</li>
-      <li>If javadoc for the release is updated, update the <a href="https://jdic.dev.java.net/nonav/documentation/javadoc/jdic/index.html">javadoc</a>
-        link on the JDIC homepage.</li>
-      <li>Update other <a href="https://jdic.dev.java.net/documentation/index.html">documentations</a>
-        on the JDIC website if necessary.
-<p>
-  <p>
-  &nbsp;</li>
+      <li>Add the new release tag or branch name created for this
+release to below <a href="#CVS%20tags">CVS tags</a> table.</li>
+      <li>Update the online WebStart demos on the JDIC <a
+ href="https://jdic.dev.java.net/">homepage</a>.</li>
+      <li>If javadoc for the release is updated, update the <a
+ href="https://jdic.dev.java.net/nonav/documentation/javadoc/jdic/index.html">javadoc</a>
+link on the JDIC homepage.</li>
+      <li>Update other <a
+ href="https://jdic.dev.java.net/documentation/index.html">documentations</a>
+on the JDIC website if necessary.
+        <p> </p>
+        <p> &nbsp; </p>
+      </li>
     </ul>
   </li>
 </ol>
 <h2><b><a name="CVS tags">CVS tags</a></b></h2>
 <blockquote>
-<p>JDIC uses the form &quot;<b>JDIC_major_minor_micro</b>&quot; for the release
-tags, and the form &quot;<b>JDIC_major_minor_micro_BRANCH</b>&quot; for the
-branch names. Here's a list of major public tags and branches to help people pull the right source when working on bugs from a specific release. Listed most-recent first.&nbsp;</p>
+  <p>JDIC uses the form "<b>JDIC_major_minor_micro</b>" for the release
+tags, and the form "<b>JDIC_major_minor_micro_BRANCH</b>" for the
+branch names. Here's a list of major public tags and branches to help
+people pull the right source when working on bugs from a specific
+release. Listed most-recent first.&nbsp;</p>
 </blockquote>
-
 <blockquote>
-<table border="1" cellpadding="2" cellspacing="0" height="219">
-
-<!-- Table of contents -->
-<tbody><tr bgcolor="#dddddd">
-<th align="left" height="56">Release Tag<br>
-                 Branch Name (if one exists)</th>
-<th align="left" height="56">Description</th>
-<th align="left" height="56">Date release tagged</th>
-<th align="left" height="56">Date branched</th>
-</tr>
+  <table border="1" cellpadding="2" cellspacing="0" height="219">
+<!-- Table of contents --> <tbody>
+      <tr bgcolor="#dddddd">
+        <th align="left" height="56">Release Tag<br>
+Branch Name (if one exists)</th>
+        <th align="left" height="56">Description</th>
+        <th align="left" height="56">Date release tagged</th>
+        <th align="left" height="56">Date branched</th>
+      </tr>
 <!-- ################# -->
-
 <!-- template 
 <tr>
 <td>MOZILLA_1_x_RELEASE<br>
@@ -194,48 +228,41 @@ branch names. Here's a list of major public tags and branches to help people pul
 <td>2004-MM-DD</td>
 <td>2004-MM-DD</td>
 </tr>
--->
-
-<!-- Insert new tag name below this line -->
-
-<tr>
-<td height="57">JDIC_0_8_5<br>
-  JDIC_0_8_5_BRANCH</td>
-<td height="57">JDIC 0.8.5 release</td>
-<td height="57">2004-08-30</td>
-<td height="57">2004-08-30</td>
-</tr>
-
-  <tr>
-<td height="19">JDIC_0_8_4_3</td>
-<td height="19">JDIC 0.8.4.2 release</td>
-<td height="19">2004-08-13</td>
-<td height="19">N/A</td>
-  </tr>
-
-<tr>
-<td height="19">JDIC_0_8_4_2</td>
-<td height="19">JDIC 0.8.4.2 release</td>
-<td height="19">2004-07-14</td>
-<td height="19">N/A</td>
-</tr>
-
-<tr>
-<td height="19">JDIC_0_8_4_1</td>
-<td height="19">JDIC 0.8.4.1 release</td>
-<td height="19">2004-07-07</td>
-<td height="19">N/A</td>
-</tr>
-
-<tr>
-<td height="38">JDIC_0_8_4<br>
-  JDIC_0_8_4_BRANCH</td>
-<td height="38">JDIC 0.8.4 release</td>
-<td height="38">2004-05-28</td>
-<td height="38">2004-05-28</td>
-</tr>
-
-</tbody></table>
+--><!-- Insert new tag name below this line -->
+      <tr>
+        <td height="57">JDIC_0_8_5<br>
+JDIC_0_8_5_BRANCH</td>
+        <td height="57">JDIC 0.8.5 release</td>
+        <td height="57">2004-08-30</td>
+        <td height="57">2004-08-30</td>
+      </tr>
+      <tr>
+        <td height="19">JDIC_0_8_4_3</td>
+        <td height="19">JDIC 0.8.4.2 release</td>
+        <td height="19">2004-08-13</td>
+        <td height="19">N/A</td>
+      </tr>
+      <tr>
+        <td height="19">JDIC_0_8_4_2</td>
+        <td height="19">JDIC 0.8.4.2 release</td>
+        <td height="19">2004-07-14</td>
+        <td height="19">N/A</td>
+      </tr>
+      <tr>
+        <td height="19">JDIC_0_8_4_1</td>
+        <td height="19">JDIC 0.8.4.1 release</td>
+        <td height="19">2004-07-07</td>
+        <td height="19">N/A</td>
+      </tr>
+      <tr>
+        <td height="38">JDIC_0_8_4<br>
+JDIC_0_8_4_BRANCH</td>
+        <td height="38">JDIC 0.8.4 release</td>
+        <td height="38">2004-05-28</td>
+        <td height="38">2004-05-28</td>
+      </tr>
+    </tbody>
+  </table>
 </blockquote>
 </body>
 </html>
