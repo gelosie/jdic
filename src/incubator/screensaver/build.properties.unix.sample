@@ -16,6 +16,4 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-# Pointer to jogl home directory containing jogl.jar
-# (http://jogl.dev.java.net/)
-jogl.home=
+# No settings for Unix, yet.

@@ -19,10 +19,6 @@
 # Set this to your Java home directory
 jdk.home=C:\\j2sdk1.4.2_04
 
-# Pointer to jogl home directory containing jogl.jar
-# (http://jogl.dev.java.net/)
-jogl.home=
-
 # You should not need to adjust any of the settings below this line.
 os=win32
 cc=cl
