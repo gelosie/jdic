@@ -383,7 +383,7 @@ public final class Jnlp2Package {
             outputDirName = "." + File.separator;
         }
         outputDirName =
-            getValidFileArgument(outputDirName, "package dir", false);
+            getValidFileArgument(outputDirName, "output dir", false);
         //Make sure output dir ends with file separator.
         if (!outputDirName.endsWith(File.separator)) {
             outputDirName += File.separator;
@@ -398,17 +398,14 @@ public final class Jnlp2Package {
             } else {
                 pkgInfo.setOutputDirPath(outputDirName);
             }
-        } else {
-            // Try to create the new destination directory.
-            boolean mksucceed = outputDirFile.mkdirs();
-            if (!mksucceed) {
-                throw new IllegalArgumentException(
-                    "Failed to create the output dir: " + outputDirFile);
-            } else {
-                pkgInfo.setOutputDirPath(outputDirName);
-            }
-        }
+        }  else {
+            //The given outputDirFile exists and is not a directory!
+            throw new IllegalArgumentException(
+                "The given output dir is not valid: "
+                + outputDirFile);
+        }   
     }
+    
     /**
      * Invoke the concrete platform relevant implementation to generate the
      * package.
