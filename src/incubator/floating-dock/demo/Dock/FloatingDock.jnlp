@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jnlp spec="1.0+"
-  codebase="file:///export/home/fdtest/jnlp"
+  codebase="file:///export/home/java.net/jdic/src/incubator/floating-dock/dist/linux/demo/jnlp"
 >
 <information>
   <title>Floating Dock Demo</title>
@@ -17,8 +17,8 @@
   <jar href="dockdemo.jar"/>
 </resources>
 <resources os="Linux">
-  <jar href="linux/floatingdock.jar"/>
-  <nativelib href="linux/floatingdock-native-linux.jar"/>
+  <jar href="floatingdock.jar"/>
+  <nativelib href="floatingdock-native.jar"/>
 </resources>
 <application-desc main-class="DockDemo" />
 </jnlp>

@@ -81,13 +81,13 @@
 
   <target name="buildjnlp" depends="buildall">
         <echo level="info">Signing JARS...</echo>
-	<copy file="${dist.dir}/floatingdock.jar" todir="${dist.dir}/jnlp"/>
-        <signjar jar="${dist.dir}/jnlp/floatingdock.jar" keystore="${keystore}" alias="${alias}" storepass="${password}"/>
-	<copy file="${dist.dir}/floatingdock-native-linux.jar" todir="${dist.dir}/jnlp"/>
-        <signjar jar="${dist.dir}/jnlp/floatingdock-native-linux.jar" keystore="${keystore}" alias="${alias}" storepass="${password}"/>
-	<copy file="${dist.dir}/demo/dockdemo.jar" todir="${dist.dir}/jnlp"/>
-	<signjar jar="${dist.dir}/jnlp/dockdemo.jar" keystore="${keystore}" alias="${alias}" storepass="${password}"/>
-	<copy file="demo/Dock/FloatingDock.jnlp" todir="${dist.dir}/jnlp"/>
+	<copy file="${dist.dir}/floatingdock.jar" todir="${dist.dir}/demo/jnlp"/>
+        <signjar jar="${dist.dir}/demo/jnlp/floatingdock.jar" keystore="${keystore}" alias="${alias}" storepass="${password}"/>
+	<copy file="${dist.dir}/floatingdock-native.jar" todir="${dist.dir}/demo/jnlp"/>
+        <signjar jar="${dist.dir}/demo/jnlp/floatingdock-native.jar" keystore="${keystore}" alias="${alias}" storepass="${password}"/>
+	<copy file="${dist.dir}/demo/dockdemo.jar" todir="${dist.dir}/demo/jnlp"/>
+	<signjar jar="${dist.dir}/demo/jnlp/dockdemo.jar" keystore="${keystore}" alias="${alias}" storepass="${password}"/>
+	<copy file="demo/Dock/FloatingDock.jnlp" todir="${dist.dir}/demo/jnlp"/>
   </target>
 
 
@@ -218,7 +218,7 @@
     <copy file="${unix.native.jni.dir}/libfloatingdock.so" todir="${dist.dir}" />
 
     <!-- generate native jar file -->
-    <jar destfile="${dist.dir}/floatingdock-native-linux.jar" update="false">
+    <jar destfile="${dist.dir}/floatingdock-native.jar" update="false">
          <fileset dir="${dist.dir}" includes="*.so"/>
     </jar>
   </target>
@@ -245,7 +245,7 @@
     <mkdir dir="${dist.dir}/demo" />
 
     <jar destfile="${dist.dir}/demo/dockdemo.jar" update="false">
-         <fileset dir="${dist.dir}" includes="*.class"/>
+         <fileset dir="${demo.dock.dir}" includes="*.class"/>
     </jar>
 
     <!-- Copy demo apps to a "demo" directory under the distribution directory -->
