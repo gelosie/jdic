@@ -166,7 +166,8 @@ public:
     void UpdateCurrentURI(nsIURI *aLocation);
 
     // BrowserFrame Related Methods
-    PRBool CreateNewBrowserFrame(PRUint32 chromeMask, 
+    PRBool CreateNewBrowserFrame(
+                            PRUint32 chromeMask, 
                             PRInt32 x, PRInt32 y, 
                             PRInt32 cx, PRInt32 cy,
                             nsIWebBrowser ** aWebBrowser);

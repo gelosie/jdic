@@ -241,7 +241,8 @@ BOOL MozEmbedApp::InitInstance()
     }
     else {
         MessageReceived("0,0,");
-        CBrowserFrame *pBrowserFrame = CreateNewBrowserFrame(nsIWebBrowserChrome::CHROME_ALL);
+        CBrowserFrame *pBrowserFrame = CreateNewBrowserFrame(
+            nsIWebBrowserChrome::CHROME_ALL);
         m_pMainWnd = pBrowserFrame;
         pBrowserFrame->m_wndBrowserView.OpenURL("about:blank");
     }
@@ -283,6 +284,10 @@ CBrowserFrame* MozEmbedApp::CreateNewBrowserFrame(PRUint32 chromeMask,
                                                   PRInt32 cx, PRInt32 cy,
                                                   PRBool bShowWindow)
 {
+    //char tmpBuf[2048];
+    //sprintf(tmpBuf, "CreateNewBrowserFrame called with pUrl is: %s", W2T(pUrl));
+    AfxMessageBox("MozEmbedApp::CreateNewBrowserFrame called!");
+
     UINT resId = IDR_MAINFRAME;
 
     // Setup a CRect with the requested window dimensions
@@ -321,13 +326,17 @@ CBrowserFrame* MozEmbedApp::CreateNewBrowserFrame(PRUint32 chromeMask,
 
 CBrowserFrame* MozEmbedApp::CreateEmbeddedBrowserFrame(HWND hParent)
 {
+    AfxMessageBox("MozEmbedApp::CreateEmbeddedBrowserFrame called !");
+
     ASSERT(hParent != NULL);
-    CBrowserFrame *pBrowserFrame = CreateNewBrowserFrame(nsIWebBrowserChrome::CHROME_DEFAULT, hParent, 0, 0, 0, 0);
+    CBrowserFrame *pBrowserFrame = CreateNewBrowserFrame(
+        nsIWebBrowserChrome::CHROME_DEFAULT, hParent, 0, 0, 0, 0);
     return pBrowserFrame;
 }
 
 void MozEmbedApp::OnNewBrowser()
 {
+    AfxMessageBox("MozEmbedApp::OnNewBrowser called !");
     CreateNewBrowserFrame(nsIWebBrowserChrome::CHROME_ALL);
 }
 
@@ -592,10 +601,16 @@ NS_IMPL_THREADSAFE_ISUPPORTS2(MozEmbedApp, nsIWindowCreator, nsISupportsWeakRefe
 // ---------------------------------------------------------------------------
 //  MozEmbedApp : nsIWindowCreator
 // ---------------------------------------------------------------------------
+//
+// Note: this method seems never being called. Instead 
+//     MozEmbedApp::CreateNewBrowserFrame 
+// is always called to create a new browser frame window.
+//
 NS_IMETHODIMP MozEmbedApp::CreateChromeWindow(nsIWebBrowserChrome *parent,
                                               PRUint32 chromeFlags,
                                               nsIWebBrowserChrome **_retval)
 {
+    AfxMessageBox("CreateChromeWindow called !!!!!!!!!!!!!!");
     NS_ENSURE_ARG_POINTER(_retval);
     *_retval = 0;
 
@@ -605,10 +620,12 @@ NS_IMETHODIMP MozEmbedApp::CreateChromeWindow(nsIWebBrowserChrome *parent,
         PRInt32 id = pImpl->m_pBrowserFrame->GetBrowserId();
         hParent = pImpl->m_pBrowserFrame->GetSafeHwnd();
         if (id >= 0) {
+            // native browser needs a yes or no confirmation from the 
+            // Java side for event CEVENT_BEFORE_NEWWINDOW.
             int bCmdCanceled = -1, waitCount = 0;
             AddTrigger(id, CEVENT_BEFORE_NEWWINDOW, &bCmdCanceled);
             SendSocketMessage(id, CEVENT_BEFORE_NEWWINDOW);
-    
+
             while (bCmdCanceled < 0 && waitCount++ < MAX_WAIT) {
                 Sleep(1);
             }
@@ -659,6 +676,7 @@ void MozEmbedApp::MessageReceived(const char * msg)
         break;
     case JEVENT_CREATEWINDOW:
         {
+        AfxMessageBox("JEVENT_CREATEWINDOW received !");
         // only create new browser window when the instance does not exist
         if (instance < m_FrameWndArray.GetSize() && m_FrameWndArray[instance] != NULL)
             break;
@@ -672,6 +690,7 @@ void MozEmbedApp::MessageReceived(const char * msg)
             pBrowserFrame->SetBrowserId(instance);
             SendSocketMessage(instance, CEVENT_INIT_WINDOW_SUCC);
         }
+        LogMsg("JEVENT_CREATEWINDOW handled !!!");
         }
         break;
     case JEVENT_DESTROYWINDOW:

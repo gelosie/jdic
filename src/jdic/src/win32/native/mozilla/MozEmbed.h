@@ -77,10 +77,12 @@ public:
     NS_DECL_ISUPPORTS
     NS_DECL_NSIWINDOWCREATOR
 
-    CBrowserFrame* CreateNewBrowserFrame(PRUint32 chromeMask = nsIWebBrowserChrome::CHROME_ALL, 
+    CBrowserFrame* CreateNewBrowserFrame(
+                            PRUint32 chromeMask = nsIWebBrowserChrome::CHROME_ALL, 
                             HWND hParent = NULL,
                             PRInt32 x = -1, PRInt32 y = -1, 
-                            PRInt32 cx = -1, PRInt32 cy = -1, PRBool bShowWindow = PR_TRUE);
+                            PRInt32 cx = -1, PRInt32 cy = -1, 
+                            PRBool bShowWindow = PR_TRUE);                            
     CBrowserFrame* CreateEmbeddedBrowserFrame(HWND hParent);
 
     void ShowDebugConsole();

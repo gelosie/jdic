@@ -736,7 +736,8 @@ void CBrowserView::OpenURL(const PRUnichar* pUrl, const char* pPostData, const c
                      headersStream);                    // Extra headers
 }
 
-CBrowserFrame* CBrowserView::CreateNewBrowserFrame(PRUint32 chromeMask,
+CBrowserFrame* CBrowserView::CreateNewBrowserFrame(
+                                    PRUint32 chromeMask,
                                     PRInt32 x, PRInt32 y,
                                     PRInt32 cx, PRInt32 cy,
                                     PRBool bShowWindow)
@@ -745,7 +746,8 @@ CBrowserFrame* CBrowserView::CreateNewBrowserFrame(PRUint32 chromeMask,
     if (!pApp)
         return NULL;
 
-    return pApp->CreateNewBrowserFrame(chromeMask, NULL, x, y, cx, cy, bShowWindow);
+    return pApp->CreateNewBrowserFrame(
+        chromeMask, NULL, x, y, cx, cy, bShowWindow);
 }
 
 void CBrowserView::OpenURLInNewWindow(const PRUnichar* pUrl)

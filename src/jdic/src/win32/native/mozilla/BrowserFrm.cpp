@@ -584,12 +584,13 @@ void CBrowserFrame::GetBrowserFrameVisibility(PRBool *aVisible)
         *aVisible = PR_FALSE;
 }
 
-PRBool CBrowserFrame::CreateNewBrowserFrame(PRUint32 chromeMask,
+PRBool CBrowserFrame::CreateNewBrowserFrame(
+                            PRUint32 chromeMask,
                             PRInt32 x, PRInt32 y,
                             PRInt32 cx, PRInt32 cy,
                             nsIWebBrowser** aWebBrowser)
 {
-   NS_ENSURE_ARG_POINTER(aWebBrowser);
+    NS_ENSURE_ARG_POINTER(aWebBrowser);
 
    *aWebBrowser = nsnull;
 
@@ -606,7 +607,9 @@ PRBool CBrowserFrame::CreateNewBrowserFrame(PRUint32 chromeMask,
     // the window size changes on the screen causing an unappealing flicker
     //
 
-    CBrowserFrame* pFrm = pApp->CreateNewBrowserFrame(chromeMask, NULL, x, y, cx, cy, PR_FALSE);
+    CBrowserFrame* pFrm = pApp->CreateNewBrowserFrame(
+        chromeMask, NULL, x, y, cx, cy, PR_FALSE);
+
     if (!pFrm)
         return PR_FALSE;
 

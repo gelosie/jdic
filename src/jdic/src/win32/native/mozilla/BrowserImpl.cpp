@@ -622,6 +622,8 @@ NS_IMETHODIMP CBrowserImpl::OnStartURIOpen(nsIURI *pURI, PRBool *aAbortOpen)
 
     PRInt32 id = m_pBrowserFrame->GetBrowserId();
     if (id >= 0) {
+        // native browser needs a yes or no confirmation from the 
+        // Java side for event CEVENT_BEFORE_NAVIGATE.
         int bCmdCanceled = -1, waitCount = 0;
         AddTrigger(id, CEVENT_BEFORE_NAVIGATE, &bCmdCanceled);
         SendSocketMessage(id, CEVENT_BEFORE_NAVIGATE, uriString.get());
