@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE>How to Write a Good Bug Report</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 7  (Win32)">
+	<META NAME="CREATED" CONTENT="20031215;391548">
+	<META NAME="CHANGEDBY" CONTENT="Roger Brinkley">
+	<META NAME="CHANGED" CONTENT="20040528;16252144">
+	<STYLE>
+	<!--
+		H1 { margin-left: 0.25in; margin-right: 0.25in; color: #000000 }
+		P { margin-left: 0.25in; margin-right: 0.25in; color: #000000 }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" TEXT="#000000" BGCOLOR="#ffffff" DIR="LTR">
+<H1>How to Write a Good Bug Report? 
+</H1>
+<P>To increase the chances that the bug you're reporting will be
+addressed in a timely manner, you should adhere to the following
+guidelines: 
+</P>
+<OL>
+	<LI><P>When you encounter a behavior which might potentially be a
+	bug, try to collect as much relevant data as possible (e.g. take a
+	screenshot in case of a UI problem, generate a thread-dump in case
+	of a deadlock or serious performance degradation, create copies of
+	relevant files, etc.) and try to recall and note the actions you
+	performed right before the problem occurred.</P>
+	<LI><P>Try to restore the original state (if possible) and reproduce
+	the incorrect behavior using the steps you noted. This should help
+	you to determine whether the problem is reproducible and persistent
+	or just intermittent. This is not to say intermittent problems
+	shouldn't be reported, but it's always worth pointing it out in the
+	bug report to make the evaluators aware of this fact.</P>
+	<LI><P>There is a chance that someone already reported the bug
+	you've just encountered. Therefore, it's a good idea to search the
+	bug database first. Go to the the JDIC Issue Tracking page, fill-in
+	the query parameters that seem relevant to your case, submit the
+	form, and go through the returned list of issues to see if any of
+	them match your problem. Typically, you'll want to search for issues
+	of type <I>DEFECT</I>, in an open state (<I>NEW</I>, <I>STARTED</I>,
+	<I>REOPENED</I>) with a specific string in the <B>Summary</B> and/or
+	<B>Description</B> fields. If the bug already exists in the database
+	and you still think you have some useful info to share, it is highly
+	recommended to add this info to the existing issue instead of filing
+	a new one.</P>
+	<LI><P>If you assume the bug hasn't been reported yet, it's time to
+	enter a new bug. (Note: to be able to do so and to be able to
+	add/update information in the issue database, you need to have a
+	netbeans.org account and be logged in. If you don't have an account
+	yet, you'll have to <A HREF="http://www.dev.java.net/servlets/Join">register</A>
+	and then become a member of the JDIC project.).</P>
+	<UL>
+		<LI><P>The first thing you need to do is to select the <B>Component</B>
+		to file the bug against. 
+		</P>
+		<LI><P>After selecting the component, you'll be prompted to fill in
+		the following fields:</P>
+		<UL>
+			<LI><P><B>Version</B> - choose the version of the component in
+			which you encountered the problem. In case of a problem found in a
+			development build, select the next release version number, or
+			<I>current</I>.</P>
+			<LI><P><B>Subcomponent</B> - select the subcomponent of a given
+			component. If you're not sure, just select <I>code</I>.</P>
+			<LI><P><B>Platform</B> - select the platform you were using when
+			the problem occured. If you were able to reproduce it on multiple
+			platforms, or are positively sure the behavior is platform
+			independent, use <I>All</I>.</P>
+			<LI><P><B>OS</B> - similar to the <B>Platform.</B></P>
+			<LI><P><B>Priority</B> - use this field to indicate the urgency
+			and severity of the issue. Refer to <A HREF="bug_priority_guidelines.html">Bug
+			Priority Guidelines</A> for instructions how to set the priority
+			level appropriately. If you're still in doubt, it's better to
+			stick with the default P3 value.</P>
+			<LI><P><B>Issue Type</B> - select the type of issue you're
+			reporting. In most cases, you'll probably want to use <I>DEFECT</I>
+			(when reporting a bug) or <I>ENHANCEMENT</I> (when requesting an
+			enhancement or feature).</P>
+			<LI><P><B>Assigned To</B> - unless you're absolutely sure who this
+			issue should be assigned to, leave this field blank. The bug will
+			be automatically assigned to the component (subcomponent) owner.</P>
+			<LI><P><B>Cc</B> - enter an optional comma-separated list of email
+			aliases you want to be notified about this issue and any
+			subsequent changes to its status. You as the reporter will be
+			notified automatically, so there's no need to add yourself. The
+			aliases must refer to valid netbeans.org accounts (e.g.
+			<I>jdoe@netbeans.org</I>). Arbitrary email addresses are not
+			accepted by the system.</P>
+			<LI><P><B>URL</B> - if there is a URL relevant to this issue, you
+			can type it here. In most cases, this field will be blank.</P>
+			<LI><P STYLE="margin-bottom: 0in"><B>Summary</B> - a brief (one
+			sentence) description of the issue. You should try to make it as
+			specific as possible while keeping it short (70 characters at the
+			most). 
+			</P>
+			<LI><P><B>Description</B> - a detailed description of the problem.
+			The description should include the following information:</P>
+			<UL>
+				<LI><P STYLE="margin-bottom: 0in">the build number 
+				</P>
+				<LI><P STYLE="margin-bottom: 0in">JDK version 
+				</P>
+				<LI><P STYLE="margin-bottom: 0in">observed behavior 
+				</P>
+				<LI><P STYLE="margin-bottom: 0in">expected behavior 
+				</P>
+				<LI><P STYLE="margin-bottom: 0in">exact steps to reproduce the
+				problem 
+				</P>
+				<LI><P>any other information potentially related to the issue 
+				</P>
+			</UL>
+			<P>Please note that you should not paste larger chunks of text
+			(e.g. complete exception logs and thread dumps, source files, test
+			data, etc.) into the Description field. You should always provide
+			those files in the form of attachments (see below). There is one
+			exception to this rule: although including complete exception logs
+			in Description is not recommended, it is a good idea to copy the
+			relevant part of the stack trace (usually 4-6 top lines to the
+			field to allow for easy searching.</P>
+		</UL>
+		<LI><P>After completing the form, push the <B>Commit</B> button to
+		send it to the database. As a confirmation you will see a number
+		uniquely identifying the issue you've just filed.</P>
+		<LI><P>If you have some additional files relevant to the issue,
+		click on the <B>Add Attachment</B> link in the page you get after
+		the previous step. You'll be asked to provide the following info:</P>
+		<UL>
+			<LI><P STYLE="margin-bottom: 0in">the location of file to be
+			sumbitted on your local machine 
+			</P>
+			<LI><P STYLE="margin-bottom: 0in">a one-line description of the
+			attachment 
+			</P>
+			<LI><P>the type of file being attached (plain text, diff, HTML,
+			GIF, JPEG, PNG, binary) 
+			</P>
+		</UL>
+		<P>Push the <B>Submit</B> button to attach the file to the issue
+		report.</P>
+	</UL>
+	<LI><P>Should you have any questions or comments regarding the issue
+	handling process, please contact the JDIC <A HREF="mailto:issues@jdic.dev.java.net">issues</A>
+	mailing list..</P>
+</OL>
+</BODY>
+</HTML>
