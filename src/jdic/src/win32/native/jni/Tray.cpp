@@ -21,7 +21,7 @@
 #include <windows.h>
 #include <windowsx.h> 
 #include "WinTrayIconService.h"
-#include "WinSystemTrayService.h"
+#include "DisplayThread.h"
 #include "JNIloader.h"
 
 HINSTANCE hInstance;
@@ -323,16 +323,17 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
 	TrayMessage(messageWindow,NIM_DELETE,id,NULL,NULL);
 }
 
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinSystemTrayService_initTray
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_DisplayThread_initTray
 (JNIEnv *env, jclass klass) {
 	if (!inited) {
 		if (!Initialize(env)) {
 			return;
 		}
+	inited = 1;
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinSystemTrayService_eventLoop
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_DisplayThread_eventLoop
 (JNIEnv *env, jclass klass) {
 	MSG   msg;
 	while(GetMessage(&msg, NULL,0, 0))     
