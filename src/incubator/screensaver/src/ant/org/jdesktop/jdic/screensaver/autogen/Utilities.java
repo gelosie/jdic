@@ -156,7 +156,7 @@ public final class Utilities {
                         else {
                             out.write(value.getBytes());
                             out.write(0);
-                            long len = 4 + buffer.length() - value.length();
+                            long len = 3 + buffer.length() - value.length();
                             if(len < 0) {
                                 throw new IOException(
                                   "String for tag ('" + tag + 
