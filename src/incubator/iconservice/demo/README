@@ -1,0 +1,16 @@
+The demo applications in this directory showcase JDIC iconservice 
+incubator functionality.  These samples are slightly modified versions of 
+the JDIC samples of the same name.  
+
+To compile these applications, make sure that both the jdic.jar and 
+jdic-icon.jar is available in the classpath or ${JRE_HOME}/lib/ext 
+directory.  
+
+To run a sample applications, the CLASSPATH must contain the sample 
+directory.  Additionally, both the jdic shared library (libjdic.so for 
+Unix / jdic.dll for Windows) and the icon service incubator shared library 
+(libjdic_icon.so for Unix / jdic_icon.dll for Windows) must be available 
+on the path or the directory specified by the java system property 
+java.library.path.
+
+
