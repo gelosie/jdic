@@ -37,7 +37,7 @@ USA
     <property name="release" value="release" />
     <property name="src" value="src" />
     
-    <property name="version" value="0.1" />
+    <property name="version" value="0.1.1" />
     <property name="release" value="1" />
     <property name="packagename" value="saverbeans-sdk-${version}" />
   </target>
