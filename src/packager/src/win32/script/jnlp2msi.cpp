@@ -61,8 +61,12 @@ bool echoJavaCmd = false;
 bool echoVersion = false;
 //Whether to print the help info.
 bool echoHelp = false;
-//Whether the MS SDK Path has been specified
-bool mssdkpathSet = false;
+//Whether the MS SDK Path has been specified as an env variable
+bool mssdkpathSetByEnv = false;
+//Whether user has specified the mssdkpath in the cmd line
+bool mssdkpathSetByUser = false;
+//The MSSDKDir env variable value
+char mssdkEnvVar[BUFFER_SIZE] = "\0";
 
 //////////////////////////////////////////////////////////////////////////////
 /**
@@ -98,6 +102,45 @@ void initOpts()
     initOpt(Echo,               "-e",   "-echo",              "");
     initOpt(Showversion,        "-sv",  "-showversion",       "");
     initOpt(Help,               "-?",   "-help",              "");
+}
+
+//////////////////////////////////////////////////////////////////////////////
+/*
+ * Format the path str, replace any occurance of \ with \\.
+ */
+void formatPathStr(char* originalPathStr, char* formatPathStr)
+{
+    // delete all leading spaces in originalPathStr
+    while (' ' == *originalPathStr)
+    {
+    	  originalPathStr++;
+    }
+
+    // delete all trailing spaces in originalPathStr
+    char* pCur = originalPathStr;
+    if (0 != *pCur)
+    {
+        pCur++;
+    }
+    pCur--;
+    while (' ' == *pCur)
+    {
+        *pCur = 0;
+        pCur--;
+    }
+
+    for (int i = 0; i < strlen(originalPathStr); i++)
+    {
+        if ((originalPathStr[i] == '\\') && (originalPathStr[i + 1] != '\\'))
+        {
+            strcat(formatPathStr, "\\\\");
+        }
+        else 
+        {
+            formatPathStr[strlen(formatPathStr)] = originalPathStr[i];
+        }
+    }
+
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -141,9 +184,12 @@ int optprocess(char* lopt, char* uopt, char* paraName, char* param, char* argv[]
             //we need to set param as -DMSSDKPath="... ..."
             if (!strcmp(argv[iLeft], sOpts[MSSDKPath]) || !strcmp(argv[iLeft], lOpts[MSSDKPath]))
             {
-                mssdkpathSet = true;   
+                mssdkpathSetByUser = true;   
             }
-            sprintf(param, "%s%s%s\"%s\"", "-D", paraName, "=", argv[++iLeft]);
+            char * argvIndex = argv[++iLeft];
+            char formatArg[BUFFER_SIZE] = "\0";
+            formatPathStr(argvIndex, formatArg);
+            sprintf(param, "-D%s=\"%s\"", paraName, formatArg);
         }
         else if ((!strcmp(argv[iLeft], sOpts[PackageName]) || !strcmp(argv[iLeft], lOpts[PackageName])) ||
             (!strcmp(argv[iLeft], sOpts[OutputDir]) || !strcmp(argv[iLeft], lOpts[OutputDir])) ||
@@ -352,12 +398,24 @@ int launchJava(int iLevel)
 
     char CREATEPROCESS[BUFFER_SIZE];
 
-    sprintf(CREATEPROCESS, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s", 
-        JavaPath, optValues[ResourceDir], optValues[PackageName], optValues[OutputDir], 
-        optValues[Version], optValues[Release], optValues[LicenseDir], 
-        optValues[BannerJpgFile], optValues[PanelJpgFile], optValues[MSSDKPath], 
-        optValues[EnableShortcut], optValues[EnableAssociation], 
-        optValues[EnableSystemCache], ClassName, JnlpFile);
+	if (mssdkpathSetByUser) 
+	{
+		sprintf(CREATEPROCESS, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s", 
+			JavaPath, optValues[ResourceDir], optValues[PackageName], optValues[OutputDir], 
+			optValues[Version], optValues[Release], optValues[LicenseDir], 
+			optValues[BannerJpgFile], optValues[PanelJpgFile], optValues[MSSDKPath], 
+			optValues[EnableShortcut], optValues[EnableAssociation], 
+			optValues[EnableSystemCache], ClassName, JnlpFile);
+	}
+	else if (mssdkpathSetByEnv)
+	{
+		sprintf(CREATEPROCESS, "%s %s %s %s %s %s %s %s %s %s%s%s %s %s %s %s %s", 
+			JavaPath, optValues[ResourceDir], optValues[PackageName], optValues[OutputDir], 
+			optValues[Version], optValues[Release], optValues[LicenseDir], 
+			optValues[BannerJpgFile], optValues[PanelJpgFile],  "-DMSSDKDir=\"", mssdkEnvVar, "\"", 
+			optValues[EnableShortcut], optValues[EnableAssociation], 
+			optValues[EnableSystemCache], ClassName, JnlpFile);
+	}
 
     if (echoJavaCmd) 
     {
@@ -382,18 +440,20 @@ void printUsage()
     "          Windows MSI file.(The output will be in executable bootstrapper\n"
     "          format.)\n"
     "\n"
-    "Note:   This tool requires J2SE 1.5.0+.\n"    
+    "Note:   This tool requires J2SE 1.5.0+, Microsoft Windows SDK Update Package.\n"
     "\n"
-    "Usage:  jnlp2msi [-options] -msd|-mssdkdir <MS SDK dir> <Jnlp File Path>\n"
-	"e.g.    jnlp2msi -msd \"C:\\Program Files\\Microsoft SDK\" d:\\draw.jnlp\n"
+    "Usage:  jnlp2msi [-options] <Jnlp File Path>\n"
     "\n"
-    "Where   <MS SDK dir>\n"
-    "        is the directory where the Windows MS SDK update package\n"
-    "        gets installed.\n"
-    "        <Jnlp File Path>\n"
+    "Where   <Jnlp File Path>\n"
     "        is the path of the Jnlp file to be packaged.\n"
     "\n"
     "Options include:\n"
+	"   -msd <value> | -mssdkdir <value>\n"
+	"        set the directory where the Windows MS SDK update package\n"
+    "        gets installed. If this option is not specified, an environment\n"
+	"        variable MSSDKDir must be set to indicate the directory\n"
+    "        information. If both this option and MSSDKDir environment variable\n"
+    "        are set, the value of MSSDKDir environment variable will be ignored.\n"
     "   -rd  <value> | -resourcedir <value>\n"
     "        set the directory of the JNLP resource files, the default value\n"
     "        is the parent directory of the given JNLP file.\n"
@@ -420,20 +480,29 @@ void printUsage()
     "        part of the MSI installation GUI. If not set, a jpeg picture\n"
     "        contained in the jar file will be used.\n"
     "   -es  | -enableshortcut\n"
-    "        create shortcut on the desktop and Start Menu after the generated\n"
+    "        create shortcut on the desktop and Start menu after the generated\n"
     "        MSI gets installed.\n"
     "   -ea  | -enableassociation\n"
-    "        associate the JNLP application with the file extension or mime type\n"
-    "        specified by the the assoication tag in the jnlp file.\n"
+    "        allow the JNLP application to associate itself with the file\n"
+    "        extension or mime-type specified by the the assoication tag in\n"
+    "        the jnlp file.\n"
     "   -esc | -enablesystemcache\n"
     "        install the JNLP application into the system cache of Java\n"
     "        Webstart. By default, the application will be installed into\n"
     "        the user cache.\n"
+    "        in order to install into the system cache, you need to configure\n"
+    "        the sytem cache accordingly. Please refer to Java Webstart documents.\n"
     "   -sv  | showversion\n"
     "        print the current version info of jnlp2msi.\n"
     "   -?   | -help\n"
     "        print this help message.\n"
     "\n"
+	"Sample: jnlp2msi -msd \"C:\\Program Files\\Microsoft SDK\" d:\\draw.jnlp\n"
+	"        (if the MSSDKDir environment variable is not set.)\n"
+	"        or\n"
+	"        jnlp2msi d:\\draw.jnlp\n"
+	"        (if the MSSDKDir environment variable is set.)\n"
+	"\n"
     );
 }
 
@@ -459,6 +528,15 @@ int main(int argc, char* argv[])
         return 1;
     }
     initOpts();
+
+    //Check if the MSSDKDir environment variable has been set
+    char * temsdkVar = getenv("MSSDKDir");
+    if (temsdkVar != NULL)
+    {
+        mssdkpathSetByEnv = true;
+        formatPathStr(temsdkVar, mssdkEnvVar);
+    }
+
     int iLeft = 1;
     while (iLeft < argc)
     {   
@@ -495,7 +573,7 @@ int main(int argc, char* argv[])
         }
     }
     
-    if (!mssdkpathSet)
+    if ((!mssdkpathSetByUser) && (!mssdkpathSetByEnv))
     {
         printUsage();
         return -1;   
