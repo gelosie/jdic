@@ -22,13 +22,10 @@ package org.jdesktop.jdic.browser;
 
 /**
  * The listener interface for receiving WebBrowser events. The class that is
- * interested in processing a WebBrowser event implements this interface or 
- * inherits the <code>WebBrowserAdapter</code> abstract class.
- * <p>
- * The object created with that class is registered with a <code>
- * WebBrowser</code> component, using the <code>addWebBrowserListener</code> 
- * method. When the WebBrowser event occurs, that object's corresponding method 
- * is invoked.
+ * interested in processing a WebBrowser event implements this interface.
+ * The object created with that class is registered with a WebBrowser component,
+ * using the <code>addWebBrowserListener</code> method. When the WebBrowser 
+ * event occurs, that object's corresponding method is invoked.
  *
  * @see WebBrowserEvent
  * @see WebBrowser 
@@ -43,40 +40,40 @@ public interface WebBrowserListener extends java.util.EventListener
      *
      * @param event the WebBrowserEvent fired.
      */
-    public void downloadStarted(WebBrowserEvent event);
+    void downloadStarted(WebBrowserEvent event);
 
     /**
-     * Invoked when a navigation operation is completed, aborted or failed.
+     * Invoked when a download operation finishes, is halted, or fails.
      *
      * @param event the WebBrowserEvent fired.
      */
-    public void downloadCompleted(WebBrowserEvent event);
+    void downloadCompleted(WebBrowserEvent event);
 
     /**
      * Invoked when the progress of a download operation is updated.
      *
      * @param event the WebBrowserEvent fired.
      */
-    public void downloadProgressChanged(WebBrowserEvent event);
+    void downloadProgress(WebBrowserEvent event);
 
     /**
      * Invoked when an error occurs during a download operation.
      * 
      * @param event the WebBrowserEvent fired.
      */
-    public void downloadError(WebBrowserEvent event);
+    void downloadError(WebBrowserEvent event);
 
     /**
-     * Invoked when the title of a document is changed.
+     * Invoked when the title of a document changes.
      * 
      * @param event the WebBrowserEvent fired.
      */
-    public void titleChanged(WebBrowserEvent event);
+    void titleChange(WebBrowserEvent event);
 
     /**
-     * Invoked when the status bar text is changed.
+     * Invoked when the status bar text changes.
      * 
      * @param event the WebBrowserEvent fired.
      */
-    public void statusTextChanged(WebBrowserEvent event);
+    void statusTextChange(WebBrowserEvent event);
 }
