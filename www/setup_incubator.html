@@ -62,14 +62,54 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
 </noscript>
 <!-- etracker CODE END -->
 <h2 align="center">How to Setup An Incubator Project</h2>
-<p>Below are detailed instructions for the <i>JDIC owners</i> to setup a new
+<p>Below are detailed instructions for the incubator project proposer and <a href="mailto:%20owner@jdic.dev.java.net">JDIC
+owners</a> to setup a new
 incubator project in the <a href="https://jdic.dev.java.net#incubator">Incubator
-Projects</a> section of the JDIC homepage. For developers to hold an incubator project, drop a
-post to alias <a href="mailto:%20owner@jdic.dev.java.net">owner@jdic.dev.java.net</a>
-and to the JDIC <a href="www.javadesktop.org/forums/forum.jspa?forumID=52">
-Forum</a>. To make it clear, we take the process of setting up the <i>SystemInfo</i>
+Projects</a> section of JDIC. This doc consists of two sections: <a href="#For incubator project proposers"><i>For
+incubator project proposers</i></a> section, which outlines the tasks for the
+project proposers, and <a href="#For JDIC owners"><i>For JDIC Owners</i></a>
+section, which outlines the tasks for the JDIC project owners.</p>
+<p><b><i><a name="For incubator project proposers">For incubator project
+proposers:</a></i></b></p>
+<ul>
+  <li><b>Post your proposal to the <a href="www.javadesktop.org/forums/forum.jspa?forumID=52">JDIC
+    Forum</a>.</b><br>
+    The post should be entitled like &quot;[Incubator Project Proposal] XXX&quot;.
+    It should give a brief introduction of the problem and a draft
+    specification. This helps to get the feedback from the community, and align
+    efforts with other individual developers and 3rd party projects in the early
+    beginning.</li>
+  <li><b>Get the JDIC owners' approval.&nbsp;<br>
+    </b>They'll then set up the project following below <a href="#For JDIC owners">For
+    JDIC owners</a> section.</li>
+  <li><b>Finalize the package name and API specification.</b><br>
+    The specs need to be discussed and agreed with among the developers and JDIC
+    owners. The API specification could contain simply one API, or a couple of
+    APIs. Refer to the <a href="https://jdic.dev.java.net/documentation/faq.html#Is%20there%20any%20Java%20package%20naming%20convention?">Java
+    package naming convention</a> while specifying the package name.</li>
+  <li><b>Check in the code and docs to the CVS repository.</b><br>
+    At least, there needs a README (index.html) file, and a javadoc link, before
+    or after the code is ready. Follow the same <a href="https://jdic.dev.java.net/source/browse/jdic/src/jdic/">file
+    structure</a> of JDIC and all the incubator project source, which makes it
+    easy to integrate the incubator project source into the central JDIC source
+    someday. A suggestion is to <a href="https://jdic.dev.java.net/source/browse/jdic/src/jdic/">download
+    a JDIC or incubator project source release</a>, and change the source.</li>
+  <li><b>Release a source or binary download.</b><br>
+    After the owners setup the incubator project, there is a folder for the
+    incubator project in the <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">Document
+    &amp; files</a> page to hold downloads. There is no way to grant the upload
+    permission to the incubator project owners, unlike the source or www modules
+    in the CVS repository. If you want to release/remove a download by
+    adding/deleting new files or folders, there'll be a "suggest" to upload/delete
+    notice to the JDIC owners, which will be approved shortly.</li>
+</ul>
+<p><b><i><a name="For JDIC owners">For JDIC owners:</a></i></b></p>
+<blockquote>
+  <p>Once the JDIC owners approve the incubator project proposal, follow below
+  instructions to setup the project. To make it clear, we take the process of setting up the <i>SystemInfo</i>
 incubator project as an example.</p>
-<ol>
+</blockquote>
+<ul>
   <li><b>Make sure the contributors/owners of the incubator project sign the JCA
     form according to the <a href="developer.html#How%20to%20Contribute">instructions</a>.</b>
   </li>
@@ -125,6 +165,6 @@ Announce the incubator project</b>.
       </li>
     </ul>
   </li>
-</ol>
+</ul>
 </body>
 </html>
