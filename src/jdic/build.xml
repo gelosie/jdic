@@ -449,14 +449,20 @@ Top-level target:
            source="1.4"
     />        
 
-    <!-- Copy demo apps to a "demo" directory under the distribution directory -->
+    <!-- Copy demo apps to a "demo" directory under the distribution directory -->    
+    <!-- NOTE: specifies only the *necessary* demo files to avoid copying 
+         unnecessary files. -->    
     <mkdir dir="${dist.dir}/demo" />   
     <copy todir="${dist.dir}/demo">
-      <fileset dir="${demo.dir}" casesensitive="false" >
-        <include name="README"/>
-        <include name="**/*.java"/>
-        <include name="**/*.class"/>        
-        <include name="**/images/**"/>
+      <fileset dir="${demo.dir}" 
+           casesensitive="false" 
+           includes="README,
+               Browser/*.java, Browser/*.class, Browser/images/**/,
+               FileChooser/*.java, FileChooser/*.class, FileChooser/images/**,
+               FileExplorer/*.java, FileExplorer/*.class, FileExplorer/images/**,
+               FileTypes/*.java, FileTypes/*.class, FileTypes/images/**,
+               SimpleBrowser/*.java, SimpleBrowser/*.class, SimpleBrowser/images/**,
+               Tray/*.java, Tray/*.class, Tray/images/**" >
       </fileset>
     </copy>
   </target>
