@@ -21,26 +21,18 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include "prlog.h"
-#include "prprf.h"
 #include "Util.h"
 
 #if defined(DEBUG) || defined(_DEBUG)
-
-PRLogModuleInfo *prLogModuleInfo = PR_NewLogModule("webbrowser");
 
 void WBTrace(const char *format, ...)
 {
     va_list args;
     va_start(args, format);
 
-    char buffer[512];
-    PR_vsnprintf(buffer, sizeof(buffer), format, args);
-
-    //fprintf(stderr, "### Ctrace: %s\n", buffer);
-    if (prLogModuleInfo) {
-        PR_LOG(prLogModuleInfo, 5, (buffer));
-    }
+    char buffer[1024];
+    sprintf(buffer, format, args);
+    printf(buffer);
 
     va_end(args);
 }

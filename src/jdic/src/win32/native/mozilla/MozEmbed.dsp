@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 xpcomglue.lib string_s.lib string_obsolete_s.lib embedstring_s.lib nspr4.lib plc4.lib plds4.lib ole32.lib comdlg32.lib shell32.lib version.lib /nologo /subsystem:windows /machine:I386 /libpath:"$(MOZILLA_SRC_HOME)/dist/lib"
+# ADD LINK32 Ws2_32.lib xpcomglue.lib string_s.lib string_obsolete_s.lib embedstring_s.lib nspr4.lib plc4.lib plds4.lib ole32.lib comdlg32.lib shell32.lib version.lib /nologo /subsystem:windows /machine:I386 /libpath:"$(MOZILLA_SRC_HOME)/dist/lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "MozEmbed - Win32 Debug"
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 xpcomglue.lib string_s.lib string_obsolete_s.lib embedstring_s.lib nspr4.lib plc4.lib plds4.lib ole32.lib comdlg32.lib shell32.lib version.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"$(MOZILLA_SRC_HOME)/dist/lib"
+# ADD LINK32 xpcomglue.lib string_s.lib string_obsolete_s.lib embedstring_s.lib nspr4.lib plc4.lib plds4.lib ole32.lib comdlg32.lib shell32.lib version.lib Ws2_32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"$(MOZILLA_SRC_HOME)/dist/lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 

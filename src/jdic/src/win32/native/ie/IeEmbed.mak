@@ -58,14 +58,14 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /Fp"$(INTDIR)\IeEmbed.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "_WIN32_IEEMBED" /Fp"$(INTDIR)\IeEmbed.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 RSC_PROJ=/l 0x409 /fo"$(INTDIR)\IeEmbed.res" /d "_DEBUG" /d "_AFXDLL" 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\IeEmbed.bsc" 
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=$(MOZILLA_SRC_HOME)/dist/lib/nspr4.lib /nologo /subsystem:windows /incremental:yes /pdb:"$(OUTDIR)\IeEmbed.pdb" /debug /machine:I386 /out:"$(OUTDIR)\IeEmbed.exe" /pdbtype:sept 
+LINK32_FLAGS=Ws2_32.lib /nologo /subsystem:windows /incremental:yes /pdb:"$(OUTDIR)\IeEmbed.pdb" /debug /machine:I386 /out:"$(OUTDIR)\IeEmbed.exe" /pdbtype:sept 
 LINK32_OBJS= \
 	"$(INTDIR)\BrowserWindow.obj" \
 	"$(INTDIR)\IeEmbed.obj" \
@@ -113,7 +113,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\IeEmbed.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "_WIN32_IEEMBED" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\IeEmbed.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 RSC_PROJ=/l 0x409 /fo"$(INTDIR)\IeEmbed.res" /d "NDEBUG" /d "_AFXDLL" 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\IeEmbed.bsc" 
@@ -131,7 +131,7 @@ BSC32_SBRS= \
 <<
 
 LINK32=link.exe
-LINK32_FLAGS=$(MOZILLA_SRC_HOME)/dist/lib/nspr4.lib /nologo /subsystem:windows /incremental:no /pdb:"$(OUTDIR)\IeEmbed.pdb" /machine:I386 /out:"$(OUTDIR)\IeEmbed.exe" 
+LINK32_FLAGS=Ws2_32.lib /nologo /subsystem:windows /incremental:no /pdb:"$(OUTDIR)\IeEmbed.pdb" /machine:I386 /out:"$(OUTDIR)\IeEmbed.exe" 
 LINK32_OBJS= \
 	"$(INTDIR)\BrowserWindow.obj" \
 	"$(INTDIR)\IeEmbed.obj" \
@@ -232,7 +232,7 @@ SOURCE=..\..\..\share\native\utils\MsgServer.cpp
 
 !IF  "$(CFG)" == "IeEmbed - Win32 Debug"
 
-CPP_SWITCHES=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_SWITCHES=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "_WIN32_IEEMBED" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 
 "$(INTDIR)\MsgServer.obj" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<
@@ -242,7 +242,7 @@ CPP_SWITCHES=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /
 
 !ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
 
-CPP_SWITCHES=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /FR"$(INTDIR)\\" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_SWITCHES=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "_WIN32_IEEMBED" /FR"$(INTDIR)\\" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 
 "$(INTDIR)\MsgServer.obj"	"$(INTDIR)\MsgServer.sbr" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<
@@ -256,7 +256,7 @@ SOURCE=.\StdAfx.cpp
 
 !IF  "$(CFG)" == "IeEmbed - Win32 Debug"
 
-CPP_SWITCHES=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /Fp"$(INTDIR)\IeEmbed.pch" /Yc"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_SWITCHES=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "_WIN32_IEEMBED" /Fp"$(INTDIR)\IeEmbed.pch" /Yc"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 
 "$(INTDIR)\StdAfx.obj"	"$(INTDIR)\IeEmbed.pch" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<
@@ -266,7 +266,7 @@ CPP_SWITCHES=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /
 
 !ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
 
-CPP_SWITCHES=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\IeEmbed.pch" /Yc"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_SWITCHES=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "_WIN32_IEEMBED" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\IeEmbed.pch" /Yc"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 
 "$(INTDIR)\StdAfx.obj"	"$(INTDIR)\StdAfx.sbr"	"$(INTDIR)\IeEmbed.pch" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<
@@ -280,7 +280,7 @@ SOURCE=..\..\..\share\native\utils\Util.cpp
 
 !IF  "$(CFG)" == "IeEmbed - Win32 Debug"
 
-CPP_SWITCHES=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_SWITCHES=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "_WIN32_IEEMBED" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 
 "$(INTDIR)\Util.obj" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<
@@ -290,7 +290,7 @@ CPP_SWITCHES=/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../share/native/utils" /
 
 !ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
 
-CPP_SWITCHES=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /I "$(MOZILLA_SRC_HOME)/dist/include/nspr" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /FR"$(INTDIR)\\" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_SWITCHES=/nologo /MD /W3 /GX /O1 /I "../../../share/native/utils" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "_WIN32_IEEMBED" /FR"$(INTDIR)\\" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 
 "$(INTDIR)\Util.obj"	"$(INTDIR)\Util.sbr" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<

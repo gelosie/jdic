@@ -23,7 +23,7 @@
 #include "BrowserWindow.h"
 #include "resource.h"
 #include "Message.h"
-#include "prthread.h"
+//#include "prthread.h"
 #include "VariantWrapper.h"
 #include "Util.h"
 #define WM_SOCKET_MSG   WM_USER + 1
@@ -438,16 +438,15 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance,
     //create hidden window for purpose of handling messages
     CreateHiddenWnd();
 
-    //init new thread for communication
-    PRThread *socketListenThread = NULL;
-    socketListenThread = PR_CreateThread(PR_USER_THREAD,
-                                        PortListening,
-                                        SocketMsgHandler,
-                                        PR_PRIORITY_NORMAL,
-                                        PR_GLOBAL_THREAD,
-                                        PR_UNJOINABLE_THREAD,
-                                        0);
-    if (!socketListenThread) {
+    //init new thread for socket communication listening.
+    HANDLE hThread = CreateThread(NULL,
+                                  0, 
+                                  PortListening, 
+                                  SocketMsgHandler,
+                                  0, 
+                                  NULL);
+
+    if (hThread == NULL) {
         SendSocketMessage(-1, CEVENT_INIT_FAILED);
         goto exit;
     }

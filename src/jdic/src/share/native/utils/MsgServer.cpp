@@ -20,24 +20,27 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "prlog.h"
-#include "prerror.h"
-#include "prenv.h"
 #include "MsgServer.h"
 #include "Message.h"
 #include "Util.h"
 
 MsgServer gMessenger;
-PRLock *gServerLock;
 
-static PRIntervalTime sleepInterval = PR_MillisecondsToInterval(10);
+#ifdef WIN32
+CRITICAL_SECTION CriticalSection; 
+#else
+pthread_mutex_t gServerMutex;
+#endif
 
 int MsgServer::mPort = 0;
 
 MsgServer::MsgServer()
 {
-#if defined(DEBUG) || defined(_DEBUG)
-    PR_SetEnv("NSPR_LOG_MODULES=webbrowser:5");
+#ifdef WIN32
+    WSADATA wsaData;
+    if (WSAStartup(WINSOCK_VERSION, &wsaData)) {
+        WBTRACE("Can't load Windows Sockets DLL!\n");
+    }
 #endif
 
     mFailed = 1;
@@ -58,16 +61,27 @@ MsgServer::MsgServer()
         mTriggers[i].mInstance = EMPTY_TRIGGER;
     }
 
-    for (i = 0; i < MAX_FD; i++) {
-        mPollList[i].fd = NULL;
-    }
+    mServerSock = -1;
+    mMsgSock = -1;
 
-    gServerLock = PR_NewLock();
+    FD_ZERO(&readfds); 
+    FD_ZERO(&writefds); 
+    FD_ZERO(&exceptfds); 
+
+#ifdef WIN32
+    InitializeCriticalSection(&CriticalSection);
+#else
+    pthread_mutex_init(&gServerMutex,NULL);
+#endif
 }
 
 MsgServer::~MsgServer()
 {
-    PR_DestroyLock(gServerLock);
+#ifdef WIN32
+    DeleteCriticalSection(&CriticalSection);
+#else
+    pthread_mutex_destroy(&gServerMutex);
+#endif
 
     delete [] mSendBuffer;
     delete [] mRecvBuffer;
@@ -75,48 +89,84 @@ MsgServer::~MsgServer()
     delete [] mTriggers;
 
     WBTRACE("Closing socket ...\n");
-    for (int i = 0; i < MAX_FD; i++) {
-        if (mPollList[i].fd)
-            PR_Close(mPollList[i].fd);
+
+    if (mServerSock >= 0) {
+#ifdef WIN32
+        closesocket(mServerSock);
+#else
+        close(mServerSock);
+#endif
     }
+    
+    if (mMsgSock >= 0) {
+#ifdef WIN32
+        closesocket(mMsgSock);
+#else
+        close(mMsgSock);
+#endif
+    }
+
+#ifdef WIN32
+        WSACleanup();
+#endif
 }
 
 int MsgServer::CreateServerSocket()
 {
-    PRFileDesc *sock = PR_NewTCPSocket();
-    if (!sock)
-        return PR_GetError();
+    u_long nbio = 1;
+    int bReuseaddr = 1;
 
-    PRSocketOptionData socket_opt;
-    socket_opt.option = PR_SockOpt_Nonblocking;
-    socket_opt.value.non_blocking = PR_TRUE;
-    if (PR_SetSocketOption(sock, &socket_opt) == PR_FAILURE)
-        goto failed;
+    mServerSock = socket(AF_INET, SOCK_STREAM, 0);
 
-    socket_opt.option = PR_SockOpt_Reuseaddr;
-    socket_opt.value.reuse_addr = PR_TRUE;
-    if (PR_SetSocketOption(sock, &socket_opt) == PR_FAILURE)
+#ifdef WIN32
+    if (mServerSock == INVALID_SOCKET) {
+#else
+    if (mServerSock < 0) {
+#endif
+        WBTRACE("socket failed!");
         goto failed;
+    }
 
-    PRNetAddr selfAddr;
-    PR_InitializeNetAddr(PR_IpAddrLoopback, mPort, &selfAddr);
-    if (PR_Bind(sock, &selfAddr) == PR_FAILURE)
-        goto failed;
+#ifdef WIN32
+    ioctlsocket(mServerSock, FIONBIO, &nbio);
+#else
+    fcntl(mServerSock, F_SETFL, O_NONBLOCK);
+#endif
 
-    if (PR_Listen(sock, MAX_CONN) == PR_FAILURE)
+    setsockopt(mServerSock, SOL_SOCKET, SO_REUSEADDR, 
+        (const char*)&bReuseaddr, sizeof(bReuseaddr));
+
+    struct sockaddr_in server_addr;
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(mPort);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind(mServerSock, (struct sockaddr *)&server_addr, 
+        sizeof(server_addr)) < 0) {
+        LogMsg("bind failed!");
         goto failed;
+    } 
+
+    if (listen(mServerSock, MAX_CONN) == -1) {
+        LogMsg("listen failed!");
+        goto failed;
+    }  
 
     WBTRACE("Listening port %d ...\n", mPort);
 
-    mPollList[0].fd = sock;
     mFailed = 0;
     return 0;
 
 failed:
-    int error = PR_GetError();
-    WBTRACE("CreateServerSocket failed! Error code = %d\n", error);
-    PR_Close(sock);
-    return error;
+    WBTRACE("CreateServerSocket failed!");
+
+#ifdef WIN32
+    closesocket(mServerSock);
+#else
+    close(mServerSock);
+#endif
+
+    return -1;
 }
 
 int MsgServer::Send(const char *pData)
@@ -154,44 +204,79 @@ int MsgServer::Listen()
     mCounter++;
 
     int ret = 0;
-    int pollcount = 0;
-    for (int i = 0; i < MAX_FD; i++) {
-        if (mPollList[i].fd) {
-            mPollList[i].in_flags = PR_POLL_READ | PR_POLL_WRITE | PR_POLL_EXCEPT;
-            mPollList[i].out_flags = 0;
-            pollcount++;
-        }
-        else
-            break;
-    }
 
-    if (mCounter >= 200 && pollcount == 1) {
+    if (mCounter >= 200 && mMsgSock < 0) {
         // haven't received any connection request after 200 times. quit
         return -1;
     }
 
-    int n = PR_Poll(mPollList, pollcount, 0);
-    if (n > 0) {
-        if (mPollList[0].out_flags & PR_POLL_READ) {
-            PRNetAddr peerAddr;
-            mPollList[1].fd = PR_Accept(mPollList[0].fd, &peerAddr, \
-                PR_INTERVAL_NO_TIMEOUT);
-            if (mPollList[1].fd == NULL) {
-                WBTRACE("accept fail, error code = %d\n", PR_GetError());
+    FD_ZERO(&readfds);
+    FD_ZERO(&writefds);
+    FD_ZERO(&exceptfds);
+
+#ifdef WIN32
+    // Type cast to avoid warning message:
+    //   warning C4018: '==' : signed/unsigned mismatch
+    FD_SET((UINT32)mServerSock, &readfds);
+    FD_SET((UINT32)mServerSock, &writefds);
+    FD_SET((UINT32)mServerSock, &exceptfds);
+#else
+    FD_SET(mServerSock, &readfds);
+    FD_SET(mServerSock, &writefds);
+    FD_SET(mServerSock, &exceptfds);
+#endif
+
+    // the value of the highest file descriptor plus one.
+    int maxfdp1 = mServerSock + 1;
+
+    if (mMsgSock >= 0) {
+#ifdef WIN32
+        // Type cast to avoid warning message:
+        //   warning C4018: '==' : signed/unsigned mismatch
+        FD_SET((UINT32)mMsgSock, &readfds);
+        FD_SET((UINT32)mMsgSock, &writefds);
+        FD_SET((UINT32)mMsgSock, &exceptfds); 
+#else
+        FD_SET(mMsgSock, &readfds);
+        FD_SET(mMsgSock, &writefds);
+        FD_SET(mMsgSock, &exceptfds); 
+#endif
+
+        maxfdp1 = mMsgSock + 1;
+    }
+
+    // wait for 1 second if no connect or recv/send socket requests.
+    struct timeval tv; 
+    tv.tv_sec = 1; 
+    tv.tv_usec = 0; 
+
+    int n = select(maxfdp1, &readfds, &writefds, &exceptfds, &tv);
+    if (n < 0) {
+        WBTRACE("Exception occurred!\n");
+        ret = -1;
+    } else if (n > 0) {
+        if (FD_ISSET(mServerSock, &readfds)) {
+            struct sockaddr_in peer_addr;
+            int len = sizeof(peer_addr);
+
+#ifdef WIN32
+            if ((mMsgSock = accept(mServerSock, (struct sockaddr*)&peer_addr, 
+                &len)) == -1) {
+#else
+            if ((mMsgSock = accept(mServerSock, (struct sockaddr*)&peer_addr, 
+                (socklen_t*)&len)) == -1) {
+#endif
+                WBTRACE("accept fail!\n");
                 ret = -1;
             }
-        }
-        else if (mPollList[0].out_flags & PR_POLL_EXCEPT) {
+        } else if (FD_ISSET(mServerSock, &exceptfds)) {
             WBTRACE("Exception occurred!\n");
             ret = -1;
-        }
-        else if (mPollList[1].out_flags & PR_POLL_READ) {
+        } else if (FD_ISSET(mMsgSock, &readfds)) {
             ret = RecvData();
-        }
-        else if (mPollList[1].out_flags & PR_POLL_WRITE) {
+        } else if (FD_ISSET(mMsgSock, &writefds)) {
             ret = SendData();
-        }
-        else if (mPollList[1].out_flags & PR_POLL_EXCEPT) {
+        } else if (FD_ISSET(mMsgSock, &exceptfds)) {
             WBTRACE("Exception occurred!\n");
             ret = -1;
         }
@@ -205,7 +290,7 @@ int MsgServer::RecvData()
     char buf[BUFFER_SIZE] = "\0";
     char unfinishedMsgBuf[BUFFER_SIZE] = "\0";
 
-    int len = PR_Recv(mPollList[1].fd, buf, BUFFER_SIZE - 1, 0, 0);
+    int len = recv(mMsgSock, buf, BUFFER_SIZE, 0);
     if (len == 0) {
         // value 0 means the network connection is closed.
         WBTRACE("client socket has been closed!\n");
@@ -213,7 +298,7 @@ int MsgServer::RecvData()
     }
     else if (len < 0) {
         // value -1 indicates a failure
-        WBTRACE("receive fail, error code = %d\n", PR_GetError());
+        WBTRACE("receive fail!\n");
         return len;
     }
     
@@ -307,7 +392,8 @@ int MsgServer::RecvData()
                     } else {
                         // If the long message buffer is not long enough to hold this end
                         // message piece, alloc more space.
-                        if (((int)strlen(mLongRecvBuffer) + (int)strlen(token)) >= mLongRecvBufferSize) {
+                        if (((int)strlen(mLongRecvBuffer) + (int)strlen(token)) 
+                            >= mLongRecvBufferSize) {
                             char *tmpRecvBuffer = mLongRecvBuffer;
                             // one more BUFFER_SIZE space is enough for one msgToken (message).
                             mLongRecvBufferSize += BUFFER_SIZE;
@@ -348,18 +434,18 @@ int MsgServer::RecvData()
 }
 
 int MsgServer::SendData()
-{
+{   
     int len = strlen(mSendBuffer);
     if (len == 0)
         return 0;
 
-    len = PR_Send(mPollList[1].fd, mSendBuffer, len, 0, 0);
+    len = send(mMsgSock, mSendBuffer, len, 0);
     WBTRACE("Client socket send %s\n", mSendBuffer);
     if (len > 0) {
         mSendBuffer[0] = 0;
     }
     else if (len < 0) {
-        WBTRACE("send fail, error code = %d\n", PR_GetError());
+        WBTRACE("send fail!\n");
     }
 
     return len;
@@ -377,9 +463,19 @@ void SendSocketMessage(int instance, int event, const char *pData)
         if (strlen(pData) <= BUFFER_SIZE_HALF) {
             sprintf(buf, "%d,%d,%s%s", instance, event, pData, MSG_DELIMITER);
             
-            PR_Lock(gServerLock);
+#ifdef WIN32
+            EnterCriticalSection(&CriticalSection);
+#else
+            pthread_mutex_lock(&gServerMutex);
+#endif
+
             gMessenger.Send(buf);
-            PR_Unlock(gServerLock);           
+
+#ifdef WIN32
+            LeaveCriticalSection(&CriticalSection);
+#else
+            pthread_mutex_unlock(&gServerMutex);
+#endif
         } else {
             // in case pData is longer than BUFFER_SIZE_HALF, send it in 
             // multiple pieces.
@@ -397,9 +493,19 @@ void SendSocketMessage(int instance, int event, const char *pData)
 
             dataPtr += BUFFER_SIZE_HALF;
 
-            PR_Lock(gServerLock);
+#ifdef WIN32
+            EnterCriticalSection(&CriticalSection);
+#else
+            pthread_mutex_lock(&gServerMutex);
+#endif
+
             gMessenger.Send(buf);
-            PR_Unlock(gServerLock);
+
+#ifdef WIN32
+            LeaveCriticalSection(&CriticalSection);
+#else
+            pthread_mutex_unlock(&gServerMutex);
+#endif
 
             memset(buf, '\0', strlen(buf));
             memset(pPartData, '\0', strlen(pPartData));
@@ -412,15 +518,41 @@ void SendSocketMessage(int instance, int event, const char *pData)
                     MSG_DELIMITER_MIDDLE);
                 dataPtr += BUFFER_SIZE_HALF;
 
-                PR_Lock(gServerLock);
-                int i = gMessenger.Send(buf);
-                PR_Unlock(gServerLock);
-                while (i == -1) {
-                    PR_Sleep(sleepInterval);
+#ifdef WIN32
+                EnterCriticalSection(&CriticalSection);
+#else
+                pthread_mutex_lock(&gServerMutex);
+#endif
 
-                    PR_Lock(gServerLock);
+                int i = gMessenger.Send(buf);
+
+#ifdef WIN32
+                LeaveCriticalSection(&CriticalSection);
+#else
+                pthread_mutex_unlock(&gServerMutex);
+#endif
+
+                while (i == -1) {
+                    // sleep in *millisecond*.
+#ifdef WIN32
+                    Sleep(SLEEP_INTERVAL_TIME);    
+#else
+                    usleep(SLEEP_INTERVAL_TIME);
+#endif
+
+#ifdef WIN32
+                    EnterCriticalSection(&CriticalSection);
+#else
+                    pthread_mutex_lock(&gServerMutex);
+#endif
+
                     i = gMessenger.Send(buf);
-                    PR_Unlock(gServerLock);
+
+#ifdef WIN32
+                    LeaveCriticalSection(&CriticalSection);
+#else
+                    pthread_mutex_unlock(&gServerMutex);
+#endif
                 }                
 
                 memset(buf, '\0', strlen(buf));
@@ -433,45 +565,107 @@ void SendSocketMessage(int instance, int event, const char *pData)
             sprintf(buf, "%d,%d,%s%s", instance, event, pPartData, \
                 MSG_DELIMITER_END);
 
-            PR_Lock(gServerLock);
-            int i = gMessenger.Send(buf);
-            PR_Unlock(gServerLock);
-            while (i == -1) {
-                PR_Sleep(sleepInterval);
+#ifdef WIN32
+            EnterCriticalSection(&CriticalSection);
+#else        
+            pthread_mutex_lock(&gServerMutex);
+#endif
 
-                PR_Lock(gServerLock);
+            int i = gMessenger.Send(buf);
+
+#ifdef WIN32
+            LeaveCriticalSection(&CriticalSection);
+#else
+            pthread_mutex_unlock(&gServerMutex);
+#endif
+            while (i == -1) {
+#ifdef WIN32
+                Sleep(SLEEP_INTERVAL_TIME);    
+#else
+                usleep(SLEEP_INTERVAL_TIME);
+#endif
+
+#ifdef WIN32
+                EnterCriticalSection(&CriticalSection);
+#else
+                pthread_mutex_lock(&gServerMutex);
+#endif
+
                 i = gMessenger.Send(buf);
-                PR_Unlock(gServerLock);
+
+#ifdef WIN32
+                LeaveCriticalSection(&CriticalSection);
+#else
+                pthread_mutex_unlock(&gServerMutex);
+#endif
             }
         }
     } else {
         sprintf(buf, "%d,%d%s", instance, event, MSG_DELIMITER);
-        PR_Lock(gServerLock);
+
+#ifdef WIN32
+        EnterCriticalSection(&CriticalSection);
+#else
+        pthread_mutex_lock(&gServerMutex);
+#endif
+
         gMessenger.Send(buf);
-        PR_Unlock(gServerLock);
+
+#ifdef WIN32
+        LeaveCriticalSection(&CriticalSection);
+#else
+        pthread_mutex_unlock(&gServerMutex);
+#endif
     }
 }
 
 void AddTrigger(int instance, int msg, int *trigger)
 {
-    PR_Lock(gServerLock);
+#ifdef WIN32
+    EnterCriticalSection(&CriticalSection);
+#else
+    pthread_mutex_lock(&gServerMutex);
+#endif
+
     gMessenger.AddTrigger(instance, msg, trigger);
-    PR_Unlock(gServerLock);
+
+#ifdef WIN32
+    LeaveCriticalSection(&CriticalSection);
+#else
+    pthread_mutex_unlock(&gServerMutex);
+#endif
 }
 
-// this is a socket server listening thread
-void PortListening(void* pParam)
+// this is a socket server listening thread function.
+#ifdef _WIN32_IEEMBED
+DWORD WINAPI PortListening(void *pParam)
+#else
+void PortListening(void *pParam)
+#endif
 {
     int ret = 0;
 
-    PR_ASSERT(pParam);
-
     gMessenger.SetHandler((MsgHandler)pParam);
     while (ret >= 0) {
-        PR_Sleep(sleepInterval);
-        PR_Lock(gServerLock);
+#ifdef WIN32
+        Sleep(SLEEP_INTERVAL_TIME);    
+#else
+        usleep(SLEEP_INTERVAL_TIME);
+#endif
+
+#ifdef WIN32
+        EnterCriticalSection(&CriticalSection);
+#else
+        pthread_mutex_lock(&gServerMutex);
+#endif
+
         ret = gMessenger.Listen();
-        PR_Unlock(gServerLock);
+
+#ifdef WIN32
+        LeaveCriticalSection(&CriticalSection);
+#else
+        pthread_mutex_unlock(&gServerMutex);
+#endif
     }
 
     WBTRACE("Quit listening thread. Quit app.\n");
@@ -479,4 +673,8 @@ void PortListening(void* pParam)
     char buf[BUFFER_SIZE];
     sprintf(buf, "-1,%d%s", JEVENT_SHUTDOWN, MSG_DELIMITER);
     ((MsgHandler)pParam)(buf);
+
+#ifdef _WIN32_IEEMBED
+    return 0;
+#endif
 }
