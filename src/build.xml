@@ -95,6 +95,7 @@ Top-level target:
     <!-- Copy the README.html and LICENSE files -->
     <copy file="README.html" todir="${dist.dir}"/>
     <copy file="COPYING" todir="${dist.dir}"/>
+    <copy file="ChangeLog" todir="${dist.dir}"/>
   </target> 
 
   <!-- *** Clean the distribution directory *** -->
