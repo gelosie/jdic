@@ -23,6 +23,7 @@
 #include <X11/Xlib.h>
 #include "WebBrowserUtil.h"
 #include <stdlib.h>
+#include <limits.h>
 
 #include <sys/stat.h>
 #include <gconf/gconf-client.h>
@@ -113,6 +114,15 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
         // scan the Mozilla command file for the MOZILLA_FIVE_HOME setting.
         char *moz5home_value = NULL;
         if (mozpath) {
+            // the file mozpath maybe a link file.
+#ifndef PATH_MAX
+#define PATH_MAX 512
+#endif
+            char *real_mozpath = (char *)malloc(PATH_MAX);
+            realpath(mozpath, real_mozpath);
+            free(mozpath);
+            mozpath = real_mozpath;
+
             // Check if libxpcom.so exists at the same path.
             char *str_p = g_strrstr(mozpath, "/");
             char *parentpath = g_strndup(mozpath, str_p - mozpath);
