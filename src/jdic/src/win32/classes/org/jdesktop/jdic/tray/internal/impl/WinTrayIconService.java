@@ -64,7 +64,7 @@ public class WinTrayIconService implements TrayIconService{
     private final int WINDOWS_TASKBAR_ICON_HEIGHT = 16;
 
     JDialog popupParentFrame;
-
+    
     boolean created;
 
     static {
@@ -86,11 +86,11 @@ public class WinTrayIconService implements TrayIconService{
         map.put(new Integer(iconID), this);
 
         popupParentFrame = new JDialog();
+        
         if( Integer.parseInt(System.getProperty("java.version").substring(2,3)) >=5 )
         	popupParentFrame.setAlwaysOnTop(true);
         popupParentFrame.setUndecorated(true);
         popupParentFrame.setBounds(0, 0, 0, 0);
-        popupParentFrame.setVisible(true);
     }
 
     private native long createIconIndirect(int[] rData, byte[] andMask,
@@ -113,14 +113,37 @@ public class WinTrayIconService implements TrayIconService{
     }
 
     private void updateBufferedImage() {
-           }
+    }
 
     public void setPopupMenu(JPopupMenu m) {
         menu = m;
         if (menu != null) {
             menu.setLightWeightPopupEnabled(false);
-        }
-    }
+
+            menu.addPopupMenuListener(new PopupMenuListener() {
+				public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+				}
+
+				public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+					popupParentFrame.setVisible(false);
+				}
+
+				public void popupMenuCanceled(PopupMenuEvent e) {
+				}
+			});
+
+            // in jdk1.4, the popup menu is still visible after the invoker window lost focus.
+			popupParentFrame.addWindowFocusListener(new WindowFocusListener() {
+				public void windowGainedFocus(WindowEvent e) {
+				}
+
+				public void windowLostFocus(WindowEvent e) {
+					menu.setVisible(false);
+				}
+			});
+
+		}
+	}
 
     protected long createNativeIcon(BufferedImage bimage, int w, int h,
             int xHotSpot, int yHotSpot) {
@@ -177,7 +200,8 @@ public class WinTrayIconService implements TrayIconService{
                 Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
                 p.x = p.x + d.width > s.width ? p.x - d.width : p.x;
                 p.y = p.y + d.height > s.height ? p.y - d.height : p.y;
-                menu.show(popupParentFrame, p.x, p.y);
+                popupParentFrame.setVisible(true);
+                menu.show(popupParentFrame.getContentPane(), p.x, p.y);
                 popupParentFrame.toFront();
             }
             break;
