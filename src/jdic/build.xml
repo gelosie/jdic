@@ -323,11 +323,18 @@ Top-level target:
     </exec>                   
 
     <exec dir="${unix.native.mozilla.dir}" executable="gmake" failonerror="yes" />
-
+<!--
     <exec os="FreeBSD" executable="cp" failonerror="yes">
       <arg value="${unix.native.mozilla.dir}/mozembed-freebsd-gtk2" />
       <arg value="${dist.dir}/." />
     </exec>
+-->
+    <copy todir="${dist.dir}">
+      <fileset dir="${unix.native.mozilla.dir}" includes="*mozembed-freebsd-gtk*"/>
+    </copy>
+    <chmod dir="${dist.dir}" perm="ugo+x"
+      includes="*mozembed-freebsd-gtk*" />
+
   </target>  
 
   <!-- *** Build Unix native JNI code *** -->
@@ -350,16 +357,23 @@ Top-level target:
     <exec dir="${unix.native.mozilla.dir}" executable="make" failonerror="yes" />
 
     <!-- copy the embeded Mozilla executable -->
+<!--
     <exec os="Linux" executable="cp" failonerror="yes">
       <arg value="${unix.native.mozilla.dir}/mozembed-linux-gtk2" />
       <arg value="${dist.dir}/." />
     </exec>
-
+-->
+    <copy todir="${dist.dir}">
+      <fileset dir="${unix.native.mozilla.dir}" includes="*mozembed-linux-gtk*"/>
+    </copy>
+    <chmod dir="${dist.dir}" perm="ugo+x"
+      includes="*mozembed-linux-gtk*" />
+<!--
     <exec os="SunOS" executable="cp" failonerror="yes">
       <arg value="${unix.native.mozilla.dir}/mozembed-solaris-gtk2" />
       <arg value="${dist.dir}/." />
     </exec>
-
+-->
   </target>
 
   <!--
