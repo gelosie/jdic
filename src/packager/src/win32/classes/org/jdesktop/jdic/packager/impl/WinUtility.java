@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -247,6 +248,8 @@ public class WinUtility {
                                       + " does not contain file "
                                       + sourceFileName);
             }
+        } catch (FileNotFoundException e) {
+            throw new IOException("Error: Illegal File Name: " + destFilePath);
         } catch (Exception e) {
             throw new IOException("Error extracting data from the jar file!");
         }
