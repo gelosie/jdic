@@ -289,6 +289,8 @@ Version 0.2
     * Screensaver now exits on Windows when cursor moves.
     * Added isFullscreen() API on context object.
     * Mouse cursor is no longer hidden from preview in Windows.
+    * Multi-monitor support
+    * Fixed bug in settings dialog when values are out of bounds
     * Added JOGL (OpenGL) Screensaver Startup Kit and corresponding APIs
       This allows developers to write OpenGL 3D screensavers in Java!
 
