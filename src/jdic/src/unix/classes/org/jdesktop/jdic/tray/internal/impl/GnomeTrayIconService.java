@@ -41,7 +41,6 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
     implements TrayIconService {
 
     private JPopupMenu menu;
-    private JWindow popupMenuParent;
     private IconPanel iconPanel;
     private Icon icon;        
     private HWToolTip tooltip;
@@ -56,9 +55,14 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         frame.setFocusable(true);
         frame.requestFocus();
         initListeners();
-        popupMenuParent = new JWindow();
-        popupMenuParent.setBounds(-500, 0, 0, 0);
-        popupMenuParent.setVisible(true);
+
+        frame.addWindowListener(new WindowAdapter(){
+			public void windowDeactivated(WindowEvent e) {
+				synchronized(frame){
+					frame.notify();
+				}
+			}
+        });
     }
 
     void mousePressed(final MouseEvent e) {
@@ -68,12 +72,30 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                 	tooltip.setVisible(false);
                 Dimension d = menu.getPreferredSize();
                 Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
-                Point p = e.getPoint();
-                SwingUtilities.convertPointToScreen(p, (Component) e.getSource());
+                final Point p = e.getPoint();
+                final Frame embedFrame = (Frame)e.getSource();
+                SwingUtilities.convertPointToScreen(p, embedFrame);
                 p.x = p.x + d.width > s.width ? p.x - d.width : p.x;
                 p.y = p.y + d.height > s.height ? p.y - d.height : p.y;
-                SwingUtilities.convertPointFromScreen(p, popupMenuParent);
-                menu.show(popupMenuParent, p.x, p.y);
+                SwingUtilities.convertPointFromScreen(p, embedFrame);
+                Thread showPopupMenuThread = new Thread(new Runnable(){
+                	public void run(){
+                		synchronized(embedFrame){
+                			try{
+                				if(embedFrame.isActive())
+                					embedFrame.wait();
+                			}catch(InterruptedException ie){
+                				
+                			}
+                		}
+                		SwingUtilities.invokeLater(new Runnable(){
+                			public void run(){
+                				menu.show(embedFrame, p.x, p.y);
+                			}
+                		});
+                	}
+                });
+                showPopupMenuThread.start();
             } else {
                 if(tooltip != null)
                 	tooltip.setVisible(false);
