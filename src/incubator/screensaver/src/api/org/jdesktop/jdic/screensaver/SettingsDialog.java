@@ -212,7 +212,7 @@ class SettingsDialog extends javax.swing.JDialog {
      */
     public static void main(String args[]) throws Exception {
         Document configFile = DocumentBuilderFactory.newInstance().
-            newDocumentBuilder().parse(new File("c:\\projects\\java-screensaver\\java-screensaver\\src\\conf\\bouncingline.xml"));
+            newDocumentBuilder().parse(new File(args[0]));
         SettingsDialog d = new SettingsDialog( new JFrame(), true, 
             configFile);
         d.setSize(640,480);
@@ -586,6 +586,8 @@ class SettingsDialog extends javax.swing.JDialog {
                 val = ((intDefault - intLow) * SLIDER_MAX) / 
                     (intHigh - intLow);
             }
+            if(val < 0) val = 0;
+            if(val > SLIDER_MAX) val = SLIDER_MAX;
             final JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 
                 SLIDER_MAX, val);
             slider.setInverted(invert);
