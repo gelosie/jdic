@@ -92,7 +92,7 @@ if [ -z "$jdkhome" ] ; then
 fi
 
 # Set LD_LIBRARY_PATH:
-LD_LIBRARY_PATH=${jdkhome}/jre/lib/${ARCH}:${jdkhome}/jre/lib/${ARCH}/client
+LD_LIBRARY_PATH=${jdkhome}/jre/lib/${ARCH}:${jdkhome}/jre/lib/${ARCH}/client:.
 export LD_LIBRARY_PATH
 
 # Launch screensaver:

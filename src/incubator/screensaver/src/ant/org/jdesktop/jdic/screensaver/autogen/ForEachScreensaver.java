@@ -65,6 +65,7 @@ import org.xml.sax.SAXException;
  *   <li>[[options]] - Xrm options string for xscreensaver.</li>
  *   <li>[[exe]] - The name of the final executable.</li>
  *   <li>[[source]] - Filename of source file, without extension.</li>
+ *   <li>[[joglsettings]] - For Makefile, settings section for jogl.</li>
  * </ul>
  *
  * The tasks in the body of the <foreachscreensaver> task are executed
@@ -92,6 +93,9 @@ public class ForEachScreensaver
     /** The platform we're running on */
     private String os;
     
+    /** If true, generate code for including jogl (3D OpenGL screensavers) */
+    private boolean jogl;
+    
     public void setConfDir( File confDir ) {
         this.confDir = confDir;
     }
@@ -118,6 +122,14 @@ public class ForEachScreensaver
     
     public void setOs(java.lang.String os) {
         this.os = os;
+    }
+    
+    public boolean isJogl() {
+        return jogl;
+    }
+
+    public void setJogl(boolean jogl) {
+        this.jogl=jogl;
     }
     
     public void execute() throws BuildException {
@@ -262,6 +274,9 @@ public class ForEachScreensaver
         String jarArg, String classArg, String exeName ) 
         throws IOException
     {
+        // Include jogl.jar in the path if this is a JOGL screensaver.
+        if(jogl) jarArg += ":jogl.jar";
+        
         File outFile = new File( outDir, filename );
         Properties substitute = new Properties();
         substitute.setProperty("jar", jarArg);
@@ -287,7 +302,17 @@ public class ForEachScreensaver
             exes.append(value);
             exes.append(' ');
         }
+        if(jogl) exes.append("linkjogl ");
         substitute.setProperty("exes", exes.toString());
+        
+        String joglSettings = "";
+        if(jogl) {
+            joglSettings = 
+                "# Set this to the location of jogl.jar and obj/libjogl.so\n" +
+                "joglhome=/opt/jogl";
+        }
+        substitute.setProperty("joglsettings", joglSettings);
+        
         iter = savers.keySet().iterator();
         while(iter.hasNext()) {
             String key = (String)iter.next();
@@ -300,6 +325,12 @@ public class ForEachScreensaver
                 "\t${strip} " + value + "\n" +
                 "\tchmod a+x " + key + "\n\n");
         }
+        if(jogl) {
+            targets.append("linkjogl:\n");
+            targets.append(
+                "\tln -s ${joglhome}/jogl.jar .\n" +
+                "\tln -s ${joglhome}/obj/libjogl.so .\n");
+        }
         substitute.setProperty("targets", targets.toString());
         Utilities.copyFileAndSubstitute(outFile, 
             "/org/jdesktop/jdic/screensaver/autogen/resources/unix/" +
@@ -311,6 +342,9 @@ public class ForEachScreensaver
         ArrayList options )
         throws IOException
     {
+        // Include jogl.jar in the path if this is a JOGL screensaver.
+        if(jogl) jarArg += ":jogl.jar";
+        
         // Go through all options and create a list of valid
         // commandline parameters:
         ArrayList allParams = new ArrayList();
@@ -358,6 +392,9 @@ public class ForEachScreensaver
         File configFile )
         throws IOException
     {
+        // Include jogl.jar in the path if this is a JOGL screensaver.
+        if(jogl) jarArg += ";jogl.jar";
+        
         // Windows needs the XML config file data so we can construct the
         // settings dialog from it.  Include as a char[]:
         StringBuffer configData = new StringBuffer();
