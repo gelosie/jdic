@@ -22,18 +22,16 @@ package org.jdesktop.jdic.browser;
 /**
  * Utility class for <code>WebBrowser</code> class.
  * <p>
- * Note: this class was unintentionally exposed as a public class in release 
- * 0.8.8, which should be made internal. As from release 0.9, all the public 
- * APIs are deprecated and are not recommended for use. This class including 
- * all the public APIs may be removed in future releases.
- * 
+ * <b>Deprecated</b>. DO NOT use this class, which will be removed in future 
+ * releases! This class was unintentionally exposed as a public class. As from 
+ * release 0.9, all the public APIs are deprecated. 
  */
 public class WebBrowserUtil {    
     /**
      * Gets the native browser path.
      * 
-     * @deprecated This method is not recommended for use and may be removed 
-     *             in future releases.
+     * @deprecated DO NOT use. This method was unintentionally exposed and will
+     *             be removed in a future release.
      * @return the path of the default browser in the current system
      */
     public static String getBrowserPath() {
@@ -44,8 +42,8 @@ public class WebBrowserUtil {
     /**
      * Checks if the default browser for the current platform is Mozilla.
      * 
-     * @deprecated This method is not recommended for use and may be removed 
-     *             in future releases.
+     * @deprecated DO NOT use. This method was unintentionally exposed and will
+     *             be removed in a future release.
      * @return true on Solaris and Linux and true on Windows platform if Mozilla
      * is set as the default browser.
      */
@@ -57,8 +55,8 @@ public class WebBrowserUtil {
     /**
      * Gets the native Mozilla GRE home directory installed with a .exe package.
      * 
-     * @deprecated This method is not recommended for use and may be removed 
-     *             in future releases.
+     * @deprecated DO NOT use. This method was unintentionally exposed and will
+     *             be removed in a future release.
      * @return the GRE home directory of the currently installed Mozilla.
      */
     public static String getMozillaGreHome() {
