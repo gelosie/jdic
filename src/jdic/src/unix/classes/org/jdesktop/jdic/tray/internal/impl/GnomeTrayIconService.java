@@ -351,6 +351,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         JLabel captionLabel = new JLabel();
         JLabel textLabel = new JLabel();
         private Thread showThread;
+        private Thread hideThread;
         private int timeout = 10000;
         private int delay = 15;
         private int pixel = 2;
@@ -410,21 +411,23 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             innerPanel.add(topPanel, BorderLayout.NORTH);
             innerPanel.add(textLabel, BorderLayout.CENTER);
             
+            outerPanel.addMouseListener(new MouseAdapter(){
+                public void mouseClicked(MouseEvent e){
+                	hideCurrentMessageWindowImmediately();
+                }
+            });
             hideAction = new ActionListener(){
 				public void actionPerformed(ActionEvent e) {
-                    Thread hideThread = new Thread(){
-                     public void run(){
-                        doHide();    
-                     }
-                    };
-                    hideThread.start();
+                    doHide();    
 				}
             };
             hideTimer = new javax.swing.Timer(timeout, hideAction);
             hideTimer.setRepeats(false);
         }
         private void hideCurrentMessageWindowImmediately(){
-            if(showThread != null){
+            if(hideThread != null){
+                hideThread.interrupt(); // already in hiding.
+            } else if(showThread != null){
                 hideTimer.stop();
                 this.setVisible(false);
 
@@ -531,35 +534,36 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                     this.validate();
                 }
                 hideTimer.start();
-                //Thread.sleep(timeout);
-                //this.doHide();
             }catch(Exception ie){
             	System.out.println(ie);
             }
         }
 
         private void doHide(){
-            p = this.getLocation();
-            d = this.getSize();
-            try{
-                for(int i=d.height; i>=1; i-=pixel){
-                    Thread.sleep(delay);
-                    if(downToup){
-                        this.setBounds(p.x, p.y+d.height-i, d.width, i);
-                    }else{
-                        this.setSize(d.width, i);
+            hideThread = new Thread(){
+             public void run(){
+                p = getLocation();
+                d = getSize();
+                try{
+                    for(int i=d.height; i>=1; i-=pixel){
+                        Thread.sleep(delay);
+                        if(downToup){
+                            setBounds(p.x, p.y+d.height-i, d.width, i);
+                        }else{
+                            setSize(d.width, i);
+                        }
+                        validate();
                     }
-                    this.validate();
+                }catch(Exception e){}
+                setVisible(false);
+                synchronized(GnomeTrayIconService.class){
+                    showThread = null;
+                    GnomeTrayIconService.class.notify();
                 }
-            }catch(Exception e){}
-            this.setVisible(false);
-            
-            synchronized(GnomeTrayIconService.class){
-                showThread = null;
-                GnomeTrayIconService.class.notify();
-            }
-
+                hideThread = null;
+             }
+            };
+            hideThread.start();
         }
     }
-    
 }
