@@ -35,7 +35,7 @@ client-side Java applications. You can find information about these tools at the
 <a href="http://java.sun.com/products/javawebstart/">Java Web Start website</a>. 
 This document walks you through the process of using Java Web Start to deploy 
 an application that uses the JDIC APIs. 
-<h3><b>FileExplorer -  sample application </b></h3>
+<h3><b>Sample Application: FileExplorer</b></h3>
   
 <blockquote>To give the implementation details of how to deploy a JDIC application 
   using Java Web Start, we'll use a JDIC demo application &quot;FileExplorer&quot; 
@@ -59,8 +59,9 @@ Figure 1. FileExplorer running on Windows XP.
 
     <h3><b>Steps </b><b>for  deploying the FileExplorer application using Java Web
     Start</b></h3>
-<p><span style="font-weight: bold;">1. Package the required application and JDIC 
-  binary files as JAR files.</span> </p>
+
+<b>1. Package the required application and JDIC 
+  binary files as JAR files.</b>
 <blockquote>
   <ul>
     <li>Create a <code><b>fileexplorer.jar</b></code> file with the generated 
@@ -94,9 +95,8 @@ Figure 1. FileExplorer running on Windows XP.
     </ul>
   </blockquote>
 </blockquote>
-<p>
-<b>2. Implement a JNLP file</b><br>
-  <br>
+
+<b>2. Implement a JNLP file</b>
   <blockquote>
 Below is a sample <span style="font-weight: bold;"><code>fileexplorer.jnlp</code></span> 
   file for the FileExplorer application: <br><br>
@@ -142,8 +142,10 @@ Below is a sample <span style="font-weight: bold;"><code>fileexplorer.jnlp</code
       </tr>
     </tbody>
   </table>
-  <p><strong>Note:
-  </strong></p>
+  <br>
+  
+  <strong>Note:
+  </strong>
   <ul>
     <li>In line 3, the <code><b>codebase</b></code> attribute and in lines 4 through 
       10, the attributes specified in the <code><b>information</b></code> tag 
@@ -182,16 +184,16 @@ Below is a sample <span style="font-weight: bold;"><code>fileexplorer.jnlp</code
       tag specifies the main class name, by which Java Web Start finds the class 
       containing the <code>main</code> method to execute.&nbsp; </li>
   </ul>
-  <ol xmlns:dw="http://www.ibm.com/developerWorks/">
-  </ol>
-  <span style="font-weight: bold;"></span><span
- style="font-weight: bold;">3. Sign the JAR files</span><br><br>
+  </blockquote>
+  
+  <b>3. Sign the JAR files</b>
+  <blockquote>
  Each JAR file must be 
   signed with your own key certificate. Details on the JAR certification can be 
   found at <a href="http://java.sun.com/j2se/1.4.2/docs/guide/jws/developersguide/development.html#security">Security 
   and Code Signing</a>.</blockquote>
-<p><span
- style="font-weight: bold;">4. Deploy and test the JNLP application</span></p>
+
+<b>4. Deploy and test the JNLP application</b>
 <blockquote>
   <ul>
     <li>Set up a local web server and put the <code>fileexplorer</code> directory 
