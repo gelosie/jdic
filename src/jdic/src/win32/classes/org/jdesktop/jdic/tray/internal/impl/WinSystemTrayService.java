@@ -28,10 +28,8 @@ package org.jdesktop.jdic.tray.internal.impl;
 
 import org.jdesktop.jdic.tray.internal.SystemTrayService;
 import org.jdesktop.jdic.tray.internal.TrayIconService;
-import org.jdesktop.jdic.tray.SystemTray;
 import org.jdesktop.jdic.tray.TrayIcon;
 import java.awt.Toolkit;
-import sun.awt.EmbeddedFrame;
 
 
 public class WinSystemTrayService implements SystemTrayService {
