@@ -42,26 +42,6 @@ void SocketMsgHandler(const char *pMsg)
     ::PostMessage(gMainWnd, WM_SOCKET_MSG, 0, (long)msg);
 }
 
-BOOL IsDlgDisplayed() 
-{
-    HKEY hkey;
-    DWORD type, cb;
-    char *p, value[256] = "\0";
-    
-    // get IE's setting of "Error Dlg Displayed On Every Error"
-    if (RegOpenKey(HKEY_CURRENT_USER, "Software\\Microsoft\\Internet Explorer\\Main", &hkey) != ERROR_SUCCESS)
-        WBTRACE("Failed to query dialog display setting from IE!");
-    
-    cb = 256;
-    if (RegQueryValueEx(hkey, "Error Dlg Displayed On Every Error", 0, &type, (LPBYTE)value, &cb) != ERROR_SUCCESS)
-        WBTRACE("Failed to query dialog display setting from IE!");
-    
-    RegCloseKey(hkey);
-   
-    p = strstr(strlwr(value), "yes");
-    return (p != NULL); 	
-}
-
 void CommandProc(char * pInputChar)
 {
     BrowserWindow * pBrowserWnd;
@@ -93,7 +73,7 @@ void CommandProc(char * pInputChar)
         if (!pBrowserWnd) 
 			break;
 
-        SetRect(&rect,200, 200, 800, 600);
+        SetRect(&rect, 0, 0, 0, 0);
         HWND hWndClient = pBrowserWnd->Create(hWnd,rect,
                 _T("about:blank"),
                 WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
@@ -109,10 +89,6 @@ void CommandProc(char * pInputChar)
         pBrowserWnd->SetReady(instanceNum);
         SendSocketMessage(instanceNum, CEVENT_INIT_WINDOW_SUCC);
         
-        //set silent mode 
-        if (!IsDlgDisplayed()) 
-            pBrowserWnd->m_pWB->put_Silent(VARIANT_TRUE);
-
         //save the pointer of BrowserWnd to array
         ABrowserWnd.SetAtGrow(instanceNum, pBrowserWnd);
         //show window
