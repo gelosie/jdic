@@ -1,7 +1,7 @@
 <html>
 <head>
 	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
-	<title>JDIC - JDesktop Integration Componenets</title>
+	<title>JDIC - JDesktop Integration Components</title>
 	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
 	<meta NAME="AUTHOR" CONTENT=" ">
 	<meta NAME="CREATED" CONTENT="20000519;14440300">
@@ -9,44 +9,91 @@
 	<meta NAME="CHANGED" CONTENT="20000901;17584900">
 </head>
 
-<body>
+<body bgcolor="#FFFFFF">
+  <p> 
+  The <strong><font color="#FF0000">J</font></strong><font color="#FF0000"><b>D</b></font>esktop 
+    <font color="#FF0000"><b>I</b></font>ntegration <font color="#FF0000"><b>C</b></font>omponents 
+    (<font color="#FF0000"><b>JDIC</b></font>) project aims to make Java applications 
+    first-class citizens of current desktop platforms without <img align=right src="resource/javaduke2-sm.gif" alt="Java" border=0 height=113 width=100 hspace=20>sacrificing 
+    platform independence.
+	</p>
+  
+  <p>
+    JDIC provides Java applications with access to facilities provided by the 
+    native desktop such as the mailer, the HTML rendering engine, and registered 
+    document viewing applications. Additionally it provides the mechanisms by 
+    which Java applications can integrate into the native desktop such as registering 
+    Java applications as document viewers on the desktop and creating desktop 
+    installer packages containing Java applications.
+	</p>
+	
+	<p>
+    JDIC consists of a collection of Java packages (<b>JDIC API</b>), all with 
+    the package name prefix<b> org.jdesktop.jdic</b>, and a JNLP application packaging 
+    tool (<b>JDIC Packager</b>).</p>
 
-<table BORDER=0 WIDTH="100%" BGCOLOR="#EFEFEF">
-  <tr>
-  <td WIDTH="93" height="92"><img SRC="resource/javalogo.gif" ALT="Java" BORDER=0 height=90 width=51 HSPACE=20></td>
-  <td width="80">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-    <td width="707" ALIGN=CENTER><p>&nbsp;</p>
-      <p><font color="#6600FF" size="+2" ><strong>JDesktop Integration Components</strong></font> </p><td ALIGN=LEFT VALIGN=TOP WIDTH="16">
-</table>
-<hr>
-<blockquote> 
-  <p><strong><font color="#FF0000">J</font></strong><font color="#FF0000"><b>D</b></font>esktop
-  <font color="#FF0000"><b>I</b></font>ntegration <font color="#FF0000"><b>C</b></font>omponents&nbsp;
-  (<font color="#FF0000"><b>JDIC</b></font>). This project aims to make 
-    Java applications first citizens of current desktop platforms without <img align=right src="resource/javaduke2.gif" alt="Java" border=0 height=113 width=66 hspace=20>sacrificing 
-    platform independence.&nbsp;<br>
-  <br>
- It provides Java applications with access to facilities 
-    provided by the native desktop such as the desktop mailer, the html rendering 
-    engine or registered document viewing applications. Additionally it provides 
-    the mechanisms by which Java applications can integrate into the native Desktop 
-    such as registering Java applications as document viewers on the desktop and 
-    creating desktop installer packages containing Java applications.&nbsp;<br>
-  <br>
-  JDIC consists of a collection of Java packages (<b>JDIC API</b>), with the
-  same major package name <b> org.jdesktop.jdic</b>, and a JNLP application
-  packaging tool (<b>JDIC Packager</b>).&nbsp;</p>
-</blockquote>
-<blockquote>
 
-    <h2><a href="documentation/index.html">Documentation</a></h2>
-    <h2><a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">Download</a></h2>
-    <h2>Demos</h2>
-    <blockquote>
-    <p><a href="http://www.javadesktop.org/jdic/webstart/Desktop/FileExplorer.jnlp"><img border="0" src="resource/fileexplorer.jpg" width="115" height="88"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <img border="0" src="resource/filechooser.jpg" width="115" height="88">(N/A)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><a href="http://www.javadesktop.org/jdic/webstart/Browser/webbrowser.jnlp"><img border="0" src="resource/browser.jpg" width="115" height="88"></a></b></p>
-    </blockquote>
-</blockquote>
+    
+<h3>Documentation</h3>
+	
+<p> The <a href="documentation/index.html">JDIC Documentation</a> page has links 
+  to articles, API documentation, implementation specifications, code examples, 
+  installation and configuration notes, and more.</p>
+	
+    
+<h3>Download</h3>
+    
+<p> You can <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">download</a> 
+  the API documentation and the latest release of the JDIC project.</p>
+	
+	<h3>Demos</h3>
+   
+   
+<p> If you have Java Web Start installed, you can download demos that showcase 
+  JDIC functionality. <font color="#FF0000">[PENDING: where is the code for these 
+  demos?]</font> </p>
+<table border="1" cellspacing="2" cellpadding="3">
+  <tr> 
+    <th>Demo<br>
+      <em>(click to run)</em></th>
+    <th> 
+      <p>Screenshot<br>
+        <em>(click for full size)</em></p>
+      </th>
+    <th>Description</th>
+  </tr>
+  <tr class="a"> 
+    <td> 
+      <p align="center"> <a href="http://www.javadesktop.org/jdic/webstart/Desktop/FileExplorer.jnlp">FileExplorer</a> 
+        <br>
+      </p>
+    </td>
+    <td><a href="resource/fileexplorer.jpg"><img src="resource/fileexplorer-sm.gif" width="153" height="100" border="0"></a></td>
+    <td><font color="#FF0000">[PENDING: This should describe which parts of the 
+      JDIC the demo uses, and what else is interesting about the demo.]</font></td>
+  </tr>
+  <tr class="b"> 
+    <td> 
+      <p align="center"><a href="http://www.javadesktop.org/jdic/webstart/Browser/webbrowser.jnlp">Browser</a> 
+        <br>
+    </td>
+    <td><a href="resource/browser.jpg"><img src="resource/browser-sm.gif" width="149" height="100" border="0"></a></td>
+    <td><font color="#FF0000">[PENDING: This should describe which parts of the 
+      JDIC the demo uses, and what else is interesting about the demo.]</font></td>
+  </tr>
+  <tr class="a"> 
+    <td> 
+      <p align="center">FileChooser<br>
+        <em>(not available yet)</em><br>
+      
+    </td>
+    <td><a href="resource/filechooser.jpg"><img src="resource/filechooser-sm.gif" width="149" height="100"></a></td>
+    <td><font color="#FF0000">[PENDING: This should describe which parts of the 
+      JDIC the demo will use.]</font> </td>
+  </tr>
+</table> 
+
+
 
 </body>
 </html>
