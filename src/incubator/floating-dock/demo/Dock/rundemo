@@ -1,0 +1,10 @@
+#!/bin/sh
+
+javahome="echo $JAVA_HOME"
+if test ! $JAVA_HOME
+then
+echo JAVA_HOME undefined
+exit
+fi
+
+java -classpath ./floatingdock.jar:. -Djava.library.path=. DockDemo
