@@ -831,8 +831,23 @@ int start_java() {
     }
     
     if( valid ) {
-        char systemDirectory[MAX_PATH];
-        GetSystemDirectory(systemDirectory, MAX_PATH);
+        /* We will assume the JARs are located in the same dir as the .scr */
+        char lpFilename[MAX_PATH];
+        char drive[_MAX_DRIVE];
+        char dir[_MAX_DIR];
+        char fname[_MAX_FNAME];
+        char ext[_MAX_EXT];
+        GetModuleFileName(GetModuleHandle(NULL), (char*)lpFilename,
+            (DWORD)sizeof(lpFilename));
+        _splitpath((const char *)lpFilename, drive, dir, fname, ext);
+        char jarDirectory[MAX_PATH];
+        sprintf(jarDirectory, "%s%s", drive, dir);
+        if(DEBUG) fprintf( log, "Detected .scr directory: %s\n", jarDirectory );
+
+        /* Alternate if you want to use C:\WINDOWS\SYSTEM32 or 
+         * C:\WINNT\SYSTEM32 */
+        //GetSystemDirectory(jarDirectory, MAX_PATH);
+
         #ifdef JNI_VERSION_1_2
         JavaVMInitArgs vm_args;
         JavaVMOption options[1];
@@ -840,9 +855,9 @@ int start_java() {
         options[0].optionString = (char *)malloc( MAX_PATH * 2 + 32 );
         sprintf( options[0].optionString, 
             "-Djava.class.path=%s\\%s%c%s\\%s", 
-            systemDirectory, jarName,
+            jarDirectory, jarName,
             PATH_SEPARATOR, 
-            systemDirectory, "saverbeans-api.jar" );
+            jarDirectory, "saverbeans-api.jar" );
         if(DEBUG) fprintf( log, "%s\n", options[0].optionString );
         vm_args.version = 0x00010002;
         vm_args.options = options;
