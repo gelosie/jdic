@@ -14,6 +14,7 @@ Top-level target:
     buildlinux:     on Linux to build a Linux distribuition.
     buildsolaris:   on Solaris to build a Solaris distribuition.
     buildfreebsd:   on FreeBSD to build a FreeBSD distribuition.
+    buildmac_os_x:  on Mac OS X to build a Mac OS X distribuition.
   clean:            Remove the generated distribution (including files and directories).
 
 -->
@@ -29,6 +30,7 @@ Top-level target:
   <property name="share.classes.dir" value="${src.dir}/share/classes" />
   <property name="unix.classes.dir"  value="${src.dir}/unix/classes" />
   <property name="win32.classes.dir" value="${src.dir}/win32/classes" />
+  <property name="mac.classes.dir"   value="${src.dir}/mac_os_x/classes" />
 
   <!-- the path of file defmailer.properties defining the default mailer 
        location on Linux/Solaris/FreeBSD -->
@@ -44,6 +46,9 @@ Top-level target:
   <property name="win32.native.ie.dir"      value="${win32.native.dir}/ie" />
   <property name="win32.native.mozilla.dir" value="${win32.native.dir}/mozilla" />
 
+  <property name="mac.native.dir"         value="${src.dir}/mac_os_x/native" />    
+  <property name="mac.native.jni.dir"     value="${mac.native.dir}/jni" />
+
   <!-- the distribution version and release of this build -->
   <!-- which is only used in javadoc target -->
   <property name="version" value="0.8" />
@@ -54,7 +59,8 @@ Top-level target:
 
   <target name="showtargets" description="default target showing all available targets">
     <echo>The top-level targets are:</echo>
-    <echo>  buildall:   Build a distribution for the current platform.</echo>
+    <echo>  buildall:   Build a distribution for the current platform</echo>
+    <echo>              (Windows, Linux, Solaris, FreeBSD or Mac OS X).</echo>
     <echo>  clean:      Remove the generated distribution.</echo>
     <echo></echo>
     <echo>  The generated distribution is put under *dist* directory.</echo>
@@ -87,6 +93,10 @@ Top-level target:
 
     <condition property="dist.dir" value="dist/freebsd">
       <os name="freebsd"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/mac_os_x">
+      <os name="Mac OS X"/>
     </condition> 
 
     <!-- Create the distribution directory -->
@@ -128,6 +138,10 @@ Top-level target:
     <condition property="platform.target" value="buildfreebsd">
       <os name="freebsd"/>      
     </condition> 
+    
+    <condition property="platform.target" value="buildmac_os_x">
+      <os name="Mac OS X" />      
+    </condition>     
 
     <antcall target="${platform.target}" />
   </target>
@@ -328,6 +342,35 @@ Top-level target:
       <arg value="${dist.dir}/." />
     </exec>
 
+  </target>
+
+  <!--
+    - MAC OS X DISTRIBUTION
+    -->
+  <target name="buildmac_os_x" depends="buildmacjar, javadoc, buildmacjni"
+          description="build java and native source code for Mac OS X" >
+  </target>
+
+  <!-- *** Build Mac jar file *** -->  
+  <target name="buildmacjar" depends="init"
+          description="build the classes and jar file." >
+    <javac srcdir="${share.classes.dir}:${mac.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" 
+    />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+         <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+  </target>
+
+  <!-- *** Build Mac native JNI code *** -->
+  <target name="buildmacjni" depends="init"
+          description="build native jni libraries." >
+    <exec dir="${mac.native.jni.dir}" executable="make" failonerror="yes" />
+
+    <!-- copy generated .jnilib file -->
+    <copy file="${mac.native.jni.dir}/libjdic.jnilib" todir="${dist.dir}" />
   </target>
 
 </project>
