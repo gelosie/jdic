@@ -223,3 +223,12 @@ forums and mailing lists available.
     * http://jdic.dev.java.net/
     * http://screensavers.dev.java.net/
 
+
+Revision History
+----------------
+Version 0.1 - June 1, 2004
+    * Initial open-source release of SaverBeans SDK
+
+Version 0.1.1
+    * Fixed screensavers.dev.java.net issue #1:
+      Fatal Exception if *.scr and *.jar not in system32 directory
