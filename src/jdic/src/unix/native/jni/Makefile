@@ -64,7 +64,6 @@ EXTRA_INCLUDES = `pkg-config --cflags glib-2.0` \
                  `pkg-config --cflags bonobo-activation-2.0` \
                  `pkg-config --cflags libbonobo-2.0` \
                  `pkg-config --cflags ORBit-2.0` \
-                 `pkg-config --cflags linc` \
                  `pkg-config --cflags gconf-2.0`
 
 LIBS = -L$(USR_LIB_DIR) \
