@@ -15,7 +15,8 @@ Top-level target:
 
   <target name="showtargets" description="default target showing all available targets">
     <echo>The available targets are:</echo>
-    <echo>  buildall:   Build a distribution for the current platform.</echo>
+    <echo>  buildall:   Build a distribution for the current platform</echo>
+    <echo>              (Windows, Linux, Solaris or FreeBSD).</echo>
     <echo>  clean:      Remove the generated distribution.</echo>
     <echo></echo>
     <echo>  The generated distribution is put under *dist* directory.</echo>
