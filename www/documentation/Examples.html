@@ -1,0 +1,341 @@
+<html>
+<head>
+	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<title>JDIC Desktop API Samples</title>
+	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+	<meta NAME="AUTHOR" CONTENT=" ">
+	<meta NAME="CREATED" CONTENT="20000519;14440300">
+	<meta NAME="CHANGEDBY" CONTENT=" ">
+	<meta NAME="CHANGED" CONTENT="20000901;17584900">
+</head>
+
+<body>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=4 WIDTH="100%"  height="25" BGCOLOR="#99CCFF" >
+  <tr> 
+    <td><p><strong><font face="sans-serif" size="3">Examples using JDIC API</font></strong></p></td>
+  </tr>
+</table>
+<ul>
+  <li><b><a href="#Use package org.jdesktop.jdic.desktop">Use package
+    org.jdesktop.jdic.desktop</a></b></li>    
+  <li><b><a href="#Use package org.jdesktop.jdic.filetypes">Use package
+    org.jdesktop.jdic.filetypes</a></b></li>
+  <li><b><a href="#Use package org.jdesktop.jdic.browser">Use package
+    org.jdesktop.jdic.browser</a></b></li>
+</ul>
+<h3><b><a name="Use package org.jdesktop.jdic.desktop">Use package
+org.jdesktop.jdic.desktop</a></b>
+</h3>
+
+<pre><b>Case# 1: </b>Open a file by launching the default content-handling application.
+
+import java.io.File;
+import org.jdesktop.jdic.desktop.Desktop;
+import org.jdesktop.jdic.desktop.DesktopException;
+
+public class TestOpen {
+    public static void main(String[] args) {
+        try {
+            Desktop.open(new File(&quot;C:\\temp\\test.txt&quot;));
+        } catch (DesktopException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+<b>Case# 2:<font color ="#0000FF"> </font></b>Edit a file if it's editable by launching the default content-handling application.
+
+import java.io.File;
+import org.jdesktop.jdic.desktop.Desktop;
+import org.jdesktop.jdic.desktop.DesktopException;
+
+public class TestEdit {
+    public static void main(String[] args) {
+        File testFile = new File(&quot;C:\\temp\\test.txt&quot;);
+        if(Desktop.isEditable(testFile)) {
+            try {
+                Desktop.edit(testFile);
+            } catch (DesktopException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+<b>Case# 3:<font color ="#0000FF"> </font></b>Print a file if it's printable by launching the default content-handling application.
+
+import java.io.File;
+import org.jdesktop.jdic.desktop.Desktop;
+import org.jdesktop.jdic.desktop.DesktopException;
+
+public class TestPrint {
+    public static void main(String[] args) {
+        File testFile = new File(&quot;C:\\temp\\test.txt&quot;);
+        if(Desktop.isPrintable(testFile)) {
+            try {
+                Desktop.print(testFile);
+            } catch (DesktopException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+<b>Case# 4:<font color ="#0000FF"> </font></b>Browse an URL by launching the system default browser.
+
+import java.net.URL;
+import java.net.MalformedURLException;
+import org.jdesktop.jdic.desktop.Desktop;
+import org.jdesktop.jdic.desktop.DesktopException;
+
+public class TestBrowse {
+    public static void main(String[] args) {
+        try {
+            Desktop.browse(new URL(&quot;http://sceri.prc.sun.com&quot;));
+        } catch(MalformedURLException e) {
+            e.printStackTrace();
+        } catch (DesktopException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+<b>Case# 5:<font color ="#0000FF"> </font></b>Launch the system default mailer.
+
+import org.jdesktop.jdic.desktop.Desktop;
+import org.jdesktop.jdic.desktop.DesktopException;
+
+public class TestMail {
+    public static void main(String[] args) {
+        try {
+            Desktop.mail();
+        } catch (DesktopException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+<b>Case# 6:<font color ="#0000FF"> </font></b>Launch the system default mailer and send the constructed message with UI or without UI.
+
+import java.util.List;
+import java.util.ArrayList;
+import org.jdesktop.jdic.desktop.Desktop;
+import org.jdesktop.jdic.desktop.DesktopException;
+import org.jdesktop.jdic.desktop.Message;
+
+public class TestOpen {
+    public static void main(String[] args) {
+        Message msg = new Message();
+        
+        List toList = new ArrayList();
+        toList.add(&quot;George.Zhang@sun.com&quot;);
+        msg.setToList(toList);
+        
+        List ccList = new ArrayList();
+        ccList.add(&quot;Paul.Huang@sun.com&quot;);
+        ccList.add(&quot;Joey.Shen@sun.com&quot;);
+        msg.setCcList(ccList);
+
+        msg.setSubject(&quot;Hello&quot;);
+        msg.setBody(&quot;Test&quot;);
+        
+        List attachList = new ArrayList();
+        attachList.add(&quot;C:\\test\\test.txt&quot;);
+        msg.setAttachmentList(attachList);      
+            
+        try {
+            // Send mail in UI mode.
+            Desktop.mail(msg);
+        } catch (DesktopException e) {
+            e.printStackTrace();
+        }
+    }
+}</pre>
+
+<hr>
+
+<h3><b><a name="Use package org.jdesktop.jdic.filetypes">Use package
+org.jdesktop.jdic.filetypes</a></b>
+</h3>
+
+<pre><b>Case# 1:</b> Get an association
+
+import org.jdesktop.jdic.filetypes.*;
+......
+    AssociationService assocService = new AssociationService();
+    Association assoc = new Association();
+    
+    // Get association for file extension.
+    assoc = assocService.getFileExtensionAssociation(&quot;.doc&quot;);
+    
+    Or:
+    // Get association for mime type.
+    assoc = assocService.getMimeTypeAssociation(&quot;text/html&quot;);
+
+    Or:
+    // Get association for the given URL.
+    assoc = assocService.getAssociationByContent(&quot;http://sceri.prc.sun.com/index.html&quot;);
+
+<b>Case# 2:</b> Register an association
+
+// On Windows. 
+import org.jdesktop.jdic.filetypes.*;
+......
+    AssociationService assocService = new AssociationService();
+    Association assoc = new Association();
+
+    assoc.addFileExtension(&quot;.tst&quot;);
+    assoc.setMimeType(&quot;testmime/submime&quot;);
+    assoc.setDescription(&quot;tst file&quot;);
+    assoc.setIconFileName(&quot;%SystemRoot%\system32\shell32.dll,-152&quot;);
+
+    Action oneAction;
+    oneAction = new Action(&quot;open&quot;, &quot;C:\WINNT\system32\notepad.exe %1&quot;, &quot;open the file&quot;);
+    assoc.addAction(oneAction);
+    oneAction = new Action(&quot;edit&quot;, &quot;C:\WINNT\system32\notepad.exe %1&quot;, &quot;edit the file&quot;);
+    assoc.addAction(oneAction);
+    oneAction = new Action(&quot;print&quot;, &quot;C:\WINNT\system32\notepad.exe /p %1&quot;, &quot;print the file&quot;);
+    assoc.addAction(oneAction);
+    
+    try {
+        // Register an association in system level.
+        assocService.registerSystemAssociation(assoc);
+    } catch (AssociationAlreadyRegisteredException e) {
+        System.out.println(e.getMessage());
+    } catch (RegisterFailedException e) {
+        System.out.println(e.getMessage()); 
+    }
+
+// On Gnome for Linux or Solaris.
+import org.jdesktop.jdic.filetypes.*;
+......
+    AssociationService assocService = new AssociationService();
+    Association assoc = new Association();
+
+    assoc.setName(&quot;javaws&quot;);
+    assoc.addFileExtension(&quot;.tst&quot;);
+    assoc.addFileExtension(&quot;.TST&quot;);
+    assoc.setMimeType(&quot;testmime/submime&quot;);
+    assoc.setDescription(&quot;tst file&quot;);
+    assoc.setIconFileName(&quot;/usr/share/pixmaps/gnome-javaws.png&quot;);
+
+    Action oneAction;
+    // Be careful!!! Here neither &quot;%1&quot; not &quot;%f&quot; is required, and only &quot;open&quot; verb
+    // is used for this API.
+    oneAction = new Action(&quot;open&quot;, &quot;/scratch/java/jre/j2re1.5.0/bin/javaws&quot;);
+    assoc.addAction(oneAction);
+    
+    try {
+        // Register an association in system level.
+        // This requires root permission, would generate three files: 
+        // javaws.keys and javaws.mime under /usr/share/mime-info or /usr/share/gnome/mime-info and 
+        // javaws.applications under /usr/share/application-registry or /usr/share/gnome/application-registry.
+        assocService.registerSystemAssociation(assoc);
+
+        // Register an association in user level.
+        // This would generate three files: javaws.keys and javaws.mime under ~/.gnome/mime-info,
+        // and javaws.applications under ~/.gnome/application-info.
+        //assocService.registerUserAssociation(assoc);
+        
+    } catch (AssociationAlreadyRegisteredException e) {
+        System.out.println(e.getMessage());
+    } catch (RegisterFailedException e) {
+        System.out.println(e.getMessage()); 
+    }
+
+<b>Case# 3:</b> Unregister an association
+
+// On Windows. 
+import org.jdesktop.jdic.filetypes.*;
+......
+    AssociationService assocService = new AssociationService();
+    Association assoc = new Association();
+
+    assoc.addFileExtension(&quot;.tst&quot;);
+    assoc.setMimeType(&quot;testmime/submime&quot;);
+    
+    try {
+        // Unregister an association in system level.
+        assocService.unregisterSystemAssociation(assoc);
+    } catch (AssociationNotRegisteredException e) {
+        System.out.println(e.getMessage());
+    } catch (RegisterFailedException e) {
+        System.out.println(e.getMessage()); 
+    }
+
+// On Gnome for Linux or Solaris.
+import org.jdesktop.jdic.filetypes.*;
+......
+    AssociationService assocService = new AssociationService();
+    Association assoc = new Association();
+
+    assoc.setName(&quot;javaws&quot;);
+    
+    try {
+        // Unregister an association in system level.
+        // This requires root permission, would remove all the three files registered/generated:
+        // javaws.keys, javaws.mime and javaws.applications at system level.
+        assocService.unregisterSystemAssociation(assoc);
+
+        // Unregister an association in user level.
+        // This would remove all the three files registered/generated:
+        // javaws.keys, javaws.mime and javaws.applications at user level.
+        //assocService.unregisterUserAssociation(assoc);
+        
+    } catch (AssociationNotRegisteredException e) {
+        System.out.println(e.getMessage());
+    } catch (RegisterFailedException e) {
+        System.out.println(e.getMessage()); 
+    }</pre>
+
+<hr>
+<h3><b><a name="Use package org.jdesktop.jdic.browser">Use package
+org.jdesktop.jdic.browser</a></b>&nbsp;</h3>
+
+<p>Using Browser API is like using Swing JEditorPane component. Below is a demo
+application to use Browser API displaying a given URL.<br>
+This demo application (SimpleBrowser) is released in both the binary and source
+JDIC distributions under demo/SimpleBrowser/ directory.</p>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse; " bordercolor="#111111" id="AutoNumber1" bgcolor="#e0e0e0">
+    <tr>
+     <td width="100%"> <pre>// Source code of demo application SimpleBrowser.
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.net.URL;
+import java.net.MalformedURLException;
+import org.jdesktop.jdic.browser.*;
+
+public class SimpleBrowser {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame(&quot;JDIC API Demo - SimpleBrowser&quot;);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        WebBrowser webBrowser = new WebBrowser();
+        
+        //Use below code to register a listener for the notification events.
+        // webBrowser.addWebBrowserListener(
+        //   new WebBrowserListener() {
+        //   public void downloadStarted(WebBrowserEvent event) {;}
+        //   public void downloadCompleted(WebBrowserEvent event) {;}
+        //   public void downloadProgress(WebBrowserEvent event) {;}
+        //   public void downloadError(WebBrowserEvent event) {;}
+        // });
+
+        try {
+            webBrowser.setURL(new URL(&quot;http://java.net&quot;));
+        } catch (MalformedURLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }        
+
+        frame.getContentPane().add(webBrowser, BorderLayout.CENTER);
+        frame.pack();
+        frame.setVisible(true);        
+    }
+}</pre></td>
+   </tr>
+</table>
+
+</body>
+</html>
