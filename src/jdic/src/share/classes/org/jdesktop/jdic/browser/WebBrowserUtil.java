@@ -21,17 +21,16 @@ package org.jdesktop.jdic.browser;
 
 /**
  * Utility class for <code>WebBrowser</code> class.
- * <p>
- * <b>Deprecated</b>. DO NOT use this class, which will be removed in future 
- * releases! This class was unintentionally exposed as a public class. As from 
- * release 0.9, all the public APIs are deprecated. 
+ * 
+ * @deprecated As of release 0.9 of JDIC. It was meant as an inner class, but 
+ *             was marked "public" due to a coding error. It will be removed 
+ *             in a future release.  
  */
 public class WebBrowserUtil {    
     /**
      * Gets the native browser path.
      * 
-     * @deprecated DO NOT use. This method was unintentionally exposed and will
-     *             be removed in a future release.
+     * @deprecated
      * @return the path of the default browser in the current system
      */
     public static String getBrowserPath() {
@@ -42,8 +41,7 @@ public class WebBrowserUtil {
     /**
      * Checks if the default browser for the current platform is Mozilla.
      * 
-     * @deprecated DO NOT use. This method was unintentionally exposed and will
-     *             be removed in a future release.
+     * @deprecated
      * @return true on Solaris and Linux and true on Windows platform if Mozilla
      * is set as the default browser.
      */
@@ -55,8 +53,7 @@ public class WebBrowserUtil {
     /**
      * Gets the native Mozilla GRE home directory installed with a .exe package.
      * 
-     * @deprecated DO NOT use. This method was unintentionally exposed and will
-     *             be removed in a future release.
+     * @deprecated
      * @return the GRE home directory of the currently installed Mozilla.
      */
     public static String getMozillaGreHome() {
