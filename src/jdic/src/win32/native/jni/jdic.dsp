@@ -19,7 +19,7 @@ CFG=jdic - Win32 Debug
 !MESSAGE 
 !MESSAGE "jdic - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "jdic - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "jdic - Win32 TRAY" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "jdic - Win32 Tray" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
 
 # Begin Project
@@ -84,12 +84,12 @@ LINK32=link.exe
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /debug /machine:I386 /pdbtype:sept /force:multiple
 # SUBTRACT LINK32 /pdb:none
 
-!ELSEIF  "$(CFG)" == "jdic - Win32 TRAY"
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "jdic___Win32_TRAY"
-# PROP BASE Intermediate_Dir "jdic___Win32_TRAY"
+# PROP BASE Output_Dir "jdic___Win32_Tray"
+# PROP BASE Intermediate_Dir "jdic___Win32_Tray"
 # PROP BASE Ignore_Export_Lib 0
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
@@ -98,7 +98,7 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JDIC_EXPORTS" /YX /FD /c
+# ADD BASE CPP /nologo /MT /W3 /GX /O2 /I "$(JAVA_HOME)/include" /I "$(JAVA_HOME)/include/win32" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JDIC_EXPORTS" /YX /FD /c
 # ADD CPP /nologo /MT /W3 /GX /O2 /I "$(JAVA_HOME)/include" /I "$(JAVA_HOME)/include/win32" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JDIC_EXPORTS" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -110,7 +110,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /machine:I386 /force:multiple
 # SUBTRACT BASE LINK32 /pdb:none
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /machine:I386 /force:multiple
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /machine:I386 /out:"Release/tray.dll" /force:multiple
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -119,13 +119,24 @@ LINK32=link.exe
 
 # Name "jdic - Win32 Release"
 # Name "jdic - Win32 Debug"
-# Name "jdic - Win32 TRAY"
+# Name "jdic - Win32 Tray"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
 SOURCE=..\..\..\share\native\utils\InitUtility.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -134,22 +145,79 @@ SOURCE=.\JNIloader.cpp
 # Begin Source File
 
 SOURCE=.\Tray.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\WebBrowser.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\WebBrowserUtil.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\WinAPIWrapper.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\WinRegistryWrapper.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -157,7 +225,35 @@ SOURCE=.\WinRegistryWrapper.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=.\DisplayThread.h
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\share\native\utils\InitUtility.h
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -166,26 +262,72 @@ SOURCE=.\JNIloader.h
 # Begin Source File
 
 SOURCE=.\WebBrowser.h
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\WebBrowserUtil.h
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\WinAPIWrapper.h
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\WinRegistryWrapper.h
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\WinSystemTrayService.h
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\WinTrayIconService.h
+# PROP Exclude_From_Build 1
 # End Source File
 # End Group
 # Begin Group "Resource Files"

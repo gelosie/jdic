@@ -1,10 +1,10 @@
 # Microsoft Developer Studio Generated NMAKE File, Based on jdic.dsp
 !IF "$(CFG)" == ""
-CFG=jdic - Win32 Release
-!MESSAGE No configuration specified. Defaulting to jdic - Win32 Release.
+CFG=jdic - Win32 Debug
+!MESSAGE No configuration specified. Defaulting to jdic - Win32 Debug.
 !ENDIF 
 
-!IF "$(CFG)" != "jdic - Win32 Release" && "$(CFG)" != "jdic - Win32 Debug" && "$(CFG)" != "jdic - Win32 TRAY"
+!IF "$(CFG)" != "jdic - Win32 Release" && "$(CFG)" != "jdic - Win32 Debug" && "$(CFG)" != "jdic - Win32 Tray"
 !MESSAGE Invalid configuration "$(CFG)" specified.
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
@@ -15,7 +15,7 @@ CFG=jdic - Win32 Release
 !MESSAGE 
 !MESSAGE "jdic - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "jdic - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "jdic - Win32 TRAY" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "jdic - Win32 Tray" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
 !ERROR An invalid configuration is specified.
 !ENDIF 
@@ -44,7 +44,6 @@ ALL : "$(OUTDIR)\jdic.dll"
 CLEAN :
 	-@erase "$(INTDIR)\InitUtility.obj"
 	-@erase "$(INTDIR)\JNIloader.obj"
-	-@erase "$(INTDIR)\Tray.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\WebBrowser.obj"
 	-@erase "$(INTDIR)\WebBrowserUtil.obj"
@@ -66,13 +65,12 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /incremental:no /pdb:"$(OUTDIR)\jdic.pdb" /machine:I386 /out:"$(OUTDIR)\jdic.dll" /implib:"$(OUTDIR)\jdic.lib" /force:multiple 
 LINK32_OBJS= \
-	"$(INTDIR)\InitUtility.obj" \
 	"$(INTDIR)\JNIloader.obj" \
-	"$(INTDIR)\Tray.obj" \
 	"$(INTDIR)\WebBrowser.obj" \
 	"$(INTDIR)\WebBrowserUtil.obj" \
 	"$(INTDIR)\WinAPIWrapper.obj" \
-	"$(INTDIR)\WinRegistryWrapper.obj"
+	"$(INTDIR)\WinRegistryWrapper.obj" \
+	"$(INTDIR)\InitUtility.obj"
 
 "$(OUTDIR)\jdic.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -93,7 +91,6 @@ ALL : "$(OUTDIR)\jdic.dll"
 CLEAN :
 	-@erase "$(INTDIR)\InitUtility.obj"
 	-@erase "$(INTDIR)\JNIloader.obj"
-	-@erase "$(INTDIR)\Tray.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(INTDIR)\WebBrowser.obj"
@@ -118,20 +115,19 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /incremental:yes /pdb:"$(OUTDIR)\jdic.pdb" /debug /machine:I386 /out:"$(OUTDIR)\jdic.dll" /implib:"$(OUTDIR)\jdic.lib" /pdbtype:sept /force:multiple 
 LINK32_OBJS= \
-	"$(INTDIR)\InitUtility.obj" \
 	"$(INTDIR)\JNIloader.obj" \
-	"$(INTDIR)\Tray.obj" \
 	"$(INTDIR)\WebBrowser.obj" \
 	"$(INTDIR)\WebBrowserUtil.obj" \
 	"$(INTDIR)\WinAPIWrapper.obj" \
-	"$(INTDIR)\WinRegistryWrapper.obj"
+	"$(INTDIR)\WinRegistryWrapper.obj" \
+	"$(INTDIR)\InitUtility.obj"
 
 "$(OUTDIR)\jdic.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-!ELSEIF  "$(CFG)" == "jdic - Win32 TRAY"
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
 
 OUTDIR=.\Release
 INTDIR=.\Release
@@ -139,21 +135,16 @@ INTDIR=.\Release
 OutDir=.\Release
 # End Custom Macros
 
-ALL : "$(OUTDIR)\jdic.dll"
+ALL : "$(OUTDIR)\tray.dll"
 
 
 CLEAN :
-	-@erase "$(INTDIR)\InitUtility.obj"
 	-@erase "$(INTDIR)\JNIloader.obj"
 	-@erase "$(INTDIR)\Tray.obj"
 	-@erase "$(INTDIR)\vc60.idb"
-	-@erase "$(INTDIR)\WebBrowser.obj"
-	-@erase "$(INTDIR)\WebBrowserUtil.obj"
-	-@erase "$(INTDIR)\WinAPIWrapper.obj"
-	-@erase "$(INTDIR)\WinRegistryWrapper.obj"
-	-@erase "$(OUTDIR)\jdic.dll"
-	-@erase "$(OUTDIR)\jdic.exp"
-	-@erase "$(OUTDIR)\jdic.lib"
+	-@erase "$(OUTDIR)\tray.dll"
+	-@erase "$(OUTDIR)\tray.exp"
+	-@erase "$(OUTDIR)\tray.lib"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -165,17 +156,12 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\jdic.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /incremental:no /pdb:"$(OUTDIR)\jdic.pdb" /machine:I386 /out:"$(OUTDIR)\jdic.dll" /implib:"$(OUTDIR)\jdic.lib" /force:multiple 
+LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /incremental:no /pdb:"$(OUTDIR)\tray.pdb" /machine:I386 /out:"$(OUTDIR)\tray.dll" /implib:"$(OUTDIR)\tray.lib" /force:multiple 
 LINK32_OBJS= \
-	"$(INTDIR)\InitUtility.obj" \
 	"$(INTDIR)\JNIloader.obj" \
-	"$(INTDIR)\Tray.obj" \
-	"$(INTDIR)\WebBrowser.obj" \
-	"$(INTDIR)\WebBrowserUtil.obj" \
-	"$(INTDIR)\WinAPIWrapper.obj" \
-	"$(INTDIR)\WinRegistryWrapper.obj"
+	"$(INTDIR)\Tray.obj"
 
-"$(OUTDIR)\jdic.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+"$(OUTDIR)\tray.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
@@ -222,12 +208,26 @@ LINK32_OBJS= \
 !ENDIF 
 
 
-!IF "$(CFG)" == "jdic - Win32 Release" || "$(CFG)" == "jdic - Win32 Debug" || "$(CFG)" == "jdic - Win32 TRAY"
+!IF "$(CFG)" == "jdic - Win32 Release" || "$(CFG)" == "jdic - Win32 Debug" || "$(CFG)" == "jdic - Win32 Tray"
 SOURCE=..\..\..\share\native\utils\InitUtility.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
 
 "$(INTDIR)\InitUtility.obj" : $(SOURCE) "$(INTDIR)"
 	$(CPP) $(CPP_PROJ) $(SOURCE)
 
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+
+"$(INTDIR)\InitUtility.obj" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+!ENDIF 
 
 SOURCE=.\JNIloader.cpp
 
@@ -236,28 +236,89 @@ SOURCE=.\JNIloader.cpp
 
 SOURCE=.\Tray.cpp
 
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+
 "$(INTDIR)\Tray.obj" : $(SOURCE) "$(INTDIR)"
 
 
+!ENDIF 
+
 SOURCE=.\WebBrowser.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
 
 "$(INTDIR)\WebBrowser.obj" : $(SOURCE) "$(INTDIR)"
 
 
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+
+"$(INTDIR)\WebBrowser.obj" : $(SOURCE) "$(INTDIR)"
+
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+!ENDIF 
+
 SOURCE=.\WebBrowserUtil.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
 
 "$(INTDIR)\WebBrowserUtil.obj" : $(SOURCE) "$(INTDIR)"
 
 
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+
+"$(INTDIR)\WebBrowserUtil.obj" : $(SOURCE) "$(INTDIR)"
+
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+!ENDIF 
+
 SOURCE=.\WinAPIWrapper.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
 
 "$(INTDIR)\WinAPIWrapper.obj" : $(SOURCE) "$(INTDIR)"
 
 
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+
+"$(INTDIR)\WinAPIWrapper.obj" : $(SOURCE) "$(INTDIR)"
+
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+!ENDIF 
+
 SOURCE=.\WinRegistryWrapper.cpp
+
+!IF  "$(CFG)" == "jdic - Win32 Release"
+
 
 "$(INTDIR)\WinRegistryWrapper.obj" : $(SOURCE) "$(INTDIR)"
 
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Debug"
+
+
+"$(INTDIR)\WinRegistryWrapper.obj" : $(SOURCE) "$(INTDIR)"
+
+
+!ELSEIF  "$(CFG)" == "jdic - Win32 Tray"
+
+!ENDIF 
 
 
 !ENDIF 
