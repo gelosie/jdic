@@ -31,14 +31,14 @@ ifeq ($(UNAME), SunOS)
   PLATFORM = solaris
   CXX = CC
   CXXFLAGS = -c
-  LDFLAGS = -G -ldl -lrt
+  LDFLAGS = -G -ldl -lrt -lpthread
   X11LIB=/usr/openwin/lib
 else 
   ifeq ($(UNAME), Linux)
     PLATFORM = linux
     CXX = gcc
     CXXFLAGS = -c
-    LDFLAGS = -shared -fPIC -ldl -lrt
+    LDFLAGS = -shared -fPIC -ldl -lrt -lpthread
   endif
   ifeq ($(UNAME), FreeBSD)
     PLATFORM = freebsd
@@ -74,13 +74,10 @@ LIBS = -L$(USR_LIB_DIR) \
        -lgconf-2 \
        -lORBit-2 \
        -lgmodule-2.0 \
-       -ldl \
        -lgobject-2.0 \
        -lgthread-2.0 \
-       -lpthread \
        -lglib-2.0 \
-       -lpopt \
-       -lrt
+       -lpopt
 
 EXTRA_BROWSER_LIBS = \
     -L$(JAVA_HOME)/jre/lib/sparc \
