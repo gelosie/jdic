@@ -144,7 +144,7 @@ REFLECT_FUNCTION(Display *, getAwtDisplay, (void), ())
 
 static Display *     display;
 static int	screen_num;
-static Atom _NET_WM_STRUT;
+static Atom _NET_WM_STRUT, _NET_WM_STRUT_PARTIAL;
 
 void ThreadYield(JNIEnv *env) {
 
@@ -272,7 +272,6 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
                 break;
             case ConfigureNotify:
                 dprintf("ConfigureNotify x = %d y=%d w=%d h=%d\n",report.xconfigure.x,report.xconfigure.y, report.xconfigure.width, report.xconfigure.height);
-
                 configureNotify(env,report.xconfigure.window,report.xconfigure.x,report.xconfigure.y, report.xconfigure.width, report.xconfigure.height);
 
                 break;
@@ -320,6 +319,7 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockSer
     screen_num     = DefaultScreen(display);
 
     _NET_WM_STRUT = XInternAtom(display,"_NET_WM_STRUT",False);
+    _NET_WM_STRUT_PARTIAL = XInternAtom(display,"_NET_WM_STRUT_PARTIAL",False);
 
     (*UnLockIt)(env);
 
@@ -344,9 +344,7 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
     Atom _NET_WM_STRUT;
     Atom _NET_WM_STATE;
     Atom _NET_WM_STATE_STICKY;
-    Atom _MOTIF_WM_HINTS;
-    int insets[4];
-    int insets_partial[12];
+    int insets[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char *       window_name = "JDIC Dock";
     char *       icon_name = "JDIC Dock Icon";
     unsigned int display_width, display_height;
@@ -393,8 +391,8 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
     size_hints->flags       = PPosition | PSize | PMinSize | PWinGravity;
     size_hints->x = 0;
     size_hints->y = 0;
-    size_hints->min_width   = 10;
-    size_hints->width   = 10;
+    size_hints->min_width   = 46;
+    size_hints->width   = 46;
     size_hints->min_height  = display_height;
     size_hints->height  = display_height;
     size_hints->win_gravity  = NorthWestGravity;
@@ -414,13 +412,11 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
     XSelectInput(display, win, ExposureMask | KeyPressMask |
                  ButtonPressMask | StructureNotifyMask);
 
-
     wm_delete_window = XInternAtom(display,"WM_DELETE_WINDOW",False);
     _NET_WM_WINDOW_TYPE = XInternAtom(display,"_NET_WM_WINDOW_TYPE",False);
     _NET_WM_WINDOW_TYPE_DOCK = XInternAtom(display,"_NET_WM_WINDOW_TYPE_DOCK",False);
     _NET_WM_STATE = XInternAtom(display,"_NET_WM_STATE",False);
     _NET_WM_STATE_STICKY = XInternAtom(display,"_NET_WM_STATE_STICKY",False);
-    _MOTIF_WM_HINTS=XInternAtom(display,"_MOTIF_WM_HINTS",True);
 
     XSetWMProtocols(display, win, &wm_delete_window, 1);
 
@@ -429,15 +425,11 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
     XChangeProperty(display, win, _NET_WM_STATE,XA_ATOM , 32, PropModeReplace,
                     (unsigned char *)&_NET_WM_STATE_STICKY, 1);
 
-    memset (insets, 0, sizeof (insets));
-
     XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
                     (unsigned char *)insets, 4);
 
-    memset (insets_partial, 0, sizeof (insets_partial));
-
-    XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
-                    (unsigned char *)insets_partial, 12);    
+    XChangeProperty(display, win, _NET_WM_STRUT_PARTIAL, XA_CARDINAL , 32, PropModeReplace,
+                    (unsigned char *)insets, 12);
 
     dprintf("Window ID = %x \n",win);
 
@@ -448,12 +440,13 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
 
 /*
  * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
- * Method:    adjustSizeHints
+ * Method:    adjustSize
  * Signature: (JII)V
  */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_adjustSizeHints (JNIEnv *env, jobject obj, jlong win, jint width, jint height)
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_adjustSize (JNIEnv *env, jobject obj, jlong win, jint width, jint height)
 {
     XSizeHints *  size_hints;
+    int insets[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     (*LockIt)(env);
 
@@ -470,17 +463,28 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService
     XSetWMProperties(display, win, NULL, NULL, NULL, 0,
             size_hints, NULL, NULL);
 
-    int insets[4];
-    insets[0]=width;
-    insets[1]=0;
-    insets[2]=0;
-    insets[3]=0;
+    insets[0] = width;
+    insets[4] = 0;
+    insets[5] = height;
 
     XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
-                    (unsigned char *)insets, 4);
+                    (unsigned char *)&insets, 4);
+
+    XChangeProperty(display, win, _NET_WM_STRUT_PARTIAL, XA_CARDINAL , 32, PropModeReplace,
+                    (unsigned char *)insets, 12);   
 
     (*UnLockIt)(env);
 }
+
+/*
+ * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
+ * Method:    adjustSizeAndLocation
+ * Signature: (JIII)V
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_adjustSizeAndLocation (JNIEnv *env, jobject obj, jlong win, jint width, jint height, int location)
+{
+}
+
 
 /*
  * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService

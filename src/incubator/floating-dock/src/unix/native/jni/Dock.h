@@ -25,11 +25,19 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
 
 /*
  * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
- * Method:    adjustSizeHints
+ * Method:    adjustSize
  * Signature: (JII)V
  */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_adjustSizeHints
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_adjustSize
   (JNIEnv *, jobject, jlong, jint, jint);
+
+/*
+ * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
+ * Method:    adjustSizeAndLocation
+ * Signature: (JIII)V
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_adjustSizeAndLocation
+  (JNIEnv *, jobject, jlong, jint, jint, jint);
 
 /*
  * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
