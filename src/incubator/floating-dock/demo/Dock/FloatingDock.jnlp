@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+"
+  codebase="file:///export/home/fdtest/jnlp"
+>
+<information>
+  <title>Floating Dock Demo</title>
+  <vendor>https://jdic.dev.java.net/incubator/floating-dock</vendor>
+  <homepage href="https://jdic.dev.java.net/incubator/floating-dock" />
+  <description>Floating Dock Demo</description>
+</information>
+<security>
+    <all-permissions/>
+</security>
+<offline-allowed/>
+<resources>
+  <j2se version="1.5+" />
+  <jar href="dockdemo.jar"/>
+</resources>
+<resources os="Linux">
+  <jar href="linux/floatingdock.jar"/>
+  <nativelib href="linux/floatingdock-native-linux.jar"/>
+</resources>
+<application-desc main-class="DockDemo" />
+</jnlp>
