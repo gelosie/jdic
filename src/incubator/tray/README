@@ -1,0 +1,68 @@
+-------------------------------------------------------------------------------
+Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+subject to license terms.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the Lesser GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+USA
+-------------------------------------------------------------------------------
+
+Tray Icon API README
+--------------------
+The Preliminary implementation for System tray functionality.
+Version 0.1
+
+The Tray Icon API is a set of APIs to create tray icons on the desktop. 
+A tray icon can have a caption (text), an icon and a menu associated with it. 
+It can also have a tooltip associated that is displayed when the mouse hovers 
+over the tray icon. The associated tray menus are Swing Menus, so that they 
+can take on a standard L&F or the system L&F. The associated icon could be 
+animated icons. To get animation in the notification tray is to use an animated 
+GIF. The associated menus can also have icons as well, unlike Windows and Gnome 
+tray menus.  
+
+Supported Platforms
+-------------------
+- WinME/NT/2000/XP/2003 
+- Sun Java Desktop System (JDS) Release 1 or greater 
+- SuSE Linux 7.1 or greater 
+- RedHat Linux 8 or greater 
+- Solaris 8 or greater 
+
+System Requirements 
+- J2SE v1.4.2 or greater (get it at http://java.com/) 
+
+Building the Source
+-------------------
+To build the API from source, your system must meet the following
+requirements:
+
+    * JDK 1.4 or greater, available from http://java.sun.com/
+    * Ant 1.5.1 or greater, available from http://ant.apache.org/
+
+To build the API:
+
+    * Run 'ant buildall' to build the API.
+
+License
+-------
+LGPL (See COPYING file).
+
+Support
+-------
+Support for Tray Icon API is provided by the Java community on the
+JDIC and Tray projects on java.net.  There are various
+forums and mailing lists available.
+
+    * http://jdic.dev.java.net/

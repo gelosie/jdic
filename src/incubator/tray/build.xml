@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<project name="Tray source code building script" default="showtargets" basedir=".">
+
+<!--
+This is the master build script for use with the Jakarta Ant build tool 
+to build the source code of Tray project.
+
+For Ant, see http://jakarta.apache.org/ant/index.html
+
+Top-level target:
+  buildall:         Build a Tray API distribution for the current platform. 
+                    Which will run one of below targets:
+    buildwin32:     on Windows to build a Windows distribuition.
+    buildlinux:     on Linux to build a Linux distribuition.
+    buildsolaris:   on Solaris to build a Solaris distribuition.
+  clean:            Remove the generated distribution (including files and directories).
+
+-->
+
+  <!-- the top-level package names -->
+  <property name="pkg.jdic.name"      value="org.jdesktop.jdic" /> 
+  <property name="pkg.tray.name"   value="${pkg.jdic.name}.tray" /> 
+
+  <!-- the path of source directory -->
+  <property name="src.dir"           value="src" />
+  <property name="share.classes.dir" value="${src.dir}/share/classes" />
+  <property name="unix.classes.dir"  value="${src.dir}/unix/classes" />
+  <property name="win32.classes.dir" value="${src.dir}/win32/classes" />
+
+  <property name="unix.native.dir"         value="${src.dir}/unix/native" />    
+  <property name="unix.native.jni.dir"     value="${unix.native.dir}/jni" />
+  <property name="unix.native.mozilla.dir" value="${unix.native.dir}/mozilla" />
+
+  <property name="win32.native.dir"         value="${src.dir}/win32/native" />    
+  <property name="win32.native.jni.dir"     value="${win32.native.dir}/jni" />
+  <property name="win32.native.ie.dir"      value="${win32.native.dir}/ie" />
+  <property name="win32.native.mozilla.dir" value="${win32.native.dir}/mozilla" />
+
+  <!-- the distribution version and release of this build -->
+  <!-- which is only used in javadoc target -->
+  <property name="version" value="0.1" />
+  <property name="release" value="1" />
+
+  <!-- the generated jar file name -->
+  <property name="jar.file" value="tray.jar" />
+
+  <target name="showtargets" description="default target showing all available targets">
+    <echo>The top-level targets are:</echo>
+    <echo>  buildall:   Build a distribution for the current platform.</echo>
+    <echo>  clean:      Remove the generated distribution.</echo>
+    <echo></echo>
+    <echo>  The generated distribution is put under *dist* directory.</echo>
+  </target>
+
+  <!--
+    - SHARED TARGETS FOR WIN32/LINUX/SOLARIS DISTRIBUTIONS
+    -->
+  <target name="init" description="the init target">
+    <!-- Create the time stamp -->
+    <tstamp/>
+
+    <!-- Set platform-dependent distribution directory -->
+    <!-- ${file.separator} is "\" on Windows, and "/" on Unix -->
+    <condition property="dist.dir" value="dist${file.separator}windows">
+      <os family="windows" />      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/linux">
+      <os name="linux"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/solaris_sparc">
+      <os name="sunos" arch="sparc"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/solaris_x86">
+      <os name="sunos" arch="x86"/>      
+    </condition> 
+
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist.dir}" />   
+
+    <echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
+    <echo>+ Tray API build version ${version} release ${release}</echo>
+    <echo>+ The distribution directory is: .${file.separator}${dist.dir}${file.separator}</echo> 
+    <echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
+  </target>
+
+  <!-- *** Top-level target *** -->
+  <!-- *** Clean the distribution directory *** -->
+  <target name="clean" depends="init"
+          description="clean up the built directory and files">
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}"/>
+    </delete>
+  </target>
+
+
+  <!-- *** Top-level target *** -->
+  <!-- *** Build a Tray API distribution for the current platform *** -->
+  <target name="buildall"
+          description="build a distribution for the current platform.">
+    <!-- Set the platform-dependent buildall target -->
+    <condition property="platform.target" value="buildwin32">
+      <os family="windows" />      
+    </condition> 
+
+    <condition property="platform.target" value="buildlinux">
+      <os name="linux"/>      
+    </condition> 
+
+    <condition property="platform.target" value="buildsolaris">
+      <os name="sunos"/>      
+    </condition>  
+
+    <antcall target="${platform.target}" />
+  </target>
+
+  <!-- *** javadoc *** -->
+  <!-- disable author and version tags output -->
+  <target name="javadoc" depends="init"
+          description="generate javadoc into ${dist.dir}/javadoc" >
+    <javadoc packagenames="${pkg.tray.name}"
+             sourcepath="${share.classes.dir}"
+             destdir="${dist.dir}/javadoc"            
+             author="false"
+             version="false"
+             use="true"
+             Windowtitle="Tray API V${version} Release ${release}"
+             Header="Tray API V${version} Release ${release}">
+             <docTitle><![CDATA[Tray API Specification, Version ${version} Release ${release}]]>
+             </docTitle>
+             <bottom><![CDATA[<font size="-1">For more information and documentation on Tray, 
+               see <a href="https://jdic.dev.java.net">Tray website</a>. <p>That documentation 
+               contains more detailed, developer-targeted descriptions, with conceptual 
+               overviews, working code examples, license terms and bug report information.
+               <p>Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is 
+               subject to <a href=
+               "https://jdic.dev.java.net/source/browse/jdic/src/COPYING">license terms</a>. 
+               </font>]]></bottom>
+    </javadoc>
+  </target>
+
+  <!--
+    - WIN32 DISTRIBUTION
+    -->
+  <target name="buildwin32" depends="buildwin32jar, javadoc, buildwin32jni"
+          description="build java and native source code for Win32 platform" >
+  </target>
+
+  <!-- *** Build Win32 jar file *** -->  
+  <target name="buildwin32jar" depends="init"
+          description="build the classes and jar file." >
+    <javac srcdir="${share.classes.dir}:${win32.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" 
+    />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+         <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+  </target>
+
+  <!-- *** Build Win32 native JNI code *** -->
+  <target name="buildwin32jni" depends="init"
+          description="build native jni libraries." >
+
+    <exec dir="${win32.native.jni.dir}" executable="nmake.exe" 
+      failonerror="yes" >
+    </exec>                   
+    <!-- copy generated .dll file -->
+    <copy file="${win32.native.jni.dir}/tray.dll" todir="${dist.dir}" />
+  </target>
+
+  <!--
+    - LINUX DISTRIBUTION
+    -->
+  <target name="buildlinux" depends="buildunixjar, javadoc, buildunixjni"
+          description="build java and native source code for Linux platform" >
+  </target>
+
+  <!--
+    - SOLARIS DISTRIBUTION
+    -->
+  <!-- This target is the same with buildlinux. -->
+  <target name="buildsolaris" depends="buildlinux"
+          description="build java and native source code for Solaris platform" >
+  </target>
+
+  <!--
+    - SHARED TARGETS FOR LINUX/SOLARIS DISTRIBUTIONS
+    -->
+  <!-- *** Build Unix jar file *** -->  
+  <target name="buildunixjar" depends="init"
+          description="build the classes and jar file." >
+    <javac srcdir="${share.classes.dir}:${unix.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" debug="true"
+    />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+         <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+  </target>
+
+  <!-- *** Build Unix native JNI code *** -->
+  <target name="buildunixjni" depends="init"
+          description="build native jni libraries." >
+    <exec dir="${unix.native.jni.dir}" executable="make" failonerror="yes" />
+
+    <!-- copy generated .so file -->
+    <copy file="${unix.native.jni.dir}/libtray.so" todir="${dist.dir}" />
+  </target>
+
+
+</project>
