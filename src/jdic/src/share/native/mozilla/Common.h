@@ -44,6 +44,9 @@ nsresult GetService(const char *aContractID, const nsIID &aIID, void **aResult);
 // helper function for instantiating xpcom components
 nsresult CreateInstance(const char *aContractID, const nsIID &aIID, void **aResult);
 
+// helper function for getting the HTML page content.
+char* GetContent(nsIWebNavigation *aWebNav);
+
 // helper function for seting the HTML page content.
 nsresult SetContent(nsIWebNavigation *aWebNav, const char *htmlContent);
 

@@ -419,10 +419,10 @@ void
 HandleSocketMessage(gpointer data, gpointer user_data)
 {
     int instance, type;
-    char buf[1024];
+    char mMsgBuf[1024];
     char *msg = (char *)data;
 
-    int i = sscanf(msg, "%d,%d,%s", &instance, &type, buf);
+    int i = sscanf(msg, "%d,%d,%s", &instance, &type, mMsgBuf);
 
     NS_ASSERTION(i >= 2, "Wrong message format\n");
 
@@ -442,7 +442,7 @@ HandleSocketMessage(gpointer data, gpointer user_data)
                 break;
             if (i != 3)
                 break;
-            int javaXId = atoi(buf);
+            int javaXId = atoi(mMsgString);
             NS_ASSERTION(javaXId, "Invalid X window handle\n");
             pBrowser = g_new0(GtkBrowser, 1);
             pBrowser->topLevelWindow = gtk_plug_new(javaXId);
@@ -473,7 +473,7 @@ HandleSocketMessage(gpointer data, gpointer user_data)
         {
             NS_ASSERTION(i == 3, "Wrong message format\n");
             int x, y, w, h;
-            i = sscanf(buf, "%d,%d,%d,%d", &x, &y, &w, &h);
+            i = sscanf(mMsgString, "%d,%d,%d,%d", &x, &y, &w, &h);
             if (i == 4) {
                 pBrowser = (GtkBrowser *)gBrowserArray[instance];
                 NS_ASSERTION(pBrowser, "Can't get native browser instance\n");
@@ -485,16 +485,16 @@ HandleSocketMessage(gpointer data, gpointer user_data)
         NS_ASSERTION(i == 3, "Wrong message format\n");
         pBrowser = (GtkBrowser *)gBrowserArray[instance];
         NS_ASSERTION(pBrowser, "Can't get native browser instance\n");
-        gtk_moz_embed_load_url(GTK_MOZ_EMBED(pBrowser->mozEmbed), buf);
+        gtk_moz_embed_load_url(GTK_MOZ_EMBED(pBrowser->mozEmbed), mMsgString);
         break;
     case JEVENT_NAVIGATE_POST:
         NS_ASSERTION(i == 3, "Wrong message format\n");
-        strncpy(gCachedURL, buf, sizeof(gCachedURL));
+        strncpy(gCachedURL, mMsgString, sizeof(gCachedURL));
         break;
     case JEVENT_NAVIGATE_POSTDATA:
         NS_ASSERTION(i == 3, "Wrong message format\n");
         pBrowser = (GtkBrowser *)gBrowserArray[instance];
-        OpenURL(pBrowser, gCachedURL, buf, POST_HEADER);
+        OpenURL(pBrowser, gCachedURL, mMsgString, POST_HEADER);
         break;
     case JEVENT_GOBACK:
         pBrowser = (GtkBrowser *)gBrowserArray[instance];
@@ -575,6 +575,23 @@ HandleSocketMessage(gpointer data, gpointer user_data)
                             (widget, (GdkEventFocus *)&event);
             }
         }
+        break;
+    case JEVENT_GETCONTENT:
+        {
+            pBrowser = (GtkBrowser *)gBrowserArray[instance];
+            NS_ASSERTION(pBrowser, "Can't get native browser instance\n");
+            nsCOMPtr<nsIWebBrowser> webBrowser;
+            gtk_moz_embed_get_nsIWebBrowser(GTK_MOZ_EMBED(pBrowser->mozEmbed), 
+                    getter_AddRefs(webBrowser));
+            nsCOMPtr<nsIWebNavigation> 
+                webNavigation(do_QueryInterface(webBrowser));
+                                                                                                            
+            char *retStr = GetContent(webNavigation);
+            if (retStr == NULL)
+                SendSocketMessage(instance, CEVENT_GETCONTENT, "");
+            else
+                SendSocketMessage(instance, CEVENT_GETCONTENT, retStr);
+        } 
         break;
     case JEVENT_SETCONTENT:
         {

@@ -297,7 +297,10 @@ load_finished_cb(GtkMozEmbed *embed, GtkBrowser *browser)
     if (focus)
         focus->Activate();
 
+    // In this case, the downloadComplete and documentComplete events
+    // are fired at the same time. On *Windows*, it's different.
     SendSocketMessage(browser->id, CEVENT_DOWNLOAD_COMPLETED);
+    SendSocketMessage(browser->id, CEVENT_DOCUMENT_COMPLETED);
 }
 
 

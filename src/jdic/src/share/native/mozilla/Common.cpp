@@ -358,6 +358,17 @@ CreateInstance(const char *aContractID, const nsIID &aIID, void **aResult)
     return compMgr->CreateInstanceByContractID(aContractID, nsnull, aIID, aResult);
 }
 
+// helper function for getting the HTML page content.
+char* 
+GetContent(nsIWebNavigation *aWebNav)
+{        
+    // JavaScript to return the content of the currently loaded URL
+    // in *Mozilla*, which is different from the JavaScript for IE.
+    char* MOZ_GETCONTENT_SCRIPT
+        = "(new XMLSerializer()).serializeToString(document);";
+    return ExecuteScript(aWebNav, MOZ_GETCONTENT_SCRIPT);
+}
+
 // helper function for seting the HTML page content.
 nsresult 
 SetContent(nsIWebNavigation *aWebNav, const char *htmlContent) 
@@ -437,6 +448,8 @@ ExecuteScript(nsIWebNavigation *aWebNav, const char *jscript)
     char *attrProp = JDIC_BROWSER_INTERMEDIATE_PROP;
     ConvertAsciiToUtf16(attrProp, unicodeProp);
     rv = elt->GetAttribute(unicodeProp, attrValue);
+    // Remove the attribute created by JDIC Browser.
+    elt->RemoveAttribute(unicodeProp);
     if (attrValue.IsEmpty()) 
         return NULL;
 

@@ -734,11 +734,7 @@ void MozEmbedApp::MessageReceived(const char * msg)
         nsIWebNavigation* mWebNav =
             ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.mWebNav;
 
-        // JavaScript to return the content of the currently loaded URL 
-        // in *Mozilla*, which is different from the JavaScript for IE.
-        char* MOZ_GETCONTENT_SCRIPT 
-            = "(new XMLSerializer()).serializeToString(document);";
-        char *retStr = ExecuteScript(mWebNav, MOZ_GETCONTENT_SCRIPT);
+        char *retStr = GetContent(mWebNav);
         if (retStr == NULL)
             SendSocketMessage(instance, CEVENT_GETCONTENT, "");
         else 
