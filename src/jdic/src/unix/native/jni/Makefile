@@ -32,19 +32,21 @@ ifeq ($(UNAME), SunOS)
   CXX = CC
   CXXFLAGS = -c
   LDFLAGS = -G -ldl -lrt
+  X11LIB=/usr/openwin/lib
 else 
   ifeq ($(UNAME), Linux)
     PLATFORM = linux
-    CXX = g++
+    CXX = gcc
     CXXFLAGS = -c
     LDFLAGS = -shared -fPIC -ldl -lrt
   endif
   ifeq ($(UNAME), FreeBSD)
     PLATFORM = freebsd
-    CXX = g++
+    CXX = gcc
     CXXFLAGS = -c -I/usr/local/include -I/usr/X11R6/include
     LDFLAGS = -shared -fPIC -L/usr/local/lib -L/usr/X11R6/lib
   endif
+  X11LIB=/usr/X11R6/lib
 endif
 
 USR_INCLUDE_DIR = /usr/include
@@ -80,45 +82,59 @@ LIBS = -L$(USR_LIB_DIR) \
        -lpopt \
        -lrt
 
-EXTRA_BROWSER_LIBS = 
+EXTRA_BROWSER_LIBS = \
     -L$(JAVA_HOME)/jre/lib/sparc \
     -L$(JAVA_HOME)/jre/lib/i386 \
-    -ljawt \
+    -ljawt
 
-TRAY_LIBS = -lXt -lX11
+TRAY_LIBS = -L$(X11LIB) -lXt -lX11
 
+#
+# All the native source files.
+#
 CPPSRCS = GnomeBrowserService.cpp \
-          GnomeLaunchService.cpp \
-          GnomeUtility.cpp \
-          GnomeVfsWrapper.cpp \
-          WebBrowser.cpp \
-          WebBrowserUtil.cpp \
-          ../../../share/native/utils/InitUtility.cpp \
-          native.c
-
-TRAY_CPPSRCS = ../../../share/native/utils/InitUtility.cpp \
-               native.c
+           GnomeLaunchService.cpp \
+           GnomeUtility.cpp \
+           GnomeVfsWrapper.cpp \
+           WebBrowser.cpp \
+           WebBrowserUtil.cpp \
+           ../../../share/native/utils/InitUtility.cpp
+CSRCS = Tray.c
           
+#
+# Build a whole libjdic.so containing all the native APIs.
+#
 SO_NAME = libjdic.so
-
 all: clean $(SO_NAME)
 
-SO_o = $(CPPSRCS:.cpp=.o)
+SO_OBJS = $(CPPSRCS:.cpp=.o) $(CSRCS:.c=.o)
 
-.cpp.o:
+.cpp.o .c.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(EXTRA_INCLUDES) -o $@ $<
 
-$(SO_NAME): $(SO_o)
-	$(CXX) $(LDFLAGS) $(LIBS) $(EXTRA_BROWSER_LIBS) $(TRAY_LIBS) $(SO_o) -o $@
+$(SO_NAME): $(SO_OBJS)
+	$(CXX) $(LDFLAGS) $(LIBS) $(EXTRA_BROWSER_LIBS) $(TRAY_LIBS) $(SO_OBJS) -o $@
 
-tray: clean $(SO_NAME)
-SO_tray_o = $(TRAY_CPPSRCS:.cpp=.o)
+#
+# Build a libjdic.so containing only the Tray Icon API,
+# though it has the same name (libjdic.so).
+#
+# Source files only needed for the Tray Icon API:
+#   ../../../share/native/utils/InitUtility.cpp
+#   Tray.c
+#
+tray: clean TRAY_SO_TARGET
 
-.cpp.o:
+TRAY_SO_OBJS = ../../../share/native/utils/InitUtility.o \
+               Tray.o
+
+../../../share/native/utils/InitUtility.o: ../../../share/native/utils/InitUtility.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
+Tray.o: Tray.c
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
 
-$(SO_NAME): $(SO_tray_o)
-	$(CXX) $(LDFLAGS) $(TRAY_LIBS) $(SO_o) -o $@
+TRAY_SO_TARGET: $(TRAY_SO_OBJS)
+	$(CXX) $(LDFLAGS) $(TRAY_LIBS) $(TRAY_SO_OBJS) -o $(SO_NAME) 
 
 clean:
 	rm -f *.so
