@@ -131,19 +131,16 @@ public class WinUtility {
      * Get the mozilla mailer location.
      * 
      * @param defMailer Name of the system default mailer
+     *        This mailer is either "Mozilla" or "Mozilla Thunderbird"
      * @return Location of the mozilla mailer
      */
     static String getMozMailerLocation(String defMailer) {
-        String MozDll = WinAPIWrapper.WinRegQueryValueEx(
-            WinAPIWrapper.HKEY_LOCAL_MACHINE,
-            "SOFTWARE\\Clients\\Mail\\" + defMailer,
-            "DLLPath");
-        if (MozDll != null) {
-            String MozLocation = MozDll.replaceAll("mozMapi32.dll", "Mozilla.exe");
-            return MozLocation;			
-        } else {
-            return null;
-        }
+   		String mailerPath = WinAPIWrapper.WinRegQueryValueEx(
+   				WinAPIWrapper.HKEY_LOCAL_MACHINE,
+	            "SOFTWARE\\Clients\\Mail\\"+defMailer+"\\shell\\open\\command",
+				"");
+   		int lastSpace = mailerPath.lastIndexOf(' ');
+   		return mailerPath.substring(0, lastSpace);
     }
     
     /**

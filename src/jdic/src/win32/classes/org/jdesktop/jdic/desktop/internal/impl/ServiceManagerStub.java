@@ -55,11 +55,12 @@ public class ServiceManagerStub {
         } else if (serviceName.equals(ServiceManager.MAILER_SERVICE)) {
             String defMailer = WinUtility.getDefaultMailer();
             // the case that Mozilla is the default mailer 
-            if (defMailer.equalsIgnoreCase("Mozilla")) {
-                //Get Mozilla location 
-                String MozLocation = WinUtility.getMozMailerLocation(defMailer);
-                return new WinMozMailer(MozLocation);
-            } else if(defMailer.equalsIgnoreCase("Microsoft Outlook")
+            if (defMailer.equalsIgnoreCase("Mozilla")
+            	|| defMailer.equalsIgnoreCase("Mozilla Thunderbird")) {
+                //Get mailer's location 
+                String mailerLocation = WinUtility.getMozMailerLocation(defMailer);
+                return new WinMozMailer(mailerLocation);
+            }else if(defMailer.equalsIgnoreCase("Microsoft Outlook")
                 || defMailer.equalsIgnoreCase("Outlook Express")) {
                 // the case that Outlook or Outlook Express is the default mailer 
                 // fetects if there is Simple Mapi support for the current system 
