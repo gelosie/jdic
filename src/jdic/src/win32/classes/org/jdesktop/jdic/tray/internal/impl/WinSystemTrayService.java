@@ -25,7 +25,6 @@
  */
 package org.jdesktop.jdic.tray.internal.impl;
 
-
 import org.jdesktop.jdic.tray.internal.SystemTrayService;
 import org.jdesktop.jdic.tray.internal.TrayIconService;
 import org.jdesktop.jdic.tray.TrayIcon;
@@ -34,60 +33,52 @@ import java.awt.Toolkit;
 
 public class WinSystemTrayService implements SystemTrayService {
 
-    public WinSystemTrayService() { init(); }
+    public WinSystemTrayService() {}
      
     public void addNotify() {}
 
     public void addTrayIcon(TrayIcon ti, TrayIconService tis, int trayIndex) {
         WinTrayIconService trayIcon = (WinTrayIconService) tis;
-
         trayIcon.addNotify();
     }
 
     public void removeTrayIcon(TrayIcon ti, TrayIconService tis, int trayIndex) {
         WinTrayIconService trayIcon = (WinTrayIconService) tis;
-
         trayIcon.remove();
     }
    
     static Thread display_thread;
     
-    private static Object lock = new Object();
-    private static boolean inited = false;
-    private static native void eventLoop();
-    private static native void initTray();
-    private static synchronized void init(){
-    	if(inited)
-    		return;
+    static {
         //
         // Very important, we need to force AWT to get loaded before the
         // native library libtray.so is loaded. Otherwise AWT will fail.
         Toolkit t = Toolkit.getDefaultToolkit();
-
         t.sync();
-
-        System.loadLibrary("tray");
         
-        display_thread = new Thread(new Runnable() {
-            public void run() {
-            	synchronized(lock){
-            		initTray();
-            		inited = true;
-            		lock.notify();
-            	}
-            	eventLoop();
+        display_thread = new DisplayThread();
+        synchronized(DisplayThread.class){
+            try{
+                display_thread.start();
+                DisplayThread.class.wait();
+            }catch(InterruptedException e){
+                // ignore interrupted exception
             }
-        });
-		display_thread.start();
-        synchronized(lock){
-        	while(!inited){
-	        	try{
-	        		lock.wait(100);
-	        	}catch(InterruptedException e){
-	        		// ignore interrupted exception
-	        	}
-        	}
-        }
+       	}
     }
+}
 
+class DisplayThread extends Thread{
+    private static native void initTray();
+    private static native void eventLoop();
+    static {
+        System.loadLibrary("tray");
+    }
+    public void run(){
+        synchronized(DisplayThread.class){
+            DisplayThread.initTray();
+            DisplayThread.class.notify();
+        }
+        DisplayThread.eventLoop();
+    }
 }
