@@ -49,12 +49,15 @@ USING_GECKO_SDK_1_4 = 1
 UNAME = $(shell uname)
 ifeq ($(UNAME), Linux)
 OS_ARCH = Linux
+CXX = g++
 endif
 ifeq ($(UNAME), SunOS)
 OS_ARCH = SunOS 
+CXX = CC
 endif
 ifeq ($(UNAME), FreeBSD)
 OS_ARCH = FreeBSD
+CXX = g++
 endif
 
 # set gtk version
@@ -101,8 +104,8 @@ endif
 PROGRAM = $(MODULE_NAME)$(BIN_SUFFIX)
 LIBRARY = lib$(MODULE_NAME).so
 
-CXXFLAGS = -g -fPIC
-#CXXFLAGS = -O2 -fPIC
+#CXXFLAGS = -g -fPIC
+CXXFLAGS = -O2 -fPIC
 
 LDFLAGS = -fPIC -Wl,--version-script=gnu-ld-script
 
