@@ -16,7 +16,7 @@ Top-level target:
   <target name="showtargets" description="default target showing all available targets">
     <echo>The available targets are:</echo>
     <echo>  buildall:   Build a distribution for the current platform</echo>
-    <echo>              (Windows, Linux, Solaris or FreeBSD).</echo>
+    <echo>              (Windows, Linux, Solaris, FreeBSD or Mac OS X).</echo>
     <echo>  clean:      Remove the generated distribution.</echo>
     <echo></echo>
     <echo>The generated distribution is put under *dist* directory.</echo>
@@ -46,6 +46,10 @@ Top-level target:
 
     <condition property="dist.dir" value="dist/freebsd">
       <os name="freebsd"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/mac_os_x">
+      <os name="Mac OS X"/>
     </condition> 
 
     <!-- Create the distribution directory -->

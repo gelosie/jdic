@@ -13,7 +13,6 @@ Top-level target:
     buildwin32:     on Windows to build a Windows distribuition.
     buildlinux:     on Linux to build a Linux distribuition.
     buildsolaris:   on Solaris to build a Solaris distribuition.
-    buildfreebsd:   on FreeBSD to build a FreeBSD distribuition.
   clean:            Remove the generated distribution (including files and directories).
 
 -->
@@ -81,10 +80,6 @@ Top-level target:
       <os name="sunos"/>      
     </condition> 
 
-    <condition property="dist.dir" value="dist/freebsd">
-      <os name="freebsd"/>
-    </condition> 
-
     <!-- Create the distribution directory -->
     <mkdir dir="${dist.dir}" />   
 
@@ -113,6 +108,14 @@ Top-level target:
     <condition property="platform.target" value="buildfreebsd">
       <os name="freebsd"/>
     </condition> 
+
+    <condition property="platform.target" value="buildfreebsd">
+      <os name="freebsd"/>
+    </condition> 
+
+    <condition property="platform.target" value="buildmac_os_x">
+      <os name="Mac OS X" />      
+    </condition>     
   </target>
 
   <!-- *** Top-level target *** -->
@@ -265,17 +268,26 @@ Top-level target:
     </delete>
   </target>
 
-  <!--
-    - FREEBSD DISTRIBUTION
-    -->
-  <target name="buildfreebsd" depends="init"
-          description="build all the class and native source code" >
-  </target>
-
   <!-- Copy the command-line packaging script -->
   <target name="cpsolarisscript" depends="init"
           description="copy the command-line packaging script." >
     <copy file="${solaris.dir}/jnlp2pkg" todir="${dist.dir}" />
+  </target>
+
+  <!--
+    - FREEBSD DISTRIBUTION
+    -->
+  <target name="buildfreebsd"
+          description="build all the class and native source code" >
+    <echo>JDIC Packager hasn't been ported to FreeBSD platform.</echo>
+  </target>
+
+  <!--
+    - MAC OS X DISTRIBUTION
+    -->
+  <target name="buildmac_os_x"
+          description="build all the class and native source code" >
+    <echo>JDIC Packager hasn't been ported to Mac OS X platform.</echo>
   </target>
 
 </project>
