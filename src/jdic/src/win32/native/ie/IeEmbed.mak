@@ -1,7 +1,7 @@
 # Microsoft Developer Studio Generated NMAKE File, Based on IeEmbed.dsp
 !IF "$(CFG)" == ""
-CFG=IeEmbed - Win32 Debug
-!MESSAGE No configuration specified. Defaulting to IeEmbed - Win32 Debug.
+CFG=IeEmbed - Win32 Release
+!MESSAGE No configuration specified. Defaulting to IeEmbed - Win32 Release.
 !ENDIF 
 
 !IF "$(CFG)" != "IeEmbed - Win32 Debug" && "$(CFG)" != "IeEmbed - Win32 Release"
@@ -114,7 +114,7 @@ LINK32_OBJS= \
 OUTDIR=.\Release
 INTDIR=.\Release
 
-ALL : "..\..\..\..\dist\windows\IeEmbed.exe"
+ALL : "$(OUTDIR)\IeEmbed.exe"
 
 
 CLEAN :
@@ -126,7 +126,7 @@ CLEAN :
 	-@erase "$(INTDIR)\StdAfx.obj"
 	-@erase "$(INTDIR)\Util.obj"
 	-@erase "$(INTDIR)\vc60.idb"
-	-@erase "..\..\..\..\dist\windows\IeEmbed.exe"
+	-@erase "$(OUTDIR)\IeEmbed.exe"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -173,7 +173,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\IeEmbed.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=$(MOZILLA_SRC_HOME)/dist/lib/nspr4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:no /pdb:"$(OUTDIR)\IeEmbed.pdb" /machine:I386 /out:"../../../../dist/windows/IeEmbed.exe" 
+LINK32_FLAGS=$(MOZILLA_SRC_HOME)/dist/lib/nspr4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:no /pdb:"$(OUTDIR)\IeEmbed.pdb" /machine:I386 /out:"$(OUTDIR)/IeEmbed.exe" 
 LINK32_OBJS= \
 	"$(INTDIR)\BrowserWindow.obj" \
 	"$(INTDIR)\IeEmbed.obj" \
@@ -182,7 +182,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\Util.obj" \
 	"$(INTDIR)\IeEmbed.res"
 
-"..\..\..\..\dist\windows\IeEmbed.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+"$(OUTDIR)/IeEmbed.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<

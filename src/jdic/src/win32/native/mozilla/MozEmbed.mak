@@ -1,7 +1,7 @@
 # Microsoft Developer Studio Generated NMAKE File, Based on MozEmbed.dsp
 !IF "$(CFG)" == ""
-CFG=MozEmbed - Win32 Debug
-!MESSAGE No configuration specified. Defaulting to MozEmbed - Win32 Debug.
+CFG=MozEmbed - Win32 Release
+!MESSAGE No configuration specified. Defaulting to MozEmbed - Win32 Release.
 !ENDIF 
 
 !IF "$(CFG)" != "MozEmbed - Win32 Release" && "$(CFG)" != "MozEmbed - Win32 Debug"
