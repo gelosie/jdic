@@ -1,8 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>SaverBeans FAQ</title>
-</head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>SaverBeans FAQ</title></head>
 <body>
 <h1>SaverBeans Screensaver FAQ</h1>
 
@@ -110,6 +108,11 @@ beans on the bottom of the screen are simply a reflection.<br>
 <span style="font-weight: bold;">A.</span> On Unix, the virtual machine
 is automatically detected using the steps outlined in the README.&nbsp;
 If this automatic detection fails, you can override it by passing <code>-jdkhome</code> to the screensaver.&nbsp; On Windows, the screensaver will use the "<code>HKEY_LOCAL_MACHINE\Software\JavaSoft\Java Runtime Environment\JavaHome</code>" registry setting to determine which JVM to use.&nbsp; This is automatically set by the JVM installer.<br>
+<br>
+<span style="font-weight: bold;">Q.</span> My screensaver is running a bit choppy on Unix, especially in the ScreensaverFrame in debug mode.<br>
+<span style="font-weight: bold;">A.</span> Make sure you are running
+J2SE 1.5.0 or greater, even when you are debugging.&nbsp; Earlier
+versions of the JDK may have choppy timing for animation on Linux.<br>
 
 <br>
 
@@ -160,6 +163,14 @@ logger.log(Level.INFO, "Log message.");<br>
   </code>
 </blockquote>
 
+<span style="font-weight: bold;">Q. </span>How can I debug my screensaver using my IDE?<br>
+<span style="font-weight: bold;">A. </span>With SaverBeans SDK 0.1.1 or greater there is a new <code>ScreensaverFrame</code>
+class that lets you run your screensaver in Java instead of being
+launched in native mode.&nbsp; This makes it easy to debug.&nbsp; In
+fact, the startup kit now includes a 'debug' ant task by default, which
+should make debugging much easier (just connect via JPDA from your
+favorite IDE, such as <a href="http://netbeans.org/">NetBeans</a>).<br>
+<br>
 <br>
 
 
