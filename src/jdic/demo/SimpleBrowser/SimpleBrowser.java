@@ -47,6 +47,7 @@ public class SimpleBrowser {
         //    public void downloadCompleted(WebBrowserEvent event) {;}
         //    public void downloadProgress(WebBrowserEvent event) {;}
         //    public void downloadError(WebBrowserEvent event) {;}
+        //    public void documentCompleted(WebBrowserEvent event) {;}
         //    public void titleChange(WebBrowserEvent event) {;}  
         //    public void statusTextChange(WebBrowserEvent event) {;}        
         //});

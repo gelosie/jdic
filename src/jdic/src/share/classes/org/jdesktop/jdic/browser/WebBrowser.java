@@ -279,6 +279,9 @@ public class WebBrowser extends Canvas
                 case WebBrowserEvent.WEBBROWSER_DOWNLOAD_ERROR:
                     listener.downloadError(e);
                     break;
+                case WebBrowserEvent.WEBBROWSER_DOCUMENT_COMPLETED:
+                    listener.documentCompleted(e);
+                    break;
                 case WebBrowserEvent.WEBBROWSER_TITLE_CHANGE:
                     listener.titleChange(e);
                     break;

@@ -506,7 +506,7 @@ NS_IMETHODIMP CBrowserImpl::OnStateChange(nsIWebProgress *progress,
             // Navigation has begun
             m_pBrowserFrame->UpdateBusyState(PR_TRUE);
 
-            //Fire a DownloadBegin event
+            // Fire a DownloadBegin event
             SendSocketMessage(id, CEVENT_DOWNLOAD_STARTED);
         }
 
@@ -522,8 +522,6 @@ NS_IMETHODIMP CBrowserImpl::OnStateChange(nsIWebProgress *progress,
 
             // Fire a DownloadComplete event
             SendSocketMessage(id, CEVENT_DOWNLOAD_COMPLETED);
-
-            // Fire a DocumentComplete event
         }
     }
 
@@ -531,7 +529,8 @@ NS_IMETHODIMP CBrowserImpl::OnStateChange(nsIWebProgress *progress,
         if (progressStateFlags & STATE_START) {
         }
         else if (progressStateFlags & STATE_STOP) {
-            // Fire a NavigateComplete event
+            // Fire a DocumentComplete event, the document finishes loading.
+            SendSocketMessage(id, CEVENT_DOCUMENT_COMPLETED);
 
             // Fire a CommandStateChange event
             char buf[20];

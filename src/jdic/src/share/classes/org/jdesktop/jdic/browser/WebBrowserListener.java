@@ -64,6 +64,13 @@ public interface WebBrowserListener extends java.util.EventListener
     void downloadError(WebBrowserEvent event);
 
     /**
+     * Invoked when the document loading has been completed.
+     *
+     * @param event the WebBrowserEvent fired.
+     */
+    void documentCompleted(WebBrowserEvent event);
+    
+    /**
      * Invoked when the title of a document changes.
      * 
      * @param event the WebBrowserEvent fired.

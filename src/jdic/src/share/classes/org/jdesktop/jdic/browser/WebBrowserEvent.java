@@ -55,21 +55,23 @@ public class WebBrowserEvent extends EventObject
     public static final int WEBBROWSER_DOWNLOAD_STARTED        = 3 + WEBBROWSER_FIRST;
     /**
      * Event fired when a navigation operation finishes, is halted, or fails. 
+     * This may be fired multiple times if a document has pop-up windows 
+     * or frames.
      */
     public static final int WEBBROWSER_DOWNLOAD_COMPLETED      = 4 + WEBBROWSER_FIRST;
     /**
-     * Event fired when the progress of a download operation is updated 
+     * Event fired when the progress of a navigation operation is updated 
      * on the object. 
      */
     public static final int WEBBROWSER_DOWNLOAD_PROGRESS       = 5 + WEBBROWSER_FIRST;
     /**
-     * Event fired when an error occurs during download.
+     * Event fired when an error occurs during a navigation operation.
      */
     public static final int WEBBROWSER_DOWNLOAD_ERROR          = 6 + WEBBROWSER_FIRST;
     /**
-     * Event fired when a navigation operation finishes, is halted, or fails. 
+     * Event fired when the document has loaded completely.
      */
-    public static final int WEBBROWSER_NAVIGATION_COMPLETED    = 7 + WEBBROWSER_FIRST;
+    public static final int WEBBROWSER_DOCUMENT_COMPLETED      = 7 + WEBBROWSER_FIRST;
 
     /**
      * Event fired when the current URL is requested by a <code>WebBrowser</code>
@@ -88,20 +90,19 @@ public class WebBrowserEvent extends EventObject
      * Event fired when the status bar text changes.
      */
     public static final int WEBBROWSER_STATUSTEXT_CHANGE       = 24 + WEBBROWSER_FIRST;
+
     /**
      * Event fired when initialization of WebBrowser fails.
      */
-    public static final int WEBBROWSER_INIT_FAILED             = 25 + WEBBROWSER_FIRST;
-    
+    public static final int WEBBROWSER_INIT_FAILED             = 40 + WEBBROWSER_FIRST;    
     /**
      * Event fired when initialization of WebBrowser Window succeeds.
      */
-    public static final int WEBBROWSER_INIT_WINDOW_SUCC        = 26 + WEBBROWSER_FIRST;
-    
+    public static final int WEBBROWSER_INIT_WINDOW_SUCC        = 41 + WEBBROWSER_FIRST;    
     /**
      * Event fired when WebBrowser need to get Focus.
      */
-    public static final int WEBBROWSER_FOCUS_REQUEST           = 27 + WEBBROWSER_FIRST;
+    public static final int WEBBROWSER_FOCUS_REQUEST           = 42 + WEBBROWSER_FIRST;
     
     /**
      * The event's id.

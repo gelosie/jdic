@@ -243,7 +243,7 @@ BOOL MozEmbedApp::InitInstance()
         MessageReceived("0,0,");
         CBrowserFrame *pBrowserFrame = CreateNewBrowserFrame(nsIWebBrowserChrome::CHROME_ALL);
         m_pMainWnd = pBrowserFrame;
-        pBrowserFrame->m_wndBrowserView.OpenURL("http://sina.com.cn");
+        pBrowserFrame->m_wndBrowserView.OpenURL("about:blank");
     }
 
     return TRUE;

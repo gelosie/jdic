@@ -26,6 +26,9 @@ BrowserWindow::BrowserWindow()
 {
     initialized = FALSE;
     m_InstanceID = -1;
+
+    glpDisp = NULL;
+    isDefaultPage = true;
 }
 
 BrowserWindow::~BrowserWindow() 
@@ -120,8 +123,14 @@ void __stdcall BrowserWindow::OnDownloadBegin()
     SendSocketMessage(m_InstanceID, CEVENT_DOWNLOAD_STARTED);
 }
 
-void __stdcall BrowserWindow::OnNavigateComplete(IDispatch* pDisp, CComVariant& URL)
+void __stdcall BrowserWindow::OnNavigateComplete(IDispatch* pDisp, VARIANT* URL)
 {
+    // If glpDisp is NULL, this is the top level OnNavigateComplete event,
+    // save pDisp to check the final OnDocumentComplete event.
+    if (!glpDisp) {
+        glpDisp = pDisp;
+    }
+    
     SendSocketMessage(m_InstanceID, CEVENT_DOWNLOAD_COMPLETED);
 }
 
@@ -134,6 +143,25 @@ void __stdcall BrowserWindow::OnNavigateError(IDispatch *pDisp,VARIANT *URL,VARI
                                               VARIANT *StatusCode,VARIANT_BOOL *Cancel)
 {
     SendSocketMessage(m_InstanceID, CEVENT_DOWNLOAD_ERROR);
+}
+
+void __stdcall BrowserWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT* URL)
+{
+    // In pages where multiple frames are loaded, this event fires for each 
+    // frame. The highest level frame fires the final event. At this time, 
+    // the pDisp parameter will be the same as the IDispatch interface pointer 
+    // of the highest level frame.
+    if (glpDisp && glpDisp == pDisp) {
+        glpDisp = NULL;
+
+        // The default, predefined page for creating the initial browser window
+        // will fire this event, ignore it. 
+        if (isDefaultPage) {
+            isDefaultPage = false;
+        } else {   
+            SendSocketMessage(m_InstanceID, CEVENT_DOCUMENT_COMPLETED);
+        }
+    }
 }
 
 void __stdcall BrowserWindow::OnTitleChange(BSTR Text)

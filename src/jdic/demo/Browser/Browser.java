@@ -206,6 +206,10 @@ public class Browser extends JPanel {
                 updateStatusInfo("Loading error.");
             }
 
+            public void documentCompleted(WebBrowserEvent event) {
+                updateStatusInfo("Document loading completed.");
+            }
+
             public void titleChange(WebBrowserEvent event) {
                 updateStatusInfo("Title of the browser window changed.");
             }  

@@ -48,7 +48,8 @@ public:
                                     VARIANT_BOOL *Cancel);
     void __stdcall OnNewWindow2(IDispatch **ppDisp,VARIANT_BOOL *Cancel);
     void __stdcall OnDownloadBegin();
-    void __stdcall OnNavigateComplete(IDispatch* pDisp, CComVariant& URL);
+    void __stdcall OnNavigateComplete(IDispatch* pDisp, VARIANT* URL);
+    void __stdcall OnDocumentComplete(IDispatch* pDisp, VARIANT* URL);
     void __stdcall OnNavigateProgress(long Progress,long ProgressMax);
     void __stdcall OnNavigateError(IDispatch *pDisp,VARIANT *URL,VARIANT *TargetFrameName,
                                    VARIANT *StatusCode,VARIANT_BOOL *Cancel);
@@ -61,6 +62,7 @@ public:
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_BEFORENAVIGATE2, OnBeforeNavigate)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_NEWWINDOW2, OnNewWindow2)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_NAVIGATECOMPLETE2, OnNavigateComplete)
+        SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_DOCUMENTCOMPLETE, OnDocumentComplete)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_PROGRESSCHANGE, OnNavigateProgress)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_TITLECHANGE, OnTitleChange)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_STATUSTEXTCHANGE, OnStatusTextChange)
@@ -69,6 +71,13 @@ public:
 protected:
     int  m_InstanceID;
     bool initialized;
+
+    // Below variables are used to check the final OnDocumentComplete event.
+    // Global IDispatch pointer.
+    IDispatch* glpDisp;
+    // Flag for the default, preloaded page ("about:blank") while 
+    // creating a browser window for JEVENT_CREATEWINDOW event.
+    bool isDefaultPage;
 };
 
 #endif // browserwindow_h
