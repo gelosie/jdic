@@ -112,8 +112,8 @@ USA
       <fileset dir="${src}/doc/win32">
         <include name="README.txt" />
       </fileset>
-      <fileset dir="${saverbeans.path}/lib">
-        <include name="jogl/jogl.jar" />
+      <fileset dir="${saverbeans.path}/lib/jogl">
+        <include name="jogl.jar" />
       </fileset>
     </copy>
     <unjar dest="${dist}/${screensaver}-win32"
