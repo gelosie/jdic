@@ -44,7 +44,6 @@ ALL : "$(OUTDIR)\jdic.dll"
 CLEAN :
 	-@erase "$(INTDIR)\InitUtility.obj"
 	-@erase "$(INTDIR)\JNIloader.obj"
-	-@erase "$(INTDIR)\Tray.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\WebBrowser.obj"
 	-@erase "$(INTDIR)\WebBrowserUtil.obj"
@@ -67,7 +66,6 @@ LINK32=link.exe
 LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /incremental:no /pdb:"$(OUTDIR)\jdic.pdb" /machine:I386 /out:"$(OUTDIR)\jdic.dll" /implib:"$(OUTDIR)\jdic.lib" /force:multiple 
 LINK32_OBJS= \
 	"$(INTDIR)\JNIloader.obj" \
-	"$(INTDIR)\Tray.obj" \
 	"$(INTDIR)\WebBrowser.obj" \
 	"$(INTDIR)\WebBrowserUtil.obj" \
 	"$(INTDIR)\WinAPIWrapper.obj" \
@@ -93,7 +91,6 @@ ALL : "$(OUTDIR)\jdic.dll"
 CLEAN :
 	-@erase "$(INTDIR)\InitUtility.obj"
 	-@erase "$(INTDIR)\JNIloader.obj"
-	-@erase "$(INTDIR)\Tray.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(INTDIR)\WebBrowser.obj"
@@ -119,7 +116,6 @@ LINK32=link.exe
 LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /incremental:yes /pdb:"$(OUTDIR)\jdic.pdb" /debug /machine:I386 /out:"$(OUTDIR)\jdic.dll" /implib:"$(OUTDIR)\jdic.lib" /pdbtype:sept /force:multiple 
 LINK32_OBJS= \
 	"$(INTDIR)\JNIloader.obj" \
-	"$(INTDIR)\Tray.obj" \
 	"$(INTDIR)\WebBrowser.obj" \
 	"$(INTDIR)\WebBrowserUtil.obj" \
 	"$(INTDIR)\WinAPIWrapper.obj" \
@@ -139,7 +135,7 @@ INTDIR=.\Release
 OutDir=.\Release
 # End Custom Macros
 
-ALL : "$(OUTDIR)\jdic.dll"
+ALL : "$(OUTDIR)\tray.dll"
 
 
 CLEAN :
@@ -147,7 +143,7 @@ CLEAN :
 	-@erase "$(INTDIR)\JNIloader.obj"
 	-@erase "$(INTDIR)\Tray.obj"
 	-@erase "$(INTDIR)\vc60.idb"
-	-@erase "$(OUTDIR)\jdic.dll"
+	-@erase "$(OUTDIR)\tray.dll"
 	-@erase "$(OUTDIR)\jdic.exp"
 	-@erase "$(OUTDIR)\jdic.lib"
 
@@ -161,13 +157,13 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\jdic.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /incremental:no /pdb:"$(OUTDIR)\jdic.pdb" /machine:I386 /out:"$(OUTDIR)\jdic.dll" /implib:"$(OUTDIR)\jdic.lib" /force:multiple
+LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /dll /incremental:no /pdb:"$(OUTDIR)\jdic.pdb" /machine:I386 /out:"$(OUTDIR)\tray.dll" /implib:"$(OUTDIR)\jdic.lib" /force:multiple
 LINK32_OBJS= \
 	"$(INTDIR)\InitUtility.obj" \
 	"$(INTDIR)\JNIloader.obj" \
 	"$(INTDIR)\Tray.obj" \
 
-"$(OUTDIR)\jdic.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+"$(OUTDIR)\tray.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
