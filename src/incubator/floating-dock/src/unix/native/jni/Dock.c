@@ -40,7 +40,7 @@
 #define dprintf
 #endif
 
-Display *     awt_display;
+static Display *     awt_display;
 
 /* AWT interface functions. */
 static void *res = NULL;
@@ -142,8 +142,9 @@ REFLECT_VOID_FUNCTION(getAwtLockFunctions,
 
 REFLECT_FUNCTION(Display *, getAwtDisplay, (void), ())
 
-Display *     display;
-int	screen_num;
+static Display *     display;
+static int	screen_num;
+static Atom _NET_WM_STRUT;
 
 void ThreadYield(JNIEnv *env) {
 
@@ -189,7 +190,7 @@ configureNotify(JNIEnv *env, Window window, int x, int y, int w, int h)
     if (gdsClass == NULL) {
         int err = 0;
         if (gdsClass == NULL) {
-            jclass tc = (*env)->FindClass(env, "org/jdesktop/jdic/dock/internal/impl/GnomeDockService");
+            jclass tc = (*env)->FindClass(env, "org/jdesktop/jdic/dock/internal/impl/UnixDockService");
             gdsClass = (*env)->NewGlobalRef(env, tc);
             (*env)->DeleteLocalRef(env, tc);
             if (gdsClass != NULL) {
@@ -219,11 +220,11 @@ configureNotify(JNIEnv *env, Window window, int x, int y, int w, int h)
 
 
 /*
- * Class:     org_jdesktop_jdic_dock_internal_impl_GnomeDockService
+ * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
  * Method:    eventLoop
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockService_eventLoop(JNIEnv *env, jclass klass)
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_eventLoop(JNIEnv *env, jclass klass)
 {
     XEvent        report;
     /*  Enter event loop  */
@@ -296,11 +297,11 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServic
 }
 
 /*
- * Class:     org_jdesktop_jdic_dock_internal_impl_GnomeDockService
+ * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
  * Method:    locateDock
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockService_locateDock(JNIEnv *env, jclass klass)
+JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_locateDock(JNIEnv *env, jclass klass)
 {
     if (initialized_lock == 0) {
         getAwtLockFunctions(&LockIt, &UnLockIt, &NoFlushUnlockIt, NULL);
@@ -318,8 +319,7 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockSe
     /*  Get screen number from display structure macro  */
     screen_num     = DefaultScreen(display);
 
-    dprintf("Dock initialized\n");
-
+    _NET_WM_STRUT = XInternAtom(display,"_NET_WM_STRUT",False);
 
     (*UnLockIt)(env);
 
@@ -327,11 +327,11 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockSe
 }
 
 /*
- * Class:     org_jdesktop_jdic_dock_internal_impl_GnomeDockService
+ * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
  * Method:    createDockWindow
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockService_createDockWindow(JNIEnv *env, jobject obj)
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_createDockWindow(JNIEnv *env, jobject obj)
 {
     Window win;
     XSizeHints *  size_hints;
@@ -346,6 +346,7 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServi
     Atom _NET_WM_STATE_STICKY;
     Atom _MOTIF_WM_HINTS;
     int insets[4];
+    int insets_partial[12];
     char *       window_name = "JDIC Dock";
     char *       icon_name = "JDIC Dock Icon";
     unsigned int display_width, display_height;
@@ -417,7 +418,6 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServi
     wm_delete_window = XInternAtom(display,"WM_DELETE_WINDOW",False);
     _NET_WM_WINDOW_TYPE = XInternAtom(display,"_NET_WM_WINDOW_TYPE",False);
     _NET_WM_WINDOW_TYPE_DOCK = XInternAtom(display,"_NET_WM_WINDOW_TYPE_DOCK",False);
-    _NET_WM_STRUT = XInternAtom(display,"_NET_WM_STRUT",False);
     _NET_WM_STATE = XInternAtom(display,"_NET_WM_STATE",False);
     _NET_WM_STATE_STICKY = XInternAtom(display,"_NET_WM_STATE_STICKY",False);
     _MOTIF_WM_HINTS=XInternAtom(display,"_MOTIF_WM_HINTS",True);
@@ -428,13 +428,16 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServi
                     (unsigned char *)&_NET_WM_WINDOW_TYPE_DOCK, 1);
     XChangeProperty(display, win, _NET_WM_STATE,XA_ATOM , 32, PropModeReplace,
                     (unsigned char *)&_NET_WM_STATE_STICKY, 1);
-    insets[0]=10;
-    insets[1]=0;
-    insets[2]=0;
-    insets[3]=0;
+
+    memset (insets, 0, sizeof (insets));
 
     XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
                     (unsigned char *)insets, 4);
+
+    memset (insets_partial, 0, sizeof (insets_partial));
+
+    XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
+                    (unsigned char *)insets_partial, 12);    
 
     dprintf("Window ID = %x \n",win);
 
@@ -444,11 +447,11 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServi
 }
 
 /*
- * Class:     org_jdesktop_jdic_dock_internal_impl_GnomeDockService
+ * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
  * Method:    adjustSizeHints
  * Signature: (JII)V
  */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockService_adjustSizeHints (JNIEnv *env, jobject obj, jlong win, jint width, jint height)
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_adjustSizeHints (JNIEnv *env, jobject obj, jlong win, jint width, jint height)
 {
     XSizeHints *  size_hints;
 
@@ -468,7 +471,6 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServic
             size_hints, NULL, NULL);
 
     int insets[4];
-    Atom _NET_WM_STRUT = XInternAtom(display,"_NET_WM_STRUT",False); 
     insets[0]=width;
     insets[1]=0;
     insets[2]=0;
@@ -477,17 +479,15 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockServic
     XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
                     (unsigned char *)insets, 4);
 
-
     (*UnLockIt)(env);
-
 }
 
 /*
- * Class:     org_jdesktop_jdic_dock_internal_impl_GnomeDockService
+ * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
  * Method:    mapWindow
  * Signature: (JZ)V
  */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_GnomeDockService_mapWindow(JNIEnv *env, jobject obj, jlong win, jboolean b)
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_mapWindow(JNIEnv *env, jobject obj, jlong win, jboolean b)
 {
     if (b) {
 	dprintf("mapped window id is %x\n", win);

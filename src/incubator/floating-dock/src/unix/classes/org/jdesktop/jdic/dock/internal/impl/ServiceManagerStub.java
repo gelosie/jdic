@@ -50,7 +50,7 @@ public class ServiceManagerStub {
     public static Object getService(String serviceName)
             throws IllegalArgumentException, UnsupportedOperationException {
         if (serviceName.equals(ServiceManager.DOCK_SERVICE)) {
-            return new GnomeDockService();
+            return new UnixDockService();
         } else {
             // Should never arrive here.
             throw new IllegalArgumentException("The requested service is not supported.");
