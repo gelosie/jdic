@@ -45,24 +45,37 @@
 USING_GECKO_SDK_1_4 = 1
 #USING_GECKO_SDK_1_7 = 1
 
-# set architecture
-UNAME = $(shell uname)
-ifeq ($(UNAME), Linux)
-OS_ARCH = Linux
+# set gtk version
+#MOZ_ENABLE_GTK = 1
+MOZ_ENABLE_GTK2 = 1
+
+MODULE_NAME_PART= mozembed
+
+# set options for each platform 
+OS_ARCH = $(shell uname)
+ifeq ($(OS_ARCH), Linux)
 CXX = g++
+LDFLAGS = -shared -fPIC -Wl,--version-script=gnu-ld-script
+MODULE_NAME_PART = mozembed-linux-gtk
 endif
-ifeq ($(UNAME), SunOS)
-OS_ARCH = SunOS 
+ifeq ($(OS_ARCH), SunOS)
 CXX = CC
+LDFLAGS = -G -M gnu-ld-script
+MODULE_NAME_PART = mozembed-solaris-gtk
 endif
-ifeq ($(UNAME), FreeBSD)
-OS_ARCH = FreeBSD
+ifeq ($(OS_ARCH), FreeBSD)
 CXX = g++
+LDFLAGS = -shared -fPIC -Wl,--version-script=gnu-ld-script
+MODULE_NAME_PART = mozembed-freebsd-gtk
 endif
 
-# set gtk version
-MOZ_ENABLE_GTK = 1
-#MOZ_ENABLE_GTK2 = 1
+# set suffix for MODULE_NAME
+ifdef MOZ_ENABLE_GTK
+MODULE_NAME = $(MODULE_NAME_PART)1.2
+endif
+ifdef MOZ_ENABLE_GTK2
+MODULE_NAME = $(MODULE_NAME_PART)2
+endif
 
 # set other variables
 BIN_SUFFIX =
@@ -75,39 +88,11 @@ CPPSRCS = MozEmbed.cpp \
           ../../../share/native/utils/MsgServer.cpp \
           $(NULL)
           
-MODULE_NAME	= mozembed
-ifeq ($(OS_ARCH), Linux)
-ifdef MOZ_ENABLE_GTK
-MODULE_NAME = mozembed-linux-gtk1.2
-endif
-ifdef MOZ_ENABLE_GTK2
-MODULE_NAME = mozembed-linux-gtk2
-endif
-endif
-ifeq ($(OS_ARCH), SunOS)
-ifdef MOZ_ENABLE_GTK
-MODULE_NAME = mozembed-solaris-gtk1.2
-endif
-ifdef MOZ_ENABLE_GTK2
-MODULE_NAME = mozembed-solaris-gtk2
-endif
-endif
-ifeq ($(OS_ARCH), FreeBSD)
-ifdef MOZ_ENABLE_GTK
-MODULE_NAME = mozembed-freebsd-gtk1.2
-endif
-ifdef MOZ_ENABLE_GTK2
-MODULE_NAME = mozembed-freebsd-gtk2
-endif
-endif
-
 PROGRAM = $(MODULE_NAME)$(BIN_SUFFIX)
 LIBRARY = lib$(MODULE_NAME).so
 
 #CXXFLAGS = -g -fPIC
 CXXFLAGS = -O2 -fPIC
-
-LDFLAGS = -fPIC -Wl,--version-script=gnu-ld-script
 
 # link against the version of gtkembedmoz included with a
 # mozilla distribution
@@ -196,7 +181,7 @@ $(PROGRAM): $(LIBRARY) Main.o
 	$(CXX) -o $(PROGRAM) Main.o -L. -l$(MODULE_NAME) $(LIBS_PROG)
 
 $(LIBRARY): $(OBJS)
-	$(CXX) -o $(LIBRARY) $^ -shared $(LDFLAGS) $(LIBS)
+	$(CXX) -o $(LIBRARY) $^ $(LDFLAGS) $(LIBS)
 
 %.o: %.cpp
 	$(CXX) -c $< -o $@ $(CPPFLAGS) $(CXXFLAGS)

@@ -661,6 +661,7 @@ mozembed_main(int argc, char **argv)
     gtk_moz_embed_pop_startup();
 
     PR_DestroyLock(gMsgLock);
+    return 0;
 }
 
 // this function is running in the socket listening thread
