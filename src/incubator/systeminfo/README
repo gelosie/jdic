@@ -1,0 +1,55 @@
+This program is free software; you can redistribute it and/or modify
+it under the terms of the Lesser GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+USA
+
+
+
+JDIC SystemInfo README
+---------------------------------
+
+This is the Preliminary implementation of the JDIC SystemInfo API.
+
+The SystemInfo API allows access to properties native to the host operating
+system, such as user idle time and desktop lock state. The implementation for
+obtaining such properties varies widely from OS to OS and desktop environment
+to desktop environment; this package hopes to consolidate their implementation
+in a runtime environment so code can be easily re-used across multiple platforms.
+
+Supported Platforms
+-------------------
+- Windows 2000/XP/2003 
+- Most *nix platforms running an XWindows implementation (Linux, Solaris)
+
+System Requirements 
+- J2SE v1.4.2 or greater (available at http://java.com/) 
+
+Building the Source
+-------------------
+To build the API from source, your system must meet the following
+requirements:
+
+    * JDK 1.4 or greater, available from http://java.sun.com/
+    * Ant 1.5.1 or greater, available from http://ant.apache.org/
+    * A C++ compiler (such as GCC or C++) or cross-compiler
+
+To build the API:
+
+    * Run 'ant buildall' to build the API and demos.
+
+Support
+-------
+Support for SystemInfo is provided by the Java community on the
+JDIC project on java.net.
+
+    * http://jdic.dev.java.net/
