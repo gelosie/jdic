@@ -10,7 +10,7 @@ Windows
 
 Unix
 
-  java -classpath ../../tray.jar:. -Djava.library.path=../../ <class name>
+  java -classpath ../../jdic.jar:. -Djava.library.path=../../ <class name>
 
 where <class name> is the same as the application's name, such as FileExplorer,
 FileChooser, FileTypes, SimpleBrowser, Browser, and Tray. 
