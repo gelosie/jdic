@@ -1,7 +1,7 @@
 <html>
 <head>
 	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
-	<title>Java Desktop Integration Componenets</title>
+	<title>JDIC - JDesktop Integration Componenets</title>
 	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
 	<meta NAME="AUTHOR" CONTENT=" ">
 	<meta NAME="CREATED" CONTENT="20000519;14440300">
@@ -16,53 +16,69 @@
   <td WIDTH="93" height="92"><img SRC="resource/javalogo.gif" ALT="Java" BORDER=0 height=90 width=51 HSPACE=20></td>
   <td width="80">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
     <td width="707" ALIGN=CENTER><p>&nbsp;</p>
-      <p><font color="#6600FF" size="+2" ><strong>Java 
-        Desktop Integration Components</strong></font> </p><td ALIGN=LEFT VALIGN=TOP WIDTH="16">
+      <p><font color="#6600FF" size="+2" ><strong>JDesktop Integration Components</strong></font> </p><td ALIGN=LEFT VALIGN=TOP WIDTH="16">
 </table>
 <hr>
 <blockquote> 
-  <p><font size="+2"><strong><font size="5">J</font></strong></font><font size="2">ava 
-    Desktop Integration Components Version (JDIC) 0.9. This project aims to make 
-    Java applications first citizens of current desktop platforms without <img align=right src="resource/javaduke2.gif" alt="Java" border=0 height=149 width=101 hspace=20>sacrificing 
-    platform independence. It provides Java applications with access to facilities 
+  <p><strong><font color="#FF0000">J</font></strong><font color="#FF0000"><b>D</b></font>esktop
+  <font color="#FF0000"><b>I</b></font>ntegration <font color="#FF0000"><b>C</b></font>omponents&nbsp;
+  (<font color="#FF0000"><b>JDIC</b></font>). This project aims to make 
+    Java applications first citizens of current desktop platforms without <img align=right src="resource/javaduke2.gif" alt="Java" border=0 height=113 width=66 hspace=20>sacrificing 
+    platform independence.&nbsp;<br>
+  <br>
+ It provides Java applications with access to facilities 
     provided by the native desktop such as the desktop mailer, the html rendering 
     engine or registered document viewing applications. Additionally it provides 
     the mechanisms by which Java applications can integrate into the native Desktop 
     such as registering Java applications as document viewers on the desktop and 
-    creating desktop installer packages containing Java applications. JDIC is 
-    composed of four sub-projects: Desktop, Filetypes, Packager and Browser:</font></p>
+    creating desktop installer packages containing Java applications.&nbsp;<br>
+  <br>
+  JDIC consists of a collection of Java packages, which are all
+  subpackages of <b> org.jdesktop.jdic</b>, and a JNLP application
+  packaging tool.&nbsp;</p>
 </blockquote>
 <ul>
   <li> 
-    <p><font size="2"> <a href="https://jdic-desktop.dev.java.net/" target="_blank"><strong>Desktop</strong></a> 
-      provides APIs to automate native applications, including the document viewer 
+    <p><b>Package </b><strong>org.jdesktop.jdic.desktop:</strong> 
+    APIs to automate native applications, including the document viewer 
       applications associated with a particular file type, the system browser 
-      and the system mailer. </font></p>
+      and the system mailer.</p>
   </li>
   <li> 
-    <p><font size="2"> <strong><a href="https://jdic-filetypes.dev.java.net/" target="_blank">Filetypes</a></strong> 
-      provides APIs to associate document viewer applications with filetypes</font></p>
+    <p><strong>Package org.jdesktop.jdic.filetypes</strong><b>:</b>  APIs to associate document viewer applications with
+    filetypes.</p>
   </li>
   <li> 
-    <p><font size="2"><strong><a href="https://jdic-packager.dev.java.net/" target="_blank">Packager</a></strong> 
-      provides tools to package JNLP applications into installable packages of 
-      MSI/RPM/PKG format , standard Windows, Linux and Solaris Operating System 
-      packags respectively.</font></p>
+    <p><strong>Package org.jdesktop.jdic.browser:</strong>  Provides
+    an AWT component to enable the embedding of the desktop's web browsing component 
+      into Java applications and applets. The APIs support URL navigation, a basic history 
+      mechanism and progress notification.&nbsp;&nbsp;</p>
   </li>
   <li> 
-    <p><font size="2"><strong><a href="https://jdic-browser.dev.java.net/" target="_blank">Browser</a></strong> 
-      provides APIs to enable the embedding of the desktop's web browsing component 
-      into Java applications. The APIs support URL navigation, a basic history 
-      mechanism and progress notification.</font></p>
+    <p><strong>JDIC Packager:</strong>  A
+    tool to package JNLP applications into installable packages of
+    MSI/RPM/PKG format , standard Windows, Linux and Solaris OS 
+      packags respectively.</p>
   </li>
 </ul>
+<blockquote>
+
+    <h2><a href="documentation/index.html">Documentation</a></h2>
+    <h2><a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">Download</a></h2>
+    <h2>Demo</h2>
+    <blockquote>
+    <p><a href="http://www.javadesktop.org/jdic/webstart/Desktop/FileExplorer.jnlp"><img border="0" src="resource/fileexplorer.jpg" width="94" height="70"></a><b>FileExplorer</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img border="0" src="resource/filechooser.jpg" width="97" height="71"><b>FileChooser</b>
+    (N/A)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b><a href="http://www.javadesktop.org/jdic/webstart/Browser/webbrowser.jnlp"><img border="0" src="resource/browser.jpg" width="96" height="71"></a>Browser</b></p>
+    </blockquote>
+</blockquote>
+
 <hr>
 <table border="0" width="100%" cellspacing="0" cellpadding="0" bgcolor="#CCCCCC">
   <tr>
     <td width="100%">
       <table border="0" width="100%" cellpadding="0" cellspacing="6">
         <tr>
-          <td width="100%" height="15"><font size="2">JDIC-Java Desktop Integration Components</font></td>
+          <td width="100%" height="15"><font size="2">JDIC-JDesktop Integration Components</font></td>
         </tr>
       </table>
     </td>
