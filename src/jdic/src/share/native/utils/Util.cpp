@@ -185,19 +185,22 @@ char* TuneJavaScript(const char* javaScript)
 
     strcat(resultJScript, "var retValue = eval(\"");
 
-    // Escape all the '\'', '\"' and '\\'s in the JavaScript string.        
+    // Escape all the '\"', '\\', '\r' and '\n's in the JavaScript string.
     for (int i = 0; i < (int)strlen(javaScript); i++) {
         char c = javaScript[i];
     
-        if (c == '\'' || c == '\"' || c == '\\')
+        if (c == '\"' || c == '\\' || c == '\r' || c == '\n')
             resultJScript[strlen(resultJScript)] = '\\';
-    
+
+        if (c == '\r') c = 'r';
+        if (c == '\n') c = 'n';
+
         resultJScript[strlen(resultJScript)] = c;
     }
     
     strcat(resultJScript, "\")");
     strcat(resultJScript, ";");
-    
+
     // Store the returned value of eval command as the "head" element property
     // JDIC_BROWSER_INTERMEDIATE_PROP.
     strcat(resultJScript, "var heads = document.getElementsByTagName('head');");
