@@ -207,6 +207,7 @@ public class FileExplorer extends JPanel {
         this.add(jSplitPane, BorderLayout.CENTER);
         this.add(statusBar, BorderLayout.SOUTH);
     }
+    
 
     private DefaultTreeModel createTreeModel() {
         // Using "My Computer" as root.
@@ -225,7 +226,7 @@ public class FileExplorer extends JPanel {
             rootNode = new MyTreeNode(MY_COMPUTER_FOLDER_FILE);
 
             MyTreeNode parent;
-            File[] roots = File.listRoots();
+            File[] roots = MyUtility.getRoots();
 
             // Remove A: drive from the initial list of drives, since whenever the
             // JTree is repaint, it tries to read floppy drive A:\.
@@ -703,7 +704,7 @@ public class FileExplorer extends JPanel {
         // Check if the text value is a local path by checking if it starts
         // with a driver name(on Windows) or root path(on Unix).
         File localFile = null;
-        File[] roots = File.listRoots();
+        File[] roots = MyUtility.getRoots();
 
         for (int i = 0; i < roots.length; i++) {
             if (address.toLowerCase().startsWith(roots[i].toString().toLowerCase())) {

@@ -113,7 +113,7 @@ public class MyTableModel extends AbstractTableModel {
         // For Windows "My Computer" node only.
         // ===
         if (selectedDir.equals(new File(FileExplorer.MY_COMPUTER_FOLDER_PATH))) {
-            File[] drivers = File.listRoots();
+            File[] drivers = MyUtility.getRoots();
             int driverNum = drivers.length;
             Object data[][] = new Object[driverNum][columnNames.length];
 

@@ -23,8 +23,11 @@
  * <p>
  * The utility class convers the length to KB numbers.
  */
-
+import java.io.File;
+import java.util.Vector;
 class MyUtility {
+    private static String osName = System.getProperty("os.name").toLowerCase();
+    private static File roots[] = null;
     public static String length2KB(long length) {
         long KB = 1024;
         long MB = 1024 * 1024;
@@ -53,5 +56,51 @@ class MyUtility {
         }
 
         return kbStr;
+    }
+    
+    static class FileSystemRoot extends File {
+        public FileSystemRoot(File f) {
+            super(f, "");
+        }
+        
+        public FileSystemRoot(String s) {
+            super(s);
+        }
+        
+        public boolean isDirectory() {
+            return true;
+        }
+    }
+    
+    public static File[] getRoots() {
+        if (roots == null) {
+            constructRoots();
+        }
+        return roots;
+    }
+    
+    private static void constructRoots() {
+        if (osName.startsWith("windows")) {
+            Vector rootsVector = new Vector();
+        
+            // Create the A: drive whether it is mounted or not
+            FileSystemRoot floppy = new FileSystemRoot("A" + ":" + "\\");
+            rootsVector.addElement(floppy);
+
+            // Run through all possible mount points and check
+            // for their existance.
+            for (char c = 'C'; c <= 'Z'; c++) {
+                char device[] = {c, ':', '\\'};
+                String deviceName = new String(device);
+                File deviceFile = new FileSystemRoot(deviceName);
+                if (deviceFile != null && deviceFile.exists()) {
+                    rootsVector.addElement(deviceFile);
+                }
+            }
+            roots = new File[rootsVector.size()];
+            rootsVector.copyInto(roots);
+        } else {
+            roots = File.listRoots();
+        }
     }
 }
