@@ -21,9 +21,7 @@
 package org.jdesktop.jdic.tray;
 
 
-import org.jdesktop.jdic.tray.internal.ServiceManager;
-import org.jdesktop.jdic.tray.internal.TrayIconService;
-
+import org.jdesktop.jdic.tray.spi.TrayIconProvider;
 import java.awt.Point;
 import javax.swing.Icon;
 import javax.swing.JPopupMenu;
@@ -44,7 +42,7 @@ import java.awt.event.ActionListener;
 
 public class TrayIcon {
 
-    TrayIconService tis;
+    TrayIconProvider tip;
 
     /**
      * TrayIcon constructor - creates a TrayIcon with the specified Icon
@@ -73,8 +71,7 @@ public class TrayIcon {
      * @param popup popupMenu to use
      */
     public TrayIcon(Icon icon, String caption, JPopupMenu popup) {
-        tis = (TrayIconService) 
-            ServiceManager.getService(ServiceManager.TRAY_ICON_SERVICE);
+        tip = TrayIconProvider.getProvider(); 
         setIcon(icon);
         setCaption(caption);
         setPopupMenu(popup); 
@@ -87,8 +84,8 @@ public class TrayIcon {
      */
 
     public void setIcon(Icon icon) {
-        if (tis != null) {
-            tis.setIcon(icon);
+        if (tip != null) {
+            tip.setIcon(icon);
         }
     }
 
@@ -99,8 +96,8 @@ public class TrayIcon {
      */
 
     public void setPopupMenu(JPopupMenu popup) {
-        if (tis != null) {
-            tis.setPopupMenu(popup);
+        if (tip != null) {
+            tip.setPopupMenu(popup);
         }
     }
 
@@ -120,8 +117,8 @@ public class TrayIcon {
      * @param  listener
      */
     public void addActionListener(ActionListener listener) {
-        if (tis != null) {
-            tis.addActionListener(listener);
+        if (tip != null) {
+            tip.addActionListener(listener);
         } 
     } 
 
@@ -132,8 +129,8 @@ public class TrayIcon {
      * @param  listener
      */
     public void removeActionListener(ActionListener listener) {
-        if (tis != null) {
-            tis.removeActionListener(listener);
+        if (tip != null) {
+            tip.removeActionListener(listener);
         } 
     } 
 
@@ -143,8 +140,8 @@ public class TrayIcon {
      * @param caption
      */
     public void setCaption(String caption) {
-        if (tis != null) {
-            tis.setCaption(caption);
+        if (tip != null) {
+            tip.setCaption(caption);
         }
     }
 
@@ -156,13 +153,13 @@ public class TrayIcon {
      *
      */
     public void setIconAutoSize(boolean autosize) {
-        if (tis != null) {
-            tis.setIconAutoSize(autosize);
+        if (tip != null) {
+            tip.setIconAutoSize(autosize);
         }
     }
 
-    TrayIconService getTrayIconService() {
-        return tis;
+    TrayIconProvider getTrayIconService() {
+        return tip;
     }
 
     /**
@@ -172,8 +169,8 @@ public class TrayIcon {
     public Point getLocationOnScreen() {
         Point p = null;
 
-        if (tis != null) {
-            p = tis.getLocationOnScreen();
+        if (tip != null) {
+            p = tip.getLocationOnScreen();
         }
 
         return p;
