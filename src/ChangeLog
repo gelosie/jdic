@@ -23,6 +23,7 @@
       231 P3   Deprecate WebBrowser.Status class.
       232 P3   Add WebBrowser.getWebBrowserListeners method.
       236 P3   NullPointerException thrown when running Tray demo.
+      238 P3   getLocationOnScreen() can not return the location of the icon
 
     * Known issue list:   
       Below are some of the most frequently mentioned known issues.
