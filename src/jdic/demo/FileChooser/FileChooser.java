@@ -225,7 +225,11 @@ public class FileChooser extends JPanel {
     }
 
     void jFileChooser_propertyChange(PropertyChangeEvent e) {
-        if (jFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(e.getPropertyName())) {
+    	if(JFileChooser.DIRECTORY_CHANGED_PROPERTY.endsWith(e.getPropertyName())){
+            jOpenButton.setEnabled(false);
+            jEditButton.setEnabled(false);
+            jPrintButton.setEnabled(false);
+    	}else if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(e.getPropertyName())) {
             // The selected file should always be the same as newFile
             selectedFile = jFileChooser.getSelectedFile();
             if (selectedFile != null) {
