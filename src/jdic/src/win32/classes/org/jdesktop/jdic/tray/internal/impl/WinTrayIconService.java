@@ -64,8 +64,6 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
     private final int WINDOWS_TASKBAR_ICON_WIDTH = 16;
     private final int WINDOWS_TASKBAR_ICON_HEIGHT = 16;
 
-    // JDialog is required because we dont want window to show on
-    // task bar, but it cant be JWindow since JWindow is not activatable.
     JDialog popupParentFrame;
 
     boolean created;
@@ -178,15 +176,13 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
                             System.currentTimeMillis(), 0));
                 }
             }
-            else {
-             popupParentFrame.toFront();
-            }
             break;
 
         case 0x205: // WM_RBUTTONUP
             if (!isShowing) {
                 isShowing = true;
                 popupParentFrame = new JDialog();
+                popupParentFrame.setAlwaysOnTop(true);
                 // Fix for bug 25 
                 GraphicsConfiguration gc = popupParentFrame.getGraphicsConfiguration();
                 Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
@@ -196,12 +192,11 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
                 if (y < screenInsets.top) {
                  y = screenInsets.top;
                 }
-                popupParentFrame.setBounds(x, y, 1, 1);
+                popupParentFrame.setBounds(-500, 0, 0, 0);
                 popupParentFrame.setVisible(true);
-                menu.show(popupParentFrame, 0, 0);
+                menu.show(popupParentFrame, x+500, y);
                 menu.addPopupMenuListener(this);
             }
-            popupParentFrame.toFront();
             break;
         }
         lastLocation = new Point(x,y);
