@@ -197,19 +197,23 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         }
     }
 
-    public void setIcon(Icon i) {
-        icon = i;
-        if (icon != null) {
-            int w = icon.getIconWidth();
-            int h = icon.getIconHeight();
-            reshape(0,0,w,h);
-            frame.setVisible(false);
-            frame.remove(iconPanel);
-            iconPanel = new IconPanel(); 
-            frame.add(iconPanel);
-            frame.setVisible(true);
-        }
-        iconPanel.repaint();
+    public void setIcon(final Icon i) {
+        SwingUtilities.invokeLater(new Runnable(){
+           public void run(){
+            icon = i;
+            if (icon != null) {
+                int w = icon.getIconWidth();
+                int h = icon.getIconHeight();
+                reshape(0,0,w,h);
+                frame.setVisible(false);
+                frame.remove(iconPanel);
+                iconPanel = new IconPanel(); 
+                frame.add(iconPanel);
+                frame.setVisible(true);
+            }
+            iconPanel.repaint();
+           }
+        });
     }
 
     public void setCaption(String s) {
@@ -281,7 +285,6 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             }
           super.paintComponent(g);
         }
-
         boolean doesIconReferenceImage(Icon icon, Image image) {
             Image iconImage = (icon != null && (icon instanceof ImageIcon)) ?
                 ((ImageIcon)icon).getImage() : null;
