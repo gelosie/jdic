@@ -1,0 +1,144 @@
+<html>
+<head>
+	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<title>SaverBeans Screensaver SDK Readme</title>
+	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+	<meta NAME="AUTHOR" CONTENT=" ">
+	<meta NAME="CREATED" CONTENT="20000519;14440300">
+	<meta NAME="CHANGEDBY" CONTENT=" ">
+	<meta NAME="CHANGED" CONTENT="20000901;17584900">
+</head>
+
+<BODY>
+<h2 align="center">README<br>
+ SaverBeans Screensaver SDK</h3> 
+<h3><b>Contents</b></h3>
+<ul>
+  <li><a href="#Introduction">Introduction</a></li>
+  <li><a href="#System Requirements">System Requirements</a></li>
+  <li><a href="#Build the Source">Build the Source</a></li>
+  <li><a href="#Web Pages">Web Pages</a></li>
+  <li><a href="#License">License</a></li>
+  <li><a href="#Web Pages">Web Pages</a></li>
+  <li><a href="#Screenshots">Screenshots</a></li>
+</ul>
+<h3><a name="Introduction">Introduction</a></h3>
+<blockquote>
+  <p>The <b>SaverBeans Screensaver SDK</b> is a Java screensaver development kit, enabling developers
+  to create cross-platform screensavers.  The developer writes a set of Java classes along with an XML description of the screensaver settings, and uses
+  the tools in this development kit to produce a screensaver for any Java-supported OS.  The resulting screensavers behave just like a native
+  screensaver (i.e. with preview capabilities and control over settings).<br>
+  <br>
+  The SaverBeans Screensaver SDK contains the following components:</p>
+  <ul>
+    <li>SaverBeans Ant Task JAR - A JAR required by screensaver projects, used to produce native screensavers.</li>
+    <li>SaverBeans API JAR - These are redistributable files to be included with your generated screensavers.</li>
+    <li>SaverBeans API Javadocs - Javadocs for the SaverBeans Screensaver APIs.</li>
+    <li>Screensaver Startup Kit - Sample project including a build file, skeleton screensaver and configuration file.</li>
+  </ul>
+  <p>The SaverBeans Screensaver SDK does not itself contain any screensavers.  It is
+  only a development kit for producing screensavers. A collection of open source Java screensavers contributed by the
+  Java community is available in the <b>SaverBeans Screensaver Pack</b> project
+  on java.net: <a href="http://screensavers.dev.java.net/">http://screensavers.dev.java.net/</a></p>
+</blockquote>
+<h3><a name="System Requirements">System Requirements</a></h3>
+<blockquote>
+  <p><b>SaverBeans SDK</b>:</p>
+  <ul>
+    <li>Supported platforms
+      <ul>
+        <li>WinME/NT/2000/XP/2003</li>
+        <li>Sun Java Desktop System (JDS) Release 1 or greater</li>
+        <li>SuSE Linux 7.1 or greater</li>
+        <li>RedHat Linux 8 or greater</li>
+        <li>Solaris 8 or greater</li>
+      </ul>
+    </li>
+    <li>System Requirements
+      <ul>
+        <li>Windows:
+            <ul>
+              <li>Administrator access to install screensavers</li>
+              <li>J2SE v1.4.2 or greater (get it at <a href="http://java.com/">http://java.com/</a>)</li>
+            </ul>
+        </li>
+        <li>Unix:
+            <ul>
+              <li>Administrator access to install screensavers</li>
+              <li>J2SE v1.5.0 beta or greater (get it at <a href="http://java.sun.com/j2se/1.5.0/download.jsp">http://java.sun.com/j2se/1.5.0/download.jsp</a>)</li>
+              <li>lesstif (provides /usr/X11R6/lib/libXm.so).  Any version 
+              will do - you may need an older version if you don't 
+              have glibc2.3; such is the case with Java Desktop System for 
+              example.  (Get it at <a href="http://www.lesstif.org/">
+              http://www.lesstif.org/</a>).</li>
+              <li>xscreensaver (any version should do, 4.14 and greater is 
+              known to work) (Get it at <a href="http://www.jwz.org/xscreensaver/">http://www.jwz.org/xscreensaver/</a>).</li>
+            </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+  Note: Performance of individual screensavers can vary greatly depending on the
+  underlying hardware and software configuration.  Factors include CPU speed,
+  available memory, video card and available video card memory, accelleration
+  support and video drivers, resolution, color bit depth, and other factors.
+</blockquote>
+<h3><a name="Build the Source">Build the Source</a></h3>
+<blockquote>
+  <p>The CVS module for the SDK source code in the CVS repository is <code>src/jdic/src/incubator/screensaver</code>.
+  You can find instructions for checking out the source code <a href="https://jdic.dev.java.net/source/browse/jdic/">here</a>.</p>
+  <p>To build from source, your system must meet the following requirements:</p>
+  <ul>
+    <li>JDK 1.4 or greater, available from <a href="http://java.sun.com/">http://java.sun.com/</a>.</li>
+    <li>Ant 1.5.1 or greater, available from <a href="http://ant.apache.org/">http://ant.apache.org/</a>.</li>
+  </ul>
+  <p>Then follow the below steps to build it:</p>
+  <ul>
+    <li>Copy build.properties.sample to build.properties.</li>
+    <li>Edit build.properties and follow the instructions in that file to configure for your environment.</li>
+    <li>Run 'ant dist' to build the SDK.</li>
+  </ul>
+  <p>Note:</p>
+  <blockquote><i>
+  <p>To rebuild the Win32 native layer (optional), you must have a
+  licensed copy of Visual C++ 5.0 with Service Pack 3 installed.
+  (Without SP3 you'll get a strange error message with the linker).
+  Execute VCVARS32.bat in the command prompt you use to build.  You may
+  need to tweak some environment settings to get everything building.</p>
+  <p>You can get Serivce Pack 3 here:
+  <a href="http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs97/default.aspx">http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs97/default.aspx</a>
+  Make sure to get the FULL pack.</p>
+  <p>The binary is checked into the CVS repository so unless you change
+  any files in the src/ant-native/win32 directory, you will not need this.
+  If you do need to rebuild it, the relevant ant target is ant-native-win32.</p>
+  </i></blockquote>
+</blockquote>
+<h3><b> <a name="License">License</a></b></h3>
+<blockquote>
+  <p><a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">Lesser General Public License
+  (LGPL)</a> </p>
+</blockquote>
+<h3><a name="Web Pages">Web Pages</a></h3>
+<blockquote>
+  <p><a href="https://jdic.dev.java.net/servlets/ProjectDocumentList?folderID=1330&amp;expandFolder=1330&amp;folderID=0">Download</a>
+  - download the latest release of JDIC and documentation.<br>
+  <a href="https://jdic.dev.java.net/nonav/documentation/javadoc/screensaver/">SaverBeans API javadoc</a> - the SDK API specification.<br>
+  <a href="https://jdic.dev.java.net/servlets/ProjectMailingListList">Mailing List</a> - 
+  contact relevant groups with issues.<br>
+  <a href="https://jdic.dev.java.net/servlets/ProjectIssues">
+  Bug Reports and Feedback</a>: report bugs or send feedback.<br>
+  <a href="https://screensavers.dev.java.net/">SaverBeans Screensaver Pack</a> - A collection of community-contributed screensavers.</p>
+</blockquote>
+<h3><a name="Screenshots">Screenshots</a></h3>
+<BLOCKQUOTE><IMG 
+  src="images/jds.gif"><BR>Screensaver properties 
+  on Java Desktop System<BR><BR><IMG 
+  src="images/linux.gif"><BR>Screensaver properties 
+  on Red Hat Linux 9<BR><BR><IMG 
+  src="images/winxp.gif"><BR>Screensaver properties 
+  on Windows XP<BR><BR><IMG 
+  src="images/redhat-settings.gif"><BR>Screensaver 
+  settings on Red Hat 9<BR><BR><IMG 
+  src="images/blackglass-small.gif"><BR>Blackglass 
+  sample screen saver</BLOCKQUOTE>
+ </BODY></HTML>
