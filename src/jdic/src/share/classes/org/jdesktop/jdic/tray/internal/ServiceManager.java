@@ -59,6 +59,13 @@ public class ServiceManager {
     // Add the initialization code from package org.jdesktop.jdic.init.
     // To set the environment variables or initialize the set up for 
     // native libraries and executable files.
+    // Note: below code is commented out at the moment. As the Tray Icon native code
+    //           for Unix is c code (Tray.c). But the initialization native code is c++ code
+    //           (InitUtility.cpp). These two code are not combined together into the generated
+    //           libtray.so native library for now. So the user has to set LD_LIBRARY_PATH
+    //           to use the Tray Icon API, the .jar file path will not be added to 
+    //           LD_LIBRARY_PATH by default.
+/*
     static {
         try {
             JdicManager jm = JdicManager.getManager();
@@ -67,6 +74,7 @@ public class ServiceManager {
             e.printStackTrace();
         }
     }
+*/
       
     /**
      * Gets a service object with the given name. The given service name should be one 
