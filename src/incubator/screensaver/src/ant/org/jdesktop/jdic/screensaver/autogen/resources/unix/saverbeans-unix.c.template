@@ -546,7 +546,7 @@ void screenhack(Display *dpy, Window window) {
     jclass class_screensaver;
     jclass class_context;
     jclass class_embedded_frame;
-    jclass cls;
+    jclass cls = NULL;
     jmethodID constructor;
     jobject context;
     jobject frame;
