@@ -33,14 +33,16 @@
 //////////////////////////////////////////////////////////////////////////////
 #define BUFFER_SIZE 2048
 #define OPT_SIZE 100
-#define OPTS_COUNT 13
+#define MY_FULL_VERSION "0.8"
+#define MY_RELEASE_NO "04"
 // Java executable file location indicator
 #define JAVA_EXE_IN_SYSTEM    1
 #define JAVA_EXE_IN_SYSTEM32  2
 #define JAVA_EXE_IN_JAVA_HOME 3
 // Enum for each options
-enum opts{ResourceDir, PackageName, OutputDir, Version, Release, LicenseDir, BannerJpgFile,
-          PanelJpgFile, MSSDKPath, EnableShortcut, EnableAssociation, EnableSystemCache, Echo};
+enum opts{ResourceDir = 0, PackageName, OutputDir, Version, Release, LicenseDir, BannerJpgFile,
+          PanelJpgFile, MSSDKPath, EnableShortcut, EnableAssociation, EnableSystemCache, Echo,
+          Showversion, Help, OPTS_COUNT};
 //acronym option indicator, such as "-pn" for packagename
 char sOpts[OPTS_COUNT][OPT_SIZE] = {0};
 //full length option indicator, such as "-packagename" for packagename
@@ -55,6 +57,12 @@ char JnlpFile [BUFFER_SIZE]  = {0};
 char ClassName[] = "org.jdesktop.jdic.packager.Jnlp2Msi";
 //Whether to print the java process cmd on terminal
 bool echoJavaCmd = false;
+//Whether to print the current jnlp2msi version info.
+bool echoVersion = false;
+//Whether to print the help info.
+bool echoHelp = false;
+//Whether the MS SDK Path has been specified
+bool mssdkpathSet = false;
 
 //////////////////////////////////////////////////////////////////////////////
 /**
@@ -87,7 +95,9 @@ void initOpts()
     initOpt(EnableShortcut,     "-es",  "-enableshortcut",    "EnableShortcut");
     initOpt(EnableAssociation,  "-ea",  "-enableassociation", "EnableAssociation");
     initOpt(EnableSystemCache,  "-esc", "-enablesystemcache", "EnableSystemCache");
-    initOpt(Echo,               "-e",   "-echo",              "Echo");
+    initOpt(Echo,               "-e",   "-echo",              "");
+    initOpt(Showversion,        "-sv",  "-showversion",       "");
+    initOpt(Help,               "-?",   "-help",              "");
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -96,30 +106,55 @@ void initOpts()
  */
 int optprocess(char* lopt, char* uopt, char* paraName, char* param, char* argv[], int& iLeft)
 {
-    if (!strncmp(lopt, argv[iLeft], strlen(lopt)) || !strncmp(uopt, argv[iLeft], strlen(uopt)))
+    if (!strcmp(lopt, argv[iLeft]) || !strcmp(uopt, argv[iLeft]))
     {   
-        if (!strncmp(argv[iLeft], sOpts[Echo], strlen(lopt)) || !strncmp(argv[iLeft], lOpts[Echo], strlen(lopt)))
+		int argLen = strlen(argv[iLeft]);
+        if (!strcmp(argv[iLeft], sOpts[Echo]) || !strcmp(argv[iLeft], lOpts[Echo]))
         {
-            if (!strncmp(argv[++iLeft], "1", strlen(lopt)))
-            {
-                echoJavaCmd = true;
-            }
+            //For echo case, we just set echoJavaCmd to be true. 
+            echoJavaCmd = true;
         }
-        else if ((!strncmp(argv[iLeft], sOpts[ResourceDir], strlen(lopt)) || !strncmp(argv[iLeft], lOpts[ResourceDir], strlen(lopt))) ||
-            (!strncmp(argv[iLeft], sOpts[LicenseDir], strlen(lopt)) || !strncmp(argv[iLeft], lOpts[LicenseDir], strlen(lopt))) ||
-            (!strncmp(argv[iLeft], sOpts[BannerJpgFile], strlen(lopt)) || !strncmp(argv[iLeft], lOpts[BannerJpgFile], strlen(lopt))) ||
-            (!strncmp(argv[iLeft], sOpts[PanelJpgFile], strlen(lopt)) || !strncmp(argv[iLeft], lOpts[PanelJpgFile], strlen(lopt))) ||
-            (!strncmp(argv[iLeft], sOpts[MSSDKPath], strlen(lopt)) || !strncmp(argv[iLeft], lOpts[MSSDKPath], strlen(lopt))))
+        else if (!strcmp(argv[iLeft], sOpts[Showversion]) || !strcmp(argv[iLeft], lOpts[Showversion]))
         {
-            //For param MSSDKPath, we need to set param as -DMSSDKPath="... ..."
+            //For showversion info
+            echoVersion = true;
+        }
+        else if (!strcmp(argv[iLeft], sOpts[Help]) || !strcmp(argv[iLeft], lOpts[Help]))
+        {
+            //For showhelp info
+            echoHelp = true;
+        }
+        else if ((!strcmp(argv[iLeft], sOpts[EnableShortcut]) || !strcmp(argv[iLeft], lOpts[EnableShortcut])) ||
+            (!strcmp(argv[iLeft], sOpts[EnableAssociation]) || !strcmp(argv[iLeft], lOpts[EnableAssociation])) ||
+            (!strcmp(argv[iLeft], sOpts[EnableSystemCache]) || !strcmp(argv[iLeft], lOpts[EnableSystemCache])))
+        {
+            //For EnableShortcut, EnableAssociation, EnableSystemCache
+            sprintf(param, "%s%s%s%s", "-D", paraName, "=", "true");
+        }
+        else if ((!strcmp(argv[iLeft], sOpts[ResourceDir]) || !strcmp(argv[iLeft], lOpts[ResourceDir])) ||
+            (!strcmp(argv[iLeft], sOpts[LicenseDir]) || !strcmp(argv[iLeft], lOpts[LicenseDir])) ||
+            (!strcmp(argv[iLeft], sOpts[BannerJpgFile]) || !strcmp(argv[iLeft], lOpts[BannerJpgFile])) ||
+            (!strcmp(argv[iLeft], sOpts[PanelJpgFile]) || !strcmp(argv[iLeft], lOpts[PanelJpgFile])) ||
+            (!strcmp(argv[iLeft], sOpts[MSSDKPath]) || !strcmp(argv[iLeft], lOpts[MSSDKPath])))
+        {
+            //For param ResourceDir, LicenseDir, BannerJpgFile, PanelJpgFile & MSSDKPath
+            //we need to set param as -DMSSDKPath="... ..."
+            if (!strcmp(argv[iLeft], sOpts[MSSDKPath]) || !strcmp(argv[iLeft], lOpts[MSSDKPath]))
+            {
+                mssdkpathSet = true;   
+            }
             sprintf(param, "%s%s%s\"%s\"", "-D", paraName, "=", argv[++iLeft]);
         }
-        else 
+        else if ((!strcmp(argv[iLeft], sOpts[PackageName]) || !strcmp(argv[iLeft], lOpts[PackageName])) ||
+            (!strcmp(argv[iLeft], sOpts[OutputDir]) || !strcmp(argv[iLeft], lOpts[OutputDir])) ||
+            (!strcmp(argv[iLeft], sOpts[Version]) || !strcmp(argv[iLeft], lOpts[Version])) ||
+            (!strcmp(argv[iLeft], sOpts[Release]) || !strcmp(argv[iLeft], lOpts[Release])))
         {
-            //For general case, we just set param as -DBannerJpgFile=... ...
+            //For PackageName, OutputDir, Version, Release, no quotes.
+            //we just set param as -DPackageName=... ...            
             sprintf(param, "%s%s%s%s", "-D", paraName, "=", argv[++iLeft]);
         }
-        iLeft ++;
+        iLeft ++;        
         return 1;
     }
     //return 0: no param gets handled in this process
@@ -340,6 +375,78 @@ int launchJava(int iLevel)
     return 0;
 }
 
+void printUsage()
+{
+    fprintf(stdout,
+    "jnlp2msi: JDIC packaging tool to package a Java Webstart application into\n"
+    "          Windows MSI file.(The output will be in executable bootstrapper\n"
+    "          format.)\n"
+    "\n"
+    "Note:   This tool requires J2SE 1.5.0+.\n"    
+    "\n"
+    "Usage:  jnlp2msi [-options] -msd|-mssdkdir <MS SDK dir> <Jnlp File Path>\n"
+	"e.g.    jnlp2msi -msd \"C:\\Program Files\\Microsoft SDK\" d:\\draw.jnlp\n"
+    "\n"
+    "Where   <MS SDK dir>\n"
+    "        is the directory where the Windows MS SDK update package\n"
+    "        gets installed.\n"
+    "        <Jnlp File Path>\n"
+    "        is the path of the Jnlp file to be packaged.\n"
+    "\n"
+    "Options include:\n"
+    "   -rd  <value> | -resourcedir <value>\n"
+    "        set the directory of the JNLP resource files, the default value\n"
+    "        is the parent directory of the given JNLP file.\n"
+    "   -ld  <value> | -licensedir <value>\n"
+    "        set the directory of the license files.\n"
+    "   -pn  <value> | -packagename <value>\n"
+    "        set the name of the generated MSI package file, the default\n"
+    "        value is the jnlp file name without any extension.\n"
+    "   -od  <value> | -outputdir <value>\n"
+    "        set the directory of the generated MSI file, the default value\n"
+    "        is the current directory.\n"
+    "   -v   <value> | -version <value>\n"
+    "        set the version number of the generated MSI package, the default\n"
+    "        value is 1.0.\n"
+    "   -r   <value> | -release <value>\n"
+    "        set the release number of the generated MSI package, the default\n"
+    "        value is 1.0.\n"
+    "   -bjf <value> | -bannerjpgfile <value>\n"
+    "        set the path of the jpeg file that will be used as the banner\n" 
+    "        part of the MSI installation GUI. If not set, a jpeg\n"
+    "        picture contained in the jar file will be used.\n"
+    "   -pjf <value> | -paneljpgfile <value>\n"
+    "        set the path of the jpeg file that will be used as the panel\n"
+    "        part of the MSI installation GUI. If not set, a jpeg picture\n"
+    "        contained in the jar file will be used.\n"
+    "   -es  | -enableshortcut\n"
+    "        create shortcut on the desktop and Start Menu after the generated\n"
+    "        MSI gets installed.\n"
+    "   -ea  | -enableassociation\n"
+    "        associate the JNLP application with the file extension or mime type\n"
+    "        specified by the the assoication tag in the jnlp file.\n"
+    "   -esc | -enablesystemcache\n"
+    "        install the JNLP application into the system cache of Java\n"
+    "        Webstart. By default, the application will be installed into\n"
+    "        the user cache.\n"
+    "   -sv  | showversion\n"
+    "        print the current version info of jnlp2msi.\n"
+    "   -?   | -help\n"
+    "        print this help message.\n"
+    "\n"
+    );
+}
+
+void printVersion()
+{
+    fprintf(stdout, 
+    "jnlp2msi version %s build %s.\n"
+    "Visit us at http://jdic.dev.java.net\n", 
+    MY_FULL_VERSION,
+    MY_RELEASE_NO
+    );
+}
+
 //////////////////////////////////////////////////////////////////////////////
 /**
  * Program entry point.
@@ -348,7 +455,8 @@ int main(int argc, char* argv[])
 {
     if (argc == 1)
     {
-        printf("No Parameters!\n");
+        printUsage();
+        return 1;
     }
     initOpts();
     int iLeft = 1;
@@ -359,6 +467,18 @@ int main(int argc, char* argv[])
         {
             if (optprocess(sOpts[i], lOpts[i], optNames[i], optValues[i], argv, iLeft))
             {
+                if (echoVersion || echoHelp) 
+                {
+                    if (echoVersion)
+                    {
+                        printVersion();
+                    }
+                    if (echoHelp)
+                    {
+                        printUsage();
+                    }
+                    return 1;   
+                }
                 break;   
             }
         }
@@ -375,12 +495,18 @@ int main(int argc, char* argv[])
         }
     }
     
-    if (JnlpFile[0] == 0)
+    if (!mssdkpathSet)
     {
-        printf("No JnlpFile!\n");
-        return -1;
+        printUsage();
+        return -1;   
     }
 
+    if (JnlpFile[0] == 0)
+    {
+        printUsage();
+        return -1;
+    }
+    
     // Check whether the version of JDK is 1.5.0+
     int iJavaPlace;
     if(0 == (iJavaPlace = checkJavaVersion()))
