@@ -117,7 +117,7 @@ public class JdicManager {
                 binaryPath = cpRootPath;
             } else {
                 // We are running from WebStart or a .jar file. 
-                binaryPath = (new File(cpRootPath, "..")).toString();
+                binaryPath = (new File(cpRootPath)).getParent();
                 if (System.getProperty("javawebstart.version") != null) {
                     //  We are running under WebStart.
                     //  NOTE: for a WebStart application, the jar file including 
