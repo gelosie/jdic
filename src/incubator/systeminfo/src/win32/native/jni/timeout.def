@@ -1,3 +1,0 @@
-; i586-mingw32-dlltool --base-file /tmp/ccPhvooY.base --output-exp systeminfo.exp --dllname systeminfo.dll --as=i586-mingw32-as --output-def timeout.def --exclude-symbol=DllMainCRTStartup@12 --def /tmp/ccxagbW8.def
-EXPORTS
-	Java_SystemInfo_nativeGetSessionIdleTime@8 @ 1
