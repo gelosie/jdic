@@ -108,6 +108,21 @@ To build the SDK:
        to configure for your environment.
     3. Run 'ant dist' to build the SDK.
 
+To rebuild the Win32 Native Layer:
+
+    To rebuild the Win32 native layer (optional), you must have a
+    licensed copy of Visual C++ 5.0 with Service Pack 3 installed.
+    (Without SP3 you'll get a strange error message with the linker).
+    Execute VCVARS32.bat in the command prompt you use to build.  You may
+    need to tweak some environment settings to get everything building.
+
+    You can get Serivce Pack 3 here:
+      http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs97/default.aspx
+    Make sure to get the FULL pack.
+
+    The binary is checked into the CVS repository so unless you change
+    any files in the src/ant-native/win32 directory, you will not need this.
+    If you do need to rebuild it, the relevant ant target is ant-native-win32.
 
 Building the Screensavers
 -------------------------
