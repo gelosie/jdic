@@ -30,12 +30,18 @@ LDFLAGS = -L$(XCOMPILE_DIR)/lib -lm -lmingwex -lsupc++ -lstdc++
 CFLAGS =  -g -O2 -c $(INCLUDE) -g 
 DLLWRAP_FLAGS = --as=$(AS) --driver-name=$(CC) --add-stdcall-alias -s
 
-all: systeminfo.dll
+all: systeminfo.dll systemcallback.dll
 
 systeminfo.dll: systeminfo.o
-	$(DLLWRAP) $(DLLWRAP_FLAGS) --output-def timeout.def -o $@ $^
+	$(DLLWRAP) $(DLLWRAP_FLAGS) --output-def info.def -o $@ $^
 
 systeminfo.o: systeminfo.cpp
+	$(CC) $(CFLAGS) $^
+
+systemcallback.dll: systemcallback.o
+	$(DLLWRAP) $(DLLWRAP_FLAGS) --output-def callback.def -o $@ $^
+
+systemcallback.o: systemcallback.cpp
 	$(CC) $(CFLAGS) $^
 
 clean:
