@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+ * subject to license terms.
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA.
+ */ 
+package org.jdesktop.jdic.browser;
+
+/**
+ * Utility class for webbrowser. This class will 
+ * 		- Get the native browser path
+ *      - Check if the default browser is Mozilla
+ * 		- Set the native env variable
+ * 
+ * @author  Paul Huang
+ * @version 0.1, August 20, 2004
+ */
+public class WebBrowserUtil {
+	private static String browserPath = null;
+	private static String osName = System.getProperty("os.name").toLowerCase();
+
+	static {
+        System.loadLibrary("jdic");
+    }
+	
+    /* native functions */
+    private static native String nativeGetBrowserPath();
+    static native void nativeSetEnv();
+    
+    /**
+     *  Gets the native browser path.
+     *  @return the path of the default browser in the current system
+     */
+    public static String getBrowserPath() {
+    	if (browserPath == null) {
+    		browserPath = nativeGetBrowserPath();
+    	}
+    	return browserPath;
+    }
+    
+    /**
+     * Checks if the default browser for the current platform is Mozilla.
+     * @return true on Solaris and Linux and true on Windows platform is Mozilla
+     * is set as the default browser.
+     */
+    public static boolean isDefaultBrowserMozilla() {
+    	if ((osName.indexOf("solaris") >= 0) ||
+    	    (osName.indexOf("linux") >= 0) ) {
+    		return true;
+    	} else {
+        	String nativeBrowserPath = getBrowserPath();
+        	//Check "iexplorer", as Mozilla 1.7 might be "firefox" 
+        	if (nativeBrowserPath.indexOf("iexplore") >= 0) {
+        		return false;
+        	} else {
+            	return true;        		
+        	}
+    	}
+    }
+}

@@ -27,6 +27,10 @@ import java.awt.event.*;
 import java.security.*;
 import java.io.File;
 
+import org.jdesktop.jdic.init.BrowserPackageFactory;
+import org.jdesktop.jdic.init.JdicInitException;
+import org.jdesktop.jdic.init.JdicManager;
+
 /**
  * A <code>WebBrowser</code> component represents a blank rectangular area of the
  * screen onto which the application can display webpages or from which the
@@ -72,14 +76,23 @@ public class WebBrowser extends Canvas
     private static boolean isDebugOn = false;
 
     static {
+        // Add the initialization code from org.jdesktop.jdic.init
+        try {
+            JdicManager jm = JdicManager.getManager();
+            jm.addPackage(BrowserPackageFactory.getBrowserPackage());
+            jm.initPackages();
+        } catch (JdicInitException e){
+            e.printStackTrace();
+        }
+        
         AccessController.doPrivileged(
-            new PrivilegedAction() {
-                public Object run() {
-                    System.loadLibrary("jdic");
-                    return null; // nothing to return
+                new PrivilegedAction() {
+                    public Object run() {
+                        System.loadLibrary("jdic");
+                        return null; // nothing to return
+                    }
                 }
-            }
-        );
+            );
         isRunningOnWindows = System.getProperty("os.name").indexOf("Windows") >= 0;
     }
 
@@ -118,7 +131,7 @@ public class WebBrowser extends Canvas
         if (browserBinary != null && browserBinary.length() > 0)
             return;
 
-        String nativePath = nativeGetBrowserPath();
+        String nativePath = WebBrowserUtil.getBrowserPath();
         if (null == nativePath) {
             WebBrowser.trace("Cant find default browser if you are on windows!");
             WebBrowser.trace("Or environment variable MOZILLA_FIVE_HOME not set if you are on linux/unix!");
@@ -488,12 +501,10 @@ public class WebBrowser extends Canvas
             }
         }
     }
-
+    
     /* native functions */
     private native int nativeGetWindow();
-    private native String nativeGetBrowserPath();
-    static native void nativeSetEnv();
-
+    
     /* debug helper */
     static void trace(String msg) {
         if (isDebugOn)

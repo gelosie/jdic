@@ -21,6 +21,8 @@
 package org.jdesktop.jdic.desktop.internal;
 
 import org.jdesktop.jdic.desktop.internal.impl.ServiceManagerStub;
+import org.jdesktop.jdic.init.JdicInitException;
+import org.jdesktop.jdic.init.JdicManager;
 
 
 /**
@@ -55,6 +57,16 @@ public class ServiceManager {
      * Suppress default constructor for noninstantiability.
      */
     private ServiceManager() {}
+    
+    static {
+        // Add the initialization code from org.jdesktop.jdic.init
+        try {
+            JdicManager jm = JdicManager.getManager();
+            jm.initPackages();
+        } catch (JdicInitException e){
+            e.printStackTrace();
+        }
+    }
   
     /**
      * Gets a service object with the given name. The given service name should be one 

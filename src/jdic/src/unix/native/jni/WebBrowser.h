@@ -7,49 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#undef org_jdesktop_jdic_browser_WebBrowser_FOCUS_TRAVERSABLE_UNKNOWN
-#define org_jdesktop_jdic_browser_WebBrowser_FOCUS_TRAVERSABLE_UNKNOWN 0L
-#undef org_jdesktop_jdic_browser_WebBrowser_FOCUS_TRAVERSABLE_DEFAULT
-#define org_jdesktop_jdic_browser_WebBrowser_FOCUS_TRAVERSABLE_DEFAULT 1L
-#undef org_jdesktop_jdic_browser_WebBrowser_FOCUS_TRAVERSABLE_SET
-#define org_jdesktop_jdic_browser_WebBrowser_FOCUS_TRAVERSABLE_SET 2L
-/* Inaccessible static: focusTraversalKeyPropertyNames */
-/* Inaccessible static: LOCK */
-/* Inaccessible static: dbg */
-/* Inaccessible static: isInc */
-/* Inaccessible static: incRate */
-#undef org_jdesktop_jdic_browser_WebBrowser_TOP_ALIGNMENT
-#define org_jdesktop_jdic_browser_WebBrowser_TOP_ALIGNMENT 0.0f
-#undef org_jdesktop_jdic_browser_WebBrowser_CENTER_ALIGNMENT
-#define org_jdesktop_jdic_browser_WebBrowser_CENTER_ALIGNMENT 0.5f
-#undef org_jdesktop_jdic_browser_WebBrowser_BOTTOM_ALIGNMENT
-#define org_jdesktop_jdic_browser_WebBrowser_BOTTOM_ALIGNMENT 1.0f
-#undef org_jdesktop_jdic_browser_WebBrowser_LEFT_ALIGNMENT
-#define org_jdesktop_jdic_browser_WebBrowser_LEFT_ALIGNMENT 0.0f
-#undef org_jdesktop_jdic_browser_WebBrowser_RIGHT_ALIGNMENT
-#define org_jdesktop_jdic_browser_WebBrowser_RIGHT_ALIGNMENT 1.0f
-#undef org_jdesktop_jdic_browser_WebBrowser_serialVersionUID
-#define org_jdesktop_jdic_browser_WebBrowser_serialVersionUID -7644114512714619750i64
-/* Inaccessible static: metrics */
-/* Inaccessible static: class_00024java_00024awt_00024Component */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024ComponentListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024FocusListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024HierarchyListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024HierarchyBoundsListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024KeyListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024MouseListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024MouseMotionListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024MouseWheelListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024InputMethodListener */
-/* Inaccessible static: class_00024java_00024beans_00024PropertyChangeListener */
-/* Inaccessible static: nameCounter */
-#undef org_jdesktop_jdic_browser_WebBrowser_serialVersionUID
-#define org_jdesktop_jdic_browser_WebBrowser_serialVersionUID -2284879212465893870i64
-/* Inaccessible static: browserBinary */
-/* Inaccessible static: eventThread */
-/* Inaccessible static: lastInstanceNum */
-/* Inaccessible static: isRunningOnWindows */
-/* Inaccessible static: isDebugOn */
 /*
  * Class:     org_jdesktop_jdic_browser_WebBrowser
  * Method:    nativeGetWindow
@@ -57,23 +14,7 @@ extern "C" {
  */
 JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
   (JNIEnv *, jobject);
-
-/*
- * Class:     org_jdesktop_jdic_browser_WebBrowser
- * Method:    nativeGetBrowserPath
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetBrowserPath
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_jdesktop_jdic_browser_WebBrowser
- * Method:    nativeSetEnv
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeSetEnv
-  (JNIEnv *, jclass);
-
+  
 #ifdef __cplusplus
 }
 #endif

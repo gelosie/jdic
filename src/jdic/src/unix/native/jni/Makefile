@@ -89,7 +89,9 @@ CPPSRCS = GnomeBrowserService.cpp \
           GnomeLaunchService.cpp \
           GnomeUtility.cpp \
           GnomeVfsWrapper.cpp \
-          WebBrowser.cpp
+          WebBrowser.cpp \
+          WebBrowserUtil.cpp \
+          ../../../share/native/utils/InitUtility.cpp
           
 SO_NAME = libjdic.so
 

@@ -62,32 +62,3 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
     return (jint)handle_x11;
 }
 
-/*
- * Class:     org_jdesktop_jdic_browser_WebBrowser
- * Method:    nativeGetBrowserPath
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetBrowserPath
-  (JNIEnv *env, jobject)
-{    
-    // Get environment variable value.
-    char *moz5Home = getenv("MOZILLA_FIVE_HOME");
-    if (moz5Home == NULL) {
-        putenv("MOZILLA_FIVE_HOME=/usr/lib/mozilla");
-        fprintf(stderr, "MOZILLA_FIVE_HOME is missing, using /usr/lib/mozilla by default.\n");
-        return env->NewStringUTF("/usr/lib/mozilla");
-    }
-    else {
-        return env->NewStringUTF(moz5Home);
-    }
-}
-
-/*
- * Class:     org_jdesktop_jdic_browser_WebBrowser
- * Method:    nativeSetEnv
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeSetEnv
-  (JNIEnv *env, jclass)
-{
-}

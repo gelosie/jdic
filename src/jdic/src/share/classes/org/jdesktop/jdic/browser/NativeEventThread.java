@@ -67,7 +67,7 @@ class NativeEventThread extends Thread
             }     
             String jvmVendor = System.getProperty("java.vm.vendor");
             if (WebBrowser.getBrowserBinary().endsWith("IeEmbed.exe") && jvmVendor.startsWith("Sun"))
-                WebBrowser.nativeSetEnv();
+                WebBrowserUtil.nativeSetEnv();
             final String cmd = WebBrowser.getBrowserBinary() + " -port=" + messenger.getPort();
             WebBrowser.trace("Executing " + cmd);
             AccessController.doPrivileged(
@@ -193,7 +193,7 @@ class NativeEventThread extends Thread
             case NativeEventData.EVENT_CREATEWINDOW:
                 int nativeWindow = browser.getNativeWindow();
                 if (0 == nativeWindow) {
-                    WebBrowser.trace("Can't get native window handle, please make sure that jawt.dll is in your path.");
+                    WebBrowser.trace("Can't get native window handle, please make sure the env variable JAVA_HOME has been set.");
                 }
                 else {
                     msg += nativeWindow;

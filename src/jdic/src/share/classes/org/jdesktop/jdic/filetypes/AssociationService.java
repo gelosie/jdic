@@ -28,6 +28,8 @@ import org.jdesktop.jdic.filetypes.internal.AppAssociationWriterFactory;
 import org.jdesktop.jdic.filetypes.internal.AppAssociationReader;
 import org.jdesktop.jdic.filetypes.internal.AppAssociationReaderFactory;
 import org.jdesktop.jdic.filetypes.internal.AppUtility;
+import org.jdesktop.jdic.init.JdicInitException;
+import org.jdesktop.jdic.init.JdicManager;
 
 
 /**
@@ -57,6 +59,16 @@ public class AssociationService {
     // A platform-dependent instance of AppAssociationWriter.
     private AppAssociationWriter appAssocWriter;
   
+    static {
+        // Add the initialization code from org.jdesktop.jdic.init
+        try {
+            JdicManager jm = JdicManager.getManager();
+            jm.initPackages();
+        } catch (JdicInitException e){
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Constructor of an <code>AssociationService</code> object.
      */
