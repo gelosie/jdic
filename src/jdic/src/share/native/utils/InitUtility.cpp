@@ -33,7 +33,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_init_InitUtility_getEnv
-  (JNIEnv * env, jclass obj, jstring envVar)
+  (JNIEnv * env, jclass /*obj*/, jstring envVar)
 {
     const char* pEnvVar = env->GetStringUTFChars(envVar, JNI_FALSE);
     char * pEnvValue;
@@ -55,7 +55,7 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_init_InitUtility_getEnv
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_init_InitUtility_setEnv
-  (JNIEnv * env, jclass obj, jstring envVar, jstring envValue)
+  (JNIEnv * env, jclass /*obj*/, jstring envVar, jstring envValue)
 {
     const char* pEnvVar = env->GetStringUTFChars(envVar, JNI_FALSE);
     const char* pEnvValue = env->GetStringUTFChars(envValue, JNI_FALSE);

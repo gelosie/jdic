@@ -248,7 +248,7 @@ public class FileExplorer extends JPanel {
             selectedTreeNode = rootNode;
             selectedFile = null;
         } else if (osName.startsWith("linux") || osName.startsWith("sunos") 
-            || osName.startsWith("freebsd")) {
+            || osName.startsWith("freebsd") || osName.startsWith("mac os")) {
             File rootFile = new File("/");
 
             rootNode = new MyTreeNode(rootFile);
@@ -509,6 +509,48 @@ public class FileExplorer extends JPanel {
         }
     }
 
+    void jTable_maybePopUpMenu(MouseEvent e) {
+        if (e.isPopupTrigger() == false || selectedFile == null) {
+            return;
+        }
+
+        if (!selectedFile.isDirectory()) {
+            // For a selected file, all the menu items are visible.
+            // Check the availability of the menu items.
+            jDesktopPopupMenu.removeAll();
+            jDesktopPopupMenu.add(jMenuItemOpen);
+            jDesktopPopupMenu.add(jMenuItemEdit);
+            jDesktopPopupMenu.add(jMenuItemPrint);
+            jDesktopPopupMenu.addSeparator();
+            jDesktopPopupMenu.add(jMenuItemBrowse);
+            jDesktopPopupMenu.addSeparator();
+            jDesktopPopupMenu.add(jMenuItemMail);
+
+            if (Desktop.isEditable(selectedFile)) {
+                jMenuItemEdit.setEnabled(true);
+            } else {
+                jMenuItemEdit.setEnabled(false);
+            }
+
+            if (Desktop.isPrintable(selectedFile)) {
+                jMenuItemPrint.setEnabled(true);
+            } else {
+                jMenuItemPrint.setEnabled(false);
+            }
+
+            jDesktopPopupMenu.show((Component) jTable, e.getX(), e.getY());
+        } else {
+            // For a selected directory, only "Open", "Browse" and "Browser in New
+            // Window" items are visible.
+            jDesktopPopupMenu.removeAll();
+            jDesktopPopupMenu.add(jMenuItemOpen);
+            jDesktopPopupMenu.addSeparator();
+            jDesktopPopupMenu.add(jMenuItemBrowse);
+
+            jDesktopPopupMenu.show((Component) jTable, e.getX(), e.getY());
+        }
+    }
+
     void jTable_mouseClicked(MouseEvent e) {
         int curRow = jTable.rowAtPoint(new Point(e.getX(), e.getY()));
 
@@ -547,47 +589,10 @@ public class FileExplorer extends JPanel {
         // Update the address text field and status bar.
         updateStatusInfo();
 
-        // For right clisk, create and popup the context menu.
-        if (SwingUtilities.isRightMouseButton(e)) {
-            if (!selectedFile.isDirectory()) {
-                // For a selected file, all the menu items are visible.
-                // Check the availability of the menu items.
-                jDesktopPopupMenu.removeAll();
-                jDesktopPopupMenu.add(jMenuItemOpen);
-                jDesktopPopupMenu.add(jMenuItemEdit);
-                jDesktopPopupMenu.add(jMenuItemPrint);
-                jDesktopPopupMenu.addSeparator();
-                jDesktopPopupMenu.add(jMenuItemBrowse);
-                jDesktopPopupMenu.addSeparator();
-                jDesktopPopupMenu.add(jMenuItemMail);
-
-                if (Desktop.isEditable(selectedFile)) {
-                    jMenuItemEdit.setEnabled(true);
-                } else {
-                    jMenuItemEdit.setEnabled(false);
-                }
-
-                if (Desktop.isPrintable(selectedFile)) {
-                    jMenuItemPrint.setEnabled(true);
-                } else {
-                    jMenuItemPrint.setEnabled(false);
-                }
-
-                jDesktopPopupMenu.show((Component) jTable, e.getX(), e.getY());
-            } else {
-                // For a selected directory, only "Open", "Browse" and "Browser in New
-                // Window" items are visible.
-                jDesktopPopupMenu.removeAll();
-                jDesktopPopupMenu.add(jMenuItemOpen);
-                jDesktopPopupMenu.addSeparator();
-                jDesktopPopupMenu.add(jMenuItemBrowse);
-
-                jDesktopPopupMenu.show((Component) jTable, e.getX(), e.getY());
-            }
-        } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+        if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
             // For a left and double click, open the file or directory.
             // Notice!!!. Below code is duplicate of
-            // void jMenuItemOpen_actionPerformed(ActionEvent e) {)
+            // void jMenuItemOpen_actionPerformed(ActionEvent e) {}
             // Popup the context menu.
             if (!selectedFile.isDirectory()) {
                 try {
@@ -825,6 +830,14 @@ class FileExplorer_jTable_mouseAdapter extends java.awt.event.MouseAdapter {
 
     public void mouseClicked(MouseEvent e) {
         adaptee.jTable_mouseClicked(e);
+    }
+
+    public void mousePressed(MouseEvent e) {
+        adaptee.jTable_maybePopUpMenu(e);
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        adaptee.jTable_maybePopUpMenu(e);
     }
 }
 

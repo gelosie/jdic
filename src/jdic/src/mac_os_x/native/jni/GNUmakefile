@@ -20,14 +20,15 @@
 
 PLATFORM = mac_os_x
 CXX = g++
-CXXFLAGS = -W -Wall -Wno-protocol -Wundeclared-selector -c -I/System/Library/Frameworks/JavaVM.framework/Headers
+CXXFLAGS = -W -Wall -c -I/System/Library/Frameworks/JavaVM.framework/Headers
+MMFLAGS = -Wno-protocol -Wundeclared-selector
 LDFLAGS = -dynamiclib
 LDSUFFIXES = -framework JavaVM -framework Cocoa
 SO_NAME = libjdic.jnilib
 
 .SUFFIXES: .o .mm
 .mm.o:
-	$(CXX) -c $(CXXFLAGS) $<
+	$(CXX) $(MMFLAGS) $(CXXFLAGS) $<
 
 USR_INCLUDE_DIR = /usr/include
 USR_LIB_DIR = /usr/lib
@@ -39,11 +40,13 @@ MMSRCS += MacBrowserService.mm
 MMSRCS += MacLaunchService.mm 
 #MMSRCS += MacMailerService.mm 
 
+CPPSRCS += ../../../share/native/utils/InitUtility.cpp
+
 .PHONY: all clean
 
 all: clean $(SO_NAME)
 
-SO_o = $(MMSRCS:.mm=.o)
+SO_o = $(MMSRCS:.mm=.o) $(CPPSRCS:.cpp=.o)
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(EXTRA_INCLUDES) -o $@ $<
