@@ -21,10 +21,14 @@ package org.jdesktop.jdic.screensaver;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.MemoryImageSource;
+import javax.swing.SwingUtilities;
 
 /**
  * Context object with information about the screensaver.
@@ -56,23 +60,32 @@ public class ScreensaverContext {
     public void setComponent( Component component ) {
         this.component = component;
         component.setBackground( Color.black );
-        setTransparentCursor( component );
+        
+        if( isFullScreen() ) {
+            setTransparentCursor( component );
+        }
         
         // Add mouse motion event to exit when mouse moves.
-        // XXX - causes Windows process not to exit sometimes
-        /*
+        // The screensaver is hidden which causes the next move of
+        // the mouse to be passed to Windows, which causes a clean
+        // exit of the screensaver.
         component.addMouseMotionListener(
             new MouseMotionListener() {
                 public void mouseDragged(MouseEvent e) {
-                    ((Frame)ScreensaverContext.this.component.
-                        getParent()).dispose();
                 }
                 public void mouseMoved(MouseEvent e) {
-                    ((Frame)ScreensaverContext.this.component.
-                        getParent()).dispose();
+                    SwingUtilities.invokeLater(
+                        new Runnable() {
+                            public void run() {
+                                if(isFullScreen()) {
+                                    ScreensaverContext.this.component.
+                                        setVisible(false);
+                                }
+                            }
+                        }
+                    );
                 }
             });
-         */
     }
     
     /**
@@ -105,6 +118,15 @@ public class ScreensaverContext {
      */
     public ScreensaverSettings getSettings() {
         return this.settings;
+    }
+
+    /**
+     * Returns true if the screensaver is in full-screen mode
+     * or false if it is in preview mode.
+     */
+    public boolean isFullScreen() {
+        Dimension fullSize = Toolkit.getDefaultToolkit().getScreenSize();
+        return component.getSize().equals(fullSize);
     }
     
     /**
