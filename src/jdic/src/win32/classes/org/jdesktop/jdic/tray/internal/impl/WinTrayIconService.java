@@ -87,7 +87,7 @@ public class WinTrayIconService implements TrayIconService{
         iconID = noIcons++;
         map.put(new Integer(iconID), this);
 
-        popupParentFrame = new JDialog();
+        popupParentFrame = new JDialog((Frame)null, "JDIC Tray Icon");
         try{
         	Method setAlwaysOnTop = popupParentFrame.getClass().getMethod("setAlwaysOnTop", new Class[]{boolean.class});
         	setAlwaysOnTop.invoke(popupParentFrame, new Object[]{Boolean.TRUE});
