@@ -28,8 +28,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.net.URL;
+import java.net.ProxySelector;
 import java.net.MalformedURLException;
 
+import com.sun.deploy.net.proxy.DeployProxySelector;
+import com.sun.deploy.net.proxy.StaticProxyManager;
+import com.sun.deploy.services.ServiceManager;
+import com.sun.deploy.services.PlatformType;
 
 /**
  * This class provides support for utility functions of File operation.
@@ -111,6 +116,21 @@ public class FileOperUtility {
         // Until now, everything is ok; copy the file from url to local.
         DataInputStream inStream = null;
         DataOutputStream outStream = null;
+        
+        if (System.getProperty("os.name").indexOf("Windows") != -1) {
+            ServiceManager.setService(PlatformType.STANDALONE_TIGER_WIN32);
+        } else {
+            ServiceManager.setService(PlatformType.STANDALONE_TIGER_UNIX);
+        }
+
+        ProxySelector ps = ProxySelector.getDefault();
+        
+        try {
+            DeployProxySelector.reset();
+        } catch (Throwable t) {
+            StaticProxyManager.reset();
+        }
+
         try {
             inStream = new DataInputStream(urlFilePath.openStream());
             outStream = new DataOutputStream(
@@ -133,6 +153,8 @@ public class FileOperUtility {
                 + " to file: "
                 + localFilePath);
         } finally {
+            ProxySelector.setDefault(ps);
+
             // No matter what happens, always close streams we've already opened
             if (inStream != null) {
                 try {
