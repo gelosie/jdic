@@ -63,6 +63,13 @@ USA
       Property jogl.path is invalid.  Please set
       it to the installation path of the JOGL distribution.
     </fail>
+    <available file="${jogl.path}/obj" property="jogl.obj.present" />
+    <fail unless="jogl.obj.present">
+      The path pointed to by jogl.path does not contain an
+      obj/ subdirectory.  Please create this directory and
+      copy the native .so or .dll files for your current
+      platform into that directory.
+    </fail>
   </target>
   
   <target name="define" description="Define custom tasks">
