@@ -27,7 +27,6 @@ import java.awt.event.*;
 import java.security.*;
 import java.io.File;
 
-import org.jdesktop.jdic.init.BrowserPackageFactory;
 import org.jdesktop.jdic.init.JdicInitException;
 import org.jdesktop.jdic.init.JdicManager;
 
@@ -79,8 +78,8 @@ public class WebBrowser extends Canvas
         // Add the initialization code from org.jdesktop.jdic.init
         try {
             JdicManager jm = JdicManager.getManager();
-            jm.addPackage(BrowserPackageFactory.getBrowserPackage());
-            jm.initPackages();
+            jm.initShareNative();
+            jm.initBrowserNative();
         } catch (JdicInitException e){
             e.printStackTrace();
         }

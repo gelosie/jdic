@@ -63,7 +63,7 @@ public class AssociationService {
         // Add the initialization code from org.jdesktop.jdic.init
         try {
             JdicManager jm = JdicManager.getManager();
-            jm.initPackages();
+            jm.initShareNative();
         } catch (JdicInitException e){
             e.printStackTrace();
         }
