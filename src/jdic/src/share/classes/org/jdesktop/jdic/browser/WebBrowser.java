@@ -22,6 +22,7 @@ package org.jdesktop.jdic.browser;
 
 import java.util.Vector;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.awt.*;
 import java.awt.event.*;
 import java.security.*;
@@ -216,9 +217,14 @@ public class WebBrowser extends Canvas
             URL url = null;
             try {
                 url = new URL(e.getData());
+            } catch (MalformedURLException ex1) {
+                try {
+                	// IE omits the file:/ protocol for local files, append it.
+                	url = new URL("file:/" + e.getData());  
+                } catch (MalformedURLException ex2) {                    
+                }
             }
-            catch (Exception ex) {
-            }
+            
             msg += willOpenURL(url) ? "0" : "1";
             eventThread.messenger.sendMessage(msg);
             return;
