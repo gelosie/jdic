@@ -109,7 +109,7 @@ inline void*& WBArray::operator[](int nIndex)
 char* TuneJavaScript(const char* javaScript);
 
 // helper function for logging the given message to the predefined,
-// log file "JDIC.log" under the *current/working* directory.
+// log file "JDIC.log" under the *current/working* directory. Usage:
 //
 //     #include "Util.h"
 //
