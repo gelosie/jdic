@@ -13,7 +13,7 @@
 <table WIDTH="100%"  height="25" BORDER=0 CELLPADDING=4 CELLSPACING=0 bordercolor="#FFFFCC" BGCOLOR="#99CCFF" >
   <tr> 
     <td><p><strong><font face="sans-serif" size="3">Package
-      org.jdesktop.jdic.browser (Browser API) Specification</font></strong></p></td>
+      org.jdesktop.jdic.browser (Browser component) Specification</font></strong></p></td>
   </tr>
 </table>
 <h2><b>Table of Contents</b></h2>
@@ -52,13 +52,13 @@
 <h3><a name="1. Requirement Specification">1. Requirement Specification</a></h3>
 <blockquote>
   <p>This section gives a high level overview of the system, performance and functional requirements for
-  the Browser API.</p>
+  the Browser component.</p>
 </blockquote>
 <h4><a name="1.1 Background">1.1 Background</a></h4>
 <blockquote>
   <p>As HTML is a very popular format of file, the requirement to display HTML or XML file inside Java GUI application is increasing.
   Unfortunately, so far, in terms of capability, the existing Java API doesn't compete with what modern browsers offer. The goal of
-  Browser API is to provide a simple AWT component which enables Java applications and applets to access basic featured web browsing capability. These basic functionalities include creating browser window, web content rendering, navigation, a basic history mechanism (back &amp; forward), and progress notification.</p>
+  Browser component is to provide a simple AWT component which enables Java applications and applets to access basic featured web browsing capability. These basic functionalities include creating browser window, web content rendering, navigation, a basic history mechanism (back &amp; forward), and progress notification.</p>
 </blockquote>
 <h4><a name="1.2 User Objectives">1.2 User Objectives</a></h4>
 <ul>
@@ -133,7 +133,7 @@
      
 <blockquote>
   <p style="font-style: normal; ">This section provides
- detailed, adequate    information      about the design of the Browser API.  It covers  not  only the system      architecture and UML analyze,
+ detailed, adequate    information      about the design of the Browser component.  It covers  not  only the system      architecture and UML analyze,
 but also  design considerations  and decisions. </p>
      
 </blockquote>
@@ -199,10 +199,10 @@ but also  design considerations  and decisions. </p>
 <h4><a name="2.4 Development Method">2.4 Development Method</a></h4>
      
 <blockquote>
-                    In order to support Java applets, we implement Browser API
-  using an out-process approach. In other words, the native browser implemented
+                    In order to support Java applets, we implement Browser component
+                    using an out-process approach. In other words, the native browser implemented
   in C++ actually runs as a standalone process, outside the Java VM process
-  which Browser API is running in. Socket is used for communication between these two processes.
+  which Browser component is running in. Socket is used for communication between these two processes.
 </blockquote>
      
 <h4><a name="2.5 Architectural Strategies">2.5 Architectural Strategies</a></h4>
@@ -220,7 +220,8 @@ but also  design considerations  and decisions. </p>
  but actually the Java code does not implement any    function     of browser.
  Instead, we embed a real stand alone web browser,    like Mozilla     or
 IE, which serves as a standalone application. The custom app  doesn't know
-which     browser is embed, it can only see the Browser API. The Browser   API  is responsible for calling the native implementation  
+which     browser is embed, it can only see the Browser component. The Browser component
+is responsible for calling the native implementation  
  code and communicate     with native embed browser.</p>
      
 </blockquote>
@@ -651,8 +652,8 @@ analyzes the WebBrowseEvent and passes them   to <span style="font-style: normal
 <hr>
 <h3><a name="4. Related Project">4. Related Project</a></h3>
 <blockquote>
-  <p>Browser API learns some ideas from <a href="http://www.mozilla.org/projects/blackwood/webclient/index.html">Webclient</a>.
-  But unlike Webclient, Browser API targets to provide the full capability to
+  <p>Browser component learns some ideas from <a href="http://www.mozilla.org/projects/blackwood/webclient/index.html">Webclient</a>.
+  But unlike Webclient, Browser component targets to provide the full capability to
   build up a Java GUI's embedded browser, it's more likely a HTML/XML viewer
   that can be embedded into any Java application as an AWT component.</p>
 </blockquote>
