@@ -45,7 +45,7 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
     private Icon icon;
     private boolean autoSize;
     private boolean isShowing;
-    private String caption = "Hello";
+    private String caption = "JDIC TrayIcon";
 
     private long hicon;
 
@@ -116,7 +116,9 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
 
     public void setPopupMenu(JPopupMenu m) {
         menu = m;
-        m.setLightWeightPopupEnabled(false);
+        if (menu != null) {
+            menu.setLightWeightPopupEnabled(false);
+        }
     }
 
     protected long createNativeIcon(BufferedImage bimage, int w, int h,
