@@ -191,3 +191,5 @@ Main.o: Main.cpp
 
 clean::
 	rm -f $(OBJS) $(PROGRAM) $(LIBRARY) Main.o
+	rm -f *.so
+	rm -f mozembed-*-gtk*
