@@ -27,17 +27,18 @@ import java.lang.reflect.Field;
 
 
 /**
- * Initialization manager for JDIC to set the environment variables or initialize the set up
- * for native libraries and executable files.
+ * Initialization manager for JDIC to set the environment variables or initialize 
+ * the set up for native libraries and executable files.
  * <p>
  * There are 3 modes of operation: WebStart, file system, and .jar file.
  * <p>
- * When using WebStart, please specify a .jar file(jdic-native.jar) with the native libraries 
- * for your platform to be loaded by WebStart in your JNPL. This class will find the 
- * unjared native libraries and executables, and use them directly.
+ * When using WebStart, please specify a .jar file(jdic-native.jar) with the 
+ * native libraries for your platform to be loaded by WebStart in your JNPL. 
+ * This class will find the unjared native libraries and executables, and use 
+ * them directly.
  * <p>
- * If not in WebStart, the system will expect the native libraries to be located in 
- * directory at the root of the classpath or .jar containing this class. 
+ * If not in WebStart, the system will expect the native libraries to be located 
+ * in directory at the root of the classpath or .jar containing this class. 
  * 
  * @author     Michael Samblanet
  *             Paul Huang
@@ -79,14 +80,16 @@ public class JdicManager {
     }
 
     /**
-     * Initializes the shared native file settings for all the JDIC components/packages.
-     * Set necessary environment variables for the shared native library and executable
-     * files, including *.dll files on Windows, and *.so files on Unix.
+     * Initializes the shared native file settings for all the JDIC components/
+     * packages. Set necessary environment variables for the shared native 
+     * library and executable files, including *.dll files on Windows, and *.so 
+     * files on Unix.
      * 
      * @exception JdicInitException Generic initialization exception
      */
     public void initShareNative() throws JdicInitException {
-        // If the shared native file setting was already initialized, just return.
+        // If the shared native file setting was already initialized, 
+        // just return.
         if (isShareNativeInitialized) {
             return;
         }
@@ -106,24 +109,27 @@ public class JdicManager {
             // Find the root path of this class.
             URL classpathRootUrl = new URL(thisClassUrl, relativePathToJarPath);
     
-            // Check the binary path including the JDIC native libraries (*.so, *.dll) and 
-            // executables (*.exe, mozembed-*):
-            // - If running from the file system, the binary path is set to the root path 
-            //   of this class.
-            // - If running under Webstart, it's set to <path of the jar file including the 
-            //   .class files>/RNjdic-native.jar/
-            // - If running from a .jar file. it's set to the parent path of the .jar file.  
+            // Check the binary path including the JDIC native libraries (*.so, 
+            // *.dll) and executables (*.exe, mozembed-*):
+            // - If running from the file system, the binary path is set to the 
+            //   root path of this class.
+            // - If running under Webstart, it's set to <path of the jar file 
+            //   including the .class files>/RNjdic-native.jar/
+            // - If running from a .jar file. it's set to the parent path of the 
+            //   .jar file.  
             if ("file".equals(classpathRootUrl.getProtocol())) {
                 // We are running from the file system.
                 binaryPath = (new File(classpathRootUrl.getFile())).toString();
             } else {
                 URL cpParent = new URL(classpathRootUrl, "..");
-                cpParent = new URL(new URL(cpParent.toString().substring(4)), "./");
+                cpParent = new URL(
+                    new URL(cpParent.toString().substring(4)), "./");
                                      
                 if (System.getProperty("javawebstart.version") != null) {
                     //  We are running under WebStart.
-                    //  NOTE: for a WebStart application, the jar file including the native 
-                    //        libraries/executables must use the name "jdic-native.jar". 
+                    //  NOTE: for a WebStart application, the jar file including 
+                    //        the native libraries/executables must use the name 
+                    //        "jdic-native.jar". 
                     String cacheDirName = "RN" + "jdic-native.jar" + "/";
                     File cacheDirFile = 
                         new File((new URL(cpParent, cacheDirName)).getFile());
@@ -146,8 +152,9 @@ public class JdicManager {
                 }
             }
     
-            // Add the binary path (including jdic.dll or libjdic.so) to "java.library.path", 
-            // since we need to use the native methods in class InitUtility.
+            // Add the binary path (including jdic.dll or libjdic.so) to 
+            // "java.library.path", since we need to use the native methods in 
+            // class InitUtility.
             String newLibPath = binaryPath + File.pathSeparator +
                                 System.getProperty("java.library.path"); 
             System.setProperty("java.library.path", newLibPath);
@@ -168,16 +175,18 @@ public class JdicManager {
     }
 
     /**
-     * Initializes the native file settings for the JDIC Browser component (package
-     * <code>org.jdecktop.jdic.browser</code>). Set necessary environment variables 
-     * for the Browser specific native library and executable files, including *.exe files on
-     * Windows, and mozembed-<os>-gtk* files on Unix.
+     * Initializes the native file settings for the JDIC Browser component 
+     * (package <code>org.jdecktop.jdic.browser</code>). Set necessary 
+     * environment variables for the Browser specific native library and 
+     * executable files, including *.exe files on Windows, and mozembed-<os>-gtk* 
+     * files on Unix.
      * 
      * @exception JdicInitException Generic initialization exception
      */
     public void initBrowserNative() throws JdicInitException {
         // The Browser component is used.
-        // If the Browser specific native file setting was already initialized, just return.
+        // If the Browser specific native file setting was already initialized, 
+        // just return.
         if (isBrowserNativeInitialized) {
             return;
         }
@@ -187,7 +196,8 @@ public class JdicManager {
             // LD_LIBRARY_PATH (on Unix). 
             String browserPath = WebBrowserUtil.getBrowserPath();
             if (browserPath == null) {
-                throw new JdicInitException("Can't locate the native browser path!");
+                throw new JdicInitException(
+                    "Can't locate the native browser path!");
             }
         
             if (WebBrowserUtil.isDefaultBrowserMozilla()) {
@@ -211,10 +221,13 @@ public class JdicManager {
                     InitUtility.appendEnv(libPathEnv, envMFH);
                 }
                 
-                // For Mozilla 1.4 on Windows, copy MozEmbed.exe to MOZILLA_FIVE_HOME.
+                // For Mozilla 1.4 on Windows, copy MozEmbed.exe to 
+                // MOZILLA_FIVE_HOME.
                 if (isWindows) {
-                    String sourceFileName = binaryPath + File.separator + "MozEmbed.exe";
-                    String destFileName = envMFH + File.separator + "MozEmbed.exe";
+                    String sourceFileName = binaryPath + File.separator 
+                        + "MozEmbed.exe";
+                    String destFileName = envMFH + File.separator 
+                        + "MozEmbed.exe";
     
                     InitUtility.copyFile(sourceFileName, destFileName);    
                 }
