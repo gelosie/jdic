@@ -189,9 +189,11 @@ Top-level target:
   <!-- *** Build Win32 jar file *** -->  
   <target name="buildwin32jar" depends="init"
           description="build the classes and jar file." >
+    <!-- generate class files that will run on VMs in JDK 1.4 and later -->
     <javac srcdir="${share.classes.dir}:${win32.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
+           target="1.4"
     />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
@@ -283,6 +285,7 @@ Top-level target:
     <javac srcdir="${share.classes.dir}:${unix.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
+           target="1.4"
     />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
@@ -374,6 +377,7 @@ Top-level target:
     <javac srcdir="${share.classes.dir}:${mac.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
+           target="1.4"
     />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
@@ -411,26 +415,32 @@ Top-level target:
     <javac srcdir="${demo.browser.dir}"
            destdir="${demo.browser.dir}"
            classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
     />
     <javac srcdir="${demo.filechooser.dir}"
            destdir="${demo.filechooser.dir}"
            classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
     />
     <javac srcdir="${demo.fileexplorer.dir}"
            destdir="${demo.fileexplorer.dir}"
            classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
     />
     <javac srcdir="${demo.filetypes.dir}"
            destdir="${demo.filetypes.dir}"
            classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
     />
     <javac srcdir="${demo.simplebrowser.dir}"
            destdir="${demo.simplebrowser.dir}"
            classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
     />        
     <javac srcdir="${demo.tray.dir}"
            destdir="${demo.tray.dir}"
            classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
     />        
 
     <!-- Copy demo apps to a "demo" directory under the distribution directory -->
@@ -494,6 +504,7 @@ Top-level target:
     <javac srcdir="${share.classes.tray.dir}:${win32.classes.tray.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
+           target="1.4"
     />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
@@ -543,6 +554,7 @@ Top-level target:
     <javac srcdir="${share.classes.dir}:${unix.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
+           target="1.4"
     />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
