@@ -512,6 +512,7 @@ int              prev_height = 0;
 JNIEnv *env = 0;
 JavaVM *jvm = 0;
 jmethodID render_frame_mid = 0;
+jmethodID base_destroy_mid = 0;
 jobject saver = 0; /* the screen saver instance */
 FILE *log;
 
@@ -523,6 +524,8 @@ TCHAR g_szClassName[] = TEXT( "SaverBeans" );
 BOOL started = FALSE;
 char szAppName[40] = TEXT( "SaverBeans" );
 int terminated = 0;
+int closing = 0;
+int closed = 0;
 
 /* 
  * Create the Graphics object.  The current strategy for this is to 
@@ -896,8 +899,6 @@ int start_java() {
 
 /* Called when we are to shut down the screensaver */
 void on_destroy(void) {
-    jmethodID destroy_mid;
-    jclass cls = NULL;
     int valid = 1;
 
     /* If destroy was already called, return immediately */
@@ -906,35 +907,18 @@ void on_destroy(void) {
     /* Notify main loop to stop iterating */
     terminated = 1;
 
+    if(DEBUG) fprintf( log, "on_destroy() called\n" );
+
     /* First, invoke destroy() on the screensaver */
     if( env ) {
-        /* Find the screensaver class */
-        if( valid ) {
-            cls = (*env)->FindClass(env, className);
-            if (cls == NULL) {
-                fprintf( stderr, "Can't find class %s\n", className );
-                valid = 0;
-            }
-        }
-
-        /* Find the destroy() method */
-        if( valid ) {
-            destroy_mid = (*env)->GetMethodID( env, cls, "baseDestroy", 
-                "()V" );
-            if (destroy_mid == NULL) {
-                fprintf( stderr, "Can't find baseDestroy() method\n" );
-                valid = 0;
-            }
-        }
-
         /* Invoke destroy() */
         if( valid ) {
-            (*env)->CallVoidMethod( env, saver, destroy_mid );
+            env->CallVoidMethod( saver, base_destroy_mid );
         }
 
         /* Output any exceptions before we quit */
-        if ((*env)->ExceptionOccurred(env)) {
-            (*env)->ExceptionDescribe(env);
+        if (env->ExceptionOccurred()) {
+            env->ExceptionDescribe();
         }
     }
 }
@@ -1016,6 +1000,15 @@ int start_screensaver( HWND win ) {
             class_embedded_frame, frame, win );
     }
     
+    /* Look up baseDestroy method */
+    if( valid ) {
+        base_destroy_mid = env->GetMethodID( cls, "baseDestroy", "()V" );
+        if( base_destroy_mid == NULL ) {
+            if(DEBUG) fprintf( log, "Could not find baseDestroy() method\n" );
+            valid = 0;
+        }
+    }
+    
     /* Initialize screen saver */
     if( valid ) {
         mid = env->GetMethodID( cls, "baseInit", 
@@ -1061,7 +1054,17 @@ void CALLBACK TimerCallback( UINT uID, UINT UMsg, DWORD dwUser, DWORD dw1,
         return;
     }
 
-    env->CallVoidMethod( saver, render_frame_mid );
+    if(closed) {
+        // do nothing
+    }
+    if(closing) {
+        closed = 1;
+        on_destroy();
+	DestroyWindow( master_hwnd );
+    }
+    else {
+        env->CallVoidMethod( saver, render_frame_mid );
+    }
 }
 
 
@@ -1085,8 +1088,8 @@ LRESULT WINAPI ScreenSaverProc( HWND hWnd, UINT uMessage,
             /* Default handler will do it */
             break; 
 	case WM_CLOSE:
+            closing = 1;
             if(DEBUG) fprintf( log, "WM_CLOSE\n" );
-	    DestroyWindow( hWnd );
 	    break;
 	case WM_DESTROY:
             /* Finish the screensaver */
@@ -1193,9 +1196,6 @@ BOOL WINAPI ScreenSaverConfigureDialog( HWND hDlg, UINT msg, WPARAM wParam,
             if(DEBUG) fprintf( log, "Opened config.\n" );
             result = TRUE;
             valid = start_java() && start_config();
-            break;
-        case WM_DESTROY:
-            on_destroy();
             break;
         case WM_CLOSE:
             break;
