@@ -35,7 +35,7 @@ Tray Icon API (Early Access)</h2>
     the image to see an enlarged version.</i></p>
   <p>
     
-  <table width="75%" border="0" align="center">
+  <table border="0" align="center">
     <tr align="center"> 
       <td><a href="images/windows.gif"><img src="images/windows.small.gif" width="149" height="100" border="0"></a></td>
         
@@ -86,14 +86,16 @@ Tray Icon API (Early Access)</h2>
     <pre>
 set JAVA_HOME=c:\j2sdk1.4.2
 cd c:\tray\demo\Tray
-%JAVA_HOME%\bin\java -classpath ..\..\tray.jar;. -Djava.library.path=..\..\ IconDemo</pre>
+%JAVA_HOME%\bin\java -classpath ..\..\tray.jar;. 
+             -Djava.library.path=..\..\ IconDemo</pre>
     <h4>Linux</h4>
     <p>Assuming the tray icons are installed under /home/duke/tray and the Java 
       installation is under /usr/java/j2sdk1.4.2:</p>
     <pre>
 export JAVA_HOME=/usr/java/j2sdk1.4.2
 cd /home/duke/tray/demo/Tray
-$JAVA_HOME/bin/java -classpath ../../tray.jar:. -Djava.library.path=../../ IconDemo
+$JAVA_HOME/bin/java -classpath ../../tray.jar:.
+            -Djava.library.path=../../ IconDemo
 </pre>
 <blockquote>
 	<hr>
