@@ -129,14 +129,8 @@ public class JdicManager {
                 } 
             }                                                       
    
-            if (isWindows) {
-                // Decodes to the string to replace "%20" with spaces on Windows.
-                // The space in the path string use character "%20".
-                try {   
-                    binaryPath = java.net.URLDecoder.decode(binaryPath, "UTF-8");
-                } catch (java.io.UnsupportedEncodingException e) {
-                }
-            }
+            // Decodes to the URL-style path to normal file path.
+            binaryPath = java.net.URLDecoder.decode(binaryPath, "UTF-8");
     
             // Add the binary path (including jdic.dll or libjdic.so) to 
             // "java.library.path", since we need to use the native methods in 
