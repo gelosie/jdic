@@ -108,7 +108,6 @@ int Initialize(JNIEnv *env) {
 BOOL TrayMessage(HWND hWnd, DWORD dwMessage, UINT uID, HICON hIcon, PSTR pszTip)
 {
     BOOL res;
-	
 	NOTIFYICONDATA tnd;
 	
 	tnd.cbSize		= sizeof(tnd);
@@ -118,21 +117,15 @@ BOOL TrayMessage(HWND hWnd, DWORD dwMessage, UINT uID, HICON hIcon, PSTR pszTip)
 	tnd.uFlags		= NIF_MESSAGE|NIF_ICON|NIF_TIP;
 	tnd.uCallbackMessage	= TRAY_NOTIFYICON+uID;
 	tnd.hIcon		= hIcon;
-	if (pszTip)
-	{
+
+	if (pszTip) {
 		lstrcpyn(tnd.szTip, pszTip, ARRAYSIZE(tnd.szTip));
-		
     }  
-	else
-	{
+	else {
 		tnd.szTip[0] = '\0';
 	}
 	
 	res = Shell_NotifyIcon(dwMessage, &tnd);
-	
-	if (hIcon)
-		DestroyIcon(hIcon);
-	
 	return res;
 }
 
@@ -282,8 +275,8 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconSer
 	
     HBITMAP hMask = ::CreateBitmap(nW, nH, 1, 1, (BYTE *)andMaskPtr);
     ::GdiFlush();
-	
-    int *cols = new int[nW*nH];
+
+	delete(andMaskPtr);
 	
     jint *intRasterDataPtr = NULL;
     HBITMAP hColor = NULL;
@@ -291,7 +284,6 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconSer
         intRasterDataPtr = 
 			(jint *)env->GetPrimitiveArrayCritical(intRasterData, 0);
 		hColor = create_BMP(NULL, (int *)intRasterDataPtr, nSS, nW, nH);
-		memcpy(cols, intRasterDataPtr, nW*nH*sizeof(int));
     } catch (...) {
         if (intRasterDataPtr != NULL) {
 			env->ReleasePrimitiveArrayCritical(intRasterData,
