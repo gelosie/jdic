@@ -1,0 +1,221 @@
+#! /bin/bash
+#
+# Copyright (C) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+# subject to license terms.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the Lesser GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+# USA.
+
+#
+# Purpose: 
+#
+# This script is the JDIC Packager launcher, which wrappers the call
+# to the main class of JDIC Packager. It accepts the input options and
+# pass down to the JDIC Packager main class.
+#
+
+#
+# Print default usage message.
+#
+print_usage()
+{
+  echo "Usage: jnlp2rpm [options] <JNLP file path>"
+  echo ""
+  echo "<JNLP file path>: the required path of the JNLP file to be packaged."
+  echo "[options] include:"
+  echo "  -rd <value> | -resourcedir <value>"
+  echo "                set the directory of the JNLP resource files,"
+  echo "                the default value is the parent path of the given JNLP file."
+  echo "  -ld <value> | -licensedir <value>"
+  echo "                set the directory of the license files if available."
+  echo "  -pn <value> | -packagename <value>"
+  echo "                set the name of the generated rpm package,"
+  echo "                the default valus is the jnlp file name without extension."
+  echo "  -od <value> | -outputdir <value>"  
+  echo "                set the directory where the generated rpm package is put,"
+  echo "                the default value is the current directory."
+  echo "  -v <value> | -version <value>"     
+  echo "                set the version number of the generated package,"
+  echo "                the default value is 1.0."
+  echo "  -r <value> | -release <value>"
+  echo "                set the release number of the generated package,"
+  echo "                the default value is 1."
+  echo "  -es | -enableshortcut"
+  echo "                create shortcut on the desktop after the generated package"
+  echo "                is installed."
+  echo "  -ea | -enableassociation"
+  echo "                associate the file extension .jnlp with Java Web Start executable"
+  echo "                after the generated package is installed."
+  echo "  -esc | -enablesystemcache"
+  echo "                install the JNLP application into the system cache of Java"
+  echo "                Web Start. By default, it's installed in the user cache."
+  echo "  -showversion  print this product version."
+  echo "  -? | -help    print this help message."
+  echo ""
+}
+
+#
+# Version and release number of this product.
+#
+PRODUCT_VERSION=0.8
+PRODUCT_RELEASE=4
+
+#
+# Parse options. These options correspond to the properties for the JDIC Packager 
+# main class.
+#
+PROP_RESOURCE_DIR=
+PROP_LICENCE_DIR=
+PROP_PACKAGE_NAME=
+PROP_OUTPUT_DIR=
+PROP_VERSION=
+PROP_RELEASE=
+PROP_ENABLE_SHORTCUT=
+PROP_ENABLE_ASSOCIATION=
+PROP_ENABLE_SYSTEM_CACHE=
+
+#
+# The JNLP file path is a required parameter.
+#
+if [ $# -eq 0 ]
+then
+  print_usage
+  exit 1
+fi
+
+while true
+do
+  if [ -z $1 ]; then
+    echo "Error: no JNLP file path is specified."
+    echo ""
+    print_usage
+    exit 1
+  fi
+
+  case $1 in
+    -rd | -resourcedir)
+      shift
+      PROP_RESOURCE_DIR="-DResourceDir=$1"
+      ;;
+    -ld | -licensedir)
+      shift
+      PROP_LICENSE_DIR="-DLicenseDir=$1"
+      ;;
+    -pn | -packagename)
+      shift
+      PROP_PACKAGE_NAME="-DPackageName=$1"
+      ;;
+    -od | -outputdir)
+      shift
+      PROP_OUTPUT_DIR="-DOutputDir=$1"
+      ;;
+    -v | -version)
+      shift
+      PROP_VERSION="-DVersion=$1"
+      ;;
+    -r | -release)
+      shift
+      PROP_RELEASE="-DRelease=$1"
+      ;;
+    -es | -enableshortcut)
+      PROP_ENABLE_SHORTCUT="-DEnableShortcut=true"
+      ;;
+    -ea | -enableassociation)
+      PROP_ENABLE_ASSOCIATION="-DEnableAssociation=true"
+      ;;
+    -esc | -enablesystemcache)
+      PROP_ENABLE_SYSTEM_CACHE="-DEnableSystemCache=true"
+      ;;
+    -showversion)
+      echo "JDIC Packager Version $PRODUCT_VERSION, Release $PRODUCT_RELEASE"
+      exit 1
+      ;;
+    -? | -help)
+      print_usage
+      exit 1
+      ;;
+    -*)
+      echo "Error: illegal option $1."
+      echo ""
+      print_usage
+      exit 1
+      ;;
+    *)
+      # Get the JNLP file path
+      JNLP_FILE_PATH=$1
+
+      break
+      ;;
+  esac
+
+  shift
+done
+
+# 
+# Report incorrect Java version (lower than 1.5).
+#
+print_java_error()
+{
+
+  echo "Error: J2SDK/J2RE version 1.5 or later is required to run JDIC Packager."
+  echo "Please install it and make sure java in under \$PATH. Or set JDIC_PACKAGER_JAVAHOME"
+  echo "to the home directory of J2SDK/J2RE to override the \$PATH setting. "
+  echo ""
+}
+
+#
+# Check if java exists under $PATH or under $JDIC_PACKAGER_JAVAHOME.
+# And then check if its version is 1.5 or later.
+#
+check_java_version() 
+{
+  if [[ -n ${JDIC_PACKAGER_JAVAHOME} ]]; then
+    JAVA_PATH=${JDIC_PACKAGER_JAVAHOME}/bin/java
+  else
+    JAVA_PATH=java
+  fi
+
+  TYPE_RESULT= `type $JAVA_PATH > /dev/null 2>&1`
+  if [[ $? -ne 0 ]]; then
+    print_java_error
+    exit 1
+  fi
+
+  JAVA_VER=`${JAVA_PATH} -version 2>&1 | awk -F\" '{print $2}' `
+  minor=`echo $JAVA_VER | awk -F\. '{print $2}'`
+  if [[ ${minor} < 5 ]]; then
+    print_java_error
+    exit 1
+  fi
+}
+
+#
+# Construct and invoke the JDIC Packager launching command with the specified properties:
+#
+
+# Check java version.
+JAVA_PATH=
+check_java_version
+
+# The main class name
+MAIN_CLASS="org.jdesktop.jdic.packager.Jnlp2Rpm"
+
+# jdic-packager.jar file path.
+PACKAGER_JAR_CLASSPATH="./jdic-packager.jar"
+
+PACKAGER_COMMAND="${JAVA_PATH} -classpath $PACKAGER_JAR_CLASSPATH:$CLASSPATH $PROP_RESOURCE_DIR $PROP_LICENSE_DIR $PROP_PACKAGE_NAME $PROP_OUTPUT_DIR $PROP_VERSION $PROP_RELEASE $PROP_ENABLE_SHORTCUT $PROP_ENABLE_ASSOCIATION $PROP_ENABLE_SYSTEM_CACHE $MAIN_CLASS $JNLP_FILE_PATH"
+
+echo ""
+$PACKAGER_COMMAND

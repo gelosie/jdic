@@ -1,0 +1,82 @@
+The demo applications in this directory showcase JDIC API 
+functionalities, and how to use the JDIC API packages.
+
+To run the demo applications, you need to follow the installation 
+instructions in the project website: https://jdic.dev.java.net, or 
+in the README.html file included in the distribution.
+
+Then, you can run the demo (assuming java command is in your path) using:
+  
+  java <class name> 
+
+where <class name> is the same as the application's name. 
+
+
+FileExplorer
+------------
+
+  A simple file viewer that allows the users to browse the files 
+  and folders on local drives or surf URLs with the native browser.
+  It demonstrates functionality of the package org.jdesktop.jdic.desktop.
+
+  Right-clicking a selected file brings up a popup menu. The items 
+  in this menu - Open, Edit, Print, Browse, and Mail to - correspond 
+  to methods in the org.jdesktop.jdic.desktop.Desktop class.
+
+  At the upper right of the GUI is a "Browse" button. Clicking it 
+  launches the default native browser to display the item specified 
+  by the address text field, which can be a local file path or an URL. 
+  This correspends to the method browse(URL) of the 
+  org.jdesktop.jdic.desktop.Desktop class.
+
+
+FileChooser
+-----------
+
+  A Swing application that uses a JFileChooser component to browse 
+  local files or surf an URL on the internet. It's another application
+  demonstrating the functionality of package org.jdesktop.jdic.desktop.
+  
+  The buttons on the right side of the JFileChooser component correspond 
+  to methods provided in the org.jdesktop.jdic.desktop.Desktop class.
+  
+  The URL text field and "Browse" button in the bottom correspond to 
+  browse(URL) method provided in the org.jdesktop.jdic.desktop.Desktop 
+  class.
+
+
+FileTypes
+---------
+
+  A dialog demonstrating functionality of the package
+  org.jdesktop.jdic.filetypes. 
+  
+  The operations in the left panel correspond to methods in 
+  AssociationService class. The fields in the right panel consist of 
+  an Association object, the fields are associated with a particular 
+  file type.
+
+
+SimpleBrowser
+-------------
+
+  A Swing application embedding the JDIC browser component to display 
+  a given URL. It demonstrates functionality of the package 
+  org.jdesktop.jdic.browser, an AWT component.
+  
+  Using JDIC browser component is just like using Swing JEditorPane 
+  component. This demo includes the basic code to embed it in a Swing 
+  application.
+
+
+Browser
+-------
+
+  A simple browser application that demonstrates the functionality of 
+  the package org.jdesktop.jdic.browser. 
+  
+  This demo embeds a browser component into the swing application
+  to render the HTML page specified in the URL text field. The top-left 
+  buttons allow the user to go forward and back and to reload and stop 
+  loading pages. The status bar reflects the browser's current state.
+

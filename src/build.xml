@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<project name="JDIC source code building script" default="showtargets" basedir=".">
+
+<!--
+This is the master build script for use with the Jakarta Ant build tool 
+to build the source code of JDIC project.
+
+For Ant, see http://jakarta.apache.org/ant/index.html
+
+Top-level target:
+  buildall:         Build a JDIC distribution for the current platform.
+  clean:            Remove the generated distribution (including files and directories).
+
+-->
+
+  <target name="showtargets" description="default target showing all available targets">
+    <echo>The available targets are:</echo>
+    <echo>  buildall:   Build a distribution for the current platform.</echo>
+    <echo>  clean:      Remove the generated distribution.</echo>
+    <echo></echo>
+    <echo>  The generated distribution is put under *dist* directory.</echo>
+  </target>
+
+  <target name="init" description="the init target">
+    <!-- Create the time stamp -->
+    <tstamp/>
+
+    <!-- Set platform-dependent distribution directory -->
+    <!-- ${file.separator} is "\" on Windows, and "/" on Unix -->
+    <condition property="dist.dir" value="dist${file.separator}windows">
+      <os family="windows" />      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/linux">
+      <os name="linux"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/solaris_sparc">
+      <os name="sunos" arch="sparc"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/solaris_x86">
+      <os name="sunos" arch="x86"/>      
+    </condition> 
+
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist.dir}" />   
+
+    <echo>=== Build a JDIC distribution ===</echo>
+    <echo>=== The distribution directory is: .${file.separator}${dist.dir}${file.separator} ===</echo> 
+  </target>
+
+  <!-- *** Build a JDIC distribution for the current platform -->
+  <target name="buildall" depends="init"
+          description="Build a JDIC distribution">
+    <!-- Build a JDIC API distribution -->
+    <ant dir="jdic" target="buildall"/>
+    
+    <!-- Build a JDIC Packager distribution -->
+    <ant dir="packager" target="buildall"/>
+
+    <!-- Copy JDIC API binary files into the distribution directory -->
+    <copy todir="${dist.dir}">
+      <fileset dir="jdic/${dist.dir}" casesensitive="false" >
+        <include name="javadoc/**"/>
+        <include name="*.jar"/>
+        <include name="*.dll"/>
+        <include name="*.so"/>
+        <include name="*embed*"/>
+        <include name="defmailer.properties"/>
+      </fileset>
+    </copy>
+
+    <!-- Copy JDIC API demo applications -->
+    <!-- create a demo directory -->
+    <mkdir dir="${dist.dir}/demo" />   
+    <copy todir="${dist.dir}/demo">
+      <fileset dir="jdic/demo" casesensitive="false" >
+        <include name="README"/>
+        <include name="**/*.java"/>
+        <include name="**/*.class"/>        
+        <include name="**/images/**"/>
+      </fileset>
+    </copy>
+
+    <!-- Copy JDIC Packager binary files -->
+    <copy todir="${dist.dir}">
+      <fileset dir="packager/${dist.dir}" casesensitive="false" >
+        <include name="*.jar"/>
+        <include name="*.dll"/>
+        <include name="jnlp2*"/>
+      </fileset>
+    </copy>
+
+    <!-- Copy the README.html and LICENSE files -->
+    <copy file="README.html" todir="${dist.dir}"/>
+    <copy file="COPYING" todir="${dist.dir}"/>
+  </target> 
+
+  <!-- *** Clean the distribution directory *** -->
+  <target name="clean" depends="init"
+          description="clean up the built directory and files">
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}"/>
+    </delete>
+  </target>
+
+</project>

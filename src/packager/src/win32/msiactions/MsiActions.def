@@ -1,0 +1,9 @@
+; MsiActions.def
+;
+; defines the exported functions which will be available to the MSI engine
+;
+LIBRARY    "MsiActions"
+DESCRIPTION    'Custom Action DLL created for Java Installer Project'
+EXPORTS
+    InstallAction
+    UninstallAction

@@ -1,0 +1,247 @@
+<?xml version="1.0"?>
+<project name="JDIC Packager building script" default="showtargets" basedir=".">
+
+<!--
+This is the master build script for use with the Jakarta Ant build tool 
+to build the source code of JDIC project.
+
+For Ant, see http://jakarta.apache.org/ant/index.html
+
+Top-level target:
+  buildall:         Build a JDIC Packager distribution for the current platform. 
+                    Which will run one of below targets:
+    buildwin32:     on Windows to build a Windows distribuition.
+    buildlinux:     on Linux to build a Linux distribuition.
+    buildsolaris:   on Solaris to build a Solaris distribuition.
+  clean:            Remove the generated distribution (including files and directories).
+
+-->
+
+  <!-- the top-level package name -->
+  <property name="pkg.packager.name" value="org.jdesktop.jdic.packager" /> 
+
+  <!-- the path of source directory -->
+  <property name="src.dir" value="src" />
+
+  <property name="unix.dir"            value="${src.dir}/unix" />
+  <property name="solaris.dir"         value="${src.dir}/solaris" />  
+  <property name="share.classes.dir"   value="${src.dir}/share/classes" />
+  <property name="unix.classes.dir"    value="${unix.dir}/classes" />
+  <property name="solaris.classes.dir" value="${solaris.dir}/classes" />
+  <property name="win32.classes.dir"   value="${src.dir}/win32/classes" />
+
+  <!-- the generated class directory -->
+  <property name="org.packager.impl.dir"       value="org/jdesktop/jdic/packager/impl" /> 
+  <property name="org.packager.impl.files.dir" value="${org.packager.impl.dir}/files" />  
+
+  <!-- only Win32 has native code -->
+  <property name="win32.native.dir"       value="${src.dir}/win32/native" />
+  <property name="win32.msiactions.dir"   value="${src.dir}/win32/msiactions" />
+  <property name="win32.script.dir"       value="${src.dir}/win32/script" />
+  <property name="win32.bootstrapper.dir" value="${src.dir}/win32/bootstrapper" />
+  <property name="win32.files.dir"        value="${src.dir}/win32/files" />
+
+  <!-- <property name="dist.dir" value="dist" /> -->
+
+  <property name="jar.file" value="jdic-packager.jar" />
+
+  <!-- the distribution version and release of this build -->
+  <!-- which is only used in javadoc target -->
+  <property name="version" value="0.8" />
+  <property name="release" value="4" />
+
+  <target name="showtargets" description="default target showing all available targets">
+    <echo>The top-level targets are:</echo>
+    <echo>  buildall:   Build a distribution for the current platform.</echo>
+    <echo>  clean:      Remove the generated distribution.</echo>
+    <echo></echo>
+    <echo>  The generated distribution is put under *dist* directory.</echo>
+  </target>
+
+  <!--
+    - SHARED TARGETS FOR WIN32/LINUX/SOLARIS DISTRIBUTIONS
+    -->
+  <target name="init" description="the init target">
+    <!-- Create the time stamp -->
+    <tstamp/>
+
+    <!-- Set platform-dependent distribution directory -->
+    <!-- ${file.separator} is "\" on Windows, and "/" on Unix -->
+    <condition property="dist.dir" value="dist${file.separator}windows">
+      <os family="windows" />      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/linux">
+      <os name="linux"/>      
+    </condition> 
+
+    <condition property="dist.dir" value="dist/solaris">
+      <os name="sunos"/>      
+    </condition> 
+
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist.dir}" />   
+
+    <echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
+    <echo>+ JDIC Packager build version ${version} release ${release}</echo>
+    <echo>+ The distribution directory is: .${file.separator}${dist.dir}${file.separator}</echo> 
+    <echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
+  </target>
+
+  <!-- *** Set the platform-dependent targets to build a distribution,
+           which is ONLY used by buildall target. *** -->
+  <target name="setplatformtarget"
+          description="set platform-dependent distribution targets.">
+    <condition property="platform.target" value="buildwin32">
+      <os family="windows" />      
+    </condition> 
+
+    <condition property="platform.target" value="buildlinux">
+      <os name="linux"/>      
+    </condition> 
+
+    <condition property="platform.target" value="buildsolaris">
+      <os name="sunos"/>      
+    </condition>  
+  </target>
+
+  <!-- *** Top-level target *** -->
+  <!-- *** Clean the distribution directory *** -->
+  <target name="clean" depends="init"
+          description="clean up the built directory and files">
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}"/>
+    </delete>
+  </target>
+
+  <!-- *** Top-level target *** -->
+  <!-- *** Build a JDIC Packager distribution for the current platform *** -->
+  <target name="buildall" depends="setplatformtarget"
+          description="build a distribution for the current platform.">
+    <!-- Execute the ${platform.target} target in this file,
+         which is buildwin32, buildlinux, or buildsolaris. -->
+    <ant target="${platform.target}"/>
+  </target>
+
+  <!-- *** javadoc *** -->
+  <!-- disable author and version tags output -->
+  <target name="javadoc" depends="init"
+          description="generate javadoc into ${dist.dir}/javadoc" >
+    <javadoc packagenames="${pkg.packager.name}"
+             sourcepath="${share.classes.dir}"
+             destdir="${dist.dir}/javadoc"
+             author="false"
+             version="false"
+             use="true"
+             Windowtitle="JDIC Packager API V${version} Release ${release}"
+             Header="JDIC Packager API V${version} Release ${release}">
+             <docTitle><![CDATA[JDIC (JDesktop Integration Components) 
+               <br> Packager API Specification, Version ${version} Release ${release}]]></docTitle>
+             <bottom><![CDATA[<font size="-1">For more information and documentation on JDIC, 
+               see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That documentation 
+               contains more detailed, developer-targeted descriptions, with conceptual 
+               overviews, working code examples, license terms and bug report information.
+               <p>Copyright 2003 Contributors. All rights reserved. Use is subject to 
+               license terms. </font>]]></bottom>
+    </javadoc>
+  </target>
+
+  <!--
+    - WIN32 DISTRIBUTION
+    -->     
+  <target name="buildwin32" depends="buildwin32jar, javadoc"
+          description="build all the class and native source code" >
+  </target>
+
+  <!-- BE CAREFUL !!! Since the jar file includes generated native files,
+       it MUST depends on buildwin32native target -->
+  <target name="buildwin32jar" depends="init, buildwin32native"
+          description="build the classes and jar file." >
+    <javac srcdir="${share.classes.dir}:${win32.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" 
+    />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+         <fileset dir="${dist.dir}" includes="org/**/*.class, org/**/files/*" />
+    </jar>
+  </target>
+
+  <!-- ***  Build Win32 native code *** -->
+  <target name="buildwin32native" depends="init"
+          description="only Win32 has native code." >
+    <!-- Execute nmake to generate the .dll files -->
+    <exec dir="${win32.native.dir}" executable="nmake" />
+    <exec dir="${win32.script.dir}" executable="nmake" />    
+    <exec dir="${win32.msiactions.dir}" executable="nmake" />    
+    <exec dir="${win32.bootstrapper.dir}" executable="nmake" />    
+
+    <!-- Copy WinMSIWrapper.dll & jnlp2msi.exe to the dist dir -->
+    <copy file="${win32.native.dir}/Release/WinMsiWrapper.dll" todir="${dist.dir}" />
+    <copy file="${win32.script.dir}/Release/jnlp2msi.exe" todir="${dist.dir}" />
+   
+    <!-- Copy custom.dll & bootstrapper.exe to the files directory -->
+    <copy file="${win32.msiactions.dir}/Release/MsiActions.dll" 
+      tofile="${win32.files.dir}/custom.dll" />
+    <copy file="${win32.bootstrapper.dir}/Release/bootstrapper.exe" 
+      tofile="${win32.files.dir}/bootstrapper.exe" />
+
+    <!-- Create the directory for the msi support files -->
+    <mkdir dir="${dist.dir}/${org.packager.impl.files.dir}" />   
+    <!-- Copy msi support files for packaging into jar files-->  
+    <copy todir="${dist.dir}/${org.packager.impl.files.dir}">
+      <fileset dir="${win32.files.dir}" includes="*.*"/>
+    </copy>
+  </target>
+
+  <!--
+    - LINUX DISTRIBUTION
+    -->
+  <target name="buildlinux" depends="buildlinuxjar, javadoc, cplinuxscript"
+          description="build all the class and native source code" >
+  </target>
+
+  <target name="buildlinuxjar" depends="init"
+          description="build the classes and jar file." >
+    <javac srcdir="${share.classes.dir}:${unix.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" 
+    />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+         <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+  </target>
+
+  <!-- Copy the command-line packaging script -->
+  <target name="cplinuxscript" depends="init"
+          description="copy the command-line packaging script." >
+    <copy file="${unix.dir}/jnlp2rpm" todir="${dist.dir}" />
+  </target>
+
+  <!--
+    - SOLARIS DISTRIBUTION
+    -->
+  <target name="buildsolaris" depends="buildsolarisjar, javadoc, cpsolarisscript"
+          description="build all the class and native source code" >
+  </target>
+
+  <target name="buildsolarisjar" depends="init"
+          description="build the classes and jar file." >
+    <javac srcdir="${share.classes.dir}:${solaris.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" 
+    />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+         <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+  </target>
+
+  <!-- Copy the command-line packaging script -->
+  <target name="cpsolarisscript" depends="init"
+          description="copy the command-line packaging script." >
+    <copy file="${solaris.dir}/jnlp2pkg" todir="${dist.dir}" />
+  </target>
+
+</project>

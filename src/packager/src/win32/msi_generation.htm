@@ -1,0 +1,785 @@
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table width="90%" border="1" align="center" height="2269">
+  <tr> 
+    <td height="65"> <div align="center"><font size="6">Uisample.msi Modifying 
+        Specification<br>
+        2004/03/10</font></div></td>
+  </tr>
+  <tr> 
+    <td height="122"> <table width="100%" border="1">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="34%"> <div align="center">#CCCCFF</div></td>
+          <td width="30%"> <div align="center">purple</div></td>
+          <td width="36%"> <div align="center">column name</div></td>
+        </tr>
+        <tr bgcolor="CCFFCC"> 
+          <td width="34%"> <div align="center">#CCFFCC</div></td>
+          <td width="30%"> <div align="center">green</div></td>
+          <td width="36%"> <div align="center">condition</div></td>
+        </tr>
+        <tr bgcolor="FFFFCC"> 
+          <td width="34%"> <div align="center">#FFFFCC</div></td>
+          <td width="30%"> <div align="center">yellow</div></td>
+          <td width="36%"> <div align="center">new value</div></td>
+        </tr>
+        <tr bgcolor="FFCCCC"> 
+          <td width="34%"> <div align="center">#FFCCCC</div></td>
+          <td width="30%"> <div align="center">red</div></td>
+          <td width="36%"> <div align="center">description</div></td>
+        </tr>
+        <tr> 
+          <td width="34%"> <div align="center">*: </div></td>
+          <td width="30%"> <div align="center">white</div></td>
+          <td width="36%">no changing of the original content.</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td height="25"> <p>1. add "<font color="#FF3333">Directory</font>" Table</p></td>
+  </tr>
+  <tr> 
+    <td height="55"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="35%"> <div align="left">Directory</div></td>
+          <td width="38%"> &nbsp; <div align="left">Directory Parent</div></td>
+          <td width="27%"> <div align="left">DefaultDir</div></td>
+        </tr>
+        <tr> 
+          <td width="35%"> <div align="left">TARGETDIR</div></td>
+          <td width="38%"> &nbsp; <div align="left">*</div></td>
+          <td width="27%"> <div align="left">SourceDir</div></td>
+        </tr>
+        <tr> 
+          <td width="35%"> <div align="left">ProgramFilesFolder</div></td>
+          <td width="38%"> <div align="left">TARGETDIR</div></td>
+          <td width="27%"> <div align="left">.:PROGRA~1|program files</div></td>
+        </tr>
+        <tr> 
+          <td width="35%"> <div align="left">INSTALLDIR</div></td>
+          <td width="38%"> <div align="left">TempFolder</div></td>
+          <td width="27%"> <div align="left">.</div></td>
+        </tr>
+        <tr> 
+          <td width="35%"> <div align="left">TempFolder</div></td>
+          <td width="38%"> <div align="left">TARGETDIR</div></td>
+          <td width="27%"> <div align="left">.:Temp</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="27"> <p>2. add "<font color="#FF3333">Component</font>" Table</p></td>
+  </tr>
+  <tr> 
+    <td height="21"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="9%"> <div align="left">Component</div></td>
+          <td width="41%"> <div align="left">ComponentId</div></td>
+          <td width="22%"> <div align="left">Directory</div></td>
+          <td width="7%"> <div align="center">Attributes</div></td>
+          <td width="6%"> &nbsp; <div align="left">Condition</div></td>
+          <td width="15%"> <div align="left">KeyPath</div></td>
+        </tr>
+        <tr> 
+          <td width="9%"> <div align="left">AllOtherFiles</div></td>
+          <td width="41%"> <div align="left">{31CCF52F-FCB3-4239-9D82-05CDA204867A}</div></td>
+          <td width="22%"> <div align="left">INSTALLDIR</div></td>
+          <td width="7%"> <div align="center">8</div></td>
+          <td width="6%"> &nbsp; <div align="left">*</div></td>
+          <td width="15%"> <div align="left">*</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="20"> <p>3. add "<font color="#FF3333">File</font>" Table</p></td>
+  </tr>
+  <tr> 
+    <td height="21"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="16%"> <div align="left">File</div></td>
+          <td width="14%"> <div align="left">Component</div></td>
+          <td width="18%"> <div align="left">FileName</div></td>
+          <td width="10%"> <div align="center">FileSize</div></td>
+          <td width="9%"> &nbsp; <div align="left">Version</div></td>
+          <td width="12%"> &nbsp; <div align="left">Language</div></td>
+          <td width="11%"> <div align="center">Attribute</div></td>
+          <td width="10%"> <div align="center">Sequence</div></td>
+        </tr>
+        <tr> 
+          <td width="16%"> <div align="left">place.txt</div></td>
+          <td width="14%"> <div align="left">AllOtherFiles</div></td>
+          <td width="18%"> <div align="left">place.txt</div></td>
+          <td width="10%"> <div align="center">18</div></td>
+          <td width="9%"> &nbsp; <div align="left">*</div></td>
+          <td width="12%"> &nbsp; <div align="left">*</div></td>
+          <td width="11%"> <div align="center">16384</div></td>
+          <td width="10%"> <div align="center">1</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="16"> <p>4. add "<font color="#FF3333">Media</font>"<font color="#FF3333"></font> 
+        Table</p></td>
+  </tr>
+  <tr> 
+    <td height="24"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="18%"> <div align="center">DiskID</div></td>
+          <td width="16%"> <div align="center">LastSequence</div></td>
+          <td width="12%"> <div align="center">DiskPrompt</div></td>
+          <td width="27%"> <div align="left">Cabinet</div></td>
+          <td width="10%"> <div align="center">VolumeLabel</div></td>
+          <td width="17%"> <div align="center">Source</div></td>
+        </tr>
+        <tr> 
+          <td width="18%"> <div align="center">1</div></td>
+          <td width="16%"> <div align="center">1</div></td>
+          <td width="12%"> <div align="center">*&nbsp;</div></td>
+          <td width="27%"> <div align="left">#Data1.cab</div></td>
+          <td width="10%"> <div align="center">*&nbsp;</div></td>
+          <td width="17%"> <div align="center">*&nbsp;</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="12"> <p>5. add "<font color="#FF3333">Feature</font>" Table</p></td>
+  </tr>
+  <tr> 
+    <td height="28"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="13%"> <div align="left">Feature</div></td>
+          <td width="7%"> <div align="center">Feature Parent </div></td>
+          <td width="11%"> <div align="left">Title</div></td>
+          <td width="20%"> <div align="center">Description</div></td>
+          <td width="11%"> <div align="center">Display</div></td>
+          <td width="12%"> <div align="center">Level</div></td>
+          <td width="14%"> <div align="left">Directory</div></td>
+          <td width="12%" bgcolor="#CCCCFF"> <div align="center">Attributes</div></td>
+        </tr>
+        <tr> 
+          <td width="13%"> <div align="left">NewFeature1</div></td>
+          <td width="7%"> <div align="center">&nbsp;</div></td>
+          <td width="11%"> <div align="left">NewFeature1</div></td>
+          <td width="20%"> <div align="center">*</div></td>
+          <td width="11%"> <div align="center">2</div></td>
+          <td width="12%"> <div align="center">1</div></td>
+          <td width="14%"> <div align="left">INSTALLDIR</div></td>
+          <td width="12%"> <div align="center">0</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>6. add &quot;<font color="#FF3333">FeatureComponents</font>&quot; 
+        Table</p></td>
+  </tr>
+  <tr> 
+    <td height="29"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td height="18"> <div align="left">Feature</div></td>
+          <td height="18"> <div align="left">Component</div></td>
+        </tr>
+        <tr> 
+          <td height="18"> <div align="left">NewFeature1</div></td>
+          <td height="18"> <div align="left">AllOtherFiles</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>7. insert into &quot;<font color="#FF3333">Property</font>&quot; 
+        Table</p></td>
+  </tr>
+  <tr> 
+    <td height="343"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="50%"> <div align="left">Property</div></td>
+          <td width="50%"> <div align="left">Value</div></td>
+        </tr>
+        <tr> 
+          <td width="50%"> <div align="left">Manufacturer</div></td>
+          <td width="50%"> <div align="left">SUN Microsystems</div></td>
+        </tr>
+        <tr> 
+          <td width="50%"> <div align="left">ProductCode</div></td>
+          <td width="50%"> <div align="left">{3D11E9FC-142F-4945-8010-861EAA24850F}</div></td>
+        </tr>
+        <tr> 
+          <td width="50%"> <div align="left">ProductName</div></td>
+          <td width="50%"> <div align="left">Default</div></td>
+        </tr>
+        <tr> 
+          <td width="50%"> <div align="left">ProductVersion</div></td>
+          <td width="50%"> <div align="left">1.00.0000</div></td>
+        </tr>
+        <tr> 
+          <td width="50%"> <div align="left">UpgradeCode</div></td>
+          <td width="50%"> <div align="left">{20AC1669-B481-4CAD-82AF-2CD00005F304}</div></td>
+        </tr>
+        <tr> 
+          <td width="50%"> <div align="left">JnlpFileName</div></td>
+          <td width="50%"> <div align="left">ok</div></td>
+        </tr>
+        <tr> 
+          <td width="50%"> <div align="left">UninstallInfo</div></td>
+          <td width="50%"> <div align="left">ok</div></td>
+        </tr>
+        <tr> 
+          <td width="50%">ShortCut</td>
+          <td width="50%">yes</td>
+        </tr>
+        <tr> 
+          <td width="50%">Locale</td>
+          <td width="50%">en</td>
+        </tr>
+        <tr> 
+          <td width="50%">Association</td>
+          <td width="50%">yes</td>
+        </tr>
+        <tr> 
+          <td width="50%">ARPCONTACT</td>
+          <td width="50%">http://www.sun.com/</td>
+        </tr>
+        <tr> 
+          <td width="50%">ARPURLINFOABOUT</td>
+          <td width="50%">http://www.sun.com/</td>
+        </tr>
+        <tr> 
+          <td width="50%">ARPURLUPDATEINFO</td>
+          <td width="50%">http://www.sun.com/</td>
+        </tr>
+        <tr> 
+          <td width="50%">ARPCOMMENTS</td>
+          <td width="50%">Generated by Java MSI Package Generator</td>
+        </tr>
+        <tr> 
+          <td width="50%">CacheType</td>
+          <td width="50%">user</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19">8. modify &quot;<font color="#FF3333">Property</font>&quot; 
+      Table</td>
+  </tr>
+  <tr> 
+    <td height="43"> <table width="100%" border="1" align="center">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="50%">Property</td>
+          <td width="50%">Value</td>
+        </tr>
+        <tr> 
+          <td width="50%" bgcolor="#CCFFCC">ARPHELPLINK</td>
+          <td width="50%" bgcolor="FFFFCC">http://www.sun.com/</td>
+        </tr>
+        <tr> 
+          <td width="50%" bgcolor="#CCFFCC">ComponentDownload</td>
+          <td width="50%" bgcolor="FFFFCC">http://www.sun.com/</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>9. add &quot;<font color="#FF3333">CustomAction</font>&quot; 
+        Table</p></td>
+  </tr>
+  <tr> 
+    <td height="34"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="25%" height="14"> <div align="left">Action</div></td>
+          <td width="27%" height="14"> <div align="center">Type</div></td>
+          <td width="23%" height="14"> <div align="left">Source</div></td>
+          <td width="25%" height="14"> <div align="left">Target</div></td>
+        </tr>
+        <tr> 
+          <td width="25%" height="14"> <div align="left">CustomInstallAction</div></td>
+          <td width="27%" height="14"> <div align="center">1</div></td>
+          <td width="23%" height="14"> <div align="left">CustomDLL</div></td>
+          <td width="25%" height="14"> <div align="left">InstallAction</div></td>
+        </tr>
+        <tr> 
+          <td width="25%" height="14"> <div align="left">CustomUninstallAction</div></td>
+          <td width="27%" height="14"> <div align="center">1</div></td>
+          <td width="23%" height="14"> <div align="left">CustomDLL</div></td>
+          <td width="25%" height="14"> <div align="left">UninstallAction</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>10. insert into &quot;<font color="#FF3333">InstallExecuteSequence</font>&quot; 
+        Table</p></td>
+  </tr>
+  <tr> 
+    <td height="34"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="25%" height="14"> <div align="left">Action</div></td>
+          <td width="27%" height="14"> <div align="left">Condition</div></td>
+          <td width="23%" height="14"> <div align="center">Sequence</div></td>
+        </tr>
+        <tr> 
+          <td width="25%" height="14"> <div align="left">CustomInstallAction</div></td>
+          <td width="27%" height="14"> <div align="left">NOT Installed</div></td>
+          <td width="23%" height="14"> <div align="center">6650</div></td>
+        </tr>
+        <tr> 
+          <td width="25%" height="14"> <div align="left">CustomUninstallAction</div></td>
+          <td width="27%" height="14"> <div align="left">Installed</div></td>
+          <td width="23%" height="14"> <div align="center">6651</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>11. insert into &quot;<font color="#FF3333">Binary</font>&quot; 
+        Table</p></td>
+  </tr>
+  <tr> 
+    <td height="34"> <table width="100%" border="1" align="center" bgcolor="FFFFCC">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="34%" height="14"> <div align="left">Name</div></td>
+          <td colspan="2" height="14" width="66%"> <div align="left">Data</div></td>
+        </tr>
+        <tr> 
+          <td width="34%" height="14"> <div align="left">CustomDLL</div></td>
+          <td colspan="2" height="14" width="66%"> <div align="left">the dll we 
+              provide (msiactions.dll)</div></td>
+        </tr>
+        <tr> 
+          <td width="34%" height="14"> <div align="left">JarPack</div></td>
+          <td colspan="2" height="14" width="66%"> <div align="left">anything</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>12. modify &quot;<font color="#FF3333">Control</font>&quot; 
+        Table</p></td>
+  </tr>
+  <tr> 
+    <td height="567"> <table width="100%" border="1" align="center">
+        <tr> 
+          <td width="19%" height="25" bgcolor="#CCCCFF"> <div align="left">Dialog</div></td>
+          <td height="25" width="11%" bgcolor="#CCCCFF"> <div align="left">Control</div></td>
+          <td height="25" width="2%" bgcolor="#CCCCFF"> <div align="center">Type</div></td>
+          <td height="25" width="0%" bgcolor="#CCCCFF"> <div align="center">X</div></td>
+          <td height="25" width="2%" bgcolor="#CCCCFF"> <div align="center">Y</div></td>
+          <td height="25" width="1%" bgcolor="#CCCCFF"> <div align="center">Width</div></td>
+          <td height="25" width="1%" bgcolor="#CCCCFF"> <div align="center">Height</div></td>
+          <td colspan="26" height="25" bgcolor="#CCCCFF"> <div align="center">Attributes</div></td>
+          <td height="25" width="1%" bgcolor="#CCCCFF"> <div align="center">Property</div></td>
+          <td height="25" width="63%" bgcolor="#CCCCFF"> <div align="center">Text</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="25" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="25" width="11%" bgcolor="#CCFFCC"> <div align="left">ChangeLabel</div></td>
+          <td height="25" width="2%"> <div align="center">*</div></td>
+          <td height="25" width="0%"> <div align="center">*</div></td>
+          <td height="25" width="2%"> <div align="center">*</div></td>
+          <td height="25" width="1%"> <div align="center">*</div></td>
+          <td height="25" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="25" bgcolor="FFFFCC"> <div align="center">0</div></td>
+          <td height="25" width="1%"> <div align="center">*</div></td>
+          <td height="25" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">ChangeButton</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14" bgcolor="FFFFCC"> <div align="center">5767168</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">ChangeText</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14" bgcolor="FFFFCC"> <div align="center">0</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">RepairLabel</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14" bgcolor="FFFFCC"> <div align="center">0</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">RepairButton</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14" bgcolor="FFFFCC"> <div align="center">5767168</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">RepairText</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14" bgcolor="FFFFCC"> <div align="center">0</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">RemoveButton</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%" bgcolor="FFFFCC"> <div align="center">65</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">RemoveLabel</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%" bgcolor="FFFFCC"> <div align="center">65</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">RemoveText</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%" bgcolor="FFFFCC"> <div align="center">78</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">Title</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%" bgcolor="FFFFCC"> <div align="left">[DlgTitleFont]Remove 
+              installation</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">Description</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14" bgcolor="FFFFCC"> <div align="center">196608</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%"> <div align="center">*</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">VerifyReadyDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">Description</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%" bgcolor="FFFFCC"> <div align="left">The 
+              [Wizard] is ready to begin the installation</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">VerifyReadyDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">Text</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%" bgcolor="FFFFCC"> <div align="left">Click 
+              Install to begin the installation. Click Cancel to exit the wizard.</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">MaintenanceWelcomeDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">Description</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%" bgcolor="FFFFCC"> <div align="left">The 
+              [Wizard] will allow you to remove [ProductName] from your computer. 
+              Click Next to continue or Cancel to exit the [Wizard].</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="22" bgcolor="#CCFFCC">MaintenanceWelcomeDlg</td>
+          <td height="22" width="11%" bgcolor="#CCFFCC">Next</td>
+          <td height="22" width="2%">*</td>
+          <td height="22" width="0%">*</td>
+          <td height="22" width="2%">*</td>
+          <td height="22" width="1%">*</td>
+          <td height="22" width="1%">*</td>
+          <td colspan="26" height="22"> <div align="center">*</div></td>
+          <td height="22" width="1%">*</td>
+          <td height="22" width="63%" bgcolor="FFFFCC">[ButtonText_Remove]</td>
+        </tr>
+        <tr> 
+          <td width="19%" height="14" bgcolor="#CCFFCC"> <div align="left">VerifyRemoveDlg</div></td>
+          <td height="14" width="11%" bgcolor="#CCFFCC"> <div align="left">Text</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="0%"> <div align="center">*</div></td>
+          <td height="14" width="2%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td colspan="26" height="14"> <div align="center">*</div></td>
+          <td height="14" width="1%"> <div align="center">*</div></td>
+          <td height="14" width="63%" bgcolor="FFFFCC"> <div align="left">Click 
+              Remove to remove [ProductName] from your computer. Click Cancel 
+              to exit the wizard.</div></td>
+        </tr>
+        <tr> 
+          <td width="19%" height="22" bgcolor="#CCFFCC">VerifyRemoveDlg</td>
+          <td height="22" width="11%" bgcolor="#CCFFCC">Title</td>
+          <td height="22" width="2%">*</td>
+          <td height="22" width="0%">*</td>
+          <td height="22" width="2%">*</td>
+          <td height="22" width="1%">*</td>
+          <td height="22" width="1%">*</td>
+          <td colspan="26" height="22"> <div align="center">*</div></td>
+          <td height="22" width="1%">*</td>
+          <td height="22" width="63%" bgcolor="FFFFCC">{\DlgFontBold8}Remove [ProductName]</td>
+        </tr>
+        <tr> 
+          <td width="19%" height="22" bgcolor="#CCFFCC">WelcomeDlg</td>
+          <td height="22" width="11%" bgcolor="#CCFFCC">Next</td>
+          <td height="22" width="2%">*</td>
+          <td height="22" width="0%">*</td>
+          <td height="22" width="2%">*</td>
+          <td height="22" width="1%">*</td>
+          <td height="22" width="1%">*</td>
+          <td colspan="26" height="22"> <div align="center">*</div></td>
+          <td height="22" width="1%">*</td>
+          <td height="22" width="63%" bgcolor="FFFFCC">SunButton</td>
+        </tr>
+        <tr> 
+          <td width="19%" height="22" bgcolor="#CCFFCC">WelcomeDlg</td>
+          <td height="22" width="11%" bgcolor="#CCFFCC">Description</td>
+          <td height="22" width="2%">*</td>
+          <td height="22" width="0%">*</td>
+          <td height="22" width="2%">*</td>
+          <td height="22" width="1%">*</td>
+          <td height="22" width="1%">*</td>
+          <td colspan="26" height="22"> <div align="center">*</div></td>
+          <td height="22" width="1%">*</td>
+          <td height="22" width="63%" bgcolor="FFFFCC">WelcomeDescription</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>13. modify &quot;<font color="#FF3333">Dialog</font>&quot; 
+        Table</p></td>
+  </tr>
+  <tr> 
+    <td height="26"> <table width="100%" border="1" align="center">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="12%" height="25"> <div align="left">Dialog</div></td>
+          <td height="25" width="13%"> <div align="center">HCentering</div></td>
+          <td height="25" width="11%"> <div align="center">VCentering</div></td>
+          <td height="25" width="12%"> <div align="center">Width</div></td>
+          <td height="25" width="12%"> <div align="center">Height</div></td>
+          <td height="25" width="12%"> <div align="center">Attributes</div></td>
+          <td height="25" width="12%"> <div align="center">Title</div></td>
+          <td height="25" width="12%"> <div align="center">Control Fist</div></td>
+          <td colspan="26" height="25" width="16%"> <div align="left">Contrl Default</div></td>
+        </tr>
+        <tr> 
+          <td width="12%" height="25" bgcolor="#CCFFCC"> <div align="left">MaintenanceTypeDlg</div></td>
+          <td height="25" width="13%"> <div align="center">*</div></td>
+          <td height="25" width="11%"> <div align="center">*</div></td>
+          <td height="25" width="12%"> <div align="center">*</div></td>
+          <td height="25" width="12%"> <div align="center">*</div></td>
+          <td height="25" width="12%"> <div align="center">*</div></td>
+          <td height="25" width="12%"> <div align="center">*</div></td>
+          <td height="25" width="12%"> <div align="center">*</div></td>
+          <td colspan="26" height="25" width="16%" bgcolor="FFFFCC"> <div align="left">RemoveButton</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>14. modify &quot;<font color="#FF3333">ControlEvent</font>&quot; 
+        Table</p></td>
+  </tr>
+  <tr> 
+    <td height="47"> <table width="100%" border="1" align="center">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="21%" height="25"> <div align="left">Dialog</div></td>
+          <td height="25" width="8%"> <div align="left">Control</div></td>
+          <td height="25" width="18%"> <div align="left">Event</div></td>
+          <td height="25" width="19%"> <div align="left">Argument</div></td>
+          <td height="25" width="18%"> <div align="center">Condition</div></td>
+          <td height="25" width="16%">Ordering</td>
+        </tr>
+        <tr> 
+          <td width="21%" height="25" bgcolor="#CCFFCC"> <div align="left">WelcomeDlg</div></td>
+          <td height="25" width="8%" bgcolor="#CCFFCC"> <div align="left">Next</div></td>
+          <td height="25" width="18%"> <div align="left">*</div></td>
+          <td height="25" width="19%" bgcolor="#FFFFCC"> <div align="left">AfterWelcomeDlg</div></td>
+          <td height="25" width="18%"> <div align="center">*</div></td>
+          <td height="25" width="16%">*</td>
+        </tr>
+        <tr> 
+          <td colspan="6" height="25" bgcolor="#FFCCCC">delete the line starting 
+            with &quot;LicenseAgreement/Next/NewDialog/SetupTypeDlg&quot;</td>
+        </tr>
+        <tr> 
+          <td width="21%" height="25" bgcolor="CCFFCC">LicenseAgreementDlg</td>
+          <td height="25" width="8%" bgcolor="CCFFCC">Next</td>
+          <td height="25" width="18%" bgcolor="CCFFCC">NewDialog -&gt; EndDialog</td>
+          <td height="25" width="19%" bgcolor="FFFFCC">Return</td>
+          <td height="25" width="18%" bgcolor="FFFFCC">IAgree = "Yes"</td>
+          <td height="25" width="16%">*</td>
+        </tr>
+        <tr> 
+          <td colspan="6" height="27" bgcolor="#FFCCCC">delete all lines starting 
+            with &quot;MaintenanceWelcomeDlg/Next&quot;, and add following</td>
+        </tr>
+        <tr bgcolor="FFFFCC"> 
+          <td width="21%" height="25">MaintenanceWelcomeDlg</td>
+          <td height="25" width="8%">Next</td>
+          <td height="25" width="18%">[InstallMode]</td>
+          <td height="25" width="19%">Remove</td>
+          <td height="25" width="18%">1</td>
+          <td height="25" width="16%">1</td>
+        </tr>
+        <tr bgcolor="FFFFCC"> 
+          <td width="21%" height="25">MaintenanceWelcomeDlg</td>
+          <td height="25" width="8%">Next</td>
+          <td height="25" width="18%">[Progress1]</td>
+          <td height="25" width="19%">Removing</td>
+          <td height="25" width="18%">1</td>
+          <td height="25" width="16%">2</td>
+        </tr>
+        <tr bgcolor="FFFFCC"> 
+          <td width="21%" height="25">MaintenanceWelcomeDlg</td>
+          <td height="25" width="8%">Next</td>
+          <td height="25" width="18%">[Progress2]</td>
+          <td height="25" width="19%">removes</td>
+          <td height="25" width="18%">1</td>
+          <td height="25" width="16%">3</td>
+        </tr>
+        <tr bgcolor="FFFFCC"> 
+          <td width="21%" height="25">MaintenanceWelcomeDlg</td>
+          <td height="25" width="8%">Next</td>
+          <td height="25" width="18%">SpawnWaitDialog</td>
+          <td height="25" width="19%">WaitForCostingDlg</td>
+          <td height="25" width="18%">CostingComplete = 1</td>
+          <td height="25" width="16%">4</td>
+        </tr>
+        <tr bgcolor="FFFFCC"> 
+          <td width="21%" height="25">MaintenanceWelcomeDlg</td>
+          <td height="25" width="8%">Next</td>
+          <td height="25" width="18%">Remove</td>
+          <td height="25" width="19%">All</td>
+          <td height="25" width="18%">1</td>
+          <td height="25" width="16%">5</td>
+        </tr>
+        <tr bgcolor="FFFFCC"> 
+          <td width="21%" height="25">MaintenanceWelcomeDlg</td>
+          <td height="25" width="8%">Next</td>
+          <td height="25" width="18%">EndDialog</td>
+          <td height="25" width="19%">Return</td>
+          <td height="25" width="18%">1</td>
+          <td height="25" width="16%">6</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>15. Insert file &quot;<font color="#FF3333">place.txt</font>&quot; 
+        into msi file</p></td>
+  </tr>
+  <tr> 
+    <td height="46"> <table width="100%" border="1" align="center">
+        <tr bgcolor="FFCCCC"> 
+          <td colspan="3" height="14">a. create a zero-byte file place.txt and 
+            run &quot;makecab place.txt Data1.cab&quot;</td>
+        </tr>
+        <tr bgcolor="FFCCCC"> 
+          <td colspan="3" height="15"> <div align="left">b. msidb.exe -d sun.msi 
+              -a Data1.cab</div></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>16. Modify &quot;<font color="#FF3333">Summary Information</font>&quot; 
+        table </p></td>
+  </tr>
+  <tr> 
+    <td height="19"> <table width="100%" border="1" align="center">
+        <tr> 
+          <td width="12%" height="25" bgcolor="CCFFCC"> <div align="left">Author</div></td>
+          <td colspan="12" height="25" width="16%" bgcolor="FFFFCC">Sun Microsystems</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr> 
+    <td height="19"> <p>17. Modify &quot;<font color="#FF3333">Binary</font>&quot; 
+        table </p></td>
+  </tr>
+  <tr> 
+    <td height="19"> <table width="100%" border="1" align="center">
+        <tr bgcolor="#CCCCFF"> 
+          <td width="12%" height="25"> <div align="left">Name</div></td>
+          <td colspan="12" height="25" width="16%">Data</td>
+        </tr>
+        <tr> 
+          <td width="12%" height="25" bgcolor="CCFFCC"> <div align="left">bannrbmp</div></td>
+          <td colspan="12" height="25" width="16%" bgcolor="#FFCCCC">the banner 
+            bitmap with .idb extension </td>
+        </tr>
+        <tr> 
+          <td width="12%" height="25" bgcolor="CCFFCC">dlgbmp</td>
+          <td colspan="12" height="25" width="16%" bgcolor="#FFCCCC">the left 
+            panel bitmap with .idb extension</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr>
+    <td height="19">18. Import the localized welcome message table</td>
+  </tr>
+</table>
+</body>
+</html>

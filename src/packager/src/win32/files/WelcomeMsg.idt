@@ -1,0 +1,13 @@
+Locale	LicenseWelcomeMsg	NonLicenseWelcomeMsg
+s20	l200	l200
+WelcomeMsg	Locale
+en	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
+zh_CN	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
+ja	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
+zh_TW	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
+fr	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
+de	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
+it	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
+ko	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
+es	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
+sv	The [Wizard] will install [ProductName] on your computer. Click Next to continue or Cancel to exit the [Wizard].	The [Wizard] will install [ProductName] on your computer. Click Install to continue or Cancel to exit the [Wizard].
