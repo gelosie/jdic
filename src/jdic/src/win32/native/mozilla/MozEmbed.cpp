@@ -320,7 +320,7 @@ CBrowserFrame* MozEmbedApp::CreateNewBrowserFrame(PRUint32 chromeMask,
 CBrowserFrame* MozEmbedApp::CreateEmbeddedBrowserFrame(HWND hParent)
 {
     ASSERT(hParent != NULL);
-    CBrowserFrame *pBrowserFrame = CreateNewBrowserFrame(nsIWebBrowserChrome::CHROME_DEFAULT, hParent, 0, 0, 700, 500);
+    CBrowserFrame *pBrowserFrame = CreateNewBrowserFrame(nsIWebBrowserChrome::CHROME_DEFAULT, hParent, 0, 0, 0, 0);
     return pBrowserFrame;
 }
 
