@@ -21,24 +21,25 @@ WIN32_DIR = $(HOME)/.cxoffice/dotwine/fake_windows
 JAVA_HOME = $(WIN32_DIR)/j2sdk1.4.2_07
 XCOMPILE_DIR = /usr/local/cross-compile/$(TARGET_ALIAS)
 
-CC = $(TARGET_ALIAS)-gcc
+CC = $(TARGET_ALIAS)-c++
 AS = $(TARGET_ALIAS)-as
 DLLWRAP = $(TARGET_ALIAS)-dllwrap
 
 INCLUDE = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -I.
 LDFLAGS = -L$(XCOMPILE_DIR)/lib -lm -lmingwex -lsupc++ -lstdc++
-CFLAGS = -mms-bitfields $(INCLUDE)
-DLLWRAP_FLAGS = --as=$(AS) --export-all --driver-name $(CC) -s
+CFLAGS =  -g -02 -c $(INCLUDE) -g 
+DLLWRAP_FLAGS = --as=$(AS) --driver-name=$(CC) --add-stdcall-alias -s
 
 all: systeminfo.dll
 
 systeminfo.dll: systeminfo.o
-	$(DLLWRAP) $(DLLWRAP_FLAGS) $(CFLAGS) $^ --output-def timeout.def -o $@ $(LDFLAGS)
+	$(DLLWRAP) $(DLLWRAP_FLAGS) --output-def timeout.def -o $@ $^
 
 systeminfo.o: systeminfo.cpp
-	$(CC) -c $(CFLAGS) $^
+	$(CC) $(CFLAGS) $^
 
 clean:
 	@rm -f *.o
+	@rm -f *.a
 	@rm -f *.def
 	@rm -f *.dll

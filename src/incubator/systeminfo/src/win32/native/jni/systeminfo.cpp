@@ -22,10 +22,8 @@
 #include <jni.h>
 #include "systeminfo.h"
 
-JNIEXPORT jlong JNICALL 
-Java_org_jdesktop_jdic_systeminfo_SystemInfo_nativeGetSessionIdleTime 
-(JNIEnv *env, jobject obj)
-{
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_systeminfo_SystemInfo_nativeGetSessionIdleTime
+  (JNIEnv *, jclass) {
   DWORD tickCount;
   LASTINPUTINFO lastInputInfo;
   lastInputInfo.cbSize = sizeof(LASTINPUTINFO);
