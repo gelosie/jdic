@@ -13,8 +13,8 @@
  *
  * The Original Code is mozilla.org code.
  *
- * The Initial Developer of the Original Code is
- * Christopher Blizzard. Portions created by Christopher Blizzard are Copyright (C) Christopher Blizzard.  All Rights Reserved.
+ * The Initial Developer of the Original Code is Christopher Blizzard.
+ *
  * Portions created by the Initial Developer are Copyright (C) 2001
  * the Initial Developer. All Rights Reserved.
  *
@@ -43,6 +43,7 @@
 #include "xembed.h"
 
 // from the Gecko SDK
+#include "prthread.h"
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsIURI.h"
 #include "nsIWebBrowser.h"
