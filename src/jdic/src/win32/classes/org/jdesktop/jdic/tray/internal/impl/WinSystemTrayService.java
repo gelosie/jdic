@@ -62,7 +62,7 @@ public class WinSystemTrayService implements SystemTrayService {
 
         t.sync();
 
-        System.loadLibrary("jdic");
+        System.loadLibrary("tray");
         display_thread = new Thread(new Runnable() {
             public void run() {
                 eventLoop();
