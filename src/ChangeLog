@@ -4,6 +4,10 @@
       ID  Pri  Summary
       ==  ===  =======
       106 P1   Tray disapears under windows
+      141 P3   I18N issue with tray support 
+      150 P3   Tray's popup menu shows behind the frame if JFrame.setAlwaysOnTop(true)
+      128 P3   PopupMenu is shown behind the taskbar if the auto-hide taskbar is enabled.
+
 
 2004-12-09 Armin Chen <armin_chen@dev.java.net>
 
