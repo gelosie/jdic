@@ -1,4 +1,6 @@
 -------------------------------------------------------------------------------
+SaverBeans Screensaver Pack License:
+-------------------------------------------------------------------------------
 Copyright © 2004 Sun Microsystems, Inc. All rights reserved. Use is
 subject to license terms.
 
@@ -18,6 +20,51 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 -------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
+JOGL License:
+-------------------------------------------------------------------------------
+Distributed with this software is a copy of JOGL, a library that provides
+Java bindings for OpenGL.  Usage of JOGL is covered under the following
+license terms:
+
+JOGL Copyright (c) 2003 Sun Microsystems, Inc. All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+- Redistribution of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+- Redistribution in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+Neither the name of Sun Microsystems, Inc. or the names of
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+This software is provided "AS IS," without a warranty of any kind
+ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, 
+INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY EXCLUDED. SUN
+MICROSYSTEMS, INC. ("SUN") AND ITS LICENSORS SHALL NOT BE LIABLE FOR
+ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR
+DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES. IN NO EVENT WILL SUN OR
+ITS LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR
+DIRECT, INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE
+DAMAGES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY,
+ARISING OUT OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF
+SUN HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+You acknowledge that this software is not designed or intended for use
+in the design, construction, operation or maintenance of any nuclear
+facility.
+
+Sun gratefully acknowledges that this software was originally authored
+and developed by Kenneth Bradley Russell and Christopher John Kline.
+-------------------------------------------------------------------------------
+
+
 SaverBeans Screensaver Pack with JOGL Support Unix README
 ---------------------------------------------------------
 
@@ -28,7 +75,7 @@ Requirements:
     have glibc2.3; such is the case with Java Desktop System for example.
   * xscreensaver (any version should do, 4-14 and greater is known to work)
   * Java VM 1.5 Beta or higher (Get at http://java.sun.com/).  
-  * JOGL (Get at https://jogl.dev.java.net/)
+  * JOGL (included with this distribution)
 
 To Install:
   * Edit Makefile and set jdkhome, xscreensaverhome and joglhome to valid 
@@ -131,3 +178,4 @@ Troubleshooting:
     (or log out and log back in):
       pkill xscreensaver
       xscreensaver -nosplash &
+

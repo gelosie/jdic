@@ -52,24 +52,6 @@ USA
       Property saverbeans.path is invalid.  Please set
       it to the installation path of the SaverBeans SDK.
     </fail>
-    
-    <fail unless="jogl.path">
-      Property jogl.path not found.  Please copy
-      build.properties.sample to build.properties and
-      follow the instructions in that file.
-    </fail>
-    <available file="${jogl.path}" property="jogl.present" />
-    <fail unless="jogl.present">
-      Property jogl.path is invalid.  Please set
-      it to the installation path of the JOGL distribution.
-    </fail>
-    <available file="${jogl.path}/obj" property="jogl.obj.present" />
-    <fail unless="jogl.obj.present">
-      The path pointed to by jogl.path does not contain an
-      obj/ subdirectory.  Please create this directory and
-      copy the native .so or .dll files for your current
-      platform into that directory.
-    </fail>
   </target>
   
   <target name="define" description="Define custom tasks">
@@ -85,7 +67,7 @@ USA
     <javac debug="on" destdir="${build}/share" srcdir="${src}/java">
       <classpath>
         <pathelement location="${saverbeans.path}/saverbeans-api.jar" />
-        <pathelement location="${jogl.path}/jogl.jar" />
+        <pathelement location="${saverbeans.path}/lib/jogl/jogl.jar" />
       </classpath>
     </javac>
     <copy todir="${build}/share">
@@ -130,7 +112,12 @@ USA
       <fileset dir="${src}/doc/win32">
         <include name="README.txt" />
       </fileset>
+      <fileset dir="${saverbeans.path}/lib">
+        <include name="jogl/jogl.jar" />
+      </fileset>
     </copy>
+    <unjar dest="${dist}/${screensaver}-win32"
+           src="${saverbeans.path}/lib/jogl/jogl-natives-win32.jar"/>
     <zip destfile="${dist}/${screensaver}-win32.zip" basedir="${dist}"
          includes="${screensaver}-win32/**" />
     
@@ -165,14 +152,21 @@ USA
     - Use the port number that the JVM gives you.
     -->
   <target name="debug" depends="compile">
+    <mkdir dir="${build}/jogl-natives"/>
+    <unzip dest="${build}/jogl-natives"
+           src="${saverbeans.path}/lib/jogl/jogl-natives-linux.jar"/>
+    <unzip dest="${build}/jogl-natives"
+           src="${saverbeans.path}/lib/jogl/jogl-natives-win32.jar"/>
+    <unzip dest="${build}/jogl-natives"
+           src="${saverbeans.path}/lib/jogl/jogl-natives-solsparc.jar"/>
     <java classname="org.jdesktop.jdic.screensaver.ScreensaverFrame" 
           fork="true">
       <classpath>
         <pathelement location="${build}/share" />
         <pathelement location="${saverbeans.path}/saverbeans-api.jar" />
-        <pathelement location="${jogl.path}/jogl.jar" />
+        <pathelement location="${saverbeans.path}/lib/jogl/jogl.jar" />
       </classpath>
-      <jvmarg value="-Djava.library.path=${jogl.path}/obj" />
+      <jvmarg value="-Djava.library.path=${build}/jogl-natives" />
       <jvmarg value="-Xdebug" />
       <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n" />
       <arg value="${screensaver.class}" />

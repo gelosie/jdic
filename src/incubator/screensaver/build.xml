@@ -35,8 +35,10 @@ USA
     <property name="dist" value="dist"/>
     <property name="release" value="release"/>
     <property name="src" value="src"/>
+    <property name="lib" value="lib"/>
+    <property name="lib.jogl" value="${lib}/jogl"/>
     
-    <property name="version" value="0.2-alpha"/>
+    <property name="version" value="0.2-beta"/>
     <property name="release" value="1"/>
     <property name="packagename" value="saverbeans-sdk-${version}"/>
   </target>
@@ -49,28 +51,13 @@ USA
     </fail>
   </target>
   
-  <target description="Check to make sure properties are set" name="check-jogl"
-          depends="init">
-    <fail unless="jogl.home">
-      Please copy build.properties.x.sample to build.properties
-      and follow the instructions in that file, where x is
-      your current platform.
-    </fail>
-    <available file="${jogl.home}/jogl.jar" property="jogl.available" />
-    <fail unless="jogl.available">
-      The jogl.home directory specified in build.properties 
-      does not contain jogl.jar.  Please edit build.properties
-      and specify the correct location for JOGL.
-    </fail>
-  </target>
-  
   <target depends="properties" name="init"/>
   
   <!--
     - Batch targets
     -->
   <target name="dist" 
-          depends="dist-ant,dist-api,dist-startup,dist-startup-jogl">
+          depends="dist-jogl,dist-ant,dist-api,dist-startup,dist-startup-jogl">
     <copy todir="${dist}">
       <fileset dir="${basedir}/../..">
         <include name="COPYING"/>
@@ -113,6 +100,16 @@ USA
         <include name="**/*.ico"/>
         <include name="**/*.scr"/>
       </fileset>
+    </copy>
+  </target>
+  
+  <!--
+    - Copy JOGL into the SaverBeans SDK distribution
+    -->
+  <target name="dist-jogl" depends="init">
+    <mkdir dir="${dist}/lib" />
+    <copy todir="${dist}/lib">
+      <fileset dir="${lib}"/>
     </copy>
   </target>
   
@@ -163,13 +160,13 @@ USA
   <!--
     - Saver Beans APIs
     -->
-  <target name="compile-api" depends="init,check-jogl" 
+  <target name="compile-api" depends="init" 
           description="Compile Saver Beans APIs">
       <mkdir dir="${build}/api"/>
-      <javac classpath="${jogl.home}/jogl.jar" debug="on" destdir="${build}/api" srcdir="${src}/api"/>
+      <javac classpath="${lib.jogl}/jogl.jar" debug="on" destdir="${build}/api" srcdir="${src}/api"/>
   </target>
   
-  <target name="javadoc-api" depends="init,check-jogl" 
+  <target name="javadoc-api" depends="init" 
           description="Generate javadocs for Screensaver API">
     <mkdir dir="${dist}/javadoc"/>
     <javadoc Header="SaverBeans API V${version} Release ${release}"
@@ -177,7 +174,7 @@ USA
              author="false" destdir="${dist}/javadoc" 
              packagenames="org.jdesktop.jdic.screensaver" 
              sourcepath="${src}/api" use="true" version="false" 
-             classpath="${jogl.home}/jogl.jar">
+             classpath="${lib.jogl}/jogl.jar">
       <docTitle><![CDATA[SaverBeans (JDesktop Integration Components Incubator) 
       <br> API Specification, Version ${version} Release ${release}]]></docTitle>
       <bottom><![CDATA[<font size="-1">For more information and documentation on JDIC, 
