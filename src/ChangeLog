@@ -1,3 +1,19 @@
+2004-11-10 Armin Chen <armin_chen@dev.java.net>
+
+    * Release 0.8.6.3
+    
+    * Fixed issue list:   
+      ID  Pri  Summary
+      ==  ===  =======   
+      133 P3   Native browser binary lose executation permission(when running under WebStart).
+      126 P2   Browser component can not resolve the symbolic link
+      87  P3   Browser component doesn't work with mozilla 1.7 on Solaris.
+      119 P3   Build JDIC Browser component against Gecko SDK and Mozilla binary on Solaris.
+
+    * Known issue list:   
+      Below are some of the most frequently mentioned known issues.
+      118  P3   Browser component doesn't work with mozilla 1.7 on Windows.
+
 2004-10-19 Armin Chen <armin_chen@dev.java.net>
 
     * Release 0.8.6.2
