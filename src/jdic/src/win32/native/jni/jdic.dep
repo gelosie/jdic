@@ -1,2 +1,81 @@
 # Microsoft Developer Studio Generated Dependency File, included by jdic.mak
 
+..\..\..\share\native\utils\InitUtility.cpp : \
+	"..\..\..\share\native\utils\InitUtility.h"\
+	"c:\j2sdk1.5.0\include\jni.h"\
+	"c:\j2sdk1.5.0\include\win32\jni_md.h"\
+	
+
+.\JNIloader.cpp : \
+	".\JNIloader.h"\
+	"c:\j2sdk1.5.0\include\jni.h"\
+	"c:\j2sdk1.5.0\include\win32\jni_md.h"\
+	"c:\program files\microsoft sdk\include\basetsd.h"\
+	"c:\program files\microsoft sdk\include\guiddef.h"\
+	"c:\program files\microsoft sdk\include\propidl.h"\
+	"c:\program files\microsoft sdk\include\reason.h"\
+	"c:\program files\microsoft sdk\include\shtypes.h"\
+	"c:\program files\microsoft sdk\include\stralign.h"\
+	"c:\program files\microsoft sdk\include\tvout.h"\
+	"c:\program files\microsoft sdk\include\winefs.h"\
+	
+
+.\Tray.cpp : \
+	".\JNIloader.h"\
+	".\WinSystemTrayService.h"\
+	".\WinTrayIconService.h"\
+	"c:\j2sdk1.5.0\include\jni.h"\
+	"c:\j2sdk1.5.0\include\win32\jni_md.h"\
+	"c:\program files\microsoft sdk\include\basetsd.h"\
+	"c:\program files\microsoft sdk\include\guiddef.h"\
+	"c:\program files\microsoft sdk\include\propidl.h"\
+	"c:\program files\microsoft sdk\include\reason.h"\
+	"c:\program files\microsoft sdk\include\stralign.h"\
+	"c:\program files\microsoft sdk\include\tvout.h"\
+	"c:\program files\microsoft sdk\include\winefs.h"\
+	
+
+.\WebBrowser.cpp : \
+	".\WebBrowser.h"\
+	"c:\j2sdk1.5.0\include\jawt.h"\
+	"c:\j2sdk1.5.0\include\jni.h"\
+	"c:\j2sdk1.5.0\include\win32\jawt_md.h"\
+	"c:\j2sdk1.5.0\include\win32\jni_md.h"\
+	"c:\program files\microsoft sdk\include\basetsd.h"\
+	"c:\program files\microsoft sdk\include\guiddef.h"\
+	"c:\program files\microsoft sdk\include\propidl.h"\
+	"c:\program files\microsoft sdk\include\reason.h"\
+	"c:\program files\microsoft sdk\include\stralign.h"\
+	"c:\program files\microsoft sdk\include\tvout.h"\
+	"c:\program files\microsoft sdk\include\winefs.h"\
+	
+
+.\WebBrowserUtil.cpp : \
+	".\WebBrowserUtil.h"\
+	"c:\j2sdk1.5.0\include\jawt.h"\
+	"c:\j2sdk1.5.0\include\jni.h"\
+	"c:\j2sdk1.5.0\include\win32\jawt_md.h"\
+	"c:\j2sdk1.5.0\include\win32\jni_md.h"\
+	"c:\program files\microsoft sdk\include\basetsd.h"\
+	"c:\program files\microsoft sdk\include\guiddef.h"\
+	"c:\program files\microsoft sdk\include\propidl.h"\
+	"c:\program files\microsoft sdk\include\reason.h"\
+	"c:\program files\microsoft sdk\include\stralign.h"\
+	"c:\program files\microsoft sdk\include\tvout.h"\
+	"c:\program files\microsoft sdk\include\winefs.h"\
+	
+
+.\WinAPIWrapper.cpp : \
+	".\WinAPIWrapper.h"\
+	"c:\j2sdk1.5.0\include\jni.h"\
+	"c:\j2sdk1.5.0\include\win32\jni_md.h"\
+	"c:\program files\microsoft sdk\include\basetsd.h"\
+	"c:\program files\microsoft sdk\include\guiddef.h"\
+	"c:\program files\microsoft sdk\include\propidl.h"\
+	"c:\program files\microsoft sdk\include\reason.h"\
+	"c:\program files\microsoft sdk\include\shldisp.h"\
+	"c:\program files\microsoft sdk\include\shobjidl.h"\
+	"c:\program files\microsoft sdk\include\shtypes.h"\
+	"c:\program files\microsoft sdk\include\stralign.h"\
+	"c:\program files\microsoft sdk\include\tvout.h"\
+	
