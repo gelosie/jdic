@@ -311,24 +311,31 @@ public class SimpleBrowser {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         WebBrowser webBrowser = new WebBrowser();
-        
-        //Use below code to register a listener for the notification events.
-        // webBrowser.addWebBrowserListener(
-        //   new WebBrowserListener() {
-        //   public void downloadStarted(WebBrowserEvent event) {;}
-        //   public void downloadCompleted(WebBrowserEvent event) {;}
-        //   public void downloadProgress(WebBrowserEvent event) {;}
-        //   public void downloadError(WebBrowserEvent event) {;}
-        // });
+
+        //Use below code to check the status of the navigation process,
+        //or register a listener for the notification events.
+        //WebBrowser.Status myStatus = webBrowser.getStatus();
+        //webBrowser.addWebBrowserListener(
+        //    new WebBrowserListener() {
+        //    public void downloadStarted(WebBrowserEvent event) {;}
+        //    public void downloadCompleted(WebBrowserEvent event) {;}
+        //    public void downloadProgress(WebBrowserEvent event) {;}
+        //    public void downloadError(WebBrowserEvent event) {;}
+        //});
 
         try {
             webBrowser.setURL(new URL(&quot;http://java.net&quot;));
         } catch (MalformedURLException e) {
             System.out.println(e.getMessage());
             return;
-        }        
+        }
+<font SIZE="2">
+</font>        <font SIZE="2">JPanel panel = </font><b><font SIZE="2" COLOR="#7f0055">new</font></b><font SIZE="2"> JPanel();
+</font>        <font SIZE="2">panel.setLayout(</font><b><font SIZE="2" COLOR="#7f0055">new</font></b><font SIZE="2"> BorderLayout());
+</font>        <font SIZE="2">panel.setPreferredSize(</font><b><font SIZE="2" COLOR="#7f0055">new</font></b><font SIZE="2"> Dimension(700, 500));
+</font>        <font SIZE="2">panel.add(webBrowser, BorderLayout.CENTER);</font>
 
-        frame.getContentPane().add(webBrowser, BorderLayout.CENTER);
+        frame.getContentPane().add(panel, BorderLayout.CENTER);
         frame.pack();
         frame.setVisible(true);        
     }
