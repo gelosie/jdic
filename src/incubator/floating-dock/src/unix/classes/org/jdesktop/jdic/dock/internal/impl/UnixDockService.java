@@ -239,19 +239,22 @@ public class UnixDockService implements DockService {
 
     public void add(Component c)
     {
+	frame.add(c);
     }
 
     public void remove(Component c)
     {
+	frame.remove(c);
     }
 
     public void setLayout(LayoutManager l)
     {
+	frame.setLayout(l);
     }
 
     public LayoutManager getLayout()
     {
-	return null;
+	return frame.getLayout();
     }
 
 
@@ -278,9 +281,11 @@ public class UnixDockService implements DockService {
 
     public void addWindowListener(WindowListener l)
     {
+	frame.addWindowListener(l);
     }
 
     public void removeWindowListener(WindowListener l)
     {
+	frame.removeWindowListener(l);
     }
 }
