@@ -45,6 +45,7 @@
 #include "nsIWebBrowser.h"
 #include "nsIWebBrowserFocus.h"
 #include "nsIWebNavigation.h"
+#include "nsString.h"
 #include "xembed.h"
 
 extern int gTestMode;
@@ -485,7 +486,7 @@ void status_text_change_cb(GtkMozEmbed *embed, gpointer request,
 				gint status, gpointer message, GtkBrowser *browser)
 {
     char buf[1024];
-    sprintf(buf, "%s", NS_ConvertUCS2toUTF8(message).get());
+    sprintf(buf, "%s", NS_ConvertUCS2toUTF8((PRUnichar *)message).get());
     SendSocketMessage(browser->id, CEVENT_STATUSTEXT_CHANGE, buf);
 }
 

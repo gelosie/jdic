@@ -163,6 +163,11 @@ void update_nav_buttons      (GtkBrowser *browser);
 
 gint dom_mouse_click_cb   (GtkMozEmbed *embed, nsIDOMMouseEvent *event, GtkBrowser *browser);
 
+void title_change_cb(GtkMozEmbed *embed, GtkBrowser *browser);
+
+void status_text_change_cb(GtkMozEmbed *embed, gpointer request,
+                                gint status, gpointer message, GtkBrowser *browser);
+
 // socket message callbak functions
 void SocketMsgHandler(const char *pMsg);
 void HandleSocketMessage(gpointer data, gpointer user_data);
