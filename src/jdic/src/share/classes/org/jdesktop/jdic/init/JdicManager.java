@@ -97,37 +97,16 @@ public class JdicManager {
 
         try {
             // Find the root path of this class.            
-        	URL cpRootUrl = 
-                this.getClass().getProtectionDomain().getCodeSource().
-                getLocation();
-
-            String cpRootPath = 
-                (new File(cpRootUrl.getFile())).toString();         
-           
-            // Check the binary path including the JDIC native libraries (*.so, 
-            // *.dll) and executables (*.exe, mozembed-*):
-            // - If running from the file system, the binary path is set to the 
-            //   root path of this class.
-            // - If running under Webstart, it's set to <path of the jar file 
-            //   including the .class files>/RNjdic-native.jar/
-            // - If running from a .jar file. it's set to the parent path of the 
-            //   .jar file.  
-            if (!cpRootPath.endsWith(".jar")) {
-            	// We are running from the file system.
-                binaryPath = cpRootPath;
-            } else {
-                // We are running from WebStart or a .jar file. 
-                binaryPath = (new File(cpRootPath)).getParent();
-                if (System.getProperty("javawebstart.version") != null) {
-                    //  We are running under WebStart.
-                    //  NOTE: for a WebStart application, the jar file including 
-                    //        the native libraries/executables must use the name 
-                    //        "jdic-native.jar". 
-                    String cacheDirName = "RN" + "jdic-native.jar" + "/";
-                    binaryPath = 
-                        (new File(cpRootPath, cacheDirName)).toString();
-                } 
-            }                                                       
+            binaryPath = (new URL(JdicManager.class.getProtectionDomain()
+           	    .getCodeSource().getLocation(), ".")).getPath();
+            if (System.getProperty("javawebstart.version") != null) {
+                //  We are running under WebStart.
+                //  NOTE: for a WebStart application, the jar file including 
+                //        the native libraries/executables must use the name 
+                //        "jdic-native.jar". 
+                String cacheDirName = "RN" + "jdic-native.jar" + "/";
+                binaryPath += File.separator + cacheDirName; 
+            }                                                     
    
             // Decodes to the URL-style path to normal file path.
             binaryPath = java.net.URLDecoder.decode(binaryPath, "UTF-8");
