@@ -79,6 +79,21 @@ with no extension.&nbsp; There are also various examples in that
 directory.&nbsp; In order for the SDK to work correctly, you must
 always have the <code>-root</code>, <code>-jar</code>, <code>-class</code> and <code>-jdkhome</code> options, and the <code>-jar</code> and <code>-class</code> must be hard-coded via a <code>&lt;command&gt;</code> tag to the appropriate values.&nbsp; See the bouncingline sample for details.<br>
 <br>
+<span style="font-weight: bold;">Q.</span> My screensaver is throwing an exception - how do I access the stack trace?<br>
+<span style="font-weight: bold;">A.</span> The SaverBeans SDK uses the J2SE logging API.&nbsp; In most cases (e.g. if the exception is thrown during the <code>paint()</code> method) you should be able to retrieve the stack trace by adjusting your JVM logging configuration as follows:<br>
+<ol>
+  <li>Edit your <code>$JAVA_HOME/jre/lib/logging.properties</code> file</li>
+  <li>Change the line:<br>
+&nbsp;&nbsp;&nbsp; <code>handlers= java.util.logging.ConsoleHandler</code><br>
+to:<br>
+&nbsp;&nbsp;&nbsp; <code>handlers= java.util.logging.FileHandler, java.util.logging.ConsoleHandler</code></li>
+  <li>At the end of the file, add the following line:<br>
+&nbsp;&nbsp;&nbsp; <code>org.jdesktop.jdic.screensaver=ALL</code><br>
+  </li>
+  <li>Restart the screensaver and look for a file called <code>java0.log</code>.&nbsp; That file should contain your stack trace and other debugging information.</li>
+</ol>
+<br>
+
 
 
 </body></html>
