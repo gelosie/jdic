@@ -203,6 +203,17 @@ public class PkgPackageGenerator implements PackageGenerator {
             for (int lineNum = 0; lineNum < javawsCheckScript.length; lineNum++ ) {
                 mBufferWriter.write(javawsCheckScript[lineNum] + "\n");
             }
+
+            /* Append below lines, which are only needed on Solaris, not on Linux:
+                  cat >$1 <<EOB
+                  JAVAWS_PATH=${JAVAWS_PATH}
+                  EOB
+                  exit 0
+             */            
+            mBufferWriter.write("cat >$1 <<EOB" + "\n");            
+            mBufferWriter.write("JAVAWS_PATH=${JAVAWS_PATH}" + "\n");
+            mBufferWriter.write("EOB" + "\n");
+            mBufferWriter.write("exit 0" + "\n");           
         } catch (IOException e) {
             throw new IOException ("Failed to write info into file: " + checkinstallFile);
         } finally {
