@@ -1,23 +1,23 @@
 /*
  * Copyright (C) 2004 Sun Microsystems, Inc. All rights reserved. Use is
  * subject to license terms.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
- */ 
- 
+ */
+
 package org.jdesktop.jdic.browser;
 
 import java.util.Vector;
@@ -28,28 +28,28 @@ import java.security.*;
 import java.io.File;
 
 /**
- * A <code>WebBrowser</code> component represents a blank rectangular area of the 
- * screen onto which the application can display webpages or from which the 
- * application can trap events from the browser window. In order to show WebBrowser 
- * component in GUI, user need to add WebBrowser to a top-level container, such as 
- * <code>Frame</code>. 
+ * A <code>WebBrowser</code> component represents a blank rectangular area of the
+ * screen onto which the application can display webpages or from which the
+ * application can trap events from the browser window. In order to show WebBrowser
+ * component in GUI, user need to add WebBrowser to a top-level container, such as
+ * <code>Frame</code>.
  * <p>
  * The class that is interested in processing a WebBrowser event should implement
- * interface <code>WebBrowserListener</code>, and the object created with that class 
- * should use WebBrowser's <code>addWebBrowserListener</code> method to register 
+ * interface <code>WebBrowserListener</code>, and the object created with that class
+ * should use WebBrowser's <code>addWebBrowserListener</code> method to register
  * as a listener.
  * <p>
- * The <code>WebBrowser</code> class has an inner class <code>Status</code>. User can use 
- * <code>getStatus</code> method to retrieve the <code>Status</code> object of the 
- * WebBrowser object. Querying status of this WebBrowser can be done by calling methods 
+ * The <code>WebBrowser</code> class has an inner class <code>Status</code>. User can use
+ * <code>getStatus</code> method to retrieve the <code>Status</code> object of the
+ * WebBrowser object. Querying status of this WebBrowser can be done by calling methods
  * provided by the <code>Status</code> class.
  *
- * @see WebBrowserEvent 
+ * @see WebBrowserEvent
  * @see WebBrowserListener
- * 
+ *
  * @author Kyle Yuan
  * @version 0.1, 03/07/17
- */ 
+ */
 public class WebBrowser extends Canvas
 {
     private static final String binary_windows_ie = "IeEmbed.exe";
@@ -62,7 +62,7 @@ public class WebBrowser extends Canvas
     private static final String binary_solaris_gtk2 = "mozembed-solaris-gtk2";
 
     private static String browserBinary;
-    private Status status = new Status();    
+    private Status status = new Status();
     private MyFocusListener focusListener = new MyFocusListener();
     private static NativeEventThread eventThread = new NativeEventThread();
     private Vector webclientListeners = new Vector();
@@ -97,7 +97,7 @@ public class WebBrowser extends Canvas
         synchronized(this) {
             instanceNum = lastInstanceNum;
             lastInstanceNum++;
-        }    
+        }
         eventThread.attachWebBrowser(this);
 
         if (0 == instanceNum) {
@@ -109,30 +109,30 @@ public class WebBrowser extends Canvas
         if (null != url) {
             setURL(url);
         }
-        
+
         setFocusable(true);
         addFocusListener(focusListener);
     }
-    
+
     private void setBinaryName() {
         if (browserBinary != null && browserBinary.length() > 0)
             return;
-        
+
         String nativePath = nativeGetBrowserPath();
         if (null == nativePath) {
             WebBrowser.trace("Cant find default browser if you are on windows!");
             WebBrowser.trace("Or environment variable MOZILLA_FIVE_HOME not set if you are on linux/unix!");
             browserBinary = null;
             return;
-        }	
-        
+        }
+
         String osname = System.getProperty("os.name");
         if (osname.indexOf("Windows") >= 0) {
             String windowspath = nativePath;
             int index = windowspath.indexOf("mozilla.exe");
             if (index >= 0)
                 browserBinary = binary_windows_mozilla;
-            else 
+            else
                 browserBinary = binary_windows_ie;
         }
         else {
@@ -165,8 +165,8 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Overrides the same method of <code>java.awt.Canvas</code> in order to 
-     * paint the browser window. On Windows system it is invoked by the system 
+     * Overrides the same method of <code>java.awt.Canvas</code> in order to
+     * paint the browser window. On Windows system it is invoked by the system
      * automatically, users are not recommended to call it.
      */
     public void addNotify() {
@@ -175,14 +175,14 @@ public class WebBrowser extends Canvas
             eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_CREATEWINDOW);
         }
     }
-    
+
     /**
-     * Moves and resizes this component. The new location of the top-left corner is 
+     * Moves and resizes this component. The new location of the top-left corner is
      * specified by x and y, and the new size is specified by width and height.
      *
-     * @param x - the new x-coordinate of this component 
-     * @param y - the new y-coordinate of this component 
-     * @param w - the new width of this component 
+     * @param x - the new x-coordinate of this component
+     * @param y - the new y-coordinate of this component
+     * @param w - the new width of this component
      * @param h - the new height of this component
      */
     public void setBounds(int x, int y, int w, int h) {
@@ -195,7 +195,7 @@ public class WebBrowser extends Canvas
         int eid = e.getID();
 
         WebBrowser.trace("Got event from NativeEventThread " + eid);
-        
+
         // native browser needs immediate return value for these two events.
         String msg = "@" + instanceNum + "," + eid + ",";
         if (WebBrowserEvent.WEBBROWSER_BEFORE_NAVIGATE == eid) {
@@ -228,7 +228,7 @@ public class WebBrowser extends Canvas
         }
         else if (WebBrowserEvent.WEBBROWSER_FOCUS_REQUEST == eid) {
             WebBrowser.trace("Got Event from brower: Focus Rquest!");
-            requestFocus(); 
+            requestFocus();
             return;
         }
 
@@ -270,7 +270,7 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Adds a <code>WebBrowserEvent</code> listener. 
+     * Adds a <code>WebBrowserEvent</code> listener.
      *
      * @param listener object which implements WebBrowserListener interface.
      */
@@ -281,9 +281,9 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Removes a <code>WebBrowserEvent</code> listener. 
+     * Removes a <code>WebBrowserEvent</code> listener.
      *
-     * @param listener object which implements WebBrowserListener interface. 
+     * @param listener object which implements WebBrowserListener interface.
      * If the listener was not in the listeners list, then no listener will be
      * removed.
      */
@@ -292,14 +292,14 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Retrieves the URL that is currently being displayed. 
+     * Retrieves the URL that is currently being displayed.
      *
-     * @return the current URL being display, or <code>null</code> if the WebBrowser object 
-     * is not ready with initialization of itself. 
+     * @return the current URL being display, or <code>null</code> if the WebBrowser object
+     * is not ready with initialization of itself.
      */
     public URL getURL() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_GETURL);
-        
+
         if (waitForResult() == true) {
             try {
                 return new URL(eventThread.eventRetString);
@@ -309,14 +309,14 @@ public class WebBrowser extends Canvas
         }
         return null;
     }
-    
+
     /**
      * Sets the document to be a blank page.
      *
-     */   
+     */
     public void setURL() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_NAVIGATE, "about:blank");
-    }	
+    }
 
     /**
      * Navigates to a resource identified by an URL using HTTP GET method.
@@ -341,7 +341,7 @@ public class WebBrowser extends Canvas
             eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_NAVIGATE_POST, url.toString());
             eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_NAVIGATE_POSTDATA, postData);
         }
-    }	
+    }
 
     /**
      * Navigates to the previous session history item.
@@ -351,19 +351,19 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     *  Navigates to the next session history item. 
+     *  Navigates to the next session history item.
      */
     public void forward() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_GOFORWARD);
     }
-    
+
     /**
      * Reloads the URL that is currently being displayed in the WebBrowser component.
      */
     public void refresh() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_REFRESH);
     }
-    
+
     /**
      * Stops loading of the current URL.
      */
@@ -373,9 +373,9 @@ public class WebBrowser extends Canvas
 
     /**
      * Sets trace messages on or off. If on, the trace messages will be printed
-     * out in the console. 
-     * 
-     * @param b <code>true</code> if enable the trace messages; otherwise, 
+     * out in the console.
+     *
+     * @param b <code>true</code> if enable the trace messages; otherwise,
      * <code>false</code>.
      */
     public static void setDebug(boolean b) {
@@ -397,7 +397,7 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Returns a <code>Status</code> object, which indicates the status of this 
+     * Returns a <code>Status</code> object, which indicates the status of this
      * <code>WebBrowser</code> object.
      *
      * @see Status
@@ -405,43 +405,46 @@ public class WebBrowser extends Canvas
     public Status getStatus() {
         return status;
     }
-    
+
     /**
-     * Called before every navigation operation occurs. A subclass could override 
-     * this method to change or block URL loading. 
+     * Called before every navigation operation occurs. A subclass could override
+     * this method to change or block URL loading.
      *
-     * @return <code>false</code> will prevent the the navigation from starting; 
+     * @return <code>false</code> will prevent the the navigation from starting;
      *         otherwise <code>true</code>.
      */
     protected boolean willOpenURL(URL url) {
+        if (null == url)
+            return true;
+
         WebBrowser.trace("URL = " + url.toString());
         SecurityManager security = System.getSecurityManager();
-	    if (security != null) {
-	        try {
-	            security.checkConnect(url.getHost(), url.getPort());
-	        }
-	        catch (AccessControlException e){
-	            return false;
-	        }	
-	    }
+        if (security != null) {
+            try {
+                security.checkConnect(url.getHost(), url.getPort());
+            }
+            catch (AccessControlException e){
+                return false;
+            }
+        }
         return true;
     }
-    
+
     /**
-     * Called before every new window is to be created. A subclass could override this 
+     * Called before every new window is to be created. A subclass could override this
      * method to prevent new window from popping up.
      *
      * @return <code>false</code> will prevent the new window from popping up; otherwise
-     * <code>true</code>. 
+     * <code>true</code>.
      */
     protected boolean willOpenWindow() {
         return true;
     }
-    
+
     int getInstanceNum() {
-        return instanceNum;	
+        return instanceNum;
     }
-    
+
     private boolean waitForResult() {
         if (! status.initialized) {
             WebBrowser.trace("You can't call this method before WebBrowser initialized!");
@@ -469,8 +472,8 @@ public class WebBrowser extends Canvas
     private boolean firstTime = true;
 
      /**
-     * Overrides the same method of <code>java.awt.Canvas</code> in order to 
-     * paint the browser window. On Linux and Unix systems it is invoked by 
+     * Overrides the same method of <code>java.awt.Canvas</code> in order to
+     * paint the browser window. On Linux and Unix systems it is invoked by
      * the system automatically, users are not recommended to call it.
      *
      * @param g the specified graphics context.
@@ -498,15 +501,15 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * An inner class which is used for retrieving the WebBrowser's properties, 
-     * such as the initialization status, back and forward status. 
+     * An inner class which is used for retrieving the WebBrowser's properties,
+     * such as the initialization status, back and forward status.
      */
     public static class Status {
         private boolean initialized;
         private boolean backEnabled;
         private boolean forwardEnabled;
         static private String failReason;
-                
+
         Status () {
             initialized = false;
             backEnabled = false;
@@ -516,10 +519,10 @@ public class WebBrowser extends Canvas
 
         /**
          * Tests whether the <code>WebBrowser</code> object is initialized successfully.
-         * 
-         * @return <code>true</code> if the <code>WebBrowser</code> object is initialized 
+         *
+         * @return <code>true</code> if the <code>WebBrowser</code> object is initialized
          * successfully; otherwise, <code>false</code>.
-         * 
+         *
          */
         public boolean isInitialized() {
             return initialized;
@@ -527,10 +530,10 @@ public class WebBrowser extends Canvas
 
         /**
          * Tests whether the back navigation operation is enabled.
-         * 
-         * @return <code>true</code> if the back navigation operation is enabled; 
+         *
+         * @return <code>true</code> if the back navigation operation is enabled;
          * otherwise, <code>false</code>.
-         *  
+         *
          */
         public boolean isBackEnabled() {
             return backEnabled;
@@ -538,8 +541,8 @@ public class WebBrowser extends Canvas
 
         /**
          * Tests whether the forward navigation operation is enabled.
-         * 
-         * @return <code>true</code> if the forward navigation operation is enabled; 
+         *
+         * @return <code>true</code> if the forward navigation operation is enabled;
          * otherwise, <code>false</code>.
          */
         public boolean isForwardEnabled() {
@@ -552,9 +555,9 @@ public class WebBrowser extends Canvas
 
         void setInitFailReason(String msg) {
             failReason = msg;
-        }	
+        }
     }
-   
+
     class MyFocusListener implements FocusListener {
         public void focusGained(FocusEvent e) {
             WebBrowser.trace("\nMyFocusListener: focusGained\n");
