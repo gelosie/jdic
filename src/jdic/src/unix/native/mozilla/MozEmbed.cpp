@@ -426,10 +426,13 @@ HandleSocketMessage(gpointer data, gpointer user_data)
 
     NS_ASSERTION(i >= 2, "Wrong message format\n");
 
-    // In case that the last message string argument contains spaces, sscanf
+    // In case that the last message string argument contains spaces, sscanf 
     // returns before the first space. Below line returns the complete message
     // string.
-    char* mMsgString = (char*)(strrchr(msg, ',') + 1);
+    char* mMsgString = (char*)strchr(msg, ',');
+    mMsgString++;
+    mMsgString = (char*)strchr(mMsgString, ',');
+    mMsgString++;
 
     GtkBrowser *pBrowser;
     switch (type) {
