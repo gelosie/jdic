@@ -46,6 +46,16 @@ public class MsiPackageGenerator implements PackageGenerator {
     private static final String MSI_SUPPORT_FILES_HIERARCHY_PATH =
         "org/jdesktop/jdic/packager/impl/files/";
     /**
+     * The relevant path of makecab.exe in MSSDKDir.
+     */
+    private static final String MAKECAB_EXE_PATH =
+        "Samples\\sysmgmt\\msi\\Patching\\makecab.exe";
+    /**
+     * The relevant path of msidb.exe in MSSDKDir.
+     */
+    private static final String MSIDB_EXE_PATH =  
+        "bin\\msidb.exe";
+    /**
      * Bootstrapper file path.
      */
     private static final String SYS_BOOTSTRAPPER_FILE_PATH =
@@ -134,19 +144,26 @@ public class MsiPackageGenerator implements PackageGenerator {
         while (i > 0) {
             i--;
             indexChar = sysClassPath.charAt(i);
-            if ((indexChar == ';') || (indexChar == '=')) {
+            if ((indexChar == ';') || (i == 0)) {
                 filePathIndex = i;
                 break;
             }
         }
         if (filePathIndex > 0) {
-            packagerJarFilePath = sysClassPath.substring(filePathIndex + 1,
-                                    fileNameIndex + SYS_JAR_FILE_NAME.length());
+            packagerJarFilePath =
+                sysClassPath.substring(
+                    filePathIndex + 1,
+                    fileNameIndex + SYS_JAR_FILE_NAME.length());
+        } else if (filePathIndex == 0) {
+            packagerJarFilePath =
+                sysClassPath.substring(
+                    filePathIndex,
+                    fileNameIndex + SYS_JAR_FILE_NAME.length());
         } else {
-            throw new IOException(""
-                + "Could not locate "
-                + SYS_JAR_FILE_NAME
-                + " in system CLASSPATH setting!");
+            throw new IOException(
+                    "Could not locate "
+                    + SYS_JAR_FILE_NAME
+                    + " in system CLASSPATH setting!");
         }
     }
     
@@ -314,7 +331,12 @@ public class MsiPackageGenerator implements PackageGenerator {
 
             treeMap.put("ProductCode", uuidProduct);
             treeMap.put("UpgradeCode", uuidUpgrade);
-            treeMap.put("ProductVersion", pkgInfo.getVersion());
+            //Will put release # together with version #
+            treeMap.put(
+                "ProductVersion",
+                pkgInfo.getVersion() +
+                "." +
+                pkgInfo.getRelease());
             treeMap.put("JnlpFileName", pkgInfo.getJnlpFileName());
             treeMap.put("UninstallInfo", pkgInfo.getJnlpFileHref());
 
@@ -685,11 +707,27 @@ public class MsiPackageGenerator implements PackageGenerator {
         fis.close();
 
         // Insert the place.txt into msi, in form of cab
+        // Evaluate if makecab.exe and msidb.exe exist in MSSDKPath.
+        String makecabFullPath = pkgInfo.getMSSDKDirPath() + MAKECAB_EXE_PATH;
+        String msidbFullPath = pkgInfo.getMSSDKDirPath() + MSIDB_EXE_PATH; 
+        File temFile = new File(makecabFullPath);
+        if (!temFile.exists()) {
+            throw new IOException("Can not locate makecab.exe at" +
+                                   makecabFullPath);
+        }
+        temFile = new File(msidbFullPath);
+        if (!temFile.exists()) {
+            throw new IOException(
+                "Can not locate msidb.exe at" +
+                msidbFullPath);
+        }
         String tempCabFilePath = pkgInfo.getUniqueTmpDirPath() + "Data1.cab";
         WinMsiWrapper.winNativeCreateProcess(
-            "makecab " + tempTxtFile.toString() + " " + tempCabFilePath);
+            "\"" + makecabFullPath + "\" " + tempTxtFile.toString()
+            + " " + tempCabFilePath);
         WinMsiWrapper.winNativeCreateProcess(
-            "msidb.exe -d " + msiFilePath + " -a " + tempCabFilePath);
+            "\"" + msidbFullPath + "\" -d " + msiFilePath +
+            " -a " + tempCabFilePath);
 
         //Import the localized WelcomeMsg table into the template MSI file.
         String tempWelcomeMsgFilePath = pkgInfo.getUniqueTmpDirPath()
@@ -956,6 +994,12 @@ public class MsiPackageGenerator implements PackageGenerator {
             pkgInfo.getOutputDirPath() + pkgInfo.getPackageName() + ".exe";
         FileOperUtility.copyFile(tempBootStrapperFilePath,
                                  targetBootStrapperFilePath);
+        //Indicate user where the file has been generated
+        File targetFile = new File(targetBootStrapperFilePath);
+        if (targetFile.exists()) {
+            System.out.println("\nSuccess: The bootstrapper MSI file has been" +
+                " generated at: \n" + targetBootStrapperFilePath + "\n");   
+        }
 
         //Remove the Unique Tmp Dir
         File tempDir = new File(pkgInfo.getUniqueTmpDirPath());
