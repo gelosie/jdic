@@ -22,6 +22,9 @@
 #include <jawt.h>
 #include "WebBrowser.h"
 #include <stdlib.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
  * Class:     org_jdesktop_jdic_browser_WebBrowser
@@ -43,9 +46,6 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
     
     char dllLocation[500] = {0};
     char* buf;
-	jclass sys;
-	jmethodID home;
-	jstring ret;
 
     // Try to find JAVA_HOME
 	buf = getenv("JAVA_HOME");
@@ -53,7 +53,8 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
 	{
 	    return -1;   
 	}
-	// Try to load jawt.dll from %JAVA_HOME%\bin\
+
+	// Try to load jawt.dll from %JAVA_HOME%\bin
 	sprintf(dllLocation, "%s%s", buf, "\\bin\\jawt.dll");
 	_hAWT = LoadLibrary((LPCTSTR)dllLocation);
     if (!_hAWT) 
@@ -95,3 +96,6 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
     return (jint)hWnd;
 }
 
+#ifdef __cplusplus
+}
+#endif
