@@ -41,6 +41,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
     implements TrayIconService {
 
     private JPopupMenu menu;
+    private JWindow popupMenuParent;
     private IconPanel iconPanel;
     private Icon icon;        
     private HWToolTip tooltip;
@@ -55,28 +56,25 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         frame.setFocusable(true);
         frame.requestFocus();
         initListeners();
+        popupMenuParent = new JWindow();
+        popupMenuParent.setBounds(-500, 0, 0, 0);
+        popupMenuParent.setVisible(true);
     }
 
     void mousePressed(MouseEvent e) {
         if (menu != null) {
-            if (e.isPopupTrigger() && !menu.isShowing()) {
-                tooltip.hide();
-                menu.show();
-                Dimension d = menu.getSize();  
-
-                if ((d.height == 0) || (d.width == 0)) {
-                    // size is zero because it has not been shown yet, show it.
-                    menu.show((Component) e.getSource(), e.getX(), e.getY());
-                    d = menu.getSize();                  // reposition it.
-                    menu.show((Component) e.getSource(), e.getX(),
-                            e.getY() - d.height);
-                } else {
-                    menu.show((Component) e.getSource(), e.getX(),
-                            e.getY() - d.height);
-                }
-            } else if (!menu.isShowing()) {
-                menu.hide();
-                tooltip.hide();
+            if (e.isPopupTrigger()) {
+                tooltip.setVisible(false);
+                Dimension d = menu.getPreferredSize();
+                Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
+                Point p = e.getPoint();
+                SwingUtilities.convertPointToScreen(p, (Component) e.getSource());
+                p.x = p.x + d.width > s.width ? p.x - d.width : p.x;
+                p.y = p.y + d.height > s.height ? p.y - d.height : p.y;
+                SwingUtilities.convertPointFromScreen(p, popupMenuParent);
+                menu.show(popupMenuParent, p.x, p.y);
+            } else {
+                tooltip.setVisible(false);
                 ListIterator li = actionList.listIterator(0);
                 ActionListener al;
 
