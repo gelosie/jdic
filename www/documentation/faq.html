@@ -52,18 +52,18 @@ navigator.appName!='Netscape'?screen.colorDepth:screen.pixelDepth;</script>
 <img border="0" alt="" src="https://www.etracker.de/cnt.php?et=ir339g&amp;java=n&amp;
 et_easy=0&amp;et_pagename=JDIC%20FAQ&amp;et_areas=&amp;et_ilevel=&amp;
 et_target=&amp;et_lpage=&amp;et_trig="/></a>
-</noscript>    
-<!-- etracker CODE END -->    
-<H1>JDIC Frequently Asked Questions (FAQ)</H1>  
+</noscript>     
+<!-- etracker CODE END -->     
+<H1>JDIC Frequently Asked Questions (FAQ)</H1>   
       <ol>
   <li><a href="#General">General</a>
     <ul>
       <li><a href="#What is JDIC?">What is JDIC?</a></li>
-      <li><a href="#When was JDIC released?">When was JDIC released?</a></li> 
-      <li><a href="#What is the current version of JDIC?">What is the current 
+      <li><a href="#When was JDIC released?">When was JDIC released?</a></li>  
+      <li><a href="#What is the current version of JDIC?">What is the current  
         version of JDIC?</a></li>
-      <li><a href="#Under which license terms was JDIC released?">Under which 
-        license terms was JDIC released?</a></li> 
+      <li><a href="#Under which license terms was JDIC released?">Under which  
+        license terms was JDIC released?</a></li>  
       <li><a href="#What are the supported platforms?">What are the supported 
         platforms?</a></li>
       <li><a href="#Will there be a port to Mac?">Will there be a port to Mac?</a></li> 
@@ -76,20 +76,16 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
       <li><a href="#Is there any Java package naming convention?">Is there any Java package naming convention?</a></li>
     </ul>
   </li>
-  <li><a href="#Downloading">Downloading</a>
+  <li><a href="#Installation and Configuration">Installation and Configuration</a> 
     <ul>
       <li><a href="#Where can I get a binary?"> Where can I get 
-      a binary?</a></li>
-      <li><a href="#Where can I get the source?">Where can I get the source?</a></li>
-    </ul>
-  </li>
-  <li><a href="#Installation and Configuration">Installation and Configuration</a>
-    <ul>
-      <li><a href="#Why is there a defmailer.properties file in the binary distributions for Linux/Solaris?"> Why is there a defmailer.properties   
-      file in the binary distributions for Linux/Solaris?</a></li> 
-      <li><a href="#Is a Mozilla binary required to use package org.jdesktop.jdic.browser?"> Is 
-        a Mozilla binary required   
-      to use package org.jdesktop.jdic.browser?</a></li>
+      a binary?</a></li> 
+      <li><a href="#Where can I get the source?">Where can I get the source?</a></li> 
+      <li><a href="#Why is there a defmailer.properties file in the binary distributions for Linux/Solaris?"> Why is there a defmailer.properties    
+      file in the binary distributions for Linux/Solaris?</a></li>  
+      <li><a href="#What are the embeddable browsers by package org.jdesktop.jdic.browser? how about FireFox?">What are the embeddable browsers by
+        package 
+        <code>org.jdesktop.jdic.browser?</code>  how about FireFox?</a></li>
     </ul>
   </li>
   <li><a href="#Building the Source">Building the Source</a>
@@ -97,72 +93,70 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
       <li><a href="#Can I pull a copy of the source and build my own binary?"> Can  
       I pull a copy of the source and build my own binary?</a></li>
       <li><a href="#What type of build system does JDIC use?"> 
-      What type of build system does JDIC use?</a></li> 
+      What type of build system does JDIC use?</a></li>  
       <li><a href="#Can I build the JDIC source without building all the Mozilla stuff?">  
-      Can I build the JDIC source without building all the Mozilla stuff?</a></li> 
+      Can I build the JDIC source without building all the Mozilla stuff?</a></li>  
       <li><a href="#Why the Microsoft Platform Software Development Kit (SDK) Update is needed to build the source on Windows platforms?"> Why the Microsoft Platform Software 
       Development Kit (SDK) Update is needed to build the source on 
       Windows platforms?</a></li>
     </ul>
   </li>
-  <li><a href="#Getting Involved with JDIC">Getting Involved with JDIC</a>  
+  <li><a href="#Getting Involved with JDIC">Getting Involved with JDIC</a>   
     <ul>
       <li><a href="#How can I submit a bug report?"> How can I submit a bug report?</a></li> 
       <li><a href="#How can I get updated with the project?"> How can I get updated with the project?</a></li>
       <li><a href="#How can I contribute to the project?"> How can I contribute to the project?</a></li> 
     </ul>
   </li>
-  <li><a href="#Troubleshooting Using JDIC">Troubleshooting Using JDIC</a>
+  <li><a href="#Troubleshooting Using JDIC">Troubleshooting Using JDIC</a> 
     <ul>
-      <li><a href="#The Browser demo runs">The Browser demo runs, but the input 
-        URL is not loaded, why?</a></li>
-      <li><a href="#The Browser demo doesn't work">The Browser demo doesn't work 
-        with Mozilla version 1.5/1.6/1.7/1.8/..., why?</a></li>
+      <li><a href="#The Browser demo doesn't work, why?">The Browser demo
+        doesn't work, why?</a></li>
       <li><a href="#Why the tray icon demo runs">Why the tray icon demo runs 
         without any error on my Linux/Solaris platform, but there is no tray 
         icon created?</a></li>
     </ul>
   </li>
-  <li><a href="#Troubleshooting Building the JDIC Source">Troubleshooting Building  
-    the JDIC Source</a>
+  <li><a href="#Troubleshooting Building the JDIC Source">Troubleshooting Building   
+    the JDIC Source</a> 
     <ul>
-      <li><a href="#Why there is an error message &quot;Makefile:42: /config/autoconf.mk: No such file or directory.&quot; on Unix, and &quot;[exec] .../msgserver.cpp(23) : fatal error C1083: Cannot open include file: 'prlog.h': No such file or directory&quot; on Windows?">Why 
-        there is an error message  
+      <li><a href="#Why there is an error message &quot;Makefile:42: /config/autoconf.mk: No such file or directory.&quot; on Unix, and &quot;[exec] .../msgserver.cpp(23) : fatal error C1083: Cannot open include file: 'prlog.h': No such file or directory&quot; on Windows?">Why  
+        there is an error message   
         &quot;Makefile:42: /config/autoconf.mk: No such file or directory.&quot; on Unix, and "[exec] ...\msgserver.cpp(23) : fatal error C1083: Cannot open include file: 
-        'prlog.h': No such file or directory" on Windows?</a></li> 
-      <li><a href="#Why there is an error message &quot;[exec] WinAPIWrapper.obj : error LNK2001: unresolved external symbol __imp__AssocQueryStringA@24&quot; on Windows?">Why 
-        there is an error message  
+        'prlog.h': No such file or directory" on Windows?</a></li>  
+      <li><a href="#Why there is an error message &quot;[exec] WinAPIWrapper.obj : error LNK2001: unresolved external symbol __imp__AssocQueryStringA@24&quot; on Windows?">Why  
+        there is an error message   
         &quot;[exec] WinAPIWrapper.obj : error LNK2001: unresolved external symbol 
-        __imp__AssocQueryStringA@24&quot; on Windows?</a></li>  
-      <li><a href="#Why there is an error message &quot;GnomeBrowserService.cpp:21:17: jni.h: No such file or directory&quot; on Unix?">Why 
-        there is an error message "GnomeBrowserService.cpp:21:17: jni.h: No such file or directory" on 
+        __imp__AssocQueryStringA@24&quot; on Windows?</a></li>   
+      <li><a href="#Why there is an error message &quot;GnomeBrowserService.cpp:21:17: jni.h: No such file or directory&quot; on Unix?">Why  
+        there is an error message "GnomeBrowserService.cpp:21:17: jni.h: No such file or directory" on  
         Unix?</a></li>  
     </ul>
   </li>
       </ol>
-      <H3>1. <a name="General">General</a></H3><b>Q. </b><a name="What is JDIC?"> What is  
+      <H3>1. <a name="General">General</a></H3><b>Q. </b><a name="What is JDIC?"> What is 
 JDIC?</a><BR>
-<SPAN style="FONT-WEIGHT: bold">A.</SPAN> <A                  
-      href="http://jdic.dev.java.net/">JDIC</A> is short for JDesktop Integration        
-Components.&nbsp;The project aims to make Java technology-based applications (Java        
-applications) first-class citizens of current desktop platforms without sacrificing        
-platform independence. The JDIC project home page is: <a href="https://jdic.dev.java.net">https://jdic.dev.java.net</a>.<BR>       
+<SPAN style="FONT-WEIGHT: bold">A.</SPAN> <A                   
+      href="http://jdic.dev.java.net/">JDIC</A> is short for JDesktop Integration         
+Components.&nbsp;The project aims to make Java technology-based applications (Java         
+applications) first-class citizens of current desktop platforms without sacrificing         
+platform independence. The JDIC project home page is: <a href="https://jdic.dev.java.net">https://jdic.dev.java.net</a>.<BR>        
 <SPAN          
       style="FONT-WEIGHT: bold"><BR>Q. 
       </SPAN>  <a name="When was JDIC released?"> When was JDIC released?</a><SPAN     
       style="FONT-WEIGHT: bold"><br> 
-      </SPAN> <b> A.</b> The JDIC project was first released on 1 June 2004. The code is               
-      available via CVS, and periodic binary releases.&nbsp;              
+      </SPAN> <b> A.</b> The JDIC project was first released on 1 June 2004. The code is                
+      available via CVS, and periodic binary releases.&nbsp;               
       <p><span style="font-weight: bold">Q. </span><a name="What is the current version of JDIC?"> What is the current version of  
       JDIC?</a><br>
       <span style="font-weight: bold">
-      A.</span> JDIC source is continually available via CVS, and the latest versioned              
-      binary release is available <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>             
-      <p><span style="font-weight: bold">Q. </span><a name="Under which license terms was JDIC released?"> Under which license terms was JDIC             
+      A.</span> JDIC source is continually available via CVS, and the latest versioned               
+      binary release is available <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>              
+      <p><span style="font-weight: bold">Q. </span><a name="Under which license terms was JDIC released?"> Under which license terms was JDIC              
       released?</a><br>
-      <span style="font-weight: bold">A. </span>JDIC is released under LGPL.             
-      Take a look at JDIC's <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">COPYING</a>             
-      file for detailed license terms.</p>            
+      <span style="font-weight: bold">A. </span>JDIC is released under LGPL.              
+      Take a look at JDIC's <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">COPYING</a>              
+      file for detailed license terms.</p>             
       <p><span style="font-weight: bold">Q. </span><a name="What are the supported platforms?"> What are the supported platforms?</a><br>
       <span style="font-weight: bold">
       A.</span>  Briefly, Windows, Linux and Solaris. Refer to the JDIC <a href="https://jdic.dev.java.net/documentation/README.html#System%20Requirements">System   
@@ -211,17 +205,21 @@ platform independence. The JDIC project home page is: <a href="https://jdic.dev.
   <li><code>org.jdesktop.jdic.browser</code> - for browser APIs.</li>  
   <li><code>org.jdesktop.jdic.tray</code> - for tray icon APIs.</li> 
   <li><code>org.jdesktop.jdic.packager</code> - for JDIC Packager APIs.</li>  
-  <li><code>org.jdesktop.jdic.screensaver</code> - for SaverBeans Screensaver SDK (incubator 
+  <li><code>org.jdesktop.jdic.screensaver</code> - for SaverBeans Screensaver SDK (incubator  
+        project).</li>
+  <li><code>org.jdesktop.jdic.dock.floatingdock </code> - for Floating Dock Toplevel Window 
+    (incubator  
         project).</li>
 </ul>
-      <H3>2. <a name="Downloading">Downloading</a></H3><p><span style="font-weight: bold">Q. 
+      <H3>2. <a name="Installation and Configuration">Installation and Configuration</a></H3>  
+<p><span style="font-weight: bold">Q. 
       </span><a name="Where can I get a binary?"> Where can I get 
       a binary?</a><br>
-      <span style="font-weight: bold">A. </span>JDIC can be fetched as a binary           
-      in a versioned release. You could find the JDIC binary downloads,           
-      including the incubator projects downloads <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>         
-      <p><span style="font-weight: bold">Q. </span><a name="Where can I get the source?"> Where can I get the source?</a><br>         
-      <span style="font-weight: bold">A</span>. There are several ways you can access the JDIC source code:</p>         
+      <span style="font-weight: bold">A. </span>JDIC can be fetched as a binary            
+      in a versioned release or as a biweekly binary build. You could find the JDIC binary downloads,            
+      including the incubator projects downloads <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>          
+      <p><span style="font-weight: bold">Q. </span><a name="Where can I get the source?"> Where can I get the source?</a><br>          
+      <span style="font-weight: bold">A</span>. There are several ways you can access the JDIC source code:</p>          
       <ul>
         <li>Browse<br>
           Browse the up-to-the-minute latest version of the source code <a href="https://jdic.dev.java.net/source/browse/jdic/src/">online</a>.</li>
@@ -230,62 +228,66 @@ platform independence. The JDIC project home page is: <a href="https://jdic.dev.
             <li><a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">FTP</a> - Download the source 
               zip file for a specific release.</li>
             <li><a href="https://jdic.dev.java.net/source/browse/jdic/">CVS</a> 
-              - The latest source could be checked out using CVS following the &quot;CVS client setup instructions&quot;           
-          <a href="https://jdic.dev.java.net/source/browse/jdic/">here</a>. It lets you get up-to-the-minute changes.&nbsp;For     
-              each JDIC release, a tag is created to help people pull the           
-          right source. The tag           
-          names are of the form&nbsp; &quot;<b>JDIC_major_minor_micro</b>&quot;.           
-          For example, JDIC release 0.8.4 has a tag &quot;JDIC_0_8_4&quot;.</li>    
+              - The latest source could be checked out using CVS following the &quot;CVS client setup instructions&quot;            
+          <a href="https://jdic.dev.java.net/source/browse/jdic/">here</a>. It lets you get up-to-the-minute changes.&nbsp;For      
+              each JDIC release, a tag is created to help people pull the            
+          right source. The tag            
+          names are of the form&nbsp; &quot;<b>JDIC_major_minor_micro</b>&quot;.            
+          For example, JDIC release 0.8.4 has a tag &quot;JDIC_0_8_4&quot;.</li>     
           </ul>
         </li>     
       </ul>
-      <H3>3. <a name="Installation and Configuration">Installation and Configuration</a></H3> 
-      <p><span style="font-weight: bold">Q. 
+      <p><span style="font-weight: bold">Q.  
       </span>
       <a name="Why is there a defmailer.properties file in the binary distributions for Linux/Solaris?"> Why is there a defmailer.properties  
       file in the binary distributions for Linux/Solaris?</a><span style="font-weight: bold"><br> 
       A. 
       </span>
- This property file is used to define the default mail program path. 
-      While the user uses <a href="https://jdic.dev.java.net/nonav/documentation/javadoc/jdic/org/jdesktop/jdic/desktop/Desktop.html#mail()">Desktop.mail()</a> 
-      method, it tries to find the system default mail program in the GConf 
-      database. If the default mail program is not set, the method looks in this 
-      property file for the default mail program path.</p>
-      <p><span style="font-weight: bold">Q. </span><a name="Is a Mozilla binary required to use package org.jdesktop.jdic.browser?"> Is
-      a Mozilla binary required  
-      to use package org.jdesktop.jdic.browser?</a><span style="font-weight: bold"><br>
-      A. </span> Yes for Linux/Solaris, and yes for Windows if Mozilla is the  
-      embedded browser. Since<span style="font-weight: bold"> </span>the JDIC <code>org.jdesktop.jdic.browser</code>    
-      package makes use of some Mozilla code, a Mozilla binary is required to   
-      use the package. For Linux/Solaris platforms, since Mozilla is always the 
-      embedded browser, a Mozilla binary is always required to use the package.   
-      For Windows platforms, the default browser (Internet Explorer or Mozilla)   
-      is embedded, if the Internet Explorer is embed, no Mozilla binary is   
-      required to use the package.</p>  
-      <H3>4. <a name="Building the Source">Building the Source</a></H3><p><span style="font-weight: bold">Q.
+ This property file is used to define the default mail program path.  
+      While the user uses <a href="https://jdic.dev.java.net/nonav/documentation/javadoc/jdic/org/jdesktop/jdic/desktop/Desktop.html#mail()">Desktop.mail()</a>  
+      method, it tries to find the system default mail program in the GConf  
+      database. If the default mail program is not set, the method looks in this  
+      property file for the default mail program path.</p> 
+<p><span style="font-weight: bold">Q. </span><a name="What are the embeddable browsers by package org.jdesktop.jdic.browser? how about FireFox?">What are the embeddable browsers by
+package 
+        <code>org.jdesktop.jdic.browser?</code>  how about FireFox?</a><span style="font-weight: bold"><br>
+      A. </span>On Windows, IE or Mozilla is embeddable. If Mozilla is set as
+the default browser, it will be embedded. Or else, IE will always be the embedded browser. On Linux/Solaris,
+Mozilla is embedded if it's set as
+the default browser or its executable <code>mozilla</code> could be found under <code>PATH</code>.
+The package has been tested with IE 5.0 and 6.0, Mozilla 1.4, 1.6, 1.7 and
+1.8a4. Other browsers including FireFox, Galeon, Epiphany, Opera, etc. are not
+supported or tested, though they might work. There is a bug(<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=262453">#262453</a>)
+on embedding Firefox. Once this bug is fixed, this package will support
+it.</p>  
+      <H3>3. <a name="Building the Source">Building the Source</a></H3><p><span style="font-weight: bold">Q. 
       </span><a name="Can I pull a copy of the source and build my own binary?"> Can  
       I pull a copy of the source and build my own binary?</a><br> 
-      <span style="font-weight: bold">A. </span>Yes. After you pull the source  
-      code, follow the &quot;Build the Source&quot; <a href="https://jdic.dev.java.net/documentation/README.html#Build%20the%20Source">guidelines</a>  
-      to build your own binary. We like to provide up to date build documentation. If you find something to be out of date, incorrect, or missing altogether,  
-      report a bug using JDIC <a href="https://jdic.dev.java.net/servlets/ProjectIssues">Issue  
-      tracker</a>, or send a mail to <a href="mailto:jdic@jdic.dev.java.net">jdic@jdic.dev.java.net</a>.</p><p><span style="font-weight: bold">Q.
+      <span style="font-weight: bold">A. </span>Yes. After you pull the source   
+      code, follow the &quot;<a href="https://jdic.dev.java.net/documentation/README.html#Build%20the%20Source">Build the Source</a>&quot; 
+instructions   
+      to build your own binary. We like to provide up to date build documentation. If you find something to be out of date, incorrect, or missing altogether,   
+      report a bug using JDIC <a href="https://jdic.dev.java.net/servlets/ProjectIssues">Issue   
+      tracker</a>, or send a mail to <a href="mailto:jdic@jdic.dev.java.net">jdic@jdic.dev.java.net</a>.</p><p><span style="font-weight: bold">Q. 
       </span><a name="What type of build system does JDIC use?"> 
       What type of build system does JDIC use?</a><br>
       <span style="font-weight: bold">A. </span>JDIC uses <a href="http://ant.apache.org/">Apache Ant</a> 
       as the build system on all platforms.</p><p><span style="font-weight: bold">Q.
       </span><a name="Can I build the JDIC source without building all the Mozilla stuff?">  
       Can I build the JDIC source without building all the Mozilla stuff?</a><br> 
-      <span style="font-weight: bold">A.</span> No. The JDIC <code>org.jdesktop.jdic.browser</code>  
-      package makes use of some Mozilla code, some native code won't compile unless the  
-      Mozilla stuff it depends on has been built. The other parts don't depend  
-      on Mozilla code.<br>  
+      <span style="font-weight: bold">A.</span>  For Windows, the answer is YES. 
+The JDIC <code>org.jdesktop.jdic.browser</code>   
+      package makes use of some Mozilla code, some native code won't compile unless the   
+      Mozilla stuff it depends on has been built. For Linux/Solaris, after 
+release 0.8.6, the answer is NO, the package builds against Gecko SDK and a 
+Mozilla binary, both of which are downloadable from mozilla.org. Refer to &quot;<a href="https://jdic.dev.java.net/documentation/README.html#Build%20the%20Source">Build 
+the Source</a>&quot; instructions for details.<br>  
       <br>
       <span style="font-weight: bold">Q. </span><a name="Why the Microsoft Platform Software Development Kit (SDK) Update is needed to build the source on Windows platforms?"> Why the Microsoft Platform Software 
       Development Kit (SDK) Update is needed to build the source on Windows
       platforms?</a>
       <span style="font-weight: bold"><br>
-      A. </span>The SDK Update is needed for below reasons:</p> 
+      A. </span>The SDK Update is needed for below reasons:</p>  
       <ul>
         <li>The JDIC API native JNI code on Windows uses a Windows Shell  
       function <code>AssocQueryString</code> to search for and retrieve a file association-related string from the registry.  
@@ -298,7 +300,7 @@ platform independence. The JDIC project home page is: <a href="https://jdic.dev.
         <li>The JDIC Packager tool <code>jnlp2msi</code> uses two tools provided by the
           SDK Update: <code>msidb.exe</code> and <code>makecab.exe</code>.</li> 
       </ul>
-      <h3> 5. <a name="Getting Involved with JDIC">Getting Involved with JDIC</a></h3> 
+      <h3> 4. <a name="Getting Involved with JDIC">Getting Involved with JDIC</a></h3>  
       <p><span style="font-weight: bold">Q. </span><a name="How can I submit a bug report?"> How 
       can I submit a bug report?</a><SPAN    
       style="FONT-WEIGHT: bold"><br>
@@ -322,31 +324,51 @@ page, which details
       the ways and the process of contribution.</p> 
  
 
-<h3>6.<a name="Troubleshooting Using JDIC">Troubleshooting Using JDIC</a></h3>
+<h3>5.<a name="Troubleshooting Using JDIC">Troubleshooting Using JDIC</a></h3>
+<p><span style="font-weight: bold">Q.</span>  <a name="The Browser demo doesn't work, why?">The  
+Browser demo doesn't work, why?</a><br>
+<span style="font-weight: bold">A. </span>Follow below steps to check it (as
+for 0.8.7):</p> 
+<ul>
+  <li>Strictly follow the <a href="https://jdic.dev.java.net/documentation/README.html#Installation">installation
+    instructions</a>.</li>
+  <li>JDIC Browser component only supports/embeds the default browser IE/Mozilla on
+    Windows and Mozilla on Linux/Unix.
+    Refer to <a href="#What are the embeddable browsers by package org.jdesktop.jdic.browser? how about FireFox?">details</a>
+    on the supported browsers.</li>
+  <li>On Windows, if Mozilla is the default browser, remove <code>MozEmbed.exe</code>
+    file if it exists in the <code> mozilla.exe</code> directory (if Mozilla is unzipped from a .zip package) or the created GRE directory
+    [<code>Program Files\Common Files\mozilla.org\GRE</code>] (if Mozilla is installed from an .exe package), which
+    might be be installed by JDIC release 0.8.6 or earlier.</li>
+  <li><code>MOZILLA_FIVE_HOME</code> env variable is not used by 0.8.7 or later,
+    please just unset it. If it's set (required by the initial releases
+    0.8.5 or ealier), make sure it points to a valid Mozilla binary path, and
+    it's added to <code>PATH</code> (on Windows) or <code>LD_LIBRARY_PATH</code> (on Linux/Unix).
+  </li>
+  <li>Help debug the problem and report the result:<br>
+    - on Windows, set IE as the default browser first and then Mozilla;<br>
+    - uncomment the statement &quot;<code>//webBrowser.setDebug(true);</code>&quot;
+    in the <code>Browser.java</code> or <code>SimpleBrowser.java</code> demo
+    source file to print out the debug information. If there is error message
+    &quot;Can't execute native browser. ErrMsg is null&quot;, the native browser
+    executables (<code>IeEmbed.exe</code> and <code>MozEmbed.exe</code> for
+    Windows releases, and <code>mozembed-&lt;os&gt;-gtk&lt;version&gt;</code>
+    for Linux/Unix releases) is not put under <code>PATH, </code>which is done
+    by the code by default if they locate at the same place as <code>jdic.jar</code>&nbsp;
+    If there is no error message, it's quite possible that the default browser
+    is not a supported embeddable browser (IE/Mozilla on
+    Windows and Mozilla on Linux/Unix).<br>
+  </li>
+</ul>
+ 
+
 <p><span style="font-weight: bold">Q.</span> <a name="Why the tray icon demo runs">Why 
 the tray icon demo runs without any error on my Linux/Solaris platform, but 
 there is no tray icon created?</a><br>
 <span style="font-weight: bold">A. </span>The Notification Area is probably disabled. You can enable it by right-clicking the GNOME panel and selecting Add to Panel -> Utility -> Notification Area.</p> 
-<p><span style="font-weight: bold">Q.</span> <a name="The Browser demo runs">The 
-Browser demo runs, but the input URL is not loaded, why?</a><br>
-<span style="font-weight: bold">A. </span>Currently (release 0.8.6), the JDIC 
-Browser component supports/embeds the default browser: IE/Mozilla 1.4.* on 
-Windows, and Mozilla 1.4.* on Unix. So there are several possible reasons for 
-this question:</p>
-<ul>
-  <li>Other browsers are used as the default browser, such as Galeon, Epiphany 
-    or Opera. They might work, but they are not supported or tested.</li>
-  <li>Other Mozilla versions, not 1.4.*, are used. This is a known problem, 
-    refer to the <a href="http://www.javadesktop.org/forums/thread.jspa?threadID=5102&amp;tstart=0">JDIC 
-    Project Needs Your Help</a> thread in the forum for more info. Help on this 
-    problem is much appreciated!</li>
-</ul>
-<p><span style="font-weight: bold">Q.</span> <a name="The Browser demo doesn't work">The 
-Browser demo doesn't work with Mozilla version 1.5/1.6/1.7/1.8/..., why?</a><br>
-<span style="font-weight: bold">A. </span>Refer to the above question.</p>
  
 
-      <h3>7.<a name="Troubleshooting Building the JDIC Source">Troubleshooting  
+      <h3>6.<a name="Troubleshooting Building the JDIC Source">Troubleshooting  
       Building the JDIC Source</a></h3>
 <p><span style="font-weight: bold">Q. </span><a name="Why there is an error message &quot;Makefile:42: /config/autoconf.mk: No such file or directory.&quot; on Unix, and &quot;[exec] .../msgserver.cpp(23) : fatal error C1083: Cannot open include file: 'prlog.h': No such file or directory&quot; on Windows?">Why 
 there is an error message  
@@ -371,6 +393,6 @@ and the include/library directory is automatically set.</p>
 <p><span style="font-weight: bold">Q. </span><a name="Why there is an error message &quot;GnomeBrowserService.cpp:21:17: jni.h: No such file or directory&quot; on Unix?">Why 
 there is an error message "GnomeBrowserService.cpp:21:17: jni.h: No such file or directory" on 
 Unix?</a><span style="font-weight: bold"><br>
-  A. </span>The environment variable <code>JAVA_HOME</code> is not set to the   
-  J2SDK home directory.</p>     
+  A. </span>The environment variable <code>JAVA_HOME</code> is not set to the    
+  J2SDK home directory.</p>      
       </body></html>
