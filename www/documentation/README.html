@@ -161,8 +161,21 @@ NT4 MSI Service Package</a>, <a
 or built JDIC binaries, following below installation instructions:
   <p> <b>JDIC API</b>:</p>
   <ul>
-    <li>Add <code>jdic.jar</code> to CLASSPATH. </li>
-    <li><b>Note</b>:for JDIC release 0.8.6.*, additional setting
+    <li>Add <code>jdic.jar</code> to <code>CLASSPATH</code>. </li>
+    <li>Below steps are ONLY necessary if the native library or executable files
+      locate at a different location from jdic.jar. If a JDIC release (<code>jdic-&lt;version&gt;-bin-&lt;os&gt;.zip</code>)
+      is unzipped, these files locate at the same location as <code>jdic.jar</code>
+      and so below steps are unnecessary:
+      <ul>
+        <li> Add the path of native library files .dll to <code>PATH</code> (for
+          Windows), or .so to <code>LD_LIBRARY_PATH</code> (for Linux/Unix).</li>
+        <li> Add the path of native executable files .exe (for Windows) or <code>mozembed-&lt;os&gt;-gtk*</code>
+          (for Linux/Unix) to <code>PATH</code>.</li>
+      </ul>
+ </li>
+  </ul>
+  <ul>
+    <li><b>Note</b>: for JDIC release 0.8.6.*, additional setting
 to use package <code><b>org.jdesktop.jdic.tray:</b></code>
       <ul>
         <li>Set the environment variable <code>JAVA_HOME</code>
@@ -180,8 +193,8 @@ to use package <code><b>org.jdesktop.jdic.browser:</b></code>
       <ul>
         <li><b>Windows</b><br>
 - Add <code>&lt;J2SDK HOME&gt;/jre/bin</code> or <code> &lt;J2RE
-HOME&gt;/bin</code> to PATH.<br>
-- Add the directory of native executable files (*.exe) to PATH.<br>
+HOME&gt;/bin</code> to <code>PATH</code>.<br>
+- Add the path of native executable files (*.exe) to <code>PATH</code>.<br>
 - The system default browser (Mozilla or Internet Explorer) is
 embedded. If Mozilla is the embedded browser:<br>
 &nbsp; * Set the environment variable <code> MOZILLA_FIVE_HOME</code>
@@ -190,11 +203,11 @@ to the absolute path of the Mozilla 1.4 (or later) executable file.<br>
 directory.<br>
 &nbsp; * Add <code> MOZILLA_FIVE_HOME</code> to PATH.</li>
         <li><b>Linux/Solaris<br>
-- </b>Add the directory of native executable files (<code>mozembed-linux-gtk*</code>
-or <code>mozembed-solaris-gtk*</code>) to PATH.<br>
+- </b>Add the path of native executable files (<code>mozembed-linux-gtk*</code>
+or <code>mozembed-solaris-gtk*</code>) to <code>PATH</code>.<br>
 - Set the environment variable <code> MOZILLA_FIVE_HOME</code> to the
 absolute path of the Mozilla 1.4 (or later) executable file.<br>
-- Add <code> MOZILLA_FIVE_HOME</code> to LD_LIBRARY_PATH.</li>
+- Add <code> MOZILLA_FIVE_HOME</code> to <code> LD_LIBRARY_PATH</code>.</li>
       </ul>
     </li>
   </ul>
@@ -203,8 +216,8 @@ absolute path of the Mozilla 1.4 (or later) executable file.<br>
   <p><b>JDIC Packager</b>: </p>
   <ul>
     <li>Add <code>packager.jar</code>
-to CLASSPATH.</li>
-    <li>Add native library (*.dll) directory to PATH (for Windows).</li>
+to <code> CLASSPATH</code>.</li>
+    <li>Add native library (*.dll) path to <code> PATH</code> (for Windows).</li>
     <li>J2SDK/J2RE version 1.5 or later is required to be installed.
 Make sure <code>java</code> command is under PATH, or set
       <code>JDIC_PACKAGER_JAVAHOME</code> to the home directory of
@@ -279,10 +292,10 @@ pkg-config version 0.15.0 or later is required, which can be downloaded
 from <a href="http://www.freedesktop.org/Software/pkgconfig">here</a>.</li>
           <li>Mozilla distribution<br>
 Mozilla release 1.4 or later is required, which can be downloaded from
-<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set MOZILLA_DIST to the directory.</li>
+<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set <code> MOZILLA_DIST</code> to the directory.</li>
           <li> Gecko SDK<br>
 Mozilla Gecko SDK is required, which can be downloaded from
-<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set GECKO_SDK to the direcotory.</li>
+<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set <code> GECKO_SDK</code> to the direcotory.</li>
         </ul>
       </li>
       <li><b>Solaris:</b>
@@ -302,10 +315,10 @@ pkg-config version 0.15.0 or later is required, which can be downloaded
 from <a href="http://www.freedesktop.org/Software/pkgconfig">here</a>.</li>
           <li>Mozilla distribution<br>
 Mozilla release 1.4 or later is required, which can be downloaded from
-<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set MOZILLA_DIST to the directory.</li>
+<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set <code> MOZILLA_DIST</code> to the directory.</li>
           <li> Gecko SDK<br>
 Mozilla Gecko SDK is required, which can be downloaded from
-<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set GECKO_SDK to the direcotory.</li>
+<a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set <code> GECKO_SDK</code> to the direcotory.</li>
         </ul>
       </li>
     </ul>
