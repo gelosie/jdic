@@ -55,7 +55,7 @@ Top-level target:
   <!-- the distribution version and release of this build -->
   <!-- which is only used in javadoc target -->
   <property name="version" value="0.8" />
-  <property name="release" value="6" />
+  <property name="release" value="7" />
 
   <!-- the generated jar file name -->
   <property name="jar.file" value="jdic.jar" />

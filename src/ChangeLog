@@ -1,3 +1,19 @@
+2004-12-09 Armin Chen <armin_chen@dev.java.net>
+
+    * Release 0.8.7
+    
+    * Fixed issue list:   
+      ID  Pri  Summary
+      ==  ===  =======
+       82 P3   Auto-check MOZILLA_FIVE_HOME setting running Browser component
+       97 P3   Embedded IE has problem with some https sites
+      126 P2   Browser component can not resolve the symbolic link
+      125 P2   Failed to generate msi package when speicfy the rd paramter 
+      136 P3   Update init package implementation.  
+      138 P3   Dependence on libpopt.so.0
+      139 P3   Tray requires setting JAVA_HOME to work.
+      140 P3   Desktop.browse takes long time if you call it from TrayIcon
+
 2004-11-10 Armin Chen <armin_chen@dev.java.net>
 
     * Release 0.8.6.3
