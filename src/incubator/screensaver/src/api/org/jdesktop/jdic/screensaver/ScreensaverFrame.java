@@ -56,13 +56,13 @@ public class ScreensaverFrame
         
         // Create timer to call render loop
         // XXX - Delay hard-coded to 60 FPS for now
-        Timer t = new Timer(1000/60, 
+        this.timer = new Timer(1000/60, 
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     ScreensaverFrame.this.screensaver.renderFrame();
                 }
             });
-        t.start();
+        this.timer.start();
     }
     
     /** This method is called from within the constructor to
@@ -84,8 +84,9 @@ public class ScreensaverFrame
     
     /** Exit the Application */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
+        timer.stop();
         screensaver.baseDestroy();
-        System.exit(0);
+        dispose();
     }//GEN-LAST:event_exitForm
     
     /**
@@ -139,6 +140,9 @@ public class ScreensaverFrame
     private int prevWidth;
     /** The height of the screensaver last time we checked */
     private int prevHeight;
+    
+    /** Delay timer for animation */
+    private Timer timer;
     
     private static void usage() {
         System.err.println("Usage: java " + ScreensaverFrame.class.getName() + 
