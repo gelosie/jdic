@@ -10,6 +10,7 @@
       22  P3   Patch or Issue 9, 12~19
       27  P3   Error to package web-based webstart application
       49  P3   Further browsing doesn't work with browser component.
+      50  P3   "jni.h not found" error building JDIC source on Windows
 
 2004-06-01 George Zhang <georgez@dev.java.net>
 
