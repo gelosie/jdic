@@ -203,12 +203,16 @@ Screensaver Startup Kit
 -----------------------
 This component is a skeleton screensaver project startup kit,
 containing a build.xml, simple screensaver and a configuration file.
-The startup kit.  It allows screensaver developers to get a quick
-start and provides a consistent look and feel between
-screensaver projects developed using the SaverBeans SDK.
+It allows screensaver developers to get a quick start and provides a 
+consistent look and feel between screensaver projects developed using 
+the SaverBeans SDK.
 
 To create your own screensaver, simply unpack the startup kit
 to a new directory and start tweaking!
+
+Use the ant 'debug' target during development to preview your screensaver
+in a ScreensaverFrame.  When done, use the ant 'dist' target to produce
+your final screensaver bundles for each supported platform.
 
 When you're done, be sure to visit the http://screensavers.dev.java.net/
 project to share your work with the community!
@@ -226,9 +230,15 @@ forums and mailing lists available.
 
 Revision History
 ----------------
-Version 0.1 - June 1, 2004
-    * Initial open-source release of SaverBeans SDK
-
-Version 0.1.1
+Version 0.1.1 - June 10, 2004
     * Fixed screensavers.dev.java.net issue #1:
       Fatal Exception if *.scr and *.jar not in system32 directory
+    * Fixed jdic.dev.java.net issue #20:
+      ScreensaverFrame for developers
+      - Added ScreensaverFrame and ant debug target to make it easier to
+        debug screensavers.
+    * Fixed jdic.dev.java.net issue #21:
+      Screensaver exceptions not being caught in init() method
+
+Version 0.1 - June 1, 2004
+    * Initial open-source release of SaverBeans SDK
