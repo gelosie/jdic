@@ -15,6 +15,8 @@ Top-level target:
     buildsolaris:   on Solaris to build a Solaris distribuition.
     buildfreebsd:   on FreeBSD to build a FreeBSD distribuition.
     buildmac_os_x:  on Mac OS X to build a Mac OS X distribuition.
+  buildtray:        Build the Tray Icon API (package org.jdesktop.jdic.tray) 
+                    binary for the current platform.
   clean:            Remove the generated distribution (including files and directories).
 
 -->
@@ -24,6 +26,7 @@ Top-level target:
   <property name="pkg.desktop.name"   value="${pkg.jdic.name}.desktop" /> 
   <property name="pkg.filetypes.name" value="${pkg.jdic.name}.filetypes" />
   <property name="pkg.browser.name"   value="${pkg.jdic.name}.browser" />
+  <property name="pkg.tray.name"      value="${pkg.jdic.name}.tray" />
 
   <!-- the path of source directory -->
   <property name="src.dir"           value="src" />
@@ -59,8 +62,10 @@ Top-level target:
 
   <target name="showtargets" description="default target showing all available targets">
     <echo>The top-level targets are:</echo>
-    <echo>  buildall:   Build a distribution for the current platform</echo>
+    <echo>  buildall:   Build a JDIC API distribution for the current platform</echo>
     <echo>              (Windows, Linux, Solaris, FreeBSD or Mac OS X).</echo>
+    <echo>  buildtray:  Build the Tray Icon API binary for the current platform</echo>
+    <echo>              (Windows, Linux or Solaris).</echo>
     <echo>  clean:      Remove the generated distribution.</echo>
     <echo></echo>
     <echo>  The generated distribution is put under *dist* directory.</echo>
@@ -150,7 +155,7 @@ Top-level target:
   <!-- disable author and version tags output -->
   <target name="javadoc" depends="init"
           description="generate javadoc into ${dist.dir}/javadoc" >
-    <javadoc packagenames="${pkg.desktop.name}, ${pkg.filetypes.name}, ${pkg.browser.name}"
+    <javadoc packagenames="${pkg.desktop.name}, ${pkg.filetypes.name}, ${pkg.browser.name}, ${pkg.tray.name}"
              sourcepath="${share.classes.dir}"
              destdir="${dist.dir}/javadoc"            
              author="false"
@@ -371,6 +376,127 @@ Top-level target:
 
     <!-- copy generated .jnilib file -->
     <copy file="${mac.native.jni.dir}/libjdic.jnilib" todir="${dist.dir}" />
+  </target>
+
+  <!-- ******************************************* -->
+  <!-- ******************************************* -->
+  <!-- ******************************************* -->
+  <!-- *********** Build Tray Icon API *********** -->
+  <!-- ***** package org.jdesktop.jdic.tray ****** -->
+  <!-- ******************************************* -->
+  <!-- ******************************************* -->
+  <!-- ******************************************* -->
+  <property name="pkg.tray.dir"      value="org/jdesktop/jdic/tray" />  
+
+  <!-- the path of source directory -->
+  <property name="share.classes.tray.dir" value="${share.classes.dir}/${pkg.tray.dir}" />
+  <property name="win32.classes.tray.dir" value="${win32.classes.dir}/${pkg.tray.dir}" />  
+  <property name="unix.classes.tray.dir"  value="${unix.classes.dir}/${pkg.tray.dir}" />  
+
+  <!-- *** Top-level target *** -->
+  <!-- *** Build a Tray Icon API binary for the current platform *** -->
+  <!-- *** First clean the distribution directory *** -->
+  <target name="buildtray" depends="clean"
+          description="build a distribution for the current platform.">
+    <!-- Set the platform-dependent buildall target -->
+    <condition property="platform.target" value="buildwin32_tray">
+      <os family="windows" />      
+    </condition> 
+
+    <condition property="platform.target" value="buildlinux_tray">
+      <os name="linux"/>      
+    </condition> 
+
+    <condition property="platform.target" value="buildsolaris_tray">
+      <os name="sunos"/>      
+    </condition>  
+
+    <antcall target="${platform.target}" />
+  </target>
+
+  <!--
+    - WIN32 DISTRIBUTION
+    -->
+  <target name="buildwin32_tray" depends="buildwin32jar_tray, buildwin32jni_tray"
+          description="build java and native source code for Win32 platform" >
+  </target>
+
+  <!-- *** Build Win32 jar file *** -->  
+  <target name="buildwin32jar_tray" depends="init"
+          description="build the classes and jar file." >
+    <javac srcdir="${share.classes.tray.dir}:${win32.classes.tray.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" 
+    />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+         <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+
+    <!-- remove the generated "org" directory -->
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}/org"/>
+    </delete>
+  </target>
+
+  <!-- *** Build Win32 native JNI code *** -->
+  <target name="buildwin32jni_tray" depends="init"
+          description="build native jni libraries." >
+
+    <exec dir="${win32.native.jni.dir}" executable="nmake" 
+      failonerror="yes" >
+      <arg line="/f jdic.mak CFG=TRAY"/>
+    </exec>                   
+
+    <!-- copy generated .dll file -->
+    <copy file="${win32.native.jni.dir}/Release/jdic.dll" todir="${dist.dir}" />
+  </target>
+
+  <!--
+    - LINUX DISTRIBUTION
+    -->
+  <target name="buildlinux_tray" depends="buildunixjar_tray, buildunixjni_tray"
+          description="build java and native source code for Linux platform" >
+  </target>
+
+  <!--
+    - SOLARIS DISTRIBUTION
+    -->
+  <!-- This target is the same with buildlinux_tray -->
+  <target name="buildsolaris_tray" depends="buildlinux_tray"
+          description="build java and native source code for Solaris platform" >
+  </target>
+
+  <!--
+    - SHARED TARGETS FOR LINUX/SOLARIS DISTRIBUTIONS
+    -->
+  <!-- *** Build Unix jar file *** -->  
+  <target name="buildunixjar_tray" depends="init"
+          description="build the classes and jar file." >
+    <javac srcdir="${share.classes.dir}:${unix.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" debug="true"
+    />
+
+    <jar destfile="${dist.dir}/${tray.jar.file}" update="false">
+         <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+    </jar>
+
+    <!-- remove the generated "org" directory -->
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}/org"/>
+    </delete>
+  </target>
+
+  <!-- *** Build Unix native JNI code *** -->
+  <target name="buildunixjni_tray" depends="init"
+          description="build native jni libraries." >
+    <exec dir="${unix.native.jni.dir}" executable="make" failonerror="yes" >
+      <arg line="tray"/>
+    </exec>
+
+    <!-- copy generated .so file -->
+    <copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.dir}" />
   </target>
 
 </project>
