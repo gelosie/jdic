@@ -33,6 +33,9 @@ import javax.swing.BorderFactory;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+
 import java.awt.event.*;
 import java.util.*;
 
@@ -41,6 +44,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
     implements TrayIconService {
 
     private JPopupMenu menu;
+    private JDialog popupMenuParent;
     private IconPanel iconPanel;
     private Icon icon;        
     private HWToolTip tooltip;
@@ -50,19 +54,20 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
 
     public GnomeTrayIconService() {
         super();
+        initFrame();
+    }
+    void initFrame(){
         iconPanel = new IconPanel();
         frame.add(iconPanel);
         frame.setFocusable(true);
         frame.requestFocus();
+        
         initListeners();
-
-        frame.addWindowListener(new WindowAdapter(){
-			public void windowDeactivated(WindowEvent e) {
-				synchronized(frame){
-					frame.notify();
-				}
-			}
-        });
+        
+        popupMenuParent = new JDialog(frame, "JDIC Tray Icon");
+        popupMenuParent.setUndecorated(true);
+        popupMenuParent.setBounds(0, 0, 0, 0);
+        popupMenuParent.setVisible(true);
     }
 
     void mousePressed(final MouseEvent e) {
@@ -72,30 +77,13 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                 	tooltip.setVisible(false);
                 Dimension d = menu.getPreferredSize();
                 Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
-                final Point p = e.getPoint();
-                final Frame embedFrame = (Frame)e.getSource();
-                SwingUtilities.convertPointToScreen(p, embedFrame);
+                Point p = e.getPoint();
+                SwingUtilities.convertPointToScreen(p, (Component) e.getSource());
                 p.x = p.x + d.width > s.width ? p.x - d.width : p.x;
                 p.y = p.y + d.height > s.height ? p.y - d.height : p.y;
-                SwingUtilities.convertPointFromScreen(p, embedFrame);
-                Thread showPopupMenuThread = new Thread(new Runnable(){
-                	public void run(){
-                		synchronized(embedFrame){
-                			try{
-                				if(embedFrame.isActive())
-                					embedFrame.wait();
-                			}catch(InterruptedException ie){
-                				
-                			}
-                		}
-                		SwingUtilities.invokeLater(new Runnable(){
-                			public void run(){
-                				menu.show(embedFrame, p.x, p.y);
-                			}
-                		});
-                	}
-                });
-                showPopupMenuThread.start();
+                SwingUtilities.convertPointFromScreen(p, popupMenuParent);
+                menu.show(popupMenuParent.getContentPane(), p.x, p.y);
+                popupMenuParent.toFront();
             } else {
                 if(tooltip != null)
                 	tooltip.setVisible(false);
@@ -160,8 +148,9 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
 
     public void addNotify() {
     	if(GnomeTrayAppletService.winMap.get(new Long(this.getWindow())) == null){
-    		this.init();
-    		
+    		super.init();
+    		initFrame();
+            
     		if(this.icon != null)
     			this.setIcon(this.icon);
     		if(this.menu != null)
@@ -170,7 +159,6 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
     		if(this.tooltip != null)
     			tooltip = new HWToolTip(this.tooltip.label.getTipText(), frame);
     		
-    		this.initListeners();
     	}
         GnomeSystemTrayService.dockWindow(this.getWindow());
         frame.setVisible(true);
@@ -180,6 +168,16 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         menu = m;
         if (m != null) {
             m.setLightWeightPopupEnabled(false);
+            // in jdk1.4, the popup menu is still visible after the invoker window lost focus.
+            popupMenuParent.addWindowFocusListener(new WindowFocusListener() {
+                public void windowGainedFocus(WindowEvent e) {
+                }
+
+                public void windowLostFocus(WindowEvent e) {
+                    menu.setVisible(false);
+                }
+            });
+
         }
     }
 
@@ -191,7 +189,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             reshape(0,0,w,h);
             frame.setVisible(false);
             frame.remove(iconPanel);
-            iconPanel = new IconPanel();
+            iconPanel = new IconPanel(); 
             frame.add(iconPanel);
             frame.setVisible(true);
         }
