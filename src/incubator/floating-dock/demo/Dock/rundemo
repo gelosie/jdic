@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# This script needs JAVA_HOME set to the correct value,
+# the classpath set to floatingdock.jar and 
+# java.library.path set to a folder that contains libfloatingdock.so. 
+
 javahome="echo $JAVA_HOME"
 if test ! $JAVA_HOME
 then
