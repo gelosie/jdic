@@ -365,9 +365,11 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             this.getContentPane().add(outerPanel);
             outerPanel.setLayout(new BorderLayout());
             outerPanel.add(innerPanel);
-            outerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED,  new Color(0x00CBDAF3), new Color(0x002F4A78)));
+            outerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED,  
+                    new Color(0x00CBDAF3), new Color(0x002F4A78)));
             innerPanel.setLayout(new BorderLayout());
-            innerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, new Color(0x00CBDAF3), new Color(0x002F4A78)));
+            innerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, 
+                    new Color(0x00CBDAF3), new Color(0x002F4A78)));
             
             captionLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
             textLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -376,9 +378,12 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             
             textLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 3, 3));
 
-            ImageIcon x = new ImageIcon(GnomeTrayIconService.class.getResource("images/x.gif"));
-            ImageIcon xx = new ImageIcon(GnomeTrayIconService.class.getResource("images/xx.gif"));
-            ImageIcon xxx = new ImageIcon(GnomeTrayIconService.class.getResource("images/xxx.gif"));
+            ImageIcon x = new ImageIcon(
+                    GnomeTrayIconService.class.getResource("images/x.png"));
+            ImageIcon xx = new ImageIcon(
+                    GnomeTrayIconService.class.getResource("images/xx.png"));
+            ImageIcon xxx = new ImageIcon(
+                    GnomeTrayIconService.class.getResource("images/xxx.png"));
             JButton closeButton = new JButton(x);
             closeButton.setPreferredSize(new Dimension(x.getIconWidth(), x.getIconHeight()));
             closeButton.setRolloverEnabled(true);
@@ -463,13 +468,16 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         private synchronized void doShow(String caption, String text, int type){
             switch(type) {
                 case 0:
-                    captionLabel.setIcon(new ImageIcon(GnomeTrayIconService.class.getResource("images/info.png")));
+                    captionLabel.setIcon(new ImageIcon(
+                            GnomeTrayIconService.class.getResource("images/info.png")));
                     break;
                 case 1:
-                    captionLabel.setIcon(new ImageIcon(GnomeTrayIconService.class.getResource("images/error.png")));
+                    captionLabel.setIcon(new ImageIcon(
+                            GnomeTrayIconService.class.getResource("images/error.png")));
                     break;
                 case 2:
-                    captionLabel.setIcon(new ImageIcon(GnomeTrayIconService.class.getResource("images/warning.png")));
+                    captionLabel.setIcon(new ImageIcon(
+                            GnomeTrayIconService.class.getResource("images/warning.png")));
                     break;
                 default :
                     captionLabel.setIcon(null);
