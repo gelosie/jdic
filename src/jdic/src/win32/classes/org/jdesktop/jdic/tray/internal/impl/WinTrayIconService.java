@@ -39,12 +39,11 @@ import java.util.*;
 import sun.awt.image.IntegerComponentRaster;
 
 
-public class WinTrayIconService implements TrayIconService, PopupMenuListener {
+public class WinTrayIconService implements TrayIconService{
 
     private JPopupMenu menu;
     private Icon icon;
     private boolean autoSize;
-    private boolean isShowing;
     private byte[] caption = "JDIC TrayIcon".getBytes();
 
     private long hicon;
@@ -85,6 +84,12 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
     public WinTrayIconService() {
         iconID = noIcons++;
         map.put(new Integer(iconID), this);
+
+        popupParentFrame = new JDialog();
+        popupParentFrame.setAlwaysOnTop(true);
+        popupParentFrame.setUndecorated(true);
+        popupParentFrame.setBounds(0, 0, 0, 0);
+        popupParentFrame.setVisible(true);
     }
 
     private native long createIconIndirect(int[] rData, byte[] andMask,
@@ -146,18 +151,6 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
         }
     }
 
-    public void popupMenuWillBecomeVisible(PopupMenuEvent e) {}
-
-    public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        isShowing = false;
-        popupParentFrame.dispose();
-    }
-
-    public void popupMenuCanceled(PopupMenuEvent e) {
-        isShowing = false;
-        popupParentFrame.dispose();
-    }
-
     public void processEvent(int mouseState, int x, int y) {
         
         switch (mouseState) {
@@ -165,24 +158,19 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
             break;
 
         case 0x202: // WM_LBUTTONUP
-            if (!isShowing) {
-                ListIterator li = actionList.listIterator(0);
-                ActionListener al;
+            ListIterator li = actionList.listIterator(0);
+            ActionListener al;
 
-                while (li.hasNext()) {
-                    al = (ActionListener) li.next();
-                    al.actionPerformed(new ActionEvent(this,
-                            ActionEvent.ACTION_PERFORMED, "PressAction",
-                            System.currentTimeMillis(), 0));
-                }
+            while (li.hasNext()) {
+                al = (ActionListener) li.next();
+                al.actionPerformed(new ActionEvent(this,
+                        ActionEvent.ACTION_PERFORMED, "PressAction",
+                        System.currentTimeMillis(), 0));
             }
             break;
 
         case 0x205: // WM_RBUTTONUP
-            if (!isShowing) {
-                isShowing = true;
-                popupParentFrame = new JDialog();
-                popupParentFrame.setAlwaysOnTop(true);
+            if (menu != null) {
                 // Fix for bug 25 
                 GraphicsConfiguration gc = popupParentFrame.getGraphicsConfiguration();
                 Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
@@ -192,10 +180,8 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
                 if (y < screenInsets.top) {
                  y = screenInsets.top;
                 }
-                popupParentFrame.setBounds(-500, 0, 0, 0);
-                popupParentFrame.setVisible(true);
-                menu.show(popupParentFrame, x+500, y);
-                menu.addPopupMenuListener(this);
+                menu.show(popupParentFrame, x, y);
+                popupParentFrame.toFront();
             }
             break;
         }
