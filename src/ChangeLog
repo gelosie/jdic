@@ -11,6 +11,7 @@
       185 P3   Tray icon is lost when taskbar is restarted.
       192 P3   Add version info to the JDIC release binaries on Windows.
       195 P3   Add property to build.xml to support debug compiling
+      194 P3   Browser DOM support lacks unicode support
       197 P3   Common.cpp building error: IsEmpty' undeclared.
 
     * Known issue list:   
