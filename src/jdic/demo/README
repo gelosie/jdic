@@ -80,3 +80,14 @@ Browser
   buttons allow the user to go forward and back and to reload and stop 
   loading pages. The status bar reflects the browser's current state.
 
+Tray
+----
+
+  A demo application using the Tray Icon API (package org.jdesktop.jdic.tray).
+  
+  It creates a tray icon on the desktop, with a caption (text), an animated 
+  icon, and an associated Swing menu containing icons. It also has a tooltip 
+  displayed when the mouse hovers over the tray icon.
+  
+  On Windows, the tray icon is created in the System Tray Area. On Gnome/Unix,
+  it's created in the Notification Area.
