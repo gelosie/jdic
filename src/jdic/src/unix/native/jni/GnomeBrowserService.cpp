@@ -32,7 +32,7 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_desktop_internal_impl_GnomeBro
 {
     const char* urlStr = env->GetStringUTFChars(url, JNI_FALSE);
 
-    char *command;
+    char *command = NULL;
     gboolean result;
 
     g_type_init();
@@ -46,32 +46,35 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_desktop_internal_impl_GnomeBro
             break;
         }
     }
-
+  
     char **argv;
     int argc;
-    if (command != NULL) {
+    
+    if (command == NULL) {
+        result = false;
+    } else {
         if (!g_shell_parse_argv (command, &argc, &argv, NULL)) {
             result = false;
-        }
-        
-        for (int i = 0; i < argc; i++) {
-            char *arg;
-            if (strcmp (argv[i], "%s") != 0)
-                continue;
+        } else {       
+            for (int i = 0; i < argc; i++) {
+                char *arg;
+                if (strcmp (argv[i], "%s") != 0)
+                    continue;
 
-            arg = argv[i];
-            argv[i] = g_strdup (urlStr);
-            g_free (arg);
-        }
+                arg = argv[i];
+                argv[i] = g_strdup (urlStr);
+                g_free (arg);
+            }
 
-        result = g_spawn_async (NULL /* working directory */,
-                             argv,
-                             NULL,
-                             G_SPAWN_SEARCH_PATH /* flags */,
-                             NULL /* child_setup */,
-                             NULL /* data */,
-                             NULL /* child_pid */,
-                             NULL);
+            result = g_spawn_async (NULL,
+                                    argv,
+                                    NULL,
+                                    G_SPAWN_SEARCH_PATH,
+                                    NULL,
+                                    NULL,
+                                    NULL,
+                                    NULL);
+        }
     }
 
     env->ReleaseStringUTFChars(url, urlStr);
