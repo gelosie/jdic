@@ -126,7 +126,9 @@ public class ScreensaverContext {
      */
     public boolean isFullScreen() {
         Dimension fullSize = Toolkit.getDefaultToolkit().getScreenSize();
-        return component.getSize().equals(fullSize);
+        Dimension currentSize = component.getSize();
+        return (currentSize.width >= fullSize.width) && 
+            (currentSize.height >= fullSize.height);
     }
     
     /**
