@@ -52,6 +52,7 @@ class MsgClient {
     private int port;
     private InetSocketAddress serverAddr;
 
+    private String charsetName = null;
     private CharsetDecoder decoder;
     private CharsetEncoder encoder;
     private ByteBuffer buffer;
@@ -65,12 +66,18 @@ class MsgClient {
     private static Set msgPieces = new HashSet();    
 
     MsgClient() {
-        //Try to get the system default Charset by reading system property
-        //"file.encoding". For Tiger, there should be a better solution:
-        //Charset.defaultCharset();
-        Charset charset = Charset.forName(System.getProperty("file.encoding"));
-        decoder = charset.newDecoder();
+        // For IE on Windows, use the system default charset. With JDK 5.0, 
+        // there is a method Charset.defaultCharset().         
+        // Note: for Mozilla on Windows/*nix, use "UTF-8", as there is no 
+        // public/frozen APIs to use the system default charset, which must be
+        // the *same* charset used by the native code.
+        charsetName = WebBrowserUtil.isDefaultBrowserMozilla() ?
+            "UTF-8" : System.getProperty("file.encoding");
+        
+        Charset charset = Charset.forName(charsetName);
+        decoder = charset.newDecoder();        
         encoder = charset.newEncoder();
+
         buffer = ByteBuffer.allocateDirect(BUFFERSIZE);
         charBuffer = CharBuffer.allocate(BUFFERSIZE);
 
@@ -238,7 +245,8 @@ class MsgClient {
                 else if (key.isWritable()) {
                     if (sendBuffer.length() > 0) {
                         WebBrowser.trace("send data to socket: " + sendBuffer);
-                        ByteBuffer buf = ByteBuffer.wrap(sendBuffer.getBytes());
+                        ByteBuffer buf 
+                            = ByteBuffer.wrap(sendBuffer.getBytes(charsetName));
                         keyChannel.write(buf);
                         sendBuffer = "";
                     }

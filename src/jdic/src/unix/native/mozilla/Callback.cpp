@@ -486,7 +486,9 @@ void new_window_orphan_cb(GtkMozEmbedSingle *embed,
 void title_change_cb(GtkMozEmbed *embed, GtkBrowser *browser)
 {
     nsEmbedCString buf;
-    ConvertUtf16ToUtf8(gtk_moz_embed_get_title_unichar(embed), buf);
+    PRUnichar *unicode_title = gtk_moz_embed_get_title_unichar(embed);
+    nsEmbedString title(unicode_title);
+    ConvertUtf16ToUtf8(title, buf);
     SendSocketMessage(browser->id, CEVENT_TITLE_CHANGE, buf.get());
 }
 
@@ -494,7 +496,8 @@ void status_text_change_cb(GtkMozEmbed *embed, gpointer request,
 				gint status, gpointer message, GtkBrowser *browser)
 {
     nsEmbedCString buf;
-    ConvertUtf16ToUtf8((const PRUnichar *)message, buf);
+    nsEmbedString title((PRUnichar *)message);
+    ConvertUtf16ToUtf8(title, buf);
     SendSocketMessage(browser->id, CEVENT_STATUSTEXT_CHANGE, buf.get());
 }
 

@@ -312,28 +312,62 @@ ConvertAsciiToUtf16(const char *str, nsEmbedString &result)
     return PR_TRUE;
 }
 
-// helper function for converting host endian UTF-16 chars to ASCII chars
-char* 
-ConvertUtf16ToAscii(nsEmbedString &aSource)
+// helper function for converting UTF-8 chars to UTF-16 chars.
+PRBool
+ConvertUtf8ToUtf16(const nsEmbedCString &aSource, nsEmbedString &aDest)
+{
+    nsEmbedCString::const_iterator source_start, source_end;
+    CalculateUTF8Length calculator;
+    copy_string(aSource.BeginReading(source_start),
+                aSource.EndReading(source_end), calculator);
+    
+    PRUint32 count = calculator.Length();  
+    aDest.SetLength(count);
+
+    nsEmbedString::iterator dest;
+    aDest.BeginWriting(dest);
+    dest.advance(0);
+    
+    ConvertUTF8toUTF16 converter(dest.get());
+    copy_string(aSource.BeginReading(source_start),
+                aSource.EndReading(source_end), 
+                converter);
+
+    if (converter.Length() != count) {
+        aDest.SetLength(0);
+        return PR_FALSE;
+    }
+
+    return PR_TRUE;
+}
+
+// helper function for converting UTF-16 chars to UTF-8 chars.
+PRBool
+ConvertUtf16ToUtf8(const nsEmbedString &aSource, nsEmbedCString &aDest)
 {
     nsEmbedString::const_iterator source_start, source_end;
     CalculateUTF8Size calculator;
     copy_string(aSource.BeginReading(source_start),
                 aSource.EndReading(source_end), calculator);
-
-    char *result = NS_STATIC_CAST(char*,
-        nsMemory::Alloc(calculator.Size() + 1));
     
-    ConvertUTF16toUTF8 converter(result);
-    copy_string(aSource.BeginReading(source_start), 
-                aSource.EndReading(source_end),
-                converter).write_terminator();
-
-    if (calculator.Size() != converter.Size()) {
-        return NULL;
+    PRUint32 count = calculator.Size(); 
+    aDest.SetLength(count);
+    
+    nsEmbedCString::iterator dest;
+    aDest.BeginWriting(dest);
+    dest.advance(0);
+        
+    ConvertUTF16toUTF8 converter(dest.get());
+    copy_string(aSource.BeginReading(source_start),
+                aSource.EndReading(source_end), 
+                converter);
+    
+    if (converter.Size() != count) {
+        aDest.SetLength(0);
+        return PR_FALSE;
     }
-    
-    return result;
+
+    return PR_TRUE;
 }
 
 // helper function for getting xpcom services
@@ -380,10 +414,11 @@ SetContent(nsIWebNavigation *aWebNav, const char *htmlContent)
     nsCOMPtr<nsIDOMHTMLDocument> domHtmlDoc(do_QueryInterface(domDoc)); 
     domHtmlDoc->Open();
 
+    // The htmlContent must be encoded with "UTF-8" charset from the Java side.
     nsEmbedString unicodeContent;
-    ConvertAsciiToUtf16(htmlContent, unicodeContent);
+    ConvertUtf8ToUtf16(nsEmbedCString(htmlContent), unicodeContent);
     domHtmlDoc->Write(unicodeContent);
-
+    
     domHtmlDoc->Close();
 
     return NS_OK;
@@ -454,8 +489,12 @@ ExecuteScript(nsIWebNavigation *aWebNav, const char *jscript)
     if (attrValue.Length() ==0) 
         return NULL;
 
-    char* resultStr = ConvertUtf16ToAscii(attrValue);
+    nsEmbedCString utf8AttrValue;
+    ConvertUtf16ToUtf8(attrValue, utf8AttrValue);
 
+    // Return the result encoded with "UTF-8" charset, which must be decoded
+    // with the same charset in the Java side.
+    char* resultStr = strdup(utf8AttrValue.get());
     if (resultStr != NULL && 
         strncmp(resultStr, "undefined", strlen(resultStr)))
         return resultStr;
