@@ -205,6 +205,14 @@ public class Browser extends JPanel {
             public void downloadError(WebBrowserEvent event) {
                 updateStatusInfo("Loading error.");
             }
+
+            public void titleChange(WebBrowserEvent event) {
+                updateStatusInfo("Title of the browser window changed.");
+            }  
+
+            public void statusTextChange(WebBrowserEvent event) {
+                // updateStatusInfo("Status text changed.");
+            }  
         });
 
         jBrowserPanel.setLayout(new BorderLayout());
