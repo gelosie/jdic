@@ -36,15 +36,7 @@ Top-level target:
       <os name="linux"/>      
     </condition> 
 
-    <condition property="webstart.native.dir" value="jdic-linux-native">
-      <os name="linux"/>      
-    </condition> 
-
     <condition property="dist.dir" value="dist/solaris_sparc">
-      <os name="sunos" arch="sparc"/>      
-    </condition> 
-
-    <condition property="webstart.native.dir" value="jdic-solaris-native">
       <os name="sunos" arch="sparc"/>      
     </condition> 
 
@@ -52,15 +44,7 @@ Top-level target:
       <os name="sunos" arch="x86"/>      
     </condition> 
 
-    <condition property="webstart.native.dir" value="jdic-solaris-native">
-      <os name="sunos" arch="x86"/>      
-    </condition> 
-
     <condition property="dist.dir" value="dist/freebsd">
-      <os name="freebsd"/>      
-    </condition> 
-
-    <condition property="webstart.native.dir" value="jdic-freebsd-native">
       <os name="freebsd"/>      
     </condition> 
 
@@ -89,15 +73,15 @@ Top-level target:
          files are not retained using Ant Copy, add executable mode.
     -->
     <exec os="Linux" executable="chmod">
-      <arg line="+x ${dist.dir}/${webstart.native.dir}/mozembed-linux-gtk2" />   
+      <arg line="+x ${dist.dir}/mozembed-linux-gtk2" />   
     </exec>
 
     <exec os="SunOS" executable="chmod">
-      <arg line="+x ${dist.dir}/${webstart.native.dir}/mozembed-solaris-gtk2" />   
+      <arg line="+x ${dist.dir}/mozembed-solaris-gtk2" />   
     </exec>
 
     <exec os="FreeBSD" executable="chmod">
-      <arg line="+x ${dist.dir}/${webstart.native.dir}/mozembed-freebsd-gtk2" />   
+      <arg line="+x ${dist.dir}/mozembed-freebsd-gtk2" />   
     </exec>
 
     <!-- Copy JDIC API demo applications -->
