@@ -77,12 +77,11 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                 SwingUtilities.convertPointToScreen(p, (Component) e.getSource());
                 p.x = p.x + d.width > s.width ? p.x - d.width : p.x;
                 p.y = p.y + d.height > s.height ? p.y - d.height : p.y;
-                popupMenuParent.setLocation(p.x, p.y);
                 SwingUtilities.convertPointFromScreen(p, popupMenuParent);
                 popupMenuParent.setVisible(true);
                 SwingUtilities.invokeLater(new Runnable(){
                     public void run(){
-                        menu.show(popupMenuParent.getContentPane(), 0, 0);
+                        menu.show(popupMenuParent.getContentPane(), p.x, p.y);
                         popupMenuParent.toFront();
                     }
                 });
