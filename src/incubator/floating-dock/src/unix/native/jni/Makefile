@@ -86,45 +86,28 @@ EXTRA_BROWSER_LIBS = \
     -L$(JAVA_HOME)/jre/lib/i386 \
     -ljawt
 
-TRAY_LIBS = -L$(X11LIB) -lXt -lX11
+DOCK_LIBS = -L$(X11LIB) -lXt -lX11
 
 #
 # All the native source files.
 #
-CPPSRCS = GnomeBrowserService.cpp \
-           GnomeLaunchService.cpp \
-           GnomeUtility.cpp \
-           GnomeVfsWrapper.cpp \
-           WebBrowser.cpp \
-           WebBrowserUtil.cpp \
-           ../../../share/native/utils/InitUtility.cpp
-TRAY_CSRC = Tray.c
+DOCK_CSRC = Dock.c
           
 #
-# Build both libjdic.so and ibtray.so containing all the native code.
+# Build both libjdic.so and libfloatingdock.so containing all the native code.
 #
-JDIC_SO_NAME = libjdic.so
-TRAY_SO_NAME = libtray.so
+DOCK_SO_NAME = libfloatingdock.so
 
-all: clean $(JDIC_SO_NAME) $(TRAY_SO_NAME)
-
-JDIC_SO_OBJS = $(CPPSRCS:.cpp=.o)
-
-.cpp.o:
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $(EXTRA_INCLUDES) -o $@ $<
-
-$(JDIC_SO_NAME): $(JDIC_SO_OBJS)
-	$(CXX) $(LDFLAGS) $(LIBS) $(EXTRA_BROWSER_LIBS) $(JDIC_SO_OBJS) -o $@
+all: clean $(DOCK_SO_NAME)
 
 #
-# Build libtray.so containing only the Tray Icon API native code.
+# Build libfloatingdock.so containing only the Dock API native code.
 #
-tray: clean $(TRAY_SO_NAME)
+dock: clean $(DOCK_SO_NAME)
 
-$(TRAY_SO_NAME): $(TRAY_CSRC)
-	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -lXt -lX11 $(TRAY_CSRC) -o $@
+$(DOCK_SO_NAME): $(DOCK_CSRC)
+	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -lXt -lX11 $(DOCK_CSRC) -o $@
 
 clean:
 	rm -f *.so
 	rm -f *.o
-	rm -f ../../../share/native/utils/*.o
