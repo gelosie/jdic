@@ -58,6 +58,8 @@ USA
     <copy todir="${dist}">
       <fileset dir="${basedir}/../..">
         <include name="COPYING" />
+      </fileset>
+      <fileset dir="${basedir}">
         <include name="README.txt" />
       </fileset>
     </copy>
