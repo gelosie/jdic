@@ -21,455 +21,208 @@
 package org.jdesktop.jdic.init;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import org.jdesktop.jdic.browser.WebBrowserUtil;
+import java.lang.reflect.Field;
 
 
 /**
- *  Initialization manager for JDIC. The application can register which
- *  components it needs with this singleton management object, alter the
- *  defaults if needed, and then call init() to initialize JDIC. <br />
- *  <br />
- *  Platforms and Packages are described by subclasses of the Platform and
- *  Package class, allowing for dynamic extension to support new subsystems or
- *  even non-JDIC components that might require native libraries<br />
- *  <br />
- *  There are 3 modes of operation - WebStart, file system, and JARed.<br />
- *  <br />
- *  When using webstart, please specify a Jar with the native libraries for your
- *  platform to be loaded by webstart in your JNPL. This class will find the unjared native
- *  libraries and use them directly, saving any extra copies. The native Jars
- *  must match the JAR names specified in the Platform subclasses.<br />
- *  <br />
- *  If not in webstart, the system will expect the native libraries to be
- *  located in subdirectories at the root of the classpath or jar containing
- *  this class. The names of the subdirectories must match the names in the
- *  Platform subclasses. If the classpath is a file: URL, then they will be used
- *  directly off the file path. Otherwise they will be copied to a temp
- *  directory and used from there. Note that some of the files may not be
- *  deleted automatically because the files are still in use while Java is
- *  shutting down<br />
- *  <br />
- *  Settings can be altered via the access methods before calling init, allowing
- *  you to alter most of the behavior. The most likely useful scenario would be
- *  to alter the temp directory being used.<br />
- *
+ * Initialization manager for JDIC to set the environment variables or initialize the set up
+ * for native libraries and executable files.
+ * <p>
+ * There are 3 modes of operation: WebStart, file system, and .jar file.
+ * <p>
+ * When using WebStart, please specify a .jar file(jdic-native.jar) with the native libraries 
+ * for your platform to be loaded by WebStart in your JNPL. This class will find the 
+ * unjared native libraries and executables, and use them directly.
+ * <p>
+ * If not in WebStart, the system will expect the native libraries to be located in 
+ * directory at the root of the classpath or .jar containing this class. 
+ * 
  * @author     Michael Samblanet
+ *             Paul Huang
+ *             George Zhang
  * @created    July 29, 2004
- * @todo       Add a new mode to allow non-webstart apps to copy the files from
- *      individual jars instead of from the main jar
  */
 public class JdicManager {
-	/**  Singleton instance of this class */
-	private static JdicManager sSingleton = null;
-	/**  The local directory containing the native files */
-	private File mBinaryDir;
-	/**  If TRUE, files will be copied from mSourceUrl to mBinaryDir on init */
-	private boolean mCopyFiles = false;
-	/**  If TRUE, copied files will be set to deleteOnExit */
-	private boolean mDeleteFiles = false;
-	/**  TRUE once the system has initialized */
-	private boolean mIsInitialized = false;
-	/**  A list describing the packages desired. Packages are added in order. */
-	private List mPackages = new ArrayList(5);
-	/**  The current system platform */
-	private Platform mPlatform = Platform.getPlatform();
-	/**  The URL to copy native files from */
-	private URL mSourceUrl;
+    private boolean isShareNativeInitialized = false;
+    private boolean isBrowserNativeInitialized = false;    
 
+    /** If the current platform is Windows */
+    boolean isWindows = 
+        (System.getProperty("os.name").indexOf("Windows") >= 0) ? 
+        true : false;
+    
+    /** The environment variable for library path setting */
+    String libPathEnv = isWindows ? "PATH" : "LD_LIBRARY_PATH";
+    
+    /** The path for the native files */ 
+    String binaryPath = null;
 
-	/**
-     * Private constructor to prevent public construction
-     * 
-     * @exception JdicInitException Description of the Exception
+    /**  Singleton instance of this class */
+    private static JdicManager sSingleton = null;
+
+    /**
+     * Private constructor to prevent public construction.
      */
-    private JdicManager() throws JdicInitException {
-        determineDefaultDirs();
-
-        for (int i = 0; i < Package.MANDATORY_PACKAGES.length; i++) {
-            addPackage(Package.MANDATORY_PACKAGES[i]);
-        }
+    private JdicManager() {
     }
 
     /**
-     * @return Singleton instance of the JDIC Manager
-     * @exception JdicInitException Generic Initialization exception
+     * Returns a singleton instance of <code>JdicManager</code>.
      */
-    public static synchronized JdicManager getManager()
-            throws JdicInitException {
+    public static synchronized JdicManager getManager() {
         if (sSingleton == null) {
             sSingleton = new JdicManager();
-            sSingleton.init();
-            //Initialize all the core packages.
-            sSingleton.initPackages();
         }
         return sSingleton;
     }
 
     /**
-     * Copies a file from a URL to a directory
+     * Initializes the shared native file settings for all the JDIC components/packages.
+     * Set necessary environment variables for the shared native library and executable
+     * files, including *.dll files on Windows, and *.so files on Unix.
      * 
-     * @param src Source File URL
-     * @param destDir Destination Directory (file name will be unchanged)
-     * @return File reference for the destination file
-     * @exception IOException Generic IOException from copy
+     * @exception JdicInitException Generic initialization exception
      */
-    private static File copyFileURL(URL src, File destDir) throws IOException {
-        String filename = src.getFile();
-        int lastSlash = filename.lastIndexOf('/');
-        if (lastSlash != -1) {
-            filename = filename.substring(lastSlash);
+    public void initShareNative() throws JdicInitException {
+        // If the shared native file setting was already initialized, just return.
+        if (isShareNativeInitialized) {
+            return;
         }
 
-        File newFile = new File(destDir, filename);
-
-        InputStream in = null;
-        OutputStream out = null;
         try {
-            in = src.openStream();
-            out = new FileOutputStream(newFile);
-            byte buf[] = new byte[4096];
-            int n = 0;
-            while ((n = in.read(buf, 0, buf.length)) > 0) {
-                out.write(buf, 0, n);
+            String thisClassFileName = 
+                this.getClass().getName().replaceAll("\\.", "/") + ".class";
+            String relativePathToJarPath = 
+                thisClassFileName.replaceAll("[^/]+", "..").substring(3);
+            URL thisClassUrl = 
+                this.getClass().getClassLoader().getResource(thisClassFileName);           
+            if (thisClassUrl == null) {
+                throw new JdicInitException("Unable to locate "
+                    + thisClassFileName + " in ClassLoader");
             }
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
+    
+            // Find the root path of this class.
+            URL classpathRootUrl = new URL(thisClassUrl, relativePathToJarPath);
+    
+            // Check the binary path including the JDIC native libraries (*.so, *.dll) and 
+            // executables (*.exe, mozembed-*):
+            // - If running from the file system, the binary path is set to the root path 
+            //   of this class.
+            // - If running under Webstart, it's set to <path of the jar file including the 
+            //   .class files>/RNjdic-native.jar/
+            // - If running from a .jar file. it's set to the parent path of the .jar file.  
+            if ("file".equals(classpathRootUrl.getProtocol())) {
+                // We are running from the file system.
+                binaryPath = (new File(classpathRootUrl.getFile())).toString();
+            } else {
+                URL cpParent = new URL(classpathRootUrl, "..");
+                cpParent = new URL(new URL(cpParent.toString().substring(4)), "./");
+                                     
+                if (System.getProperty("javawebstart.version") != null) {
+                    //  We are running under WebStart.
+                    //  NOTE: for a WebStart application, the jar file including the native 
+                    //        libraries/executables must use the name "jdic-native.jar". 
+                    String cacheDirName = "RN" + "jdic-native.jar" + "/";
+                    File cacheDirFile = 
+                        new File((new URL(cpParent, cacheDirName)).getFile());
+                    binaryPath = cacheDirFile.toString();
+                } else if ("jar".equals(classpathRootUrl.getProtocol())) {
+                    // We are running from a .jar file.
+                    // The jar URL will look like this:
+                    //   jar:file:/C:/code/jury/jury.jar!
+                    // Strip it down and get rid of the JAR.
+                    binaryPath = (new File(cpParent.getFile())).toString();
                 }
-            } catch (IOException e) {
-            }
-            try {
-                if (out != null) {
-                    out.close();
+            }                                                       
+   
+            if (isWindows) {
+                // Decodes to the string to replace "%20" with spaces on Windows.
+                // The space in the path string use character "%20".
+                try {   
+                    binaryPath = java.net.URLDecoder.decode(binaryPath, "UTF-8");
+                } catch (java.io.UnsupportedEncodingException e) {
                 }
-            } catch (IOException e) {
             }
+    
+            // Add the binary path (including jdic.dll or libjdic.so) to "java.library.path", 
+            // since we need to use the native methods in class InitUtility.
+            String newLibPath = binaryPath + File.pathSeparator +
+                                System.getProperty("java.library.path"); 
+            System.setProperty("java.library.path", newLibPath);
+            Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
+            fieldSysPath.setAccessible(true);
+            if (fieldSysPath != null) {
+                fieldSysPath.set(System.class.getClassLoader(), null);
+            }
+    
+            // Pre-append the binary path to PATH(on Windows) or LD_LIBRARY_PATH 
+            // (on Unix).                     
+            InitUtility.appendEnv(libPathEnv, binaryPath); 
+        } catch (Throwable e) {
+            throw new JdicInitException(e);
         }
-        return newFile;
+        
+        isShareNativeInitialized = true;
     }
 
     /**
-     * @return The local directory containing all the native files
-     */
-    public File getBinaryDir() {
-        return mBinaryDir;
-    }
-
-    /**
-     * @return true if the files are to be copied
-     */
-    public boolean getCopyFiles() {
-        return mCopyFiles;
-    }
-
-    /**
-     * @return The local directory containing all the native files
-     */
-    public boolean getDeleteFiles() {
-        return mDeleteFiles;
-    }
-
-    /**
-     * @return List of the current packages - CAREFUL - this list is not a copy
-     *         so mutations would impact the manager
-     */
-    public List getPackages() {
-        return mPackages;
-    }
-
-    /**
-     * @return The current platform
-     */
-    public Platform getPlatform() {
-        return mPlatform;
-    }
-
-    /**
-     * @return The source URL used for copying files
-     */
-    public URL getSourceUrl() {
-        return mSourceUrl;
-    }
-
-    /**
-     * Overrides the directory to contain the native files
+     * Initializes the native file settings for the JDIC Browser component (package
+     * <code>org.jdecktop.jdic.browser</code>). Set necessary environment variables 
+     * for the Browser specific native library and executable files, including *.exe files on
+     * Windows, and mozembed-<os>-gtk* files on Unix.
      * 
-     * @param dir The new binaryDir value
+     * @exception JdicInitException Generic initialization exception
      */
-    public void setBinaryDir(File dir) {
-        if (mIsInitialized) {
-            throw new IllegalStateException(
-                    "Cannot alter JdicManager after initializing");
+    public void initBrowserNative() throws JdicInitException {
+        // The Browser component is used.
+        // If the Browser specific native file setting was already initialized, just return.
+        if (isBrowserNativeInitialized) {
+            return;
         }
-        mBinaryDir = dir;
-    }
 
-    /**
-     * Override the copy files flag
-     * 
-     * @param copy
-     *            If true, files will be copied from SourceUrl to BinaryDir
-     */
-    public void setCopyFiles(boolean copy) {
-        if (mIsInitialized) {
-            throw new IllegalStateException(
-                    "Cannot alter JdicManager after initializing");
-        }
-        mCopyFiles = copy;
-    }
-
-    /**
-     * Override the delete files flag
-     * 
-     * @param b If true, delete copied files on exit
-     */
-    public void setDeleteFiles(boolean b) {
-        if (mIsInitialized) {
-            throw new IllegalStateException(
-                    "Cannot alter JdicManager after initializing");
-        }
-        mDeleteFiles = b;
-    }
-
-    /**
-     * Override the detected platform
-     * 
-     * @param p  New platform value
-     */
-    public void setPlatform(Platform p) {
-        if (mIsInitialized) {
-            throw new IllegalStateException(
-                    "Cannot alter JdicManager after initializing");
-        }
-        mPlatform = p;
-    }
-
-    /**
-     * Override the source URL
-     * 
-     * @param s The source URL to use for copying native files
-     */
-    public void setSourceUrl(URL s) {
-        if (mIsInitialized) {
-            throw new IllegalStateException(
-                    "Cannot alter JdicManager after initializing");
-        }
-        mSourceUrl = s;
-    }
-
-    /**
-     * Adds a package to the initialization list
-     * 
-     * @param p The feature to be added to the Package attribute
-     */
-    public void addPackage(Package p) {
-        if (!mPackages.contains(p)) {
-            // Ensure only one instance of each
-            mPackages.add(p);
-        }
-    }
-
-    /**
-     * Removes a package from the initialization list
-     * 
-     * @param p The feature to be removeded from the Package attribute
-     */
-    public void removePackage(Package p) {
-        if (mPackages.contains(p)) {
-            // Ensure only one instance of each
-            mPackages.remove(p);
-        }
-    }
-
-    /**
-     * Determines the class path and then builds the source and dest paths if
-     * they have not been calculated already
-     * 
-     * @exception JdicInitException
-     *                Generic initialization exception
-     */
-    private void determineDefaultDirs() throws JdicInitException {
         try {
-            // Need to know the platform to do anyting...
-            if (mPlatform == null)
-                return;
-
-            if (mSourceUrl == null || mBinaryDir == null) {
-                // OK - find where we are...
-                String thisClassFileName = this.getClass().getName()
-                        .replaceAll("\\.", "/")
-                        + ".class";
-                String relativePathToRootParent = thisClassFileName.replaceAll(
-                        "[^/]+", "..").substring(3);
-                URL thisClassUrl = this.getClass().getClassLoader()
-                        .getResource(thisClassFileName);
-                if (thisClassUrl == null) {
-                    throw new JdicInitException("Unable to locate "
-                            + thisClassFileName + " in classloader");
-                }
-
-                // Now find the root of the class directories
-                URL classpathRootUrl = new URL(thisClassUrl,
-                        relativePathToRootParent);
-                if (mSourceUrl == null) {
-                    mSourceUrl = new URL(classpathRootUrl, mPlatform
-                            .getDirName()
-                            + "/");
-                }
-
-                if (mBinaryDir == null) {
-                    if (System.getProperty("javawebstart.version") != null) {
-                        // We are webstart....find the cached native files...
-                        mCopyFiles = false;
-                        mDeleteFiles = false;
-
-                        // OK - Find the dir containing our Jar
-                        // Once we find it, the native files should be in a dir
-                        // named "RN"+jarName
-
-                        URL cpParent = new URL(classpathRootUrl, ".."); 
-                        // Try .. in case we are not in a jar...
-                        if ("jar".equals(cpParent.getProtocol())) {
-                            // At this point the jar URL will look like this:
-                            // jar:file:/C:/code/jury/jury.jar!
-                            // Strip it down and get rid of the JAR...
-                            cpParent = new URL(new URL(cpParent.toString()
-                                    .substring(4)), "./");
-                        }
-                        String cacheDirName = "RN" + mPlatform.getJarName()
-                                + "/";
-                        mBinaryDir = new File(new URI(new URL(cpParent,
-                                cacheDirName).toString()));
-                    } else if ("file".equals(classpathRootUrl.getProtocol())) {
-                        // We are running from the file system...just use the 
-                        // file system
-                        mCopyFiles = false;
-                        mDeleteFiles = false;
-                        mBinaryDir = new File(new URI(new URL(classpathRootUrl,
-                                mPlatform.getDirName()).toString()));
+            // Check and set MOZILLA_FIVE_HOME, add it to PATH(on Windows) or 
+            // LD_LIBRARY_PATH (on Unix). 
+            String browserPath = WebBrowserUtil.getBrowserPath();
+            if (browserPath == null) {
+                throw new JdicInitException("Can't locate the native browser path!");
+            }
+        
+            if (WebBrowserUtil.isDefaultBrowserMozilla()) {
+                if (!isWindows) {
+                    // On Unix, add the binary path to PATH.
+                    InitUtility.appendEnv("PATH", binaryPath);
+                }               
+                    
+                String envMFH = InitUtility.getEnv("MOZILLA_FIVE_HOME");
+                if (envMFH == null) {
+                    // If MOZILLA_FIVE_HOME not set, set it and add it to PATH
+                    // (on Windows) or LD_LIBRARY_PATH(on Unix). 
+                    File browserFile = new File(browserPath);
+                    if (browserFile.isDirectory()) {
+                        envMFH = browserFile.getCanonicalPath();
                     } else {
-                        // Not a file system - need to copy the files...
-                        mCopyFiles = true;
-                        mDeleteFiles = true;
-                        /**
-                         * @todo    Perhaps an option to copy from individual 
-                         *          Jars instead of just the main jar?
-                         */
-                        // Place files in the temp dir...
-                        File tmpFile = File.createTempFile("jdic", ".tmp");
-                        mBinaryDir = new File(tmpFile.getParent()
-                                + File.separator + tmpFile.getName());
-                        tmpFile.delete();
+                        envMFH = browserFile.getCanonicalFile().getParent();
                     }
+                        
+                    InitUtility.appendEnv("MOZILLA_FIVE_HOME", envMFH);
+                    InitUtility.appendEnv(libPathEnv, envMFH);
+                }
+                
+                // For Mozilla 1.4 on Windows, copy MozEmbed.exe to MOZILLA_FIVE_HOME.
+                if (isWindows) {
+                    String sourceFileName = binaryPath + File.separator + "MozEmbed.exe";
+                    String destFileName = envMFH + File.separator + "MozEmbed.exe";
+    
+                    InitUtility.copyFile(sourceFileName, destFileName);    
                 }
             }
         } catch (Throwable e) {
             throw new JdicInitException(e);
         }
-    }
-
-    /**
-     *  Initialzes the binary dirs.
-     *
-     * @exception  JdicInitException  Generic JDIC exception
-     */
-    private void init() throws JdicInitException {
-        if (mIsInitialized) {
-            throw new IllegalStateException("Cannot re-init JdicManager");
-        }
-        mIsInitialized = true;
-        // If this fails, do not allow a reattempt
-
-        if (mPlatform == null) {
-            throw new JdicInitException("Unable to determine platform - "
-                    + System.getProperty("os.name"));
-        }
-
-        // Just recheck the defaults - if the platform was not detected then
-        // they may not have initialized...
-        determineDefaultDirs();
-
-        if (mCopyFiles) {
-            // Ensure the target directory exists
-            mBinaryDir.mkdirs();
-            if (mDeleteFiles) {
-                mBinaryDir.deleteOnExit();
-            }
-        }
-    }
-
-    /**
-     *  Iterates each packages and works on uninitialized one.
-     *
-     * @exception  JdicInitException  Generic JDIC exception
-     */
-    public void initPackages() throws JdicInitException {
-        Iterator pkgItr = mPackages.iterator();
-        while (pkgItr.hasNext()) {
-            Package p = (Package) pkgItr.next();
-            //Try to work on the uninitialized pacakges
-            if (!p.getIsInitialized()) {
-                String[] files = p.getFiles(mPlatform);
-
-                if (files == null) {
-                    throw new JdicInitException("Package " + p.getName()
-                            + " not supported on platform "
-                            + mPlatform.getName());
-                }
-
-                p.preCopy();
-
-                if (mCopyFiles) {
-                    // OK - now copy the files...
-                    for (int i = 0; i < files.length; i++) {
-                        try {
-                            URL src = new URL(mSourceUrl, files[i]);
-                            File dest = copyFileURL(src, mBinaryDir);
-                            if (mDeleteFiles) {
-                                dest.deleteOnExit();
-                                // NOTE: The deleteOnExit will fail on core
-                                // libraries because the lib will be locked by
-                                // the java process when the deleteOnExit occurs
-                                /**
-                                 * @todo Based on some quick net research, this
-                                 *       can be worked around by loading all the
-                                 *       launcher code into a new classloader
-                                 *       and forcing the CL to GC before
-                                 *       exit...unloading the class loader for
-                                 *       the class that did the load >SHOULD <
-                                 *       unload the library based on a net
-                                 *       search - however a lot of work for a
-                                 *       single dangling file...
-                                 */
-                            }
-                        } catch (Throwable e) {
-                            throw new JdicInitException(e);
-                        }
-                    }
-                }
-
-                // Verify all the files exist as a sanity check...
-                for (int i = 0; i < files.length; i++) {
-                    File f = new File(mBinaryDir, files[i]);
-                    if (!f.exists()) {
-                        throw new JdicInitException("Unable to locate file "
-                                + f);
-                    }
-                }
-
-                p.postCopy();
-                p.setIsInitialized(true);
-            }
-        }
+        
+        isBrowserNativeInitialized = true;
     }
 }

@@ -31,43 +31,43 @@ import java.io.IOException;
  * @created August 20, 2004
  */
 public class InitUtility {
-	static {
-		System.loadLibrary("jdic");
-	}
-	
-	/**
-	 * Gets the value of the environment variable.
-	 *
-	 * @param envVarName The name of the environment variable.
-	 * @return The value of the environment variable.
-	 */
-	public static native String getEnv(String envVarName);
-	
-	/**
-	 * Sets the environment variable. 
-	 *
-	 * @param ennVarName The name of the environment variable.
-	 * @param envValue The value to be set.
-	 */
-	public static native void setEnv(String envVarName, String envValue);
+    static {
+        System.loadLibrary("jdic");
+    }
     
     /**
-     * Append the value to the environment variable.
+     * Gets the value of the environment variable.
+     *
+     * @param envVarName The name of the environment variable.
+     * @return The value of the environment variable.
+     */
+    public static native String getEnv(String envVarName);
+    
+    /**
+     * Sets the environment variable. 
+     *
+     * @param ennVarName The name of the environment variable.
+     * @param envValue The value to be set.
+     */
+    public static native void setEnv(String envVarName, String envValue);
+    
+    /**
+     * Appends the value to the environment variable.
      *
      * @param envVarName environment variable name.
      * @param appendValue new value to be appended.
      */
-	public static void appendEnv(String envVarName, String appendValue) {
+    public static void appendEnv(String envVarName, String appendValue) {
         String originalValue = getEnv(envVarName);
         String newValue = appendValue;
         if (originalValue != null) {
             newValue = appendValue.concat(File.pathSeparator).concat(originalValue);
         }
         setEnv(envVarName, newValue);
-	}
+    }
     
     /**
-     * Evaluate is the given file is readable.
+     * Evaluates if the given file is readable.
      * @param filePath The given file path.
      * @return true If file is not a directory and is readable.
      */
@@ -82,7 +82,7 @@ public class InitUtility {
     
     
     /**
-     * Copy the file from source file to the destination file.
+     * Copies a source file to a destination file.
      * @param sourceFileName The given source file name.
      * @param destFileName The given destination file name.
      * @throws IOException If the copy failed.

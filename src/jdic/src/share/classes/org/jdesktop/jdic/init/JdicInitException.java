@@ -28,19 +28,14 @@ package org.jdesktop.jdic.init;
  * @created    August 2, 2004
  */
 public class JdicInitException extends Exception {
-	public JdicInitException() { }
+    public JdicInitException() { }
 
-	public JdicInitException(String desc) {
-		super(desc);
-	}
+    public JdicInitException(String desc) {
+        super(desc);
+    }
 
-	public JdicInitException(String desc, Throwable t) {
-		super(desc, t);
-	}
-
-	public JdicInitException(Throwable t) {
-		super(t);
-	}
-
+    public JdicInitException(Throwable t) {
+        super(t);
+    }
 }
 
