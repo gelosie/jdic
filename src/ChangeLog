@@ -10,6 +10,7 @@
       161 P3   Add a method documentCompleted on the WebBrowserListener
       177 P3   Balloon Messages / Notification Window
       185 P3   Tray icon is lost when taskbar is restarted.
+      191 P3   JDIC Browser doesn't work with Mozilla using gtk1.2 on Solar
       192 P3   Add version info to the JDIC release binaries on Windows.
       194 P3   Browser DOM support lacks unicode support
       195 P3   Add property to build.xml to support debug compiling
