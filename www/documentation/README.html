@@ -63,7 +63,8 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
 </noscript>
 <!-- etracker CODE END -->
 <h2 align="center">README<br>
-JDesktop Integration Components (JDIC)</h2>
+JDesktop Integration Components (JDIC)<br>
+Release 0.8.6</h2>
 <h2><b>Contents</b></h2>
 <ul>
   <li><a href="#Introduction">Introduction</a></li>
@@ -94,6 +95,11 @@ to enable the embedding of the desktop's web browsing component into
 Java applications and applets. The APIs support URL navigation, a basic
 history mechanism and progress notification.&nbsp;</li>
   </ul>
+  <blockquote>
+    <p><code>org.jdesktop.jdic.tray</code>: APIs to to create tray icons on the
+    desktop (in the System Tray Area for Windows platforms, and in the Notification
+    Area for Unix platforms). A tray icon can have a caption (text), an icon, and a menu associated with it. It can also have a tool tip that is displayed when the mouse hovers over the tray icon. To get animation in the notification tray, use an animated GIF for the icon. Tray menus are Swing menus, which enables them to contain icons (unlike Windows and Gnome tray menus) and have either a cross-platform look and feel or the system look and feel.</p>
+  </blockquote>
   <ul>
     <li><b> JDIC Packager</b> is a tool for putting JNLP applications
 into installable packages of the standard Windows, Linux, and Solaris
@@ -108,7 +114,8 @@ formats &#8212; MSI, RPM and PKG, respectively.</li>
       <ul>
         <li>WinME/NT/2000/XP/2003, Sun Java Desktop System (JDS)
 Release 1 or later, SuSE Linux 7.1 or later, RedHat Linux 8 or later,
-Solaris 8 or later.</li>
+Solaris 8 or later (package <code>org.jdesktop.jdic.tray requires </code>Solaris JDS
+          3).</li>
       </ul>
     </li>
     <li> Additional software
@@ -157,10 +164,21 @@ or built JDIC binaries, following below installation instructions:
     <li>Add <code>jdic.jar</code> to CLASSPATH. </li>
     <li>Add the directory of native libraries (*.dll or *.so) to PATH
 (on Windows) or LD_LIBRARY_PATH (on Linux/Solaris). </li>
-    <li>On Windows, set the environment variable <code>JAVA_HOME</code>
-to the J2SDK/J2RE installation path to use package <code><b>org.jdesktop.jdic.browse</b></code>.
+    <li>Additional setting
+to use package <code><b>org.jdesktop.jdic.tray:</b></code>
+      <ul>
+        <li>Set the environment variable <code>JAVA_HOME</code>
+to the J2SDK/J2RE installation path.</li>
+      </ul>
     </li>
-    <li><b>Note</b>: for JDIC before version 0.8.5, additional settings
+    <li><b>Note</b>: for JDIC release 0.8.5, additional setting
+to use package <code><b>org.jdesktop.jdic.browser:</b></code>
+      <ul>
+        <li>On Windows, set the environment variable <code>JAVA_HOME</code>
+to the J2SDK/J2RE installation path.</li>
+      </ul>
+    </li>
+    <li><b>Note</b>: for JDIC release 0.8.4.*, additional settings
 to use package <code><b>org.jdesktop.jdic.browser:</b></code>
       <ul>
         <li><b>Windows</b><br>
@@ -281,7 +299,14 @@ to <a href="http://www.mozilla.org/">http://www.mozilla.org/</a>, and <a
  href="http://www.mozilla.org/build/">http://www.mozilla.org/build/</a>
 for where to download and how to build it.&nbsp;Setup the environment
 variable <code> <b> MOZILLA_SRC_HOME</b></code> to the top directory
-of Mozilla source code. </li>
+of Mozilla source code. This step is required to build the native code for
+        package <code>org.jdesktop.jdic.browser.</code> </li>
+    </ul>
+    <ul>
+      <li><b>Note: </b>If only build the tray icon API (package <code>org.jdesktop.jdic.tray</code>)
+        code, go to <code>&lt;JDIC source directory&gt;/jdic/</code>,&nbsp; run
+        &quot;<code>ant buildtray</code>&quot; with Jakarta Ant and J2SDK v1.4.2 or later
+        installed.</li>
     </ul>
   </blockquote>
   <ul>
@@ -329,7 +354,7 @@ Reports and Feedback</a> - report bugs or send feedback.<br>
   <a href="faq.html">FAQ</a> - get answers to frequently asked
 questions.<br>
   <a href="../developer.html">Developer's Page</a> - information for developers
-  on how to contribute to JDIC.</p>
+  on how to contribute to JDIC and release notes.</p>
 </blockquote>
 </body>
 </html>
