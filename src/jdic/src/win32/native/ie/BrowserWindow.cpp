@@ -77,9 +77,13 @@ void __stdcall BrowserWindow::OnBeforeNavigate(IDispatch *pDisp,VARIANT *URL,
     VARIANT *Flags,VARIANT *TargetFrameName,VARIANT *PostData,VARIANT *Headers,
     VARIANT_BOOL *Cancel)
 {
+    char url[1024];
+    int len = wcslen(URL->bstrVal);
+    WideCharToMultiByte(CP_ACP, 0, URL->bstrVal, -1, url, len*2, NULL, NULL);
+
     int bCmdCanceled = -1, waitCount = 0;
     AddTrigger(m_InstanceID, CEVENT_BEFORE_NAVIGATE, &bCmdCanceled); 
-    SendSocketMessage(m_InstanceID, CEVENT_BEFORE_NAVIGATE);
+    SendSocketMessage(m_InstanceID, CEVENT_BEFORE_NAVIGATE, url);
 
     while (bCmdCanceled < 0 && waitCount++ < MAX_WAIT) {
         Sleep(1);

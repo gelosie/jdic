@@ -129,7 +129,7 @@ public class WebBrowser extends Canvas
             String windowspath = nativePath;
             int index = windowspath.indexOf("mozilla.exe");
             if (index >= 0)
-                browserBinary = windowspath.substring(0, index) + binary_windows_mozilla;
+                browserBinary = binary_windows_mozilla;
             else 
                 browserBinary = binary_windows_ie;
         }
@@ -400,12 +400,13 @@ public class WebBrowser extends Canvas
      *         otherwise <code>true</code>.
      */
     protected boolean willOpenURL(URL url) {
+        WebBrowser.trace("URL = " + url.toString());
         SecurityManager security = System.getSecurityManager();
 	    if (security != null) {
 	        try {
 	            security.checkConnect(url.getHost(), url.getPort());
 	        }
-	        catch (Exception e){
+	        catch (AccessControlException e){
 	            return false;
 	        }	
 	    }

@@ -292,7 +292,8 @@ BOOL CBrowserView::PreCreateWindow(CREATESTRUCT& cs)
 //
 void CBrowserView::OnSize( UINT nType, int cx, int cy)
 {
-    mBaseWindow->SetPositionAndSize(0, 0, cx, cy, PR_TRUE);
+    if (mBaseWindow)
+        mBaseWindow->SetPositionAndSize(0, 0, cx, cy, PR_TRUE);
 }
 
 // Called by this object's creator i.e. the CBrowserFrame object

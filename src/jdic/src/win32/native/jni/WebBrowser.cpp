@@ -91,30 +91,42 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetBro
         return env->NewStringUTF(value);
     }
 
-    // get the default http protocal handler
+    // get the default http protocol handler
     if (RegOpenKey(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", &hkey) != ERROR_SUCCESS)
         return 0;
     
-    cb = 256;
+    cb = sizeof(value);
     if (RegQueryValueEx(hkey, "", 0, &type, (LPBYTE)value, &cb) != ERROR_SUCCESS)
         return 0;
     
     RegCloseKey(hkey);
    
-    // eliminate the arguments
-    p = strstr(strlwr(value), ".exe");
-    if (!p)
-        return 0;
-    p[4] = 0;
+    p = strstr(strlwr(value), "mozilla.exe");
+    if (p) {
+        char szName[256];
+        cb = sizeof(szName);
+        if (RegOpenKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\mozilla.org\\GRE", &hkey) == ERROR_SUCCESS) {
+            if (RegEnumKeyEx(hkey, 0, szName, &cb, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
+                if (RegOpenKey(hkey, szName, &hkey) == ERROR_SUCCESS) {
+                    cb = sizeof(value);
+                    if (RegQueryValueEx(hkey, "GreHome", 0, &type, (LPBYTE)value, &cb) == ERROR_SUCCESS) {
+                        char szEnv[1000];
+                        sprintf(szEnv, "GRE_HOME=%s", value);
+                        _putenv(szEnv);
+                        sprintf(szEnv, "PATH=%s;%s", getenv("PATH"), value);
+                        _putenv(szEnv);
+                    }
+                }
+            }
+        }
+        strcpy(value, "mozilla.exe");
+    }
+    else {
+        _putenv("JAVA_PLUGIN_WEBCONTROL_ENABLE=1");
+        strcpy(value, "iexplore.exe");
+    }
 
-    // eliminate the "
-    p = strchr(value, '\"');
-    if (!p)
-        p = value;
-    else
-        p++;
-
-    return env->NewStringUTF(p);
+    return env->NewStringUTF(value);
 }
 
 /*
