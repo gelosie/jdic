@@ -39,8 +39,6 @@ import org.jdesktop.jdic.dock.FloatingDock;
 public class UnixDockService implements DockService {
 
     EmbeddedFrame frame;
-    Dimension size;
-    boolean visible = false;
     int location = FloatingDock.LEFT;
     static long window_id;
     static UnixDockService uds;
@@ -80,7 +78,6 @@ public class UnixDockService implements DockService {
     public UnixDockService()
     {
 	uds = this;
-	size = new Dimension(0, 0);
 	init();
     }
 
@@ -190,34 +187,30 @@ public class UnixDockService implements DockService {
         return ef;
     }
 
-
     public void setVisible(boolean b)
     {
-	visible = b;
-	mapWindow(window_id, b);	
 	frame.setVisible(b);
+	mapWindow(window_id, b);
     }
 
     public boolean getVisible()
     {
-	return visible;
+	return frame.isVisible();
     }
 
     long getWindow() {
         return window_id;
     }
 
-    public void setSize(Dimension s)
+    public void setSize(Dimension d)
     {
-	size = s;
-	adjustSizeAndLocation(getWindow(), size.width, size.height, location);
-        frame.setSize(size.width, size.height);
-	frame.validate();
+	adjustSizeAndLocation(getWindow(), d.width, d.height, location);
+        frame.setSize(d.width, d.height);
+        frame.validate();
     }
 
     void configureWindow(int x, int y, int w, int h) 
     {
-	size = new Dimension(w, h);
         frame.setSize(w, h);
         frame.validate();
      //   System.out.println("configureWindow: frame = " + frame + " configure width = " + width + " height = " + height);
@@ -226,30 +219,37 @@ public class UnixDockService implements DockService {
     static void configureNotify(long window, int x, int y, int w, int h) 
     {
         //  System.out.println("configureNotify: window =" + window );
-	if (window == window_id)
-	{
+	if (window == window_id) {
             uds.configureWindow(x, y, w, h);
         }
     }
 
     public Dimension getSize()
     {
-	return size;
+	return frame.getSize();
     }
 
     public void add(Component c)
     {
 	frame.add(c);
+	frame.pack();
+	Dimension d = frame.getSize();
+	adjustSizeAndLocation(getWindow(), d.width, d.height, location);
     }
 
     public void remove(Component c)
     {
 	frame.remove(c);
+	Dimension d = frame.getSize();
+        adjustSizeAndLocation(getWindow(), d.width, d.height, location);
     }
 
     public void setLayout(LayoutManager l)
     {
 	frame.setLayout(l);
+	frame.validate();
+	Dimension d = frame.getSize();
+        adjustSizeAndLocation(getWindow(), d.width, d.height, location);
     }
 
     public LayoutManager getLayout()
@@ -260,8 +260,9 @@ public class UnixDockService implements DockService {
 
     public void setLocation(int l)
     {
+	Dimension d = frame.getSize();
 	location = l;
-	adjustSizeAndLocation(getWindow(), size.width, size.height, location);
+	adjustSizeAndLocation(getWindow(), d.width, d.height, location);
     }
 
     public int getLocation()
