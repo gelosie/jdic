@@ -1,28 +1,6 @@
 <?xml version="1.0"?>
-<project name="JDIC API source code building script" default="showtargets" basedir=".">
+<project name="Floating Dock source code building script" default="showtargets" basedir=".">
 
-<!--
-This is the master build script for use with the Jakarta Ant build tool 
-to build the source code of JDIC project.
-
-For Ant, see http://jakarta.apache.org/ant/index.html
-
-Top-level target:
-  buildall:         Build a JDIC API distribution for the current platform. 
-                    Which will run one of below targets:
-    buildwin32:     on Windows to build a Windows distribuition.
-    buildlinux:     on Linux to build a Linux distribuition.
-    buildsolaris:   on Solaris to build a Solaris distribuition.
-    buildfreebsd:   on FreeBSD to build a FreeBSD distribuition.
-    buildmac_os_x:  on Mac OS X to build a Mac OS X distribuition.
-  builddock:        Build the Floating Dock API (package org.jdesktop.jdic.dock) 
-                    binary for the current platform.
-  clean:            Remove the generated distribution (including files and directories).
-
--->
-
-  <!-- the top-level package names -->
-  <property name="pkg.jdic.name"      value="org.jdesktop.jdic" /> 
   <property name="pkg.dock.name"      value="${pkg.jdic.name}.dock" />
 
   <!-- the path of source directory -->
@@ -30,7 +8,6 @@ Top-level target:
   <property name="share.classes.dir" value="${src.dir}/share/classes" />
   <property name="unix.classes.dir"  value="${src.dir}/unix/classes" />
   <property name="win32.classes.dir" value="${src.dir}/win32/classes" />
-  <property name="mac.classes.dir"   value="${src.dir}/mac_os_x/classes" />
 
   <property name="unix.native.dir"         value="${src.dir}/unix/native" />    
   <property name="unix.native.jni.dir"     value="${unix.native.dir}/jni" />
@@ -49,7 +26,11 @@ Top-level target:
   <target name="showtargets" description="default target showing all available targets">
     <echo>The top-level targets are:</echo>
     <echo> buildall:  Build a Floating Dock API distribution for the current platform</echo>
-    <echo>            (Windows, Linux, Solaris).</echo>
+    <echo>            (Windows, Linux, Solaris)</echo>
+    <echo> builddemo: Build the FLoating Dock Demo</echo>
+    <echo> buildjnlp: Build signed jar files, ready for Java Webstart deployment</echo>
+    <echo>            needs keystore, alias and password properties defined in build.xml</echo>
+    <echo>            or an ant properties file</echo>
     <echo> clean:     Remove the generated distribution.</echo>
     <echo></echo>
     <echo>The generated distribution is put under *dist* directory.</echo>
@@ -96,6 +77,17 @@ Top-level target:
     <delete includeEmptyDirs="true" failonerror="false">
       <fileset dir="${dist.dir}"/>
     </delete>
+  </target>
+
+  <target name="buildjnlp" depends="buildall">
+        <echo level="info">Signing JARS...</echo>
+	<copy file="${dist.dir}/floatingdock.jar" todir="${dist.dir}/jnlp"/>
+        <signjar jar="${dist.dir}/jnlp/floatingdock.jar" keystore="${keystore}" alias="${alias}" storepass="${password}"/>
+	<copy file="${dist.dir}/floatingdock-native-linux.jar" todir="${dist.dir}/jnlp"/>
+        <signjar jar="${dist.dir}/jnlp/floatingdock-native-linux.jar" keystore="${keystore}" alias="${alias}" storepass="${password}"/>
+	<copy file="${dist.dir}/demo/dockdemo.jar" todir="${dist.dir}/jnlp"/>
+	<signjar jar="${dist.dir}/jnlp/dockdemo.jar" keystore="${keystore}" alias="${alias}" storepass="${password}"/>
+	<copy file="demo/Dock/FloatingDock.jnlp" todir="${dist.dir}/jnlp"/>
   </target>
 
 
@@ -224,6 +216,11 @@ Top-level target:
 
     <!-- copy generated .so file -->
     <copy file="${unix.native.jni.dir}/libfloatingdock.so" todir="${dist.dir}" />
+
+    <!-- generate native jar file -->
+    <jar destfile="${dist.dir}/floatingdock-native-linux.jar" update="false">
+         <fileset dir="${dist.dir}" includes="*.so"/>
+    </jar>
   </target>
 
   <!-- *** Build demo applications into .class files *** -->
@@ -235,7 +232,7 @@ Top-level target:
 
     <!-- remove the ".class" files to rebuild the demo apps -->
     <delete failonerror="false">
-      <fileset dir="${demo.dir}" includes="**/*.class"/>
+      <fileset dir="${demo.dock.dir}/*.class"/>
     </delete>
 
     <javac srcdir="${demo.dock.dir}"
@@ -245,14 +242,16 @@ Top-level target:
            source="1.4"
     />
 
-    <!-- Copy demo apps to a "demo" directory under the distribution directory -->
     <mkdir dir="${dist.dir}/demo" />
+
+    <jar destfile="${dist.dir}/demo/dockdemo.jar" update="false">
+         <fileset dir="${dist.dir}" includes="*.class"/>
+    </jar>
+
+    <!-- Copy demo apps to a "demo" directory under the distribution directory -->
     <copy todir="${dist.dir}/demo">
       <fileset dir="${demo.dir}" casesensitive="false" >
         <include name="README"/>
-        <include name="**/*.java"/>
-        <include name="**/*.class"/>
-        <include name="**/images/**"/>
       </fileset>
     </copy>
   </target>
