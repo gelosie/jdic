@@ -33,9 +33,19 @@ public class SystemInfo
      */
     static
     {
+        boolean useCallbacks = System.getProperty("os.name").matches("Windows (95|98|NT).*");
+
         try
         {
-            System.loadLibrary("systeminfo");
+            if(useCallbacks)
+            {
+                System.loadLibrary("systemcallback");
+            }
+            else
+            {
+                System.loadLibrary("systeminfo");
+            }
+              
             _systemInfoLibraryLoaded = true;
         }
         catch (UnsatisfiedLinkError e)
@@ -48,15 +58,9 @@ public class SystemInfo
 
     private int seconds = 0;
 
-    private SystemInfo()
-    {
-    }
-
     private static native long nativeGetSessionIdleTime();
-
-
+    
     private static native boolean nativeIsSessionLocked();
-
 
     /**
      * Return how long a user's session has been idle
@@ -73,7 +77,6 @@ public class SystemInfo
             return -1L;
         }
     }
-
 
     /**
      * Return a boolean true if the user's session or workstation has been locked
