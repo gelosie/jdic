@@ -62,13 +62,13 @@ Top-level target:
 
   <target name="showtargets" description="default target showing all available targets">
     <echo>The top-level targets are:</echo>
-    <echo>  buildall:   Build a JDIC API distribution for the current platform</echo>
-    <echo>              (Windows, Linux, Solaris, FreeBSD or Mac OS X).</echo>
-    <echo>  buildtray:  Build the Tray Icon API binary for the current platform</echo>
-    <echo>              (Windows, Linux or Solaris).</echo>
-    <echo>  clean:      Remove the generated distribution.</echo>
+    <echo> buildall:  Build a JDIC API distribution for the current platform</echo>
+    <echo>            (Windows, Linux, Solaris, FreeBSD or Mac OS X).</echo>
+    <echo> buildtray: Build the Tray Icon API binary for the current platform</echo>
+    <echo>            (Windows, Linux or Solaris).</echo>
+    <echo> clean:     Remove the generated distribution.</echo>
     <echo></echo>
-    <echo>  The generated distribution is put under *dist* directory.</echo>
+    <echo>The generated distribution is put under *dist* directory.</echo>
   </target>
 
   <!--
