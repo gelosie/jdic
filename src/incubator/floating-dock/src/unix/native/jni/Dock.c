@@ -40,6 +40,11 @@
 #define dprintf
 #endif
 
+#define TOP	0
+#define BOTTOM	1
+#define RIGHT	2
+#define LEFT	3
+
 static Display *     awt_display;
 
 /* AWT interface functions. */
@@ -334,7 +339,6 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockSer
 JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_createDockWindow(JNIEnv *env, jobject obj)
 {
     Window win;
-    XSizeHints *  size_hints;
     XWMHints   *  wm_hints;
     XClassHint *  class_hints;
     XTextProperty windowName, iconName;
@@ -344,26 +348,20 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
     Atom _NET_WM_STRUT;
     Atom _NET_WM_STATE;
     Atom _NET_WM_STATE_STICKY;
-    int insets[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char *       window_name = "JDIC Dock";
     char *       icon_name = "JDIC Dock Icon";
-    unsigned int display_width, display_height;
 
     unsigned int *data =  (unsigned int *) malloc(6*4);
 
     (*LockIt)(env);
     /*  Allocate memory for our structures  */
 
-    if ( !( size_hints  = XAllocSizeHints() ) ||
-            !( wm_hints    = XAllocWMHints()   ) ||
+    if (    !( wm_hints    = XAllocWMHints()   ) ||
             !( class_hints = XAllocClassHint() )    ) {
         fprintf(stderr, "Couldn't allocate memory.\n");
         (*UnLockIt)(env);
         return 0;
     }
-
-    display_width  = DisplayWidth(display, screen_num);
-    display_height = DisplayHeight(display, screen_num);
 
     win = XCreateWindow(display,RootWindow(display,screen_num),
             0,0,10,10,1,
@@ -388,15 +386,6 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
         return 0;
     }
 
-    size_hints->flags       = PPosition | PSize | PMinSize | PWinGravity;
-    size_hints->x = 0;
-    size_hints->y = 0;
-    size_hints->min_width   = 46;
-    size_hints->width   = 46;
-    size_hints->min_height  = display_height;
-    size_hints->height  = display_height;
-    size_hints->win_gravity  = NorthWestGravity;
-
     wm_hints->flags         = StateHint | InputHint;
     wm_hints->initial_state = NormalState;
     wm_hints->input         = True;
@@ -405,7 +394,7 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
     class_hints->res_class  = "JDIC Dock";
 
     XSetWMProperties(display, win, &windowName, &iconName, NULL, 0,
-            size_hints, wm_hints, class_hints);
+            NULL, wm_hints, class_hints);
 
     /*  Choose which events we want to handle  */
 
@@ -425,12 +414,6 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
     XChangeProperty(display, win, _NET_WM_STATE,XA_ATOM , 32, PropModeReplace,
                     (unsigned char *)&_NET_WM_STATE_STICKY, 1);
 
-    XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
-                    (unsigned char *)insets, 4);
-
-    XChangeProperty(display, win, _NET_WM_STRUT_PARTIAL, XA_CARDINAL , 32, PropModeReplace,
-                    (unsigned char *)insets, 12);
-
     dprintf("Window ID = %x \n",win);
 
     (*UnLockIt)(env);
@@ -440,49 +423,61 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockServic
 
 /*
  * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
- * Method:    adjustSize
- * Signature: (JII)V
- */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_adjustSize (JNIEnv *env, jobject obj, jlong win, jint width, jint height)
-{
-    XSizeHints *  size_hints;
-    int insets[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-    (*LockIt)(env);
-
-    if (!(size_hints  = XAllocSizeHints())) {
-        fprintf(stderr, "Couldn't allocate memory.\n");
-        (*UnLockIt)(env);
-        return;
-    }
-
-    size_hints->flags       = PSize | PMinSize;
-    size_hints->min_width   = width;
-    size_hints->min_height  = height;
-
-    XSetWMProperties(display, win, NULL, NULL, NULL, 0,
-            size_hints, NULL, NULL);
-
-    insets[0] = width;
-    insets[4] = 0;
-    insets[5] = height;
-
-    XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
-                    (unsigned char *)&insets, 4);
-
-    XChangeProperty(display, win, _NET_WM_STRUT_PARTIAL, XA_CARDINAL , 32, PropModeReplace,
-                    (unsigned char *)insets, 12);   
-
-    (*UnLockIt)(env);
-}
-
-/*
- * Class:     org_jdesktop_jdic_dock_internal_impl_UnixDockService
  * Method:    adjustSizeAndLocation
  * Signature: (JIII)V
  */
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_dock_internal_impl_UnixDockService_adjustSizeAndLocation (JNIEnv *env, jobject obj, jlong win, jint width, jint height, int location)
 {
+    XSizeHints *  size_hints;
+    int insets[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    unsigned int display_width, display_height;
+
+    (*LockIt)(env);
+
+    display_width  = DisplayWidth(display, screen_num);
+    display_height = DisplayHeight(display, screen_num);
+
+    XResizeWindow (display, win, width, height);
+
+    switch (location) {
+	case LEFT:
+	    dprintf ("Left ...\n");
+    	    insets[0] = width;
+    	    insets[4] = 0;
+    	    insets[5] = height;
+	    XMoveWindow (display, win, 0, 0);
+	    break;
+	case TOP:
+	    dprintf ("Top ...\n");
+	    insets[2] = height;
+	    insets[8] = 0;
+	    insets[9] = width;
+	    XMoveWindow (display, win, 0, 0);
+	    break;
+	case RIGHT:
+	    dprintf ("Right ...\n");
+	    insets[1] = width;
+	    insets[6] = 0;
+	    insets[7] = height;
+	    XMoveWindow (display, win, display_width - width, 0);
+	    break;
+	case BOTTOM:
+	    dprintf ("Bottom ...\n");
+	    insets[3] = height;
+	    insets[10] = 0;
+	    insets[11] = width;
+	    XMoveWindow (display, win, 0, display_height - height);
+	    break;
+    }
+
+    XChangeProperty(display, win, _NET_WM_STRUT, XA_CARDINAL , 32, PropModeReplace,
+                    (unsigned char *)&insets, 4);
+
+    XChangeProperty(display, win, _NET_WM_STRUT_PARTIAL, XA_CARDINAL , 32, PropModeReplace,
+                    (unsigned char *)&insets, 12);
+
+    (*UnLockIt)(env);
+
 }
 
 

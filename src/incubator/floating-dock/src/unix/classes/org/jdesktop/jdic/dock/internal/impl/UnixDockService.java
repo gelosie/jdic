@@ -41,13 +41,12 @@ public class UnixDockService implements DockService {
     EmbeddedFrame frame;
     Dimension size;
     boolean visible = false;
-    int location;
+    int location = FloatingDock.LEFT;
     static long window_id;
     static UnixDockService uds;
 
     native long createDockWindow();
     native long getWidget(long window, int widht, int height, int x, int y);
-    native void adjustSize (long window, int width, int height);
     native void adjustSizeAndLocation(long window, int width, int height, int location);
     static native boolean  locateDock();
     static native void eventLoop();
@@ -81,6 +80,7 @@ public class UnixDockService implements DockService {
     public UnixDockService()
     {
 	uds = this;
+	size = new Dimension(0, 0);
 	init();
     }
 
@@ -210,7 +210,7 @@ public class UnixDockService implements DockService {
     public void setSize(Dimension s)
     {
 	size = s;
-	adjustSize(getWindow(), size.width, size.height);
+	adjustSizeAndLocation(getWindow(), size.width, size.height, location);
         frame.setSize(size.width, size.height);
 	frame.validate();
     }
