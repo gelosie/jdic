@@ -18,6 +18,7 @@
 
 # You must download the SaverBeans SDK to build this screensaver.
 # Set this to the installation directory for the SaverBeans SDK.
+# See http://jdic.dev.java.net/
 saverbeans.path=/opt/saverbeans
 
 # Parameters to pass to screensaver during debugging
