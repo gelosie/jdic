@@ -46,8 +46,8 @@ USING_GECKO_SDK_1_4 = 1
 #USING_GECKO_SDK_1_7 = 1
 
 # set gtk version
-#MOZ_ENABLE_GTK = 1
-MOZ_ENABLE_GTK2 = 1
+MOZ_ENABLE_GTK = 1
+#MOZ_ENABLE_GTK2 = 1
 
 MODULE_NAME_PART= mozembed
 
@@ -130,6 +130,7 @@ CPPFLAGS += \
 ifdef USING_GECKO_SDK_1_4
 CPPFLAGS += \
 	-include $(GECKO_SDK)/mozilla-config.h \
+	-I$(GECKO_SDK)/ \
 	-I$(GECKO_SDK)/xpcom/include \
 	-I$(GECKO_SDK)/nspr/include \
 	-I$(GECKO_SDK)/webbrwsr/include \
