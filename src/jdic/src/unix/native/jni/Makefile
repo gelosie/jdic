@@ -54,7 +54,7 @@ INCLUDES = -I$(JAVA_HOME)/include \
            -I$(JAVA_HOME)/include/$(PLATFORM)
 
 EXTRA_INCLUDES = `pkg-config --cflags glib-2.0` \
-		 `pkg-config --cflags libgnome-2.0` \
+                 `pkg-config --cflags libgnome-2.0` \
                  `pkg-config --cflags gnome-vfs-2.0`\
                  `pkg-config --cflags gnome-vfs-module-2.0` \
                  `pkg-config --cflags bonobo-activation-2.0` \
@@ -66,16 +66,19 @@ EXTRA_INCLUDES = `pkg-config --cflags glib-2.0` \
 LIBS = -L$(USR_LIB_DIR) \
        -lz \
        -lm \
-       `pkg-config --libs glib-2.0` \
-       `pkg-config --libs libgnome-2.0` \
-       `pkg-config --libs gnome-vfs-2.0`\
-       `pkg-config --libs gnome-vfs-module-2.0` \
-       `pkg-config --libs glib-2.0` \
-       `pkg-config --libs bonobo-activation-2.0` \
-       `pkg-config --libs libbonobo-2.0` \
-       `pkg-config --libs ORBit-2.0` \
-       `pkg-config --libs linc` \
-       `pkg-config --libs gconf-2.0`
+       -lgnome-2 \
+       -lgnomevfs-2 \
+       -lbonobo-activation \
+       -lgconf-2 \
+       -lORBit-2 \
+       -lgmodule-2.0 \
+       -ldl \
+       -lgobject-2.0 \
+       -lgthread-2.0 \
+       -lpthread \
+       -lglib-2.0 \
+       -lpopt \
+       -lrt
 
 EXTRA_BROWSER_LIBS = \
     -L$(JAVA_HOME)/jre/lib/sparc \
