@@ -431,6 +431,17 @@ public class WebBrowser extends Canvas
     }
 
     /**
+     * Returns the name of the embedded browser's native binary, which runs as 
+     * a standalone native process.
+     * 
+     * @deprecated DO NOT use. This method was unnecessarily exposed and will
+     *             be removed in a future release.
+     */
+    public static String getBrowserBinary () {
+        return WebBrowserUtil.getEmbedBinaryName();
+    }
+    
+    /**
      * Called before every navigation operation occurs. A subclass could 
      * override this method to change or block URL loading.
      *
