@@ -290,21 +290,30 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
     DestroyIcon((HICON)icon);
 }
 
-
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_createIcon
-(JNIEnv *env , jobject obj, jlong icon, jint id, jstring str)
+char* ConvertJByteArray(JNIEnv *env, jbyteArray arr )
 {
-    LPTSTR buffer = (LPTSTR) env->GetStringUTFChars(str, NULL);
+	int len =  env->GetArrayLength(arr);
+	char *temp = (char *)env->GetByteArrayElements(arr, 0);
+	char *buffer = (char *)malloc(len+1);
+	strncpy(buffer, temp, len);
+	*(buffer+len)='\0';
+	env->ReleaseByteArrayElements(arr, (signed char*)temp, 0);
+	return buffer;
+}
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_createIcon
+(JNIEnv *env , jobject obj, jlong icon, jint id, jbyteArray tooltip)
+{
+	char *buffer = ConvertJByteArray(env, tooltip);
 	TrayMessage(messageWindow,NIM_ADD,id,(HICON)icon, buffer);
-	env->ReleaseStringUTFChars(str, buffer);
+	free(buffer);
 }
 
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_updateNativeIcon
-(JNIEnv *env , jobject obj, jlong icon, jint id, jstring str)
+(JNIEnv *env , jobject obj, jlong icon, jint id, jbyteArray tooltip)
 {
-	LPTSTR buffer = (LPTSTR) env->GetStringUTFChars( str, NULL);
+	char *buffer = ConvertJByteArray(env, tooltip);
 	TrayMessage(messageWindow,NIM_MODIFY,id,(HICON)icon,buffer);
-	env->ReleaseStringUTFChars(str, buffer);
+	free(buffer);
 }
 
 

@@ -45,7 +45,7 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
     private Icon icon;
     private boolean autoSize;
     private boolean isShowing;
-    private String caption = "JDIC TrayIcon";
+    private byte[] caption = "JDIC TrayIcon".getBytes();
 
     private long hicon;
     private Image oldIconImage;
@@ -92,9 +92,9 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
             int height, int xHotSpot,
             int yHotSpot);
 
-    private native void createIcon(long hIcon, int id, String string);
+    private native void createIcon(long hIcon, int id, byte[] tooltip);
 
-    private native void updateNativeIcon(long hIcon, int id, String string);
+    private native void updateNativeIcon(long hIcon, int id, byte[] tooltip);
     
     private native void deleteHIcon(long hIcon);
 
@@ -286,7 +286,7 @@ public class WinTrayIconService implements TrayIconService, PopupMenuListener {
     }
 
     public void setCaption(String s) {
-        caption = s;
+        caption = (s == null ? "" : s ).getBytes();
         if (created) {
             observer.setUpdate(false);
             observer = new AnimationObserver();
