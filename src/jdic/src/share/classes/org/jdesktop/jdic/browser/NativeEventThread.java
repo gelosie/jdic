@@ -177,7 +177,7 @@ class NativeEventThread extends Thread
             return true;
         }
 
-        if (! browser.getStatus().isInitialized() &&
+        if (! browser.isInitialized() &&
             (nativeEvent.type != NativeEventData.EVENT_INIT &&
              nativeEvent.type != NativeEventData.EVENT_CREATEWINDOW)) {
             return false;
@@ -287,8 +287,8 @@ class NativeEventThread extends Thread
         }
         
         if (WebBrowserEvent.WEBBROWSER_INIT_WINDOW_SUCC == eventData.type) {
-            browser.getStatus().setInitStatus(true);
-            browser.getStatus().setInitFailReason("");
+            browser.setInitialized(true);
+            browser.setInitFailureMessage("");
             return;
         }
 
@@ -325,8 +325,7 @@ class NativeEventThread extends Thread
     }
 
     void setBrowsersInitFailReason(String msg) {
-        ((WebBrowser)webBrowsers.elementAt(0)).getStatus().
-        setInitFailReason(msg);
+        ((WebBrowser)webBrowsers.elementAt(0)).setInitFailureMessage(msg);
     }
 
     class StreamGobbler extends Thread {

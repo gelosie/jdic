@@ -63,7 +63,6 @@ public class Browser extends JPanel {
     JPanel jBrowserPanel = new JPanel();
 
     WebBrowser webBrowser;
-    WebBrowser.Status myStatus;
 
     public Browser() {
         try {
@@ -179,15 +178,14 @@ public class Browser extends JPanel {
             return;
         }
 
-        myStatus = webBrowser.getStatus();
         webBrowser.addWebBrowserListener(new WebBrowserListener() {
             public void downloadStarted(WebBrowserEvent event) {
                 updateStatusInfo("Loading started.");
             }
 
             public void downloadCompleted(WebBrowserEvent event) {
-                jBackButton.setEnabled(myStatus.isBackEnabled());
-                jForwardButton.setEnabled(myStatus.isForwardEnabled());
+                jBackButton.setEnabled(webBrowser.isBackEnabled());
+                jForwardButton.setEnabled(webBrowser.isForwardEnabled());
 
                 updateStatusInfo("Loading completed.");
 

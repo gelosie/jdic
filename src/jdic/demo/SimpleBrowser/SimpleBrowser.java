@@ -106,7 +106,6 @@ public class SimpleBrowser {
         
         //Use below code to check the status of the navigation process,
         //or register a listener for the notification events.
-        WebBrowser.Status myStatus = webBrowser.getStatus();
         webBrowser.addWebBrowserListener(
             new WebBrowserListener() {
             boolean isFirstPage = true;

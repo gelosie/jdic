@@ -55,7 +55,6 @@ import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
  */
 public class WebBrowser extends Canvas
 {
-    private Status status = new Status();
     private MyFocusListener focusListener = new MyFocusListener();
     // eventThread should be initialized after JdicManager.initShareNative() 
     // in static block.
@@ -64,6 +63,12 @@ public class WebBrowser extends Canvas
     private int instanceNum;
     private static int lastInstanceNum = 0;
     private static boolean isRunningOnWindows = false;
+    
+    // WebBrowser status.
+    private boolean isInitialized = false;
+    private boolean isBackEnabled = false;
+    private boolean isForwardEnabled = false;
+    private String initFailureMessage = "WebBrowser is not initialized.";       
 
     static {
         // Add the initialization code from package org.jdesktop.jdic.init.
@@ -89,6 +94,14 @@ public class WebBrowser extends Canvas
         isRunningOnWindows 
             = System.getProperty("os.name").indexOf("Windows") >= 0;
     }
+
+    void setInitialized(boolean b) {
+        isInitialized = b;
+    }
+
+    void setInitFailureMessage(String msg) {
+        initFailureMessage = msg;
+    }    
 
     /**
      * Constructs a new <code>WebBrowser</code> object with no URL specified.
@@ -185,13 +198,13 @@ public class WebBrowser extends Canvas
         else if (WebBrowserEvent.WEBBROWSER_COMMAND_STATE_CHANGE == eid) {
             String data = e.getData();
             if (data.startsWith("forward")) {
-                status.forwardEnabled = data.substring(8).equals("1");
+                isForwardEnabled = data.substring(8).equals("1");
                 WebBrowserUtil.trace("Forward State changed = " 
-                        + status.forwardEnabled);
+                        + isForwardEnabled);
             }
             else if (data.startsWith("back")) {
-                status.backEnabled = data.substring(5).equals("1");
-                WebBrowserUtil.trace("Back State changed = " + status.backEnabled);
+                isBackEnabled = data.substring(5).equals("1");
+                WebBrowserUtil.trace("Back State changed = " + isBackEnabled);
             }
             return;
         }
@@ -423,11 +436,15 @@ public class WebBrowser extends Canvas
     /**
      * Returns a <code>Status</code> object, which indicates the status of this
      * <code>WebBrowser</code> object.
-     *
+     * 
+     * @deprecated The <code>WebBrowser.Status</code> inner class is deprecated 
+     *             as of release 0.9 of JDIC. Its APIs have been moved to this 
+     *             <code>Browser</code> class. This API is no longer used, and 
+     *             will be removed in a future release.
      * @see Status
      */
     public Status getStatus() {
-        return status;
+        return new Status(this);        
     }
 
     /**
@@ -441,6 +458,41 @@ public class WebBrowser extends Canvas
         return WebBrowserUtil.getEmbedBinaryName();
     }
     
+    /**
+     * Checks whether this <code>WebBrowser</code> object is initialized 
+     * successfully.
+     *
+     * @return <code>true</code> if the <code>WebBrowser</code> object is 
+     *         initialized successfully; otherwise, <code>false</code>.
+     */
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
+    /**
+     * Checks whether this <code>WebBrowser</code> object's back command 
+     * is enabled. 
+     *
+     * @return <code>true</code> if the WebBrowser can navigate to the 
+     *         previous session history item, and <code>false</code> otherwise.
+     * @see #back
+     */
+    public boolean isBackEnabled() {
+        return isBackEnabled;
+    }
+
+    /**
+     * Checks whether this <code>WebBrowser</code> object's forward command 
+     * is enabled. 
+     *
+     * @return <code>true</code> if the WebBrowser can navigate to the 
+     *         next session history item, and <code>false</code> otherwise.
+     * @see #forward
+     */
+    public boolean isForwardEnabled() {
+        return isForwardEnabled;
+    }
+
     /**
      * Called before every navigation operation occurs. A subclass could 
      * override this method to change or block URL loading.
@@ -481,7 +533,7 @@ public class WebBrowser extends Canvas
     }
 
     private boolean waitForResult() {
-        if (! status.initialized) {
+        if (! isInitialized) {
             WebBrowserUtil.trace("You can't call this method before " +
                     "WebBrowser is initialized!");
             return false;
@@ -511,60 +563,59 @@ public class WebBrowser extends Canvas
     /**
      * An inner class which is used for retrieving the WebBrowser's properties,
      * such as the initialization status, back and forward status.
+     * 
+     * @deprecated As of release 0.9 of JDIC. Its APIs have been moved to 
+     *             <code>org.jdesktop.jdic.browser.WebBrowser</code> class. 
+     *             Will be removed in a future release.
      */
     public static class Status {
-        private boolean initialized;
-        private boolean backEnabled;
-        private boolean forwardEnabled;
-        static private String failReason;
+        WebBrowser webBrowser;
 
-        Status () {
-            initialized = false;
-            backEnabled = false;
-            forwardEnabled = false;
-            failReason = "WebBrowser has not finish intializing";
+        Status (WebBrowser curWebBrowser) {
+            webBrowser = curWebBrowser;
         }
 
         /**
-         * Tests whether the <code>WebBrowser</code> object is initialized 
+         * Checks whether this <code>WebBrowser</code> object is initialized 
          * successfully.
-         *
+         * 
+         * @deprecated As of release 0.9 of JDIC, replaced by 
+         *             <code>WebBrowser.isInitialized()</code>. 
          * @return <code>true</code> if the <code>WebBrowser</code> object is 
          *         initialized successfully; otherwise, <code>false</code>.
-         *
          */
         public boolean isInitialized() {
-            return initialized;
+            return webBrowser.isInitialized();
         }
 
         /**
-         * Tests whether the back navigation operation is enabled.
+         * Checks whether this <code>WebBrowser</code> object's back command 
+         * is enabled. 
          *
-         * @return <code>true</code> if the back navigation operation is enabled;
-         * otherwise, <code>false</code>.
-         *
+         * @deprecated As of release 0.9 of JDIC, replaced by 
+         *             <code>WebBrowser.isBackEnabled()</code>.
+         * @return <code>true</code> if the WebBrowser can navigate to the 
+         *         previous session history item, and <code>false</code> 
+         *         otherwise.
+         * @see #back
          */
         public boolean isBackEnabled() {
-            return backEnabled;
+            return webBrowser.isBackEnabled();
         }
 
         /**
-         * Tests whether the forward navigation operation is enabled.
+         * Checks whether this <code>WebBrowser</code> object's forward command 
+         * is enabled. 
          *
-         * @return <code>true</code> if the forward navigation operation is 
-         *         enabled; otherwise, <code>false</code>.
+         * @deprecated As of release 0.9 of JDIC, replaced by 
+         *             <code>WebBrowser.isForwardEnabled()</code>. 
+         * @return <code>true</code> if the WebBrowser can navigate to the 
+         *         next session history item, and <code>false</code> otherwise.
+         * @see #forward
          */
         public boolean isForwardEnabled() {
-            return forwardEnabled;
-        }
-
-        void setInitStatus(boolean b) {
-            initialized = b;
-        }
-
-        void setInitFailReason(String msg) {
-            failReason = msg;
-        }
+            return webBrowser.isForwardEnabled();
+        }        
     }
 
     class MyFocusListener implements FocusListener {
