@@ -19,38 +19,76 @@
  */
 
 import org.jdesktop.jdic.dock.FloatingDock;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import java.awt.Dimension;
+import java.awt.*;
 
 class DockDemo {
 
-    private static void createTestGUI() {
-        //Make sure we have nice window decorations.
-        JFrame.setDefaultLookAndFeelDecorated(true);
-
-        //Create and set up the window.
-        JFrame frame = new JFrame("HelloWorldSwing");
-        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        //Add the ubiquitous "Hello World" label.
-        JLabel label = new JLabel("Hello World");
-        frame.getContentPane().add(label);
-
-        //Display the window.
-        frame.pack();
-        frame.setVisible(true);
-    }
-
-
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
+	Button button1, button2, button3;
+	
 	FloatingDock fd = new FloatingDock();
+	fd.setVisible (false);
+	GridLayout gl1 = new GridLayout(3, 1);
+	GridLayout gl2 = new GridLayout(1, 3);
 
-	fd.setSize (new Dimension (100, 100));
-	fd.setVisible (true);
+	button1 = new Button("Button 1");
+	button1.setVisible(true);
+	button2 = new Button("Button 2");
+        button2.setVisible(true);
+	button3 = new Button("Button 3");
+        button3.setVisible(true);
+
+	fd.setLocation (FloatingDock.LEFT);
+	fd.setLayout(gl1);
+	fd.add(button1);
+	fd.add(button2);
+	fd.add(button3);
+	fd.setVisible(true);
 	try {
 	    Thread.sleep (5000);
 	} catch (Exception e) {}
-	fd.setVisible (false);
+	
+	fd.setVisible(false);
+	fd.remove(button1);
+	fd.remove(button2);
+	fd.remove(button3);
+	fd.setLocation (FloatingDock.TOP);
+        fd.setLayout(gl2);
+        fd.add(button1);
+        fd.add(button2);
+        fd.add(button3);
+	fd.setVisible(true);
+        try {
+            Thread.sleep (5000);
+        } catch (Exception e) {}
+
+	fd.setVisible(false);
+	fd.remove(button1);
+        fd.remove(button2);
+        fd.remove(button3);
+	fd.setLocation (FloatingDock.RIGHT);
+        fd.setLayout(gl1);
+        fd.add(button1);
+        fd.add(button2);
+        fd.add(button3);
+	fd.setVisible(true);
+        try {
+            Thread.sleep (5000);
+        } catch (Exception e) {}
+
+	fd.setVisible(false);
+	fd.remove(button1);
+        fd.remove(button2);
+        fd.remove(button3);
+	fd.setLocation (FloatingDock.BOTTOM);
+        fd.setLayout(gl2);
+        fd.add(button1);
+        fd.add(button2);
+        fd.add(button3);
+	fd.setVisible(true);
+        try {
+            Thread.sleep (5000);
+        } catch (Exception e) {}
     }
 }
