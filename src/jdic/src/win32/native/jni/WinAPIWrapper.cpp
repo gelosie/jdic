@@ -17,18 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  */ 
- 
-#include <jni.h>
 
 #include <afx.h>
 #include <afxdisp.h>
 #include <stdio.h>
-//*********************************
-//Header files for WinBrowserService
+
 #include <comdef.h>
 #include <atlbase.h>
 #include <ExDisp.h>
-//**********************************
+
 #include <mapi.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,17 +40,9 @@ const int MAX_VALUE_LENGTH = 4096;
 const int MAX_MIME_DATA_LENGTH = 256;
 const char *EXCEPTION_CLASS = "org/jdesktop/jdic/desktop/internal/LaunchFailedException";
 
-//***************************************************************************************
-//Native code for WinBrowserService
+// Native code for WinBrowserService
 // Global IWebBrowser2 object.
 CComQIPtr<IWebBrowser2, &IID_IWebBrowser2> m_spWebBrowser2;
-
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
-{
-    CoInitialize(NULL);
-
-    return (JNI_VERSION_1_2);
-}
 
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_desktop_internal_impl_WinAPIWrapper_shutDown
   (JNIEnv *, jclass) {
@@ -83,7 +72,7 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_desktop_internal_impl_WinAPIWr
 
     return (hr == S_OK) ? true : false;
 }
-//********************************************************************************************
+
 JNIEXPORT jintArray JNICALL Java_org_jdesktop_jdic_desktop_internal_impl_WinAPIWrapper_RegOpenKey
   (JNIEnv* env, jclass cl, jint hKey, jbyteArray lpSubKey, jint securityMask) {
     HKEY handle;
