@@ -1,4 +1,4 @@
-2004-09-23 George Zhang <georgez@dev.java.net>
+2004-09-27 George Zhang <georgez@dev.java.net>
 
     * Release 0.8.6
     
@@ -8,7 +8,10 @@
       ID  Pri  Summary
       ==  ===  =======   
       89  P2   <Extension> Jnlp key word support
-      95  P3   Remove JAVA_HOME setting to run JDIC Browser component.      
+      93  P3   Incorporate Tray Icon API into JDIC API.
+      95  P3   Remove JAVA_HOME setting to run JDIC Browser component.
+      99  P3   Add "builddemo" target to build demo applications.
+      100 P3   Generate JDIC API binary files that run on JDK 1.4 and later.
 
     * Known issue list:   
       Below are some of the most frequently mentioned known issues.
