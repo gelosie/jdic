@@ -204,14 +204,21 @@ Top-level target:
   <!-- *** Build Win32 native JNI code *** -->
   <target name="buildwin32jni" depends="init"
           description="build native jni libraries." >
-
+    <!-- build jdic.dll -->
     <exec dir="${win32.native.jni.dir}" executable="nmake" 
       failonerror="yes" >
       <arg line="/f jdic.mak"/>
     </exec>                   
 
+    <!-- build tray.dll containing the Tray Icon native code -->
+    <exec dir="${win32.native.jni.dir}" executable="nmake" 
+      failonerror="yes" >
+      <arg line="/f jdic.mak CFG=TRAY"/>
+    </exec>                   
+
     <!-- copy generated .dll file -->
     <copy file="${win32.native.jni.dir}/Release/jdic.dll" todir="${dist.dir}" />
+    <copy file="${win32.native.jni.dir}/Release/tray.dll" todir="${dist.dir}" />
   </target>
 
   <!-- *** Build Win32 native embeded browser code *** -->
@@ -451,7 +458,7 @@ Top-level target:
     </exec>                   
 
     <!-- copy generated .dll file -->
-    <copy file="${win32.native.jni.dir}/Release/jdic.dll" todir="${dist.dir}" />
+    <copy file="${win32.native.jni.dir}/Release/tray.dll" todir="${dist.dir}" />    
   </target>
 
   <!--
