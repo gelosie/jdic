@@ -54,7 +54,9 @@ public class GnomeSystemTrayService implements SystemTrayService {
 
     // public void addTrayApplet(TrayApplet ta, int trayIndex) {}
 
-    public void removeTrayIcon(TrayIcon ti, TrayIconService tis, int trayIndex) {}
+    public void removeTrayIcon(TrayIcon ti, TrayIconService tis, int trayIndex) {
+        ((GnomeTrayIconService)tis).remove();
+    }
 
     // public void removeTrayApplet(TrayApplet ta, int trayIndex){}
   

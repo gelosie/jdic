@@ -219,24 +219,24 @@ public class GnomeTrayAppletService implements TrayAppletService {
         return peer;
     }
 
-    public void configureWindow(int x, int y, int w, int h) {
+    void configureWindow(int x, int y, int w, int h) {
         this.x = x;
         this.y = y;
         this.width = w;
         this.height = h;
         frame.setSize(width, height);
         frame.validate();
-        // System.out.println("configureWindow: frame = " + frame + " configure width = " + width + " height = " + height);
+     //   System.out.println("configureWindow: frame = " + frame + " configure width = " + width + " height = " + height);
     }
 
     public Dimension getAppletSize() {
         return new Dimension(width, height);
     }
 
-    public static void configureNotify(long window, int x, int y, int w, int h) {
+    static void configureNotify(long window, int x, int y, int w, int h) {
         GnomeTrayAppletService gas; 
 
-        // System.out.println("configureNotify: window =" + window );
+      //  System.out.println("configureNotify: window =" + window );
         synchronized (winMap) {
             gas = (GnomeTrayAppletService) winMap.get(new Long(window));
         }
@@ -244,5 +244,15 @@ public class GnomeTrayAppletService implements TrayAppletService {
             gas.configureWindow(x, y, w, h);
         }
     }
+   
+    public void remove() {
+        // remove mapping in the window map.
+        synchronized (winMap) {
+            winMap.remove(new Long(getWindow()));
+        }
+        dispose(getWindow());
+    }
+ 
+    native void dispose(long window_id); 
 
 }

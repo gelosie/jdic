@@ -713,4 +713,18 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayApple
 }
 
 
+/*
+ * Class:     org_jdesktop_jdic_tray_internal_impl_GnomeTrayAppletService
+ * Method:    dispose
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayAppletService_dispose (JNIEnv *env, jobject object, jlong window) {
+
+    (*LockIt)(env);	
+    XDestroyWindow(display,(Window) window);
+    XSync(display,False);
+    (*UnLockIt)(env);	
+
+}
+
 

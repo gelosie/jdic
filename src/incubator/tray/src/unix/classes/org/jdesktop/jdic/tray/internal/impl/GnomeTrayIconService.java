@@ -58,39 +58,41 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
     }
 
     void mousePressed(MouseEvent e) {
-        if (e.isPopupTrigger() && !menu.isShowing()) {
-            tooltip.hide();
-            menu.show();
-            Dimension d = menu.getSize();  
+        if (menu != null) {
+            if (e.isPopupTrigger() && !menu.isShowing()) {
+                tooltip.hide();
+                menu.show();
+                Dimension d = menu.getSize();  
 
-            if ((d.height == 0) || (d.width == 0)) {
-                // size is zero because it has not been shown yet, show it.
-                menu.show((Component) e.getSource(), e.getX(), e.getY());
-                d = menu.getSize();                  // reposition it.
-                menu.show((Component) e.getSource(), e.getX(),
-                        e.getY() - d.height);
-            } else {
-                menu.show((Component) e.getSource(), e.getX(),
-                        e.getY() - d.height);
+                if ((d.height == 0) || (d.width == 0)) {
+                    // size is zero because it has not been shown yet, show it.
+                    menu.show((Component) e.getSource(), e.getX(), e.getY());
+                    d = menu.getSize();                  // reposition it.
+                    menu.show((Component) e.getSource(), e.getX(),
+                            e.getY() - d.height);
+                } else {
+                    menu.show((Component) e.getSource(), e.getX(),
+                            e.getY() - d.height);
+                }
+            } else if (!menu.isShowing()) {
+                menu.hide();
+                tooltip.hide();
+                ListIterator li = actionList.listIterator(0);
+                ActionListener al;
+
+                while (li.hasNext()) {
+                    al = (ActionListener) li.next();
+                    al.actionPerformed(new ActionEvent(e.getSource(),
+                                ActionEvent.ACTION_PERFORMED, "PressAction", e.getWhen(),
+                                0));
+                }
+
             }
-        } else if (!menu.isShowing()) {
-            menu.hide();
-            tooltip.hide();
-            ListIterator li = actionList.listIterator(0);
-            ActionListener al;
-
-            while (li.hasNext()) {
-                al = (ActionListener) li.next();
-                al.actionPerformed(new ActionEvent(e.getSource(),
-                        ActionEvent.ACTION_PERFORMED, "PressAction", e.getWhen(),
-                        0));
-            }
-
         }
     }
 
     void mouseEntered(MouseEvent e) {
-        if ((tooltip != null) && !menu.isShowing()) {
+        if ((tooltip != null) && ((menu == null) || ((menu != null) && !menu.isShowing()))) {
             Dimension d = tooltip.getSize();
             Point p = frame.getLocationOnScreen();
             Dimension size = tooltip.getPreferredSize();
@@ -141,6 +143,11 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             int w = icon.getIconWidth();
             int h = icon.getIconHeight();
             reshape(0,0,w,h);
+            frame.setVisible(false);
+            frame.remove(iconPanel);
+            iconPanel = new IconPanel();
+            frame.add(iconPanel);
+            frame.setVisible(true);
         }
         iconPanel.repaint();
     }
@@ -155,8 +162,16 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
     }
 
     public void setIconAutoSize(boolean b) {
-        if (iconPanel != null) {
-            iconPanel.setIconAutoSize(b);
+        autoSize = b;
+        if (autoSize && (icon != null)) {
+            int w = icon.getIconWidth();
+            int h = icon.getIconHeight();
+            reshape(0,0,w,h);
+            frame.setVisible(false);
+            frame.remove(iconPanel);
+            iconPanel = new IconPanel();
+            frame.add(iconPanel);
+            frame.setVisible(true);
         }
     }
 
@@ -182,34 +197,52 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
      *
      */
 
-    class IconPanel extends JRootPane {
-        boolean autoSize;
+    class IconPanel extends JComponent {
         Image img;
         IconPanel() {}
 
-        public void setIconAutoSize(boolean b) {
-            autoSize = b; 
-        }
+        public void paintComponent(Graphics g) {
+            Dimension d = getAppletSize();
+            g.clearRect(0, 0, d.width, d.height);
 
-        public void paint(Graphics g) {
-            Rectangle r = getBounds();
-
-            g.clearRect(r.x, r.y, r.width, r.height);
-
-            if (!autoSize) {
-                icon.paintIcon(this, g, r.x, r.y);
-            } else {
-                /* Scale to the right size */
-                if (img == null) {
-                    int w = icon.getIconWidth();
-                    int h = icon.getIconHeight();
-                    img = createImage(w, h);
+            if (icon != null) {
+                int w = icon.getIconWidth();
+                int h = icon.getIconHeight();
+                if (!autoSize) {
+                    icon.paintIcon(this, g, 0, 0);
+                } else {
+                    /* Scale to the right size */
+                    if (img == null) {
+                        img = createImage(w, h);
+                    }
+                    icon.paintIcon(this, img.getGraphics(), 0, 0);
+                    g.drawImage(img, 0, 0, d.width, d.height, 0,0,w,h, this);
                 }
-                icon.paintIcon(this, img.getGraphics(), 0, 0);
-                g.drawImage(img, r.x, r.y, r.width, r.height, this);
             }
+          super.paintComponent(g);
         }
 
+        boolean doesIconReferenceImage(Icon icon, Image image) {
+            Image iconImage = (icon != null && (icon instanceof ImageIcon)) ?
+                ((ImageIcon)icon).getImage() : null;
+            return (iconImage == image);
+        }
+
+        /**
+         * This is overridden to return false if the current Icon's Image is
+         * not equal to the passed in Image <code>img</code>.
+         *
+         * @see     java.awt.image.ImageObserver
+         * @see     java.awt.Component#imageUpdate(java.awt.Image, int, int, int, int, int)
+         */
+        public boolean imageUpdate(Image img, int infoflags,
+                int x, int y, int w, int h) {
+            if (!isShowing() ||
+                    !doesIconReferenceImage(icon, img)) {
+                return false;
+            }
+            return super.imageUpdate(img, infoflags, x, y, w, h);
+        }
     }
 
 
