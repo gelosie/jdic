@@ -42,7 +42,7 @@ USA
   <target name="check" description="Check to make sure properties are set">
     <fail unless="saverbeans.path">
       Property saverbeans.path not found.  Please copy
-      build.properties.x.sample to build.properties and
+      build.properties.sample to build.properties and
       follow the instructions in that file.
     </fail>
     <available file="${saverbeans.path}" property="saverbeans.present" />
