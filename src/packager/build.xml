@@ -191,7 +191,9 @@ Top-level target:
   <target name="buildwin32native" depends="init"
           description="only Win32 has native code." >
     <!-- Execute nmake to generate the .dll files -->
-    <exec dir="${win32.native.dir}" executable="nmake" />
+    <exec dir="${win32.native.dir}" executable="nmake" >
+        <arg line="/f packager.mak CFG='packager - Win32 Release'"/>
+    </exec>
     
     <exec dir="${win32.script.dir}" executable="nmake" >    
       <arg line="/f jnlp2msi.mak CFG='jnlp2msi - Win32 Release'"/>
@@ -200,7 +202,7 @@ Top-level target:
     <exec dir="${win32.msiactions.dir}" executable="nmake" />    
     
     <exec dir="${win32.bootstrapper.dir}" executable="nmake" >
-      <arg line="/f packager.mak CFG='packager - Win32 Release'"/>
+      <arg line="/f bootstrapper.mak CFG='bootstrapper - Win32 Release'"/>
     </exec>    
 
     <!-- Copy WinMSIWrapper.dll & jnlp2msi.exe to the dist dir -->
