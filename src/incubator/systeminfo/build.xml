@@ -182,6 +182,7 @@ Top-level target:
   <target name="buildwin32jni" depends="init" description="build native jni libraries." >
     <exec dir="${win32.native.jni.dir}" executable="make" failonerror="yes"/>
     <copy file="${win32.native.jni.dir}/systeminfo.dll" todir="${dist.dir}" />
+    <copy file="${win32.native.jni.dir}/systemcallback.dll" todir="${dist.dir}" />
   </target>
 
 </project>
