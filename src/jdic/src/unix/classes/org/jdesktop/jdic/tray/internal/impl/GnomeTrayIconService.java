@@ -31,6 +31,7 @@ import org.jdesktop.jdic.tray.internal.TrayIconService;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
@@ -46,6 +47,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
     private IconPanel iconPanel;
     private Icon icon;        
     private HWToolTip tooltip;
+    private BalloonMessageWindow bmw;
     private boolean autoSize;
 
     private LinkedList actionList = new LinkedList();
@@ -59,6 +61,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
         frame.add(iconPanel);
         frame.setFocusable(true);
         frame.requestFocus();
+        bmw = new BalloonMessageWindow(frame);
         
         initListeners();
         
@@ -330,5 +333,225 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             setVisible(true);
         }
     }
+    
+    public void showBalloonMessage(String caption, String text, int type){
+        if( caption == null && text == null)
+            throw new NullPointerException();
+        bmw.showBalloonMessage(caption, text, type);
+    }
+    
+    class BalloonMessageWindow extends JWindow{
+        Dimension sd;
+        Dimension pd;
+        Dimension d;
+        Point pp;
+        Point p;
+        boolean downToup = true;
+        
+        JLabel captionLabel = new JLabel();
+        JLabel textLabel = new JLabel();
+        private Thread showThread;
+        private int timeout = 10000;
+        private int delay = 15;
+        private int pixel = 2;
 
+        private ActionListener hideAction;
+        private javax.swing.Timer hideTimer;
+
+        public BalloonMessageWindow(Window parent){
+            super(parent);
+            JPanel outerPanel = new JPanel();
+            JPanel innerPanel = new JPanel();
+            this.getContentPane().add(outerPanel);
+            outerPanel.setLayout(new BorderLayout());
+            outerPanel.add(innerPanel);
+            outerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED,  new Color(0x00CBDAF3), new Color(0x002F4A78)));
+            innerPanel.setLayout(new BorderLayout());
+            innerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, new Color(0x00CBDAF3), new Color(0x002F4A78)));
+            
+            captionLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+            textLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            innerPanel.setBackground(new Color(0x00FFFFE1));
+            innerPanel.setOpaque(true);
+            
+            textLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 3, 3));
+
+            ImageIcon x = new ImageIcon(GnomeTrayIconService.class.getResource("images/x.gif"));
+            ImageIcon xx = new ImageIcon(GnomeTrayIconService.class.getResource("images/xx.gif"));
+            ImageIcon xxx = new ImageIcon(GnomeTrayIconService.class.getResource("images/xxx.gif"));
+            JButton closeButton = new JButton(x);
+            closeButton.setPreferredSize(new Dimension(x.getIconWidth(), x.getIconHeight()));
+            closeButton.setRolloverEnabled(true);
+            closeButton.setRolloverIcon(xx);
+            closeButton.setPressedIcon(xxx);
+            closeButton.setBorder(null);
+            closeButton.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e) {
+                    BalloonMessageWindow.this.hideCurrentMessageWindowImmediately();
+                }
+            });
+            closeButton.setToolTipText("Close");
+            JPanel closePanel = new JPanel();
+            closePanel.setOpaque(false);
+            closePanel.setLayout(new BorderLayout());
+            closePanel.add(closeButton, BorderLayout.NORTH);
+            
+            JPanel topPanel = new JPanel();
+            topPanel.setLayout(new BorderLayout());
+            topPanel.setOpaque(false);
+            topPanel.add(closePanel, BorderLayout.EAST);
+            topPanel.add(captionLabel, BorderLayout.CENTER);
+            topPanel.setBorder(BorderFactory.createEmptyBorder(3, 5, 0, 3));
+            innerPanel.add(topPanel, BorderLayout.NORTH);
+            innerPanel.add(textLabel, BorderLayout.CENTER);
+            
+            hideAction = new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+                    Thread hideThread = new Thread(){
+                     public void run(){
+                        doHide();    
+                     }
+                    };
+                    hideThread.start();
+				}
+            };
+            hideTimer = new javax.swing.Timer(timeout, hideAction);
+            hideTimer.setRepeats(false);
+        }
+        private void hideCurrentMessageWindowImmediately(){
+            if(showThread != null){
+                hideTimer.stop();
+                this.setVisible(false);
+
+                synchronized(GnomeTrayIconService.class){
+                    GnomeTrayIconService.class.notify();
+                    showThread = null;
+                }
+            }
+        }
+        
+        public void showBalloonMessage(final String caption, final String text, final int type){
+            if(showThread != null){
+                Thread waitThread = new Thread(){
+                    public void run(){
+                        synchronized(GnomeTrayIconService.class){
+                            try{
+                                if(showThread != null)
+                                    GnomeTrayIconService.class.wait();
+                            }catch(InterruptedException ie){
+                                ie.printStackTrace();
+                            }
+                        }
+                        doShowMessageWindow(caption, text, type);
+                    }
+                };
+                waitThread.start();
+            }else {
+                this.doShowMessageWindow(caption, text, type);
+            }
+        }
+        
+        private void doShowMessageWindow(final String caption, final String text, final int type){
+            showThread = new Thread(){
+                public void run(){
+                    doShow(caption, text, type);
+                }
+            };
+            showThread.start();
+        }
+     
+        private synchronized void doShow(String caption, String text, int type){
+            switch(type) {
+                case 0:
+                    captionLabel.setIcon(new ImageIcon(GnomeTrayIconService.class.getResource("images/info.png")));
+                    break;
+                case 1:
+                    captionLabel.setIcon(new ImageIcon(GnomeTrayIconService.class.getResource("images/error.png")));
+                    break;
+                case 2:
+                    captionLabel.setIcon(new ImageIcon(GnomeTrayIconService.class.getResource("images/warning.png")));
+                    break;
+                default :
+                    captionLabel.setIcon(null);
+                    break;
+            }
+            captionLabel.setText(caption != null ? caption : "");
+            if(text != null){
+                text = "<html>"+text.replaceAll("\\n", "<br>")+"</html>";
+                textLabel.setText(text);
+            }else{
+                textLabel.setText("");   
+            }
+            
+            this.pack();
+
+            pp = frame.getLocation();
+            SwingUtilities.convertPointToScreen(pp, frame);
+            p = new Point();
+
+            sd = Toolkit.getDefaultToolkit().getScreenSize();
+            pd = frame.getSize();
+            d = this.getSize();
+
+            // Adjust for the frame's size
+            pp.x -= 2;
+            pp.y -= 4;
+            pd.width += 2;
+            pd.height += 6;
+
+            p.x = (pp.x + d.width) < sd.width ? pp.x : sd.width-d.width;
+            downToup = (pp.y - d.height) > 0;
+            p.y = (pp.y - d.height) > 0 ? pp.y - d.height : pp.y + pd.height;
+            try{
+                if(downToup)
+                    this.setBounds(p.x, p.y+d.height, d.width, 1);
+                else
+                    this.setBounds(p.x, p.y, d.width, 1);
+
+                this.setVisible(true);
+                for(int i=1; i < d.height; i+=pixel){
+                    Thread.sleep(delay);
+                    if(downToup)
+                        this.setBounds(p.x, p.y+d.height-i, d.width, i);
+                    else
+                        this.setBounds(p.x, p.y, d.width, i);
+                    
+                    this.validate();
+                }
+                if(p.y != this.getLocation().y || d.height != this.getSize().getHeight()){
+                    this.setBounds(p.x, p.y, d.width, d.height);
+                    this.validate();
+                }
+                hideTimer.start();
+                //Thread.sleep(timeout);
+                //this.doHide();
+            }catch(Exception ie){
+            	System.out.println(ie);
+            }
+        }
+
+        private void doHide(){
+            p = this.getLocation();
+            d = this.getSize();
+            try{
+                for(int i=d.height; i>=1; i-=pixel){
+                    Thread.sleep(delay);
+                    if(downToup){
+                        this.setBounds(p.x, p.y+d.height-i, d.width, i);
+                    }else{
+                        this.setSize(d.width, i);
+                    }
+                    this.validate();
+                }
+            }catch(Exception e){}
+            this.setVisible(false);
+            
+            synchronized(GnomeTrayIconService.class){
+                showThread = null;
+                GnomeTrayIconService.class.notify();
+            }
+
+        }
+    }
+    
 }
