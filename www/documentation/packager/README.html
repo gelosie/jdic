@@ -1,0 +1,281 @@
+<html>
+<head>
+	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<title>JDIC Packager Readme</title>
+	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+	<meta NAME="AUTHOR" CONTENT=" ">
+	<meta NAME="CREATED" CONTENT="20000519;14440300">
+	<meta NAME="CHANGEDBY" CONTENT=" ">
+	<meta NAME="CHANGED" CONTENT="20000901;17584900">
+</head>
+
+<body>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=4 WIDTH="100%" BGCOLOR="#99CCFF" >
+  <tr> 
+    <td><strong><font face="sans-serif" size="3">README for JDIC Packager</font></strong></td>
+  </tr>
+</table>
+<h2><b>Table of Contents</b></h2>
+<p>1. <a href="#Overview">Overview</a><br>
+  2. <a href="#System Requirements">System Requirements</a><br>
+  3. <a href="#Binary">Binary</a><br>
+  4. <a href="#Source Code">Source Code</a><br>
+  5. <a href="#Usage">Usage</a><br>
+6. <a href="#License">License</a><br>
+7. <a href="#Contributors">Contributors</a></p>
+<p><b>1. <a name="Overview">Overview</a></b></p>
+<blockquote> 
+  <p>JDIC Packager is a Java-based tool to package JNLP applications into installable packages of
+  MSI/RPM/PKG format , standard Windows, Linux and Solaris OS packags respectively.
+  It's part of <a href="https://jdic.dev.java.net">JDIC</a> project.</p>
+</blockquote>
+<p><b>2. <a name="System Requirements"> System Requirements</a></b></p>
+<ul>
+  <li><b>Supported platforms</b>
+    <ul>
+      <li>Win98/ME/NT/2000/XP/2003, Linux SuSE 7.1 or later, RedHat 8 or later, Solaris 8 or later.</li>
+    </ul>
+  </li>
+      <li> <b> Additional software</b>
+        <ul>
+          <li>Windows98/NT: MSI service package. Download 
+      the following executable and install.<br>
+      <a href="http://download.microsoft.com/download/WindowsInstaller/Install/2.0/NT45/EN-US/InstMsiW.exe">Windows 
+      NT4 MSI Service Package</a>,
+      <a href="http://download.microsoft.com/download/WindowsInstaller/Install/2.0/W9XMe/EN-US/InstMsiA.exe">Windows 
+      9x MSI Service Package</a></li>
+          <li>Linux:
+      rpm-build package.</li>
+          <li>J2SE v1.5.0 or later.</li>
+        </ul>
+      </li>
+</ul>
+<p><b>3. <a name="Binary">Binary</a></b></p>
+<blockquote> 
+  <p>JDIC Packager is released both in binary distributions and 
+    source distributions. Binary distributions are available both in gzipped tar format
+  (jdic-packager-&lt;release number&gt;-bin-&lt;arch&gt;.tar.gz) and zip format
+  (jdic-packager-&lt;release 
+    number&gt;-bin-&lt;arch&gt;.zip) <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.</p>
+  <p>Extracting a binary distribution will create below directory
+  structure:</p>
+  
+  <pre><b>jdic-packager-&lt;release number&gt;-bin-&lt;arch&gt;</b>
++- README.html: this file.
+|
++- LICENSE: the license file.
+|
++- NOTES: Notes, issues and known bugs.
+|
++- bin/: contains Windows specific libraries and running exectuable.
+|  +- jPackager.exe: running executable.
+|  +- *.dll (For Windows platform only)
+|
++- lib/: contains jar file, Linux/Solaris-specific libraries, and running script.
+|  +- jPackager: running script.
+|  +- jdic-packager.jar
+|  +- *.so (For Linux and Solaris only)
+|
++- docs/: contains documentations.
+|  +- javadoc/:
+|
++- [demo]/: API demo
+|
++- [examples]/: contains API example source code and/or binaries.
+|
++- [tests]/: contains test case source code and/or binaries.
+</pre>
+</blockquote>
+<p><b>4. <a name="Source Code">Source Code</a></b></p>
+<blockquote> 
+  <p>JInstaller source distributions are available in gzipped tar 
+    format (jinstaller-&lt;release number&gt;-&lt;arch&gt;-src.tar.gz) and zip 
+    format (jinstaller-&lt;release number&gt;-&lt;arch&gt;-src.zip).</p>
+  <p><strong>4.1 Prerequisites</strong></p>
+  <p>The following additional tools and libraries to build the 
+    sources (including test code):</p>
+  <ul>
+    <li><b>Jakarta Ant</b>:<br>
+      JInstaller comes with a simple, Ant-based build system. Obtain and install 
+      <a href="http://ant.apache.org/" target="_blank">Ant</a> as outlined in the manual.</li>
+    <li><b>JUnit</b>: <br>
+      JInstaller uses JUnit as the test framework and tool. Obtain and install 
+      <a href="http://www.junit.org/">JUnit</a> as outlined in the manual, which 
+      is ONLY used to build and run test code.</li>
+    <li><b>[Windows] Microsoft Visual C++ Compiler</b>  : <br>
+      The Microsoft Visual C++ 6.0 Professional Edition compiler is required for 
+      building the source code. The compiler and tools binaries must be in the 
+      PATH.</li>
+  </ul>
+  <p><strong>4.2. Extract the source code</strong></p>
+    <p>Extracting a source distribution will create below
+    directory structure:</p>
+  <pre><b>jdic-packager-&lt;release number&gt;-src</b>
++- readme.html: this file.
+|
++- build.xml: contains Ant build scripts.
+|  build.properties:
+|
++- src/: contains source code.
+|  +- share/:
+|  |  +- classes/, native/
+|  |   
+|  +- win32/:
+|  |  +- jPackager.exe: running executable.
+|  |  +- classes/, native/
+|  |   
+|  +- unix/:
+|     +- jPackager: running script.
+|     +- classes/, native/
+|
++- demo/: API demo
+|
++- [examples]/: contains API example source code and/or binaries.
+|
++- [tests]/: contains test case source code and/or binaries.
+| 
++- [<i>dist</i>]/: generated directory containing the generated files and directories.
+   +- org/.../: contains the generated .class files.
+   +- *.dll, *.exe
+   +- jdic.jar
+   +- javadoc</pre>
+  <p><strong>4.3. Building</strong></p>
+  <blockquote>  
+    <p>After get and extract a source distribution, below are the 
+      basic steps to build it:</p>
+    <p> 1) Get and install the needed software as outlined in Section 
+      4.1, set up them correctly.</p>
+    <p>2) Change to the top directory of JDIC Packager source code. Run
+    &quot;<i>ant</i>&quot; to see all the available targets. The current available targets
+    are:<br>
+    &nbsp;&nbsp; <i>showtargets</i>: the default target, to display all the available
+    targets and their description.<br>
+    &nbsp;&nbsp; <i>clean</i>: target to remove all the generated directories
+    and files.<br>
+    &nbsp;&nbsp; <i>buildall: </i>target to build all the .jar files, native
+    libraries, javadoc for the current platform.</p>
+    <p>3) After a successful build, a new <i> dist</i> directory will 
+      be created, with all the generated directories and files put there.</p>
+    <p>4) If any changes are made to the source code, run Ant again. 
+      It will perform an incremental rebuild of the target.</p>
+  </blockquote> 
+  </blockquote>
+<p><b>5. <a name="Usage">Usage</a></b></p>
+<ul>
+  <li>Add jdic-packager.jar to CLASSPATH.</li>
+  <li>Add native library (*.dll/*.so) directory to PATH (for Windows) or
+    LD_LIBRARY_PATH (for Unix).</li>
+  <li>Run <b>jPackager:</b></li>
+</ul>
+<blockquote>
+
+<p><b>jPackager - the JDIC Packager launcher</b></p>
+
+<p>
+The <b>jPackager</b> tool launches JDIC Packager with the required path of the
+JNLP file and the given options. It's actually a wrapper script for the main
+class of JDIC Packager. It just pass down the user given path of .jnlp file or
+options to the main class.</p>
+
+  <ul>
+    <li><p><b>Synopsis</b></p></li>
+  </ul>
+  <pre>    <b>jPackager</b> [options] &lt;JNLP file path&gt;</pre>
+
+<blockquote>
+<dl><dt><a href="#options"><code>options</code></a>
+         </dt><dd>Command-line options in <b>-<i>option</i> <i>value</i></b>
+    format.
+
+     </dd><dt><code>&lt;JNLP file path&gt;</code>
+         </dt><dd>Required path of the JNLP file to be invoked.&nbsp;
+
+     </dd></dl>
+</blockquote>
+
+  <ul>
+    <li><p><b><a name="Options">Options</a></b></p></li>
+  </ul>
+  <blockquote>
+<dl><dt><b>-resourcepath</b> <i>resourcepath</i>
+        </dt>
+  <dd>Specify the path of the JNLP resource files.<br>
+	If this option is not set, the parent path (..) of the given JNLP file will
+    be used.</dd>
+    </dl>
+<dl><dt><b>-packagename</b> <i>packagename</i>
+        </dt>
+  <dd>Specify the name of the generated package.</dd>
+  <dd>
+	If this option is not set, the given JNLP file name without the suffix .jnlp
+    will be used.</dd>
+    </dl>
+<dl><dt><b>-packagepath</b> <i>packagepath</i>
+        </dt>
+  <dd>Specify the destination path of the generated package.<br>
+	If this option is not set,</dd>
+  <dd><i>Windows</i>: the current directory (.) will be used.<br>
+    <i>linux</i>: $HOME/rpm will be used.</dd>
+  <dd><i>Solaris</i>: . /var/spool/pkg will be used.</dd>
+    </dl>
+<dl><dt><b>-version</b> <i>version</i>
+        </dt>
+  <dd>Specify the version number of the generated package.</dd>
+  <dd>
+	If this option is not set, 1.0 will be used.</dd>
+    </dl>
+<dl><dt><b>-release</b> <i>release</i>
+        </dt>
+  <dd>Specify the release number of the generated package.</dd>
+  <dd>
+	If this option is not set, 1 will be used.</dd>
+    </dl>
+<dl><dt><b>-licensepath</b> <i>licensepath</i>
+        </dt>
+  <dd>Specify the path of the license files.<br>
+	If this option is not set, there would be license files used.</dd>
+    </dl>
+  </blockquote>
+</blockquote>
+<p><b>6. <a name="License">License</a></b></p>
+<blockquote> 
+  <p><a href="http://www.opensource.org/licenses/bsd-license.html">Berkeley 
+    Software Distribution (BSD)</a></p>
+</blockquote>
+<p><b>7. <a name="Contributors"> Contributors</a></b></p>
+<blockquote> 
+  <table width="75%" border="0">
+    <tr> 
+      <td><a href="mailto:laux@dev.java.net">Thorsten Laux</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td>Stanley Ho</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:funchung@dev.java.net">Thomas Ng</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td><a href="mailto:sceri@dev.java.net">Robert (Xu) Chen</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:paul_huang@dev.java.net">Paul (Peng) Huang</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:george@dev.java.net">George (Jichao) Zhang</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:joey_shen@dev.java.net">Joey (Zhuoli) Shen</a></td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  
+</blockquote>
+
+</body>
+</html>

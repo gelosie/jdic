@@ -1,0 +1,281 @@
+<html>
+<head>
+	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<title>JDIC API Readme</title>
+	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+	<meta NAME="AUTHOR" CONTENT=" ">
+	<meta NAME="CREATED" CONTENT="20000519;14440300">
+	<meta NAME="CHANGEDBY" CONTENT=" ">
+	<meta NAME="CHANGED" CONTENT="20000901;17584900">
+</head>
+
+<body>
+<table WIDTH="100%"  height="25" BORDER=0 CELLPADDING=4 CELLSPACING=0 bordercolor="#FFFFCC" BGCOLOR="#99CCFF" >
+  <tr> 
+    <td><p><strong><font face="sans-serif" size="3">README for
+      JDIC API</font></strong></p></td>
+  </tr>
+</table>
+<h2><b>Table of Contents</b></h2>
+<p>1. <a href="#Overview">Overview</a><br>
+  2. <a href="#System Requirements">System Requirements</a><br>
+  3. <a href="#Binary">Binary</a><br>
+  4. <a href="#Source">Source Code</a><br>
+  5. <a href="#Usage">Usage</a><br>
+6. <a href="#License">License</a><br>
+7. <a href="#Contributors">Contributors</a></p>
+<p><b>1. <a name="Overview">Overview</a></b></p>
+<blockquote> 
+  <p>     JDIC API is part of <a href="https://jdic.dev.java.net">JDIC</a>
+  project and is composed of below Java packages:<br>
+  <br>
+  <b>org.jdesktop.jdic.desktop</b>: APIs to automate native applications, including the document viewer applications associated with a particular file type, the system browser and the system mailer.<br>
+  <br>
+  <b>org.jdesktop.jdic.filetypes</b>: APIs to associate document viewer applications with
+  filetypes.<br>
+  <br>
+  <b>org.jdesktop.jdic.browser</b>: Provides an AWT component to enable the embedding of the desktop's web browsing component into Java applications and applets. The APIs support URL navigation, a basic history mechanism and progress notification.&nbsp;</p>
+</blockquote>
+<p><b>2. <a name="System Requirements"> System Requirements</a></b></p>
+<ul>
+  <li><b>Supported platforms</b>
+    <ul>
+      <li>Win98/ME/NT/2000/XP/2003, Linux SuSE 7.1 or later, RedHat 8 or later, Solaris 8 or later.</li>
+    </ul>
+  </li>
+      <li> <b> Additional software</b>
+        <ul>
+          <li>Windows: Internet Explorer 5 or later, or Mozilla 1.4 or later.</li>
+          <li>Linux/Solaris: Gnome 2.0, Ximian Evolution 1.4 or later, Mozilla 1.4
+            or later.</li>
+          <li>J2SE v1.4.2 or later.</li>
+        </ul>
+      </li>
+</ul>
+<p><b>3. <a name="Binary">Binary</a></b></p>
+<blockquote> 
+  <p>JDIC is released in both binary distributions and 
+    source distributions. Binary distributions are available in both gzipped tar format
+  (jdic-&lt;release number&gt;-bin-&lt;arch&gt;.tar.gz) and zip format (jdic-&lt;release 
+    number&gt;-bin-&lt;arch&gt;.zip) <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.</p>
+  <p>Extracting a binary distribution will create below directory
+  structure:</p>
+
+<pre><b>jdic-&lt;release number&gt;-bin-&lt;arch&gt;</b>
++- README.html: this file.
+|
++- LICENSE: the license file.
+|
++- NOTES: Notes, issues and known bugs.
+|
++- bin/: Windows specific libraries.
+|  +- *.dll (For Windows platform only)
+|
++- lib/: jar file and Linux/Solaris-specific libraries.
+|  +- jdic.jar, *.so (For Linux and Solaris only)
+|
++- docs/: documentations.
+|  +- javadoc/:
+|
++- demo/: API demo
+|
++- [tests]/: test case source code and/or binaries.
+</pre>
+</blockquote>
+<p><b>4. <a name="Source">Source Code</a></b></p>
+<blockquote> 
+  <p>JDIC source code could be checked out from CVS <a href="https://jdic.dev.java.net/source/browse/jdic/">tree</a>.&nbsp;</p>
+  <p>And JDIC source distributions are available both in gzipped tar 
+    format (jdic-&lt;release number&gt;-src.tar.gz) and zip format (jdic-&lt;release number&gt;-src.zip)
+  <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.</p>
+  <p><b>4.1. Prerequisites</b></p>
+  <blockquote>
+  <p>The following additional tools and libraries are needed to build the JDIC source code:</p>
+  </blockquote>
+  <ul>
+    <li><b>Jakarta Ant:</b><br>
+      JDIC comes with a simple, Ant-based build system. Obtain and install 
+      <a href="http://ant.apache.org/" target="_blank">Ant</a> 1.5.4 or later as outlined in 
+      the manual.</li>
+    <li><b>JUnit:</b><br>
+      JDIC uses JUnit as the test framework and tool. Obtain and install <a href="http://www.junit.org/" target="_blank">JUnit</a> 
+      as outlined in the manual, which is ONLY used to build and run test code. 
+    </li>
+    <li><b>Windows:</b>
+      <ul>
+        <li><b>Microsoft Visual C++ Compiler</b><br>
+          The Microsoft Visual C++ 6.0 Professional Edition compiler is required.</li>
+        <li><b>Microsoft Platform Software Development Kit (SDK)<br>
+          </b>It can be downloaded from <a href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">here</a>.</li>
+      </ul>
+    </li>
+    <li><b>Linux:</b>
+      <ul>
+        <li><b>GNU Make</b><br>
+      GNU make version 3.78.1 or later is required, which can be downloaded from
+          <a href="http://www.gnu.org/software/make/make.html" target="_blank">GNU 
+      make web site</a>.</li>
+        <li><b>GCC Compiler</b><br>
+          GNU gcc version 3.2.1-7 or later is required, which can be downloaded
+          from <a href="http://gcc.gnu.org/">GCC home page</a></li>
+      </ul>
+    </li>
+    <li><b>Solaris:</b>
+      <ul>
+        <li><b>GNU Make</b><br>
+      GNU make version 3.78.1 or later is required, which can be downloaded from
+          <a href="http://www.gnu.org/software/make/make.html" target="_blank">GNU 
+      make web site</a>.</li>
+        <li><b>Sun ONE Studio Compilers (formerly Forte Tools)</b><br>
+          Forte 6 Update 2 or later Sun ONE Studio 8, Compiler Collection, which
+          could be found <a href="http://wwws.sun.com/software/download/app_dev.html">here</a>
+          or from <a href="http://wwws.sun.com/software/sundev/suncc/index.html">Sun ONE Studio Developer Tools web
+          site</a>.</li>
+      </ul>
+ </li>
+  </ul>
+  <p><b>4.2. Extract the source code</b></p>
+  <blockquote>
+    Extracting a source distribution will create below directory
+    structure:<pre><b>JDIC-&lt;release number&gt;-src</b>
++- README.html: this file.
+|
++- build.xml: Ant build scripts.
+|
++- src/: source code.
+|  +- share/: platform independent class and native files.
+|  |   +- classes/:
+|  |   +- native/
+|  |      +- mozilla/: shared C++ code for embedding mozilla.
+|  |      +- utils/: shared C++ code for embedding mozilla and Internet Explorer.
+|  |   
+|  +- win32/: Windows specific class and native files.
+|  |   +- classes/ 
+|  |   +- native/
+|  |      +- jni/: JNI code.
+|  |      +- mozilla/: C++ code for embedding mozilla.
+|  |      +- iexplorer/: C++ source code for embedding Internet Explorer.
+|  |   
+|  +- unix/: Unix specific class and native files.
+|     +- classes/
+|     +- native/
+|        +- jni/: 
+|        +- mozilla/: C++ source code for embedding mozilla.
+|
++- demo/: API demo
+|
++- [tests]/: test case source code and/or binaries.
+| 
++- [<i>dist</i>]/: generated directory containing the generated files and directories.
+   +- org/.../: the generated .class files.
+   +- jdic.jar
+   +- *.dll, *.exe or *.so
+   +- javadoc
+</pre>
+  </blockquote>
+  <p><b>4.3. Building</b></p>
+  <blockquote>
+  <p>After get and extract a source distribution, below are the 
+      basic steps to build it:</p>
+  </blockquote>
+  <ul>
+    <li>Get and install the needed software as outlined in Section 
+      4.1, set up them correctly.
+    </li>
+    <li>Get and build Mozilla 1.4 or later source code. Please
+    refer to <a href="http://www.mozilla.org/">http://www.mozilla.org/</a>, and <a href="http://www.mozilla.org/build/">http://www.mozilla.org/build/</a>
+    for where to download and how to build it. And refer to a FAQ in case of
+      problems.&nbsp;
+      <br>
+ Setup
+    the environment variable <i> MOZILLA_SRC_HOME</i> to the top directory of Mozilla source code.
+    </li>
+    <li>Change to the top directory of JDIC source code. Run
+    &quot;<i>ant</i>&quot; to see all the available targets. The main available targets
+    are:<br>
+    &nbsp;&nbsp; <i>showtargets</i>: the default target, to display all the available
+    targets and their description.<br>
+    &nbsp;&nbsp; <i>clean</i>: target to remove all the generated directories
+    and files.<br>
+    &nbsp;&nbsp; <i>buildall</i>: target to build all the .jar files, native
+    libraries, javadoc for the current platform.</li>
+  </ul>
+  <blockquote>
+    <p>After a successful build, a new dist directory will 
+      be created, with all the generated directories and files. If any changes are made to the source code, run
+    Ant again. 
+      It will perform an incremental rebuild of the target.</p>
+  </blockquote>
+</blockquote>
+<p><b>5. <a name="Usage">Usage</a></b></p>
+<ul>
+  <li>Add jdic.jar to CLASSPATH.
+  </li>
+  <li>Add native library (*.dll/*.so) directory to PATH
+    (for Windows) or LD_LIBRARY_PATH (for Unix).
+  </li>
+  <li>Specific usage settings to use package <b>org.jdesktop.jdic.browser</b>
+    <ul>
+      <li><b>Windows</b><br>
+        Add <i>&lt;JAVA_HOME&gt;\jre\bin</i> to PATH.<br>
+        By default, the system default browser (Mozilla/IE) will be embeded. But
+        if the user specifies the embedded browser using <i>org.jdesktop.jdic.browser.WebBrowser.browserBinary =
+        &lt;Browser Path&gt;</i>, the specified browser will be embedded.<br>
+        If Mozilla is the embeded browser:<br>
+        1) Setup the environment variable <i> MOZILLA_FIVE_HOME</i> to specify
+        the path where Mozilla 1.4 (or later) executables locates.<br>
+        2) Copy MozEmbed.exe file to <i>MOZILLA_FIVE_HOME</i> directory.<br>
+        3) Add <i> MOZILLA_FIVE_HOME</i> to PATH.</li>
+      <li><b>Linux/Solaris</b><br>
+        1) Setup the environment variable <i> MOZILLA_FIVE_HOME</i> to specify
+        the path where Mozilla 1.4 (or later) executables locates.<br>
+        2) Add <i> MOZILLA_FIVE_HOME</i> to LD_LIBRARY_PATH.</li>
+    </ul>
+  </li>
+</ul>
+<p><b>6. <a name="License"> License</a></b></p>
+<blockquote> 
+  <p> <a href="http://www.opensource.org/licenses/bsd-license.html">Berkeley Software Distribution
+  (BSD)</a> &amp; <a href="http://www.mozilla.org/MPL/"> MPL</a></p>
+</blockquote>
+<p><b>7. <a name="Contributors"> Contributors</a></b></p>
+<blockquote> 
+  <table width="75%" border="0">
+    <tr> 
+      <td><a href="mailto:laux@dev.java.net">Thorsten Laux</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td>Stanley Man-Kit Ho</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td><a href="mailto:funchung@dev.java.net">Thomas Ng</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:paul_huang@dev.java.net">Paul (Peng) Huang</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:georgez@dev.java.net">George (Jichao) Zhang</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:joey_shen@dev.java.net">Joey (Zhuoli) Shen</a></td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Kyle Yuan</td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Mia Xiao</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+</html>
