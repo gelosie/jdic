@@ -41,6 +41,9 @@ To Install:
       Red Hat 9:
         SCREENSAVER_BIN=/usr/X11R6/bin
         SCREENSAVER_CONF=/usr/share/control-center/screensavers
+      Fedora Core 3:
+        SCREENSAVER_BIN=/usr/X11R6/lib/xscreensaver
+        SCREENSAVER_CONF=/usr/share/control-center/screensavers
       Other platforms:
         SCREENSAVER_BIN=(search for an xscreensaver, like apollonian)
         SCREENSAVER_CONF=(search for a config file, like apollonian.xml)
