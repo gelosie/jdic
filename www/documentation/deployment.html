@@ -30,10 +30,7 @@ var et_ssl = 1;
 var et_pagename = "JDIC%20Application%20Deployment";
 var et_areas = "";
 var et_ilevel = 0;
-</script>
-<!-- etracker PARAMETER END -->
-
-<!-- etracker CODE 2.0.6 -->
+</script><!-- etracker PARAMETER END --><!-- etracker CODE 2.0.6 -->
 <script type="text/javascript">
 var et_server="http://www.etracker.de";
 var et_sslserver="https://www.etracker.de";
@@ -64,204 +61,171 @@ et_pagename);tc=new Date();document.write("<a target='_blank' href='"+et_referer
 param+"'><img border='0' alt='' src='"+(et_ssl==1?et_sslserver:et_server)+
 "/cnt.php?java=y&amp;tc="+tc.getTime()+"&amp;et="+param+"&amp;et_ilevel="+
 et_ilevel+et_easy+et_p+et_a+cex+et_t+et_lpage+et_sw+et_sc+et_ref+et_pl+"'/>"+
-"<\/a>");}</script><script type="text/javascript1.2">et_sw=screen.width;et_sc=
+"<\/a>");}</script>
+<script type="text/javascript1.2">et_sw=screen.width;et_sc=
 navigator.appName!='Netscape'?screen.colorDepth:screen.pixelDepth;</script>
-<script type="text/javascript">et_eC('ir339g');</script>
-
-<!-- etracker CODE NOSCRIPT -->
-<noscript>
-<a target="_blank" href="http://www.etracker.de/soverview.php?c=1&amp;et=ir339g">
-<img border="0" alt="" src="https://www.etracker.de/cnt.php?et=ir339g&amp;java=n&amp;
+<script type="text/javascript">et_eC('ir339g');</script><!-- etracker CODE NOSCRIPT -->
+<noscript><a target="_blank"
+href="http://www.etracker.de/soverview.php?c=1&amp;et=ir339g">
+<img border="0" alt=""
+src="https://www.etracker.de/cnt.php?et=ir339g&amp;java=n&amp;
 et_easy=0&amp;et_pagename=JDIC%20Application%20Deployment&amp;et_areas=&amp;et_ilevel=&amp;
 et_target=&amp;et_lpage=&amp;et_trig="/></a>
 </noscript>
 <!-- etracker CODE END -->
-<table width="100%"  height="25" border=0 cellpadding=4 cellspacing=0 bordercolor="#FFFFCC" bgcolor="#99CCFF" >
-  <tr>
-    <td><strong><font face="sans-serif" size="3">Deploying a JDIC Application 
-      Using Java Web Start</font></strong></td>
-  </tr>
+<table width="100%" height="25" border="0" cellpadding="4"
+ cellspacing="0" bordercolor="#ffffcc" bgcolor="#99ccff">
+  <tbody>
+    <tr>
+      <td><strong><font face="sans-serif" size="3">Deploying a JDIC
+Application Using Java Web Start</font></strong></td>
+    </tr>
+  </tbody>
 </table>
 <br>
-Java&#153; Web Start technology provides powerful tools to deploy cross-platform 
-client-side Java applications. You can find information about these tools at the 
-<a href="http://java.sun.com/products/javawebstart/">Java Web Start website</a>. 
-This document walks you through the process of using Java Web Start to deploy 
-an application that uses the JDIC APIs. 
+Java&#8482; Web Start technology provides powerful tools to deploy
+cross-platform client-side Java applications. You can find information
+about these tools at the <a
+ href="http://java.sun.com/products/javawebstart/">Java Web Start
+website</a>. This document walks you through the process of using Java
+Web Start to deploy an application that uses the JDIC APIs.
 <h3><b>Sample Application: FileExplorer</b></h3>
-  
-<blockquote>To give the implementation details of how to deploy a JDIC application 
-  using Java Web Start, we'll use a JDIC demo application &quot;FileExplorer&quot; 
-  as a sample application. This is currently deployed in the <a href="https://jdic.dev.java.net"> 
-  JDIC home page</a>. The source code of FileExplorer is provided under the <code>demo/FileExplorer</code> 
-  subdirectory in both the binary and source distributions.&nbsp; 
+<blockquote>To give the implementation details of how to deploy a JDIC
+application using Java Web Start, we'll use a JDIC demo application
+"FileExplorer" as a sample application. This is currently deployed in
+the <a href="https://jdic.dev.java.net"> JDIC home page</a>. The
+source code of FileExplorer is provided under the <code>demo/FileExplorer</code>
+subdirectory in both the binary and source distributions.&nbsp; <br>
   <br>
-  <br>
-  FileExplorer is a simple cross-platform file explorer that allows users to view 
-  the files and folders on a local disk. It uses the JDIC APIs to automate launching 
-  the default file handler for a particular file type, the system default browser, 
-  and the system mailer. Figure 1 demonstrates the application running on Windows 
-  XP.
-  <br>
+FileExplorer is a simple cross-platform file explorer that allows users
+to view the files and folders on a local disk. It uses the JDIC APIs to
+automate launching the default file handler for a particular file type,
+the system default browser, and the system mailer. Figure 1
+demonstrates the application running on Windows XP. <br>
   <br>
 Figure 1. FileExplorer running on Windows XP.
 </blockquote>
-<p><img border="0" src="../resource/fileexplorer.jpg" width="644" height="422"><br>
+<p><img border="0" src="../resource/fileexplorer.jpg" width="644"
+ height="422"><br>
 <br>
 </p>
-
-    
-<h3><b>Steps </b><b>for deploying the FileExplorer application using Java Web 
-  Start<br>
-  <br>
-  </b></h3>
-
-<b>1. Package the required application and JDIC 
-  binary files as JAR files.</b>
+<h3><b>Steps </b><b>for deploying the FileExplorer application using
+Java Web Start<br>
+<br>
+</b></h3>
+<b>1. Package the required application and JDIC binary files as JAR
+files.</b>
 <blockquote>
   <ul>
-    <li>Create a <code><b>fileexplorer.jar</b></code> file with the generated 
-      FileExplorer .class files and image resource files using the <code>jar</code> 
-      tool;</li>
-    <li>Create a platform-dependent <code><b>jdicnativelib.jar</b></code> file 
-      with the platform-dependent JDIC native files using the <code>jar</code> 
-      tool.</li>
-    <li>Put the generated JAR files and platform-dependent <code><b>jdic.jar</b></code> 
-      files in the appropriate folders.</li>
+    <li>Create a <code><b>fileexplorer.jar</b></code> file with the
+generated FileExplorer .class files and image resource files using the <code>jar</code>
+tool;</li>
+    <li>Create a platform-dependent <code><b>jdic-native.jar</b></code>
+file with the platform-dependent JDIC native files using the <code>jar</code>
+tool.<br>
+      <span style="font-weight: bold;">NOTE</span>: the native jar file
+name must be <code style="font-weight: bold;">jdic-native.jar</code>.
+Since the application needs to retrieve the native files after the jar
+file is unjar'ed by Java Web Start.<br>
+    </li>
+    <li>Put the generated JAR files and platform-dependent <code><b>jdic.jar</b></code>
+files in the appropriate folders.</li>
   </ul>
-  Example:
+Example:
   <blockquote>
-    <p><code>http://localhost:8080/fileexplorer
-    (root directory)</code></p>
+    <p><code>http://localhost:8080/fileexplorer (root directory)</code></p>
     <ul type="circle">
-      <li><code>lib/fileexplorer.jar</code>: contains the Java class files and 
-        image resource files of FileExplorer. </li>
-      <li><code>lib/win32/jdic.jar</code>: contains the JDIC Java class files 
-        for Windows. </li>
-      <li><code>lib/win32/jdicnativelib.jar</code>: contains the JDIC native libraries 
-        for Windows.</li>
-      <li><code>lib/linux/jdic.jar</code>: contains the JDIC Java class files 
-        for Linux.</li>
-      <li><code>lib/linux/jdicnativelib.jar</code>: contains the JDIC native libraries 
-        for Linux. </li>
-      <li><code>lib/solaris/jdic.jar</code>: contains the JDIC Java class files 
-        for Solaris.</li>
-      <li><code>lib/solaris/jdicnativelib.jar</code>: contains the JDIC native 
-        libraries for Solaris. </li>
+      <li><code>lib/fileexplorer.jar</code>: contains the Java class
+files and image resource files of FileExplorer. </li>
+      <li><code>lib/win32/jdic.jar</code>: contains the JDIC Java class
+files for Windows. </li>
+      <li><code>lib/win32/jdic-native.jar</code>: contains the JDIC
+native libraries for Windows.</li>
+      <li><code>lib/linux/jdic.jar</code>: contains the JDIC Java class
+files for Linux.</li>
+      <li><code>lib/linux/jdic-native.jar</code>: contains the JDIC
+native libraries for Linux. </li>
+      <li><code>lib/solaris/jdic.jar</code>: contains the JDIC Java
+class files for Solaris.</li>
+      <li><code>lib/solaris/jdic-native.jar</code>: contains the JDIC
+native libraries for Solaris. </li>
     </ul>
   </blockquote>
 </blockquote>
-
 <b>2. Implement a JNLP file</b>
-  <blockquote>
-Below is a sample <span style="font-weight: bold;"><code>fileexplorer.jnlp</code></span> 
-  file for the FileExplorer application: <br><br>
-
+<blockquote>Below is a sample <span style="font-weight: bold;"><code>fileexplorer.jnlp</code></span>
+file for the FileExplorer application: <br>
+  <br>
   <table bgcolor="#cccccc" width="100%" cellpadding="5" cellspacing="0"
  border="1">
     <tbody>
       <tr>
         <td>
-        <pre><code>1    &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt; 
-2    &lt;!-- JNLP File for JDIC Demo Application (FileExplorer) --&gt; 
-3    &lt;jnlp spec=&quot;1.0+&quot; codebase=&quot;</code><code>http://localhost:8080/fileexplorer</code><code>&quot; href=&quot;fileexplorer.jnlp&quot;&gt; 
-4        &lt;information&gt; 
-5            &lt;title&gt;JDIC FileExplorer Example&lt;/title&gt; 
-6            &lt;vendor&gt;Your website&lt;/vendor&gt; 
-7            &lt;description&gt;</code><code>FileExplorer Example App.</code><code>&lt;/description&gt; 
-8           &lt;description kind=&quot;short&quot;&gt;</code><code>FileExplorer Example App.</code><code>&lt;/description&gt; 
-9           &lt;offline-allowed/&gt; 
-10       &lt;/information&gt; 
-11       &lt;security&gt; 
-12           &lt;all-permissions/&gt;
-13       &lt;/security&gt; 
-14       &lt;resources&gt;
-15           &lt;j2se      version=&quot;1.4&quot;/&gt;
-16           &lt;jar       href=&quot;lib/fileexplorer.jar&quot;/&gt; </code>
-<code>17       &lt;/resources&gt;
-18       &lt;resources os=&quot;Windows&quot;&gt;
-19           &lt;jar       href=&quot;lib/win32/jdic.jar&quot;/&gt; 
-20           &lt;nativelib href=&quot;lib/win32/jdicnativelib.jar&quot;/&gt;
-21       &lt;/resource&gt;
-</code><code>22       &lt;resources os=&quot;SunOS&quot;&gt;
-</code><code>23           &lt;jar       href=&quot;lib/solaris/jdic.jar&quot;/&gt; 
-24           &lt;nativelib href=&quot;lib/solaris/jdicnativelib.jar&quot;/&gt;
-25       &lt;/resource&gt;
-26       &lt;resources os=&quot;Linux&quot;&gt;
-27           &lt;jar       href=&quot;lib/linux/jdic.jar&quot;/&gt; 
-28           &lt;nativelib href=&quot;lib/linux/jdicnativelib.jar&quot;/&gt;
-29       &lt;/resource&gt;
-30       &lt;application-desc main-class=&quot;FileExplorer&quot;/&gt;
-31    &lt;/jnlp&gt;
-</code></pre>
+        <pre><code>1    &lt;?xml version="1.0" encoding="utf-8"?&gt; <br>2    &lt;!-- JNLP File for JDIC Demo Application (FileExplorer) --&gt; <br>3    &lt;jnlp spec="1.0+" codebase="</code><code>http://localhost:8080/fileexplorer</code><code>" href="fileexplorer.jnlp"&gt; <br>4        &lt;information&gt; <br>5            &lt;title&gt;JDIC FileExplorer Example&lt;/title&gt; <br>6            &lt;vendor&gt;Your website&lt;/vendor&gt; <br>7            &lt;description&gt;</code><code>FileExplorer Example App.</code><code>&lt;/description&gt; <br>8           &lt;description kind="short"&gt;</code><code>FileExplorer Example App.</code><code>&lt;/description&gt; <br>9           &lt;offline-allowed/&gt; <br>10       &lt;/information&gt; <br>11       &lt;security&gt; <br>12           &lt;all-permissions/&gt;<br>13       &lt;/security&gt; <br>14       &lt;resources&gt;<br>15           &lt;j2se      version="1.4+"/&gt;<br>16           &lt;jar       href="lib/fileexplorer.jar"/&gt; </code><br><code>17       &lt;/resources&gt;<br>18       &lt;resources os="Windows"&gt;<br>19           &lt;jar       href="lib/win32/jdic.jar"/&gt; <br>20           &lt;nativelib href="lib/win32/jdic-native.jar"/&gt;<br>21       &lt;/resources&gt;<br></code><code>22       &lt;resources os="SunOS"&gt;<br></code><code>23           &lt;jar       href="lib/solaris/jdic.jar"/&gt; <br>24           &lt;nativelib href="lib/solaris/jdic-native.jar"/&gt;<br>25       &lt;/resources&gt;<br>26       &lt;resources os="Linux"&gt;<br>27           &lt;jar       href="lib/linux/jdic.jar"/&gt; <br>28           &lt;nativelib href="lib/linux/jdic-native.jar"/&gt;<br>29       &lt;/resources&gt;<br>30       &lt;application-desc main-class="FileExplorer"/&gt;<br>31    &lt;/jnlp&gt;<br></code></pre>
         </td>
       </tr>
     </tbody>
   </table>
   <br>
-  
-  <strong>Note:
-  </strong>
+  <strong>Note: </strong>
   <ul>
-    <li>In line 3, the <code><b>codebase</b></code> attribute and in lines 4 through 
-      10, the attributes specified in the <code><b>information</b></code> tag 
-      should be changed accordingly by the user.<br>
+    <li>In line 3, the <code><b>codebase</b></code> attribute and in
+lines 4 through 10, the attributes specified in the <code><b>information</b></code>
+tag should be changed accordingly by the user.<br>
     </li>
-    <li>A JDIC application is required to load a system library upon execution, 
-      it needs to have full access to the user's machine. The <code><b>security</b></code> 
-      tag in lines 11 through 13 shows how an application can request full access 
-      to a client's environment. In order for Java Web Start to grant this level 
-      of access, all the application's JAR files must be digitally signed (see 
-      below step 3).<br>
+    <li>A JDIC application is required to load a system library upon
+execution, it needs to have full access to the user's machine. The <code><b>security</b></code>
+tag in lines 11 through 13 shows how an application can request full
+access to a client's environment. In order for Java Web Start to grant
+this level of access, all the application's JAR files must be digitally
+signed (see below step 3).<br>
     </li>
-    <li>The <code><b>resources</b></code> tag in lines 14 through 17 specifies 
-      the application JAR file, which contains cross-platform Java class files 
-      and image resource files.<br>
+    <li>The <code><b>resources</b></code> tag in lines 14 through 17
+specifies the application JAR file, which contains cross-platform Java
+class files and image resource files.<br>
     </li>
-    <li>The <code><b>resources</b></code> tags in lines 18 through 29 load the 
-      appropriate JDIC JAR files for a particular operating system (Windows/Linux/Solaris). 
-      <br>
-      The <code><b>os</b></code> attribute specifies the operating system for 
-      which the resources element should be considered,<code><i> </i></code>which 
-      is based on the end user's <code>os.name</code> Java system property. <br>
-      The <code><b>resources</b></code> tags could also allow resources for use 
-      only by a particular architecture, such as x86 and sparc, by specifying 
-      the <code><b>arch</b></code> attribute, which is based on the end user's 
-      <code>os.arch</code> Java system property. Since JDIC depends on the operation 
-      system,&nbsp; not on the architecture, the <b><code>arch</code></b> attribute 
-      is not used.<br>
+    <li>The <code><b>resources</b></code> tags in lines 18 through 29
+load the appropriate JDIC JAR files for a particular operating system
+(Windows/Linux/Solaris). <br>
+The <code><b>os</b></code> attribute specifies the operating system
+for which the resources element should be considered,<code><i> </i></code>which
+is based on the end user's <code>os.name</code> Java system property. <br>
+The <code><b>resources</b></code> tags could also allow resources for
+use only by a particular architecture, such as x86 and sparc, by
+specifying the <code><b>arch</b></code> attribute, which is based on
+the end user's <code>os.arch</code> Java system property. Since JDIC
+depends on the operation system,&nbsp; not on the architecture, the <b><code>arch</code></b>
+attribute is not used.<br>
     </li>
-    <li>The <code><b>nativelib</b></code> tags in lines 20, 24, and 28 tell Java 
-      Web Start that the specified JAR file contains native libraries. For JDIC, 
-      the native JAR files contain some <code>.dll</code> files for Windows, or 
-      some <code>.so</code> files for Linux/Solaris.<br>
+    <li>The <code><b>nativelib</b></code> tags in lines 20, 24, and 28
+tell Java Web Start that the specified JAR file contains native
+libraries. For JDIC, the native JAR files contain some <code>.dll</code>
+files for Windows, or some <code>.so</code> files for Linux/Solaris.<br>
     </li>
-    <li>In line 30, the <code>main-class</code> attribute in the <code><b>application-desc</b></code> 
-      tag specifies the main class name, by which Java Web Start finds the class 
-      containing the <code>main</code> method to execute.&nbsp; </li>
+    <li>In line 30, the <code>main-class</code> attribute in the <code><b>application-desc</b></code>
+tag specifies the main class name, by which Java Web Start finds the
+class containing the <code>main</code> method to execute.&nbsp; </li>
   </ul>
-  </blockquote>
-  
-  <b>3. Sign the JAR files</b>
-  <blockquote>
- Each JAR file must be 
-  signed with your own key certificate. Details on the JAR certification can be 
-  found at <a href="http://java.sun.com/j2se/1.4.2/docs/guide/jws/developersguide/development.html#security">Security 
-  and Code Signing</a>.</blockquote>
-
+</blockquote>
+<b>3. Sign the JAR files</b>
+<blockquote> Each JAR file must be signed with your own key
+certificate. Details on the JAR certification can be found at <a
+ href="http://java.sun.com/j2se/1.4.2/docs/guide/jws/developersguide/development.html#security">Security
+and Code Signing</a>.</blockquote>
 <b>4. Deploy and test the JNLP application</b>
 <blockquote>
   <ul>
-    <li>Set up a local web server and put the <code>fileexplorer</code> directory 
-      in the root directory. </li>
-    <li>Open a Web browser to the following URL and click on the following link: 
+    <li>Set up a local web server and put the <code>fileexplorer</code>
+directory in the root directory. </li>
+    <li>Open a Web browser to the following URL and click on the
+following link:
       <p><code><a href="http://localhost/fileexplorer/fileexplorer.jnlp">http://localhost/fileexplorer/fileexplorer.jnlp</a></code>
+      </p>
     </li>
   </ul>
-  Clicking the link should activate Java Web Start and download the JAR files 
-    (Note: If you haven't associated .jnlp files with the <code>javaws</code> 
-    exectuable, you should choose the <code>javaws</code> executable to open it.) 
-    After that, FileExplorer launches. 
-</blockquote>
+Clicking the link should activate Java Web Start and download the JAR
+files (Note: If you haven't associated .jnlp files with the <code>javaws</code>
+exectuable, you should choose the <code>javaws</code> executable to
+open it.) After that, FileExplorer launches. </blockquote>
 </body>
 </html>
