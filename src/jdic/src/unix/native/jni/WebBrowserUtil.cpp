@@ -111,7 +111,6 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
 
         // Check if libxpcom.so is located at the Mozilla parent path. If not, 
         // scan the Mozilla command file for the MOZILLA_FIVE_HOME setting.
-        char *moz5home_env = NULL;
         char *moz5home_value;
         if (mozpath) {
             // Check if libxpcom.so exists at the same path.
@@ -119,7 +118,6 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
             char *parentpath = g_strndup(mozpath, str_p - mozpath);
             char *libpath = g_strconcat (parentpath, "/libxpcom.so", NULL);
             if (stat (libpath, &stat_p) == 0) {
-                moz5home_env = g_strconcat("MOZILLA_FIVE_HOME=", parentpath, NULL);
 #ifdef DEBUG
                 printf("Found libxpcom.so under mozilla binary path: %s\n", parentpath);
 #endif
@@ -137,7 +135,6 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
                         if (substr_p) {
                             moz5home_value = 
                               g_strdup(substr_p + strlen("MOZILLA_FIVE_HOME=")); 
-                            //moz5home_env = g_strdup(buf);
                             if (moz5home_value && strlen(moz5home_value)) {
                                 moz5home_value = g_strstrip(moz5home_value);
                                 if (moz5home_value) {
@@ -157,9 +154,6 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
                                             break;
                                         }
                                     }
-
-                                    moz5home_env = g_strconcat("MOZILLA_FIVE_HOME=", 
-                                                               moz5home_value, NULL);
 #ifdef DEBUG
                                     printf("Scaned MOZILLA_FIVE_HOME setting from %s as: %s\n", 
                                         mozpath, moz5home_value);
@@ -175,21 +169,8 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_browser_WebBrowserUtil_nativeGe
             }
             g_free(mozpath);
         }
-
-        // Set the retrieved MOZILLA_FIVE_HOME value and add it to 
-        // LD_LIBRARY_PATH.
-        if (!moz5home_env) {
-            return NULL;
-        } else {
-            putenv(moz5home_env);
-            char *ld_env = g_strdup_printf ("LD_LIBRARY_PATH=%s:%s", 
-                getenv("MOZILLA_FIVE_HOME"), getenv("LD_LIBRARY_PATH"));
-            putenv(ld_env);
-
-            moz5home_value = getenv("MOZILLA_FIVE_HOME");
-            return (moz5home_value == NULL) ? 
-                NULL : env->NewStringUTF(moz5home_value);  
-        }
+        return (moz5home_value == NULL) ? 
+            NULL : env->NewStringUTF(moz5home_value);  
     } // end of MOZILLA_FIVE_HOME not set by the user, check and set it.
 }
 
