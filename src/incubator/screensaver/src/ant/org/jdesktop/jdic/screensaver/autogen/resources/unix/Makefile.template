@@ -38,11 +38,13 @@ checkpaths:
                 echo "Directory ${xscreensaverhome} not found."; \
                 echo "Please edit Makefile and set xscreensaverhome to "; \
                 echo "the install directory for xscreensaver src."; \
+		false; \
         fi;
 	@if [ ! -d ${jdkhome} ]; then \
                 echo "Directory ${jdkhome} not found."; \
                 echo "Please edit Makefile and set jdkhome to "; \
                 echo "the install directory for J2SDK 1.5.0 or greater."; \
+		false; \
         fi;
 
 [[targets]]
