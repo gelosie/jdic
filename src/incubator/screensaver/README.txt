@@ -41,6 +41,9 @@ The SaverBeans SDK contains the following components:
     * SaverBeans API Javadocs - Javadocs for the SaverBeans APIs.
     * Screensaver Startup Kit - Sample project including a build file, 
       skeleton screensaver and configuration file.
+    * Screensaver JOGL Startup Kit - Sample project for jogl (OpenGL) 
+      screensavers including a build file, skeleton screensaver and 
+      configuration file.
 
 
 SaverBeans Screensaver Pack
@@ -199,13 +202,16 @@ API.  These javadocs are used as a reference by screensaver
 developers.
 
 
-Screensaver Startup Kit
------------------------
+Screensaver Startup Kit and JOGL (OpenGL) Startup Kit
+-----------------------------------------------------
 This component is a skeleton screensaver project startup kit,
 containing a build.xml, simple screensaver and a configuration file.
 It allows screensaver developers to get a quick start and provides a 
 consistent look and feel between screensaver projects developed using 
 the SaverBeans SDK.
+
+The jogl version includes all the code you need to get started writing
+JOGL screensavers in Java.
 
 To create your own screensaver, simply unpack the startup kit
 to a new directory and start tweaking!
@@ -230,6 +236,12 @@ forums and mailing lists available.
 
 Revision History
 ----------------
+Version 0.2
+    * Added a destroy() method to the ScreensaverBase API so that
+      screensavers can release resources before shutting down.
+    * Added JOGL (OpenGL) Screensaver Startup Kit and corresponding APIs
+      This allows developers to write OpenGL 3D screensavers in Java!
+
 Version 0.1.1 - June 10, 2004
     * Fixed screensavers.dev.java.net issue #1:
       Fatal Exception if *.scr and *.jar not in system32 directory
