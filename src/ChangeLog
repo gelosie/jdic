@@ -1,17 +1,27 @@
-    * Up to date
+2005-01-27 George Zhang <georgez@dev.java.net>
+
+    * Release 0.8.8
     
     * Fixed issue list:   
       ID  Pri  Summary
-      ==  ===  =======
+      ==  ===  =======      
       101 P2   Browser not working with Mozilla installable (.exe) package
+      102 P3   PrivilegedActionException left wrapped in reporting in web b
       106 P1   Tray disapears under windows
       141 P3   I18N issue with tray support
       147 P3   Jnlp2msi dose not support relative path.
-      148 P3   System tray empty space after remove/add
-      150 P3   Tray's popup menu shows behind the frame if JFrame.setAlwaysOnTop(true)
-      128 P3   PopupMenu is shown behind the taskbar if the auto-hide taskbar is enabled.
-      155 P3   Tray popup menu flashes on screen briefly(On Linux)
+      148 P3   Empty space after remove/add
+      149 P3   Browser demo application can't handle "file://" protocol.
+      150 P3   Tray's popup menu shows behind the frame if JFrame.setAlways
+      155 P3   JDIC Tray Demo icon in system tray only quickly flashes menu
       158 P3   MozEmbed.exe needs to be copied to work.
+      165 P3   isDefaultBrowserMozilla() should not be true for Opera
+      166 P3   Internet Explorer does not return URLs for local files
+      168 P3   popup menu does not appear on J2SE1.4.2
+
+    * Known issue list:   
+      Below are some of the most frequently mentioned known issues.
+      170 P3   Browser doesn't work with Mozilla 1.4 .exe installation.
 
 2004-12-09 Armin Chen <armin_chen@dev.java.net>
 
@@ -46,7 +56,7 @@
 
     * Known issue list:   
       Below are some of the most frequently mentioned known issues.
-      118  P3   Browser component doesn't work with mozilla 1.7 on Windows.
+      118 P3   Browser component doesn't work with mozilla 1.7 on Windows.
 
 2004-10-19 Armin Chen <armin_chen@dev.java.net>
 
@@ -60,7 +70,7 @@
 
     * Known issue list:   
       Below are some of the most frequently mentioned known issues.
-      118  P3   Browser component doesn't work with mozilla 1.7 on Windows.
+      118 P3   Browser component doesn't work with mozilla 1.7 on Windows.
 
 2004-10-08 George Zhang <georgez@dev.java.net>
 
@@ -74,7 +84,7 @@
 
     * Known issue list:   
       Below are some of the most frequently mentioned known issues.
-      118  P3   Browser component doesn't work with mozilla 1.7 on Windows.
+      118 P3   Browser component doesn't work with mozilla 1.7 on Windows.
 
 2004-09-27 George Zhang <georgez@dev.java.net>
 

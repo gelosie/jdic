@@ -48,7 +48,7 @@ Top-level target:
   <!-- the distribution version and release of this build -->
   <!-- which is only used in javadoc target -->
   <property name="version" value="0.8" />
-  <property name="release" value="7" />
+  <property name="release" value="8" />
 
   <target name="showtargets" description="default target showing all available targets">
     <echo>The top-level targets are:</echo>
