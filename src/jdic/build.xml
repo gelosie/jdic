@@ -59,6 +59,8 @@ Top-level target:
 
   <!-- the generated jar file name -->
   <property name="jar.file" value="jdic.jar" />
+  
+  <property name="toDebug" value="off"/>
 
   <target name="showtargets" description="default target showing all available targets">
     <echo>The top-level targets are:</echo>
@@ -190,7 +192,7 @@ Top-level target:
   <target name="buildwin32jar" depends="init"
           description="build the classes and jar file." >
     <!-- generate class files that will run on VMs in JDK 1.4 and later -->
-    <javac srcdir="${share.classes.dir}:${win32.classes.dir}"
+    <javac debug="${toDebug}" srcdir="${share.classes.dir}:${win32.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
            target="1.4"
@@ -284,7 +286,7 @@ Top-level target:
   <!-- *** Build Unix jar file *** -->  
   <target name="buildunixjar" depends="init"
           description="build the classes and jar file." >
-    <javac srcdir="${share.classes.dir}:${unix.classes.dir}"
+    <javac debug="${toDebug}" srcdir="${share.classes.dir}:${unix.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
            target="1.4"
@@ -373,7 +375,7 @@ Top-level target:
   <!-- *** Build Mac jar file *** -->  
   <target name="buildmacjar" depends="init"
           description="build the classes and jar file." >
-    <javac srcdir="${share.classes.dir}:${mac.classes.dir}"
+    <javac debug="${toDebug}" srcdir="${share.classes.dir}:${mac.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
            target="1.4"
@@ -412,37 +414,37 @@ Top-level target:
     </delete>
 
     <!-- TO BE DONE: below tasks should be combined to one task -->
-    <javac srcdir="${demo.browser.dir}"
+    <javac debug="${toDebug}" srcdir="${demo.browser.dir}"
            destdir="${demo.browser.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
     />
-    <javac srcdir="${demo.filechooser.dir}"
+    <javac debug="${toDebug}" srcdir="${demo.filechooser.dir}"
            destdir="${demo.filechooser.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
     />
-    <javac srcdir="${demo.fileexplorer.dir}"
+    <javac debug="${toDebug}" srcdir="${demo.fileexplorer.dir}"
            destdir="${demo.fileexplorer.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
     />
-    <javac srcdir="${demo.filetypes.dir}"
+    <javac debug="${toDebug}" srcdir="${demo.filetypes.dir}"
            destdir="${demo.filetypes.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
     />
-    <javac srcdir="${demo.simplebrowser.dir}"
+    <javac debug="${toDebug}" srcdir="${demo.simplebrowser.dir}"
            destdir="${demo.simplebrowser.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
     />        
-    <javac srcdir="${demo.tray.dir}"
+    <javac debug="${toDebug}" srcdir="${demo.tray.dir}"
            destdir="${demo.tray.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
@@ -513,7 +515,7 @@ Top-level target:
   <!-- *** Build Win32 jar file *** -->  
   <target name="buildwin32jar_tray" depends="init"
           description="build the classes and jar file." >
-    <javac srcdir="${share.classes.tray.dir}:${win32.classes.tray.dir}"
+    <javac debug="${toDebug}" srcdir="${share.classes.tray.dir}:${win32.classes.tray.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
            target="1.4"
@@ -564,7 +566,7 @@ Top-level target:
   <!-- *** Build Unix jar file *** -->  
   <target name="buildunixjar_tray" depends="init"
           description="build the classes and jar file." >
-    <javac srcdir="${share.classes.dir}:${unix.classes.dir}"
+    <javac debug="${toDebug}" srcdir="${share.classes.dir}:${unix.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
            target="1.4"
