@@ -239,6 +239,8 @@ Version 0.1.1 - June 10, 2004
         debug screensavers.
     * Fixed jdic.dev.java.net issue #21:
       Screensaver exceptions not being caught in init() method
+    * Improved Unix Makefile to give error message when dirs don't exist
+    * Building on Windows now produces correct newlines for unix distribution
 
 Version 0.1 - June 1, 2004
     * Initial open-source release of SaverBeans SDK
