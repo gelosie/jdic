@@ -34,7 +34,7 @@ import java.awt.Toolkit;
 
 public class WinSystemTrayService implements SystemTrayService {
 
-    public WinSystemTrayService() {}
+    public WinSystemTrayService() { init(); }
      
     public void addNotify() {}
 
@@ -51,10 +51,14 @@ public class WinSystemTrayService implements SystemTrayService {
     }
    
     static Thread display_thread;
-   
-    static native void eventLoop();
     
-    static {
+    private static Object lock = new Object();
+    private static boolean inited = false;
+    private static native void eventLoop();
+    private static native void initTray();
+    private static synchronized void init(){
+    	if(inited)
+    		return;
         //
         // Very important, we need to force AWT to get loaded before the
         // native library libtray.so is loaded. Otherwise AWT will fail.
@@ -63,14 +67,27 @@ public class WinSystemTrayService implements SystemTrayService {
         t.sync();
 
         System.loadLibrary("tray");
+        
         display_thread = new Thread(new Runnable() {
             public void run() {
-                eventLoop();
+            	synchronized(lock){
+            		initTray();
+            		inited = true;
+            		lock.notify();
+            	}
+            	eventLoop();
             }
         });
-
-        display_thread.start();
-
+		display_thread.start();
+        synchronized(lock){
+        	while(!inited){
+	        	try{
+	        		lock.wait(100);
+	        	}catch(InterruptedException e){
+	        		// ignore interrupted exception
+	        	}
+        	}
+        }
     }
 
 }

@@ -310,22 +310,22 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconServ
 
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinTrayIconService_removeIcon
 
-(JNIEnv *env , jclass klass, jint id)
-
-{
+(JNIEnv *env , jclass klass, jint id) {
 	TrayMessage(messageWindow,NIM_DELETE,id,NULL,NULL);
 }
 
-
-
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinSystemTrayService_eventLoop
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinSystemTrayService_initTray
 (JNIEnv *env, jclass klass) {
-	MSG   msg;
 	if (!inited) {
 		if (!Initialize(env)) {
 			return;
 		}
 	}
+}
+
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinSystemTrayService_eventLoop
+(JNIEnv *env, jclass klass) {
+	MSG   msg;
 	while(GetMessage(&msg, NULL,0, 0))     
 	{
 		TranslateMessage(&msg);

@@ -1,3 +1,10 @@
+    * Release 0.8.8
+    
+    * Fixed issue list:   
+      ID  Pri  Summary
+      ==  ===  =======
+      106 P1   Tray disapears under windows
+
 2004-12-09 Armin Chen <armin_chen@dev.java.net>
 
     * Release 0.8.7

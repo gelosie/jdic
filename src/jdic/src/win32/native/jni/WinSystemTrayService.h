@@ -14,7 +14,8 @@ extern "C" {
  */
 JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinSystemTrayService_eventLoop
   (JNIEnv *, jclass);
-
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_WinSystemTrayService_initTray
+  (JNIEnv *, jclass);
 #ifdef __cplusplus
 }
 #endif
