@@ -65,7 +65,10 @@ class MsgClient {
     private static Set msgPieces = new HashSet();    
 
     MsgClient() {
-        Charset charset = Charset.forName("ISO-8859-1");
+        //Try to get the system default Charset by reading system property
+        //"file.encoding". For Tiger, there should be a better solution:
+        //Charset.defaultCharset();
+        Charset charset = Charset.forName(System.getProperty("file.encoding"));
         decoder = charset.newDecoder();
         encoder = charset.newEncoder();
         buffer = ByteBuffer.allocateDirect(BUFFERSIZE);
