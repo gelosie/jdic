@@ -24,6 +24,7 @@ saverbeans.path=/opt/saverbeans
 # Parameters to pass to screensaver during debugging
 debug.params=
 
-# Choose either linux or solsparc
+# Choose either linux or solsparc for debugging the unix build
+# This is only used when debugging on Unix - it does not affect the release.
 arch=linux
 #arch=solsparc
