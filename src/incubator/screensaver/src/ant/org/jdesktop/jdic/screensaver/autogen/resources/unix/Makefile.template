@@ -1,15 +1,5 @@
 # Screensaver Makefile
 
-# Set this to your Java home directory
-jdkhome=/usr/java/jdk1.5.0_01
-
-# Set this to where the xscreensaver source bundle is installed
-xscreensaverhome=/opt/xscreensaver-4.14
-
-# Set this to your platform (either Linux or SunOS)
-platform=Linux
-#platform=SunOS
-
 # Compiler
 cc=gcc
 
@@ -23,28 +13,34 @@ strip=strip
 commonargs=-Wall -Wstrict-prototypes -Wnested-externs -std=c89 -U__STRICT_ANSI__
 
 # Args to compiler
-ccargs=${commonargs} -c -I . -I ${xscreensaverhome}/hacks -I ${xscreensaverhome}/utils -I ${xscreensaverhome} -I ${jdkhome}/include -I ${jdkhome}/include/linux -I ${jdkhome}/include/solaris -DPLATFORM_${platform} -DSTANDALONE -g -O2
+ccargs=${commonargs} -c -I . -I ${XSCREENSAVER_HOME}/hacks -I ${XSCREENSAVER_HOME}/utils -I ${XSCREENSAVER_HOME} -I ${JAVA_HOME}/include -I ${JAVA_HOME}/include/linux -I ${JAVA_HOME}/include/solaris -DPLATFORM_${PLATFORM} -DSTANDALONE -g -O2
 
 # Args to linker
-linkargs=${commonargs} -L/usr/local/lib -L/usr/X11R6/lib -L${jdkhome}/jre/lib/i386 -L${jdkhome}/jre/lib/i386/client -L${jdkhome}/jre/lib/sparc -L${jdkhome}/jre/lib/sparc/client -ljvm -lSM -lICE -lXt -lX11 -lXmu -lXext -lm
+linkargs=${commonargs} -L/usr/local/lib -L/usr/X11R6/lib -L${JAVA_HOME}/jre/lib/i386 -L${JAVA_HOME}/jre/lib/i386/client -L${JAVA_HOME}/jre/lib/sparc -L${JAVA_HOME}/jre/lib/sparc/client -ljvm -lSM -lICE -lXt -lX11 -lXmu -lXext -lm
 
 # Objects for linker
-linkobj=${xscreensaverhome}/hacks/screenhack.o ${xscreensaverhome}/utils/resources.o ${xscreensaverhome}/utils/visual.o ${xscreensaverhome}/utils/usleep.o ${xscreensaverhome}/utils/yarandom.o
+linkobj=${XSCREENSAVER_HOME}/hacks/screenhack.o ${XSCREENSAVER_HOME}/utils/resources.o ${XSCREENSAVER_HOME}/utils/visual.o ${XSCREENSAVER_HOME}/utils/usleep.o ${XSCREENSAVER_HOME}/utils/yarandom.o
 
 all: checkpaths [[all]]
 
 checkpaths:
-	@if [ ! -d ${xscreensaverhome} ]; then \
-                echo "Directory ${xscreensaverhome} not found."; \
-                echo "Please edit Makefile and set xscreensaverhome to "; \
-                echo "the install directory for xscreensaver src."; \
-		false; \
+	@if [ ! -d "${XSCREENSAVER_HOME}" ]; then \
+            echo "Directory ${XSCREENSAVER_HOME} not found."; \
+            echo "Please set XSCREENSAVER_HOME to the install directory "; \
+            echo "for xscreensaver src."; \
+            false; \
         fi;
-	@if [ ! -d ${jdkhome} ]; then \
-                echo "Directory ${jdkhome} not found."; \
-                echo "Please edit Makefile and set jdkhome to "; \
-                echo "the install directory for J2SDK 1.5.0 or greater."; \
-		false; \
+	@if [ ! -d "${JAVA_HOME}" ]; then \
+            echo "Directory ${JAVA_HOME} not found."; \
+            echo "Please set JAVA_HOME to the install directory for "; \
+            echo "J2SDK 1.5.0 or greater."; \
+            false; \
+        fi;
+	@if [ "${PLATFORM}" != "Linux" ]; then \
+            if [ "${PLATFORM}" != "SunOS" ]; then \
+                echo Please set PLATFORM to either "Linux" or "SunOS"; \
+                false; \
+            fi; \
         fi;
 
 [[targets]]
