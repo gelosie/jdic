@@ -193,6 +193,9 @@ LPSTR executeScript(BrowserWindow* pBrowserWnd, char* scriptCode)
     CComVariant varValue;
     attribName.Append(JDIC_BROWSER_INTERMEDIATE_PROP);
     hRes = pHTMLElement->getAttribute(attribName, 0, &varValue);
+    // Remove the intermedial attribute created by JDIC Browser.
+    VARIANT_BOOL success;
+    pHTMLElement->removeAttribute(attribName, 0, &success);
     if (SUCCEEDED(hRes))
     {
         WBTRACE("IHTMLElement::getAttribute()");
