@@ -37,6 +37,8 @@ USA
     <property name="dist" value="dist" />
     <property name="src" value="src" />
     <property name="screensaver" value="bouncingline" />
+    <property name="screensaver.class" 
+             value="org.jdesktop.jdic.screensaver.bouncingline.BouncingLine" />
   </target>
   
   <target name="check" description="Check to make sure properties are set">
@@ -81,6 +83,7 @@ USA
                         os="win32" />
   </target>
   
+  <!-- Create screensaver distribution -->
   <target name="dist" depends="compile">
     <mkdir dir="${build}/jar" />
     <jar destfile="${build}/jar/${screensaver}.jar">
@@ -131,6 +134,26 @@ USA
     </copy>
     <zip destfile="${dist}/${screensaver}-unix.zip" basedir="${dist}"
          includes="${screensaver}-unix/**" />
+  </target>
+  
+  <!-- 
+    - Compile and debug screensaver in a JFrame.
+    - Can optionally attach to process using your Java IDE.  Change
+    - to suspend=y if you need to debug before the first frame.
+    - Use the port number that the JVM gives you.
+    -->
+  <target name="debug" depends="compile">
+    <java classname="org.jdesktop.jdic.screensaver.ScreensaverFrame" 
+          fork="true">
+      <classpath>
+        <pathelement location="${build}/share" />
+        <pathelement location="${saverbeans.path}/saverbeans-api.jar" />
+      </classpath>
+      <jvmarg value="-Xdebug" />
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n" />
+      <arg value="${screensaver.class}" />
+      <arg line="${debug.params}" />
+    </java>
   </target>
   
   <target name="clean" depends="init" 
