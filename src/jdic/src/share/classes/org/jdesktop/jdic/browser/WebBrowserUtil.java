@@ -63,11 +63,15 @@ public class WebBrowserUtil {
             return true;
         } else {
             String nativeBrowserPath = getBrowserPath();
-            //Check "iexplorer", as Mozilla 1.7 might be "firefox" 
-            if (nativeBrowserPath.indexOf("iexplore") >= 0) {
-                return false;
+            // Only when Mozilla is set as the default browser, return true. 
+            // Or else, fall back to Internet Explorer.
+            // FireFox 1.0 is statically linked into Gecko and therefore can not 
+            // be embedded. If FireFox is embeddable for some future version,
+            // we would have to explicitly check for both Mozilla and FireFox. 
+            if (nativeBrowserPath.indexOf("mozilla") >= 0) {
+            	return true;
             } else {
-                return true;                
+                return false;                
             }
         }
     }
