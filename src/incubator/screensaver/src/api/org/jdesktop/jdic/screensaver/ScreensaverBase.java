@@ -21,6 +21,8 @@ package org.jdesktop.jdic.screensaver;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Base class for screensavers written in Java.
@@ -33,6 +35,10 @@ import java.awt.Graphics;
  * @author Mark Roth
  */
 public abstract class ScreensaverBase {
+    
+    /** Logging support */
+    private static Logger logger = 
+        Logger.getLogger("org.jdesktop.jdic.screensaver");
     
     /** Context information for this screensaver (eg window size) */
     protected ScreensaverContext context;
@@ -75,11 +81,18 @@ public abstract class ScreensaverBase {
     }
     
     /**
-     * Initialize or reinitialize the screensaver.  Updates lastSize and
-     * calls subclass init().
+     * Initialize or reinitialize the screensaver.  Calls subclass init().
+     * Any exceptions thrown during init() will be sent to the 
+     * org.jdesktop.jdic.screensaver J2SE logger.
      */
     private void reinit() {
-        init();
+        try {
+            init();
+        }
+        catch(Throwable t) {
+            logger.log(Level.WARNING, 
+                "Exception occurred during screensaver init()", t);
+        }
     }
     
     /**
