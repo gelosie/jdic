@@ -22,6 +22,7 @@
       227 P3   Remove WebBrowser.getBrowserBinary() method.
       231 P3   Deprecate WebBrowser.Status class.
       232 P3   Add WebBrowser.getWebBrowserListeners method.
+      236 P3   NullPointerException thrown when running Tray demo.
 
     * Known issue list:   
       Below are some of the most frequently mentioned known issues.
