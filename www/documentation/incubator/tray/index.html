@@ -17,6 +17,7 @@ Tray Icon API (Early Access)</h2>
   <li><a href="#Introduction">Introduction</a></li>
   <li><a href="#Download">Download</a></li>
   <li><a href="#System Requirements">System Requirements</a></li>
+  <li><a href="#Run the Demos">Run the Demos</a></li>
   <li><a href="#Build the Source">Build the Source</a></li>
   <li><a href="#License">License</a></li>
   <li><a href="#Web Pages">Web Pages</a></li>
@@ -54,6 +55,29 @@ Tray Icon API (Early Access)</h2>
       </ul>
     </li>
   </ul>
+</blockquote>
+<h3><a name="Run the Demos">Run the Demos</a></h3>
+<blockquote> 
+  <blockquote> 
+    <h4> Windows</h4>
+    <p>Assuming the tray icons are installed under c:\tray:</p>
+    <pre>
+set JAVA_HOME=c:\j2sdk1.4.2
+cd c:\tray\demo\Tray
+%JAVA_HOME%\bin\java -classpath ..\..\tray.jar;. -Djava.library.path=..\..\ IconDemo</pre>
+    <h4>Linux</h4>
+    <p>Assuming the tray icons are installed under /home/duke/tray and the Java 
+      installation is under /usr/java/j2sdk1.4.2:</p>
+    <pre>
+export JAVA_HOME=/usr/java/j2sdk1.4.2
+cd /home/duke/tray/demo/Tray
+$JAVA_HOME/bin/java -classpath ../../tray.jar:. -Djava.library.path=../../ IconDemo
+</pre>
+    <p>If you do not see tray icons, the notification area is probably disabled. 
+      You can enable it by right-clicking the GNOME panel and selecting Add&nbsp;to&nbsp;Panel 
+      > Utility > Notification&nbsp;Area.</p>
+    <p></p>
+    </blockquote>
 </blockquote>
 <h3><a name="Build the Source">Build the Source</a></h3>
 <blockquote>
