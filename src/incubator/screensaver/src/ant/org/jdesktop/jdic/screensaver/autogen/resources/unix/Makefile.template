@@ -3,7 +3,7 @@
 # Set this to your Java home directory
 jdkhome=/usr/java/j2sdk1.5.0
 
-# Set this to where xscreensaver is installed
+# Set this to where the xscreensaver source bundle is installed
 xscreensaverhome=/opt/xscreensaver-4.14
 
 # Set this to your platform (either Linux or SunOS)
