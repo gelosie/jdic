@@ -152,7 +152,10 @@ formats &#8212; MSI, RPM and PKG, respectively.</li>
     <li>Add <code>jdic.jar</code> to CLASSPATH. </li>
     <li>Add the directory of native libraries (*.dll or *.so) to PATH (on Windows) 
       or LD_LIBRARY_PATH (on Linux/Solaris). </li>
-    <li>For JDIC before version 0.8.5, additional settings to use package <code><b>org.jdesktop.jdic.browser:</b></code> 
+    <li>On Windows, set the environment variable <code>JAVA_HOME</code> to the
+      J2SDK/J2RE installation path to use package <code><b>org.jdesktop.jdic.browse</b></code>.
+    </li>
+    <li><b>Note</b>: for JDIC before version 0.8.5, additional settings to use package <code><b>org.jdesktop.jdic.browser:</b></code> 
       <ul>
         <li><b>Windows</b><br>
           - Add <code>&lt;J2SDK HOME>/jre/bin</code> or <code> &lt;J2RE HOME>/bin</code> 
