@@ -66,18 +66,20 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
 <table BORDER=0 CELLSPACING=0 CELLPADDING=4 WIDTH="100%"  height="25" BGCOLOR="#99CCFF" >
   <tr> 
     <td>
-      <p><strong><font face="sans-serif" size="3">Examples of Using the JDIC APIs</font></strong></p>
+      <p><strong><font face="sans-serif" size="3">Examples of Using the JDIC API</font></strong></p>
     </td>
   </tr>
 </table>
 <ul>
-  <li><b><a href="#Use package org.jdesktop.jdic.desktop">Using package org.jdesktop.jdic.desktop</a></b></li>
-  <li><b><a href="#Use package org.jdesktop.jdic.filetypes">Using package 
+  <li><b><a href="#Use package org.jdesktop.jdic.desktop">Use package org.jdesktop.jdic.desktop</a></b></li>
+  <li><b><a href="#Use package org.jdesktop.jdic.filetypes">Use package 
     org.jdesktop.jdic.filetypes </a></b></li>
-  <li><b><a href="#Use package org.jdesktop.jdic.browser">Using package org.jdesktop.jdic.browser 
+  <li><b><a href="#Use package org.jdesktop.jdic.browser">Use package org.jdesktop.jdic.browser 
     </a></b></li>
+  <li><b><a href="#Use package org.jdesktop.jdic.tray">Use package
+    org.jdesktop.jdic.tray</a></b></li>
 </ul>
-<h3><b><a name="Use package org.jdesktop.jdic.desktop">Using package org.jdesktop.jdic.desktop</a></b> 
+<h3><b><a name="Use package org.jdesktop.jdic.desktop">Use package <code>org.jdesktop.jdic.desktop</code></a></b> 
 </h3>
 
 <pre><b>Case# 1: </b>Open a file by launching the default content-handling application.
@@ -207,7 +209,7 @@ public class TestOpen {
 
 <hr>
 
-<h3><b><a name="Use package org.jdesktop.jdic.filetypes">Using package org.jdesktop.jdic.filetypes</a></b> 
+<h3><b><a name="Use package org.jdesktop.jdic.filetypes">Use package <code>org.jdesktop.jdic.filetypes</code></a></b> 
 </h3>
 
 <pre><b>Case# 1:</b> Get an association
@@ -341,7 +343,7 @@ import org.jdesktop.jdic.filetypes.*;
     }</pre>
 
 <hr>
-<h3><b><a name="Use package org.jdesktop.jdic.browser">Use package org.jdesktop.jdic.browser</a></b></h3>
+<h3><b><a name="Use package org.jdesktop.jdic.browser">Use package <code>org.jdesktop.jdic.browser</code></a></b></h3>
 
 <p>Below is a demo application that uses the <code>org.jdesktop.jdic.browser.WebBrowser</code> 
   component to display a given URL. This demo application (SimpleBrowser) is in 
@@ -391,6 +393,54 @@ public class SimpleBrowser {
         frame.pack();
         frame.setVisible(true);        
     }
+}</pre></td>
+   </tr>
+</table>
+
+<p>&nbsp;</p>
+<hr>
+<p><b><a name="Use package org.jdesktop.jdic.tray">Use package <code>org.jdesktop.jdic.tray</code></a></b></p>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse; " bordercolor="#111111" id="AutoNumber1" bgcolor="#e0e0e0">
+    <tr>
+     <td width="100%"> <pre>import java.awt.event.*;
+import javax.swing.*;
+import org.jdesktop.jdic.tray.*;
+
+public class TestTray {
+    public static JMenuItem quit;
+    
+    public TestTray() {
+        JPopupMenu menu = new JPopupMenu(&quot;Tray Icon Menu&quot;);
+        menu.add(new JMenuItem(&quot;Test Item&quot;));
+        menu.addSeparator();
+        JMenuItem quitItem = new JMenuItem(&quot;Quit&quot;);
+        quitItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                System.exit(0);
+            }});
+        menu.add(quitItem);
+        
+        // Resource file &quot;duke.gif&quot; must exist at the same directory
+        // as this class file.
+        ImageIcon icon = new ImageIcon(&quot;duke.gif&quot;);
+        TrayIcon ti = new TrayIcon(icon, &quot;JDIC Tray Icon API Test&quot;, menu);
+
+        // Action listener for left click.
+        ti.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, 
+                    &quot;JDIC Tray Icon API Test!&quot;, &quot;About&quot;,
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+               
+        SystemTray tray = SystemTray.getDefaultSystemTray();
+        tray.addTrayIcon(ti);
+    }
+
+    public static void main(String[] args) {
+        new TestTray();
+    }   
 }</pre></td>
    </tr>
 </table>
