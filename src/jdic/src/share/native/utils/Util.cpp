@@ -167,40 +167,7 @@ void WBArray::RemoveAt(int nIndex, int nCount)
 	m_nSize -= nCount;
 }
 
-//////////////////////////////////////////////////////////////////
-LogFile::LogFile()
-{
-    char* pszFileName = "log.txt";
-    CFileException fileException;
-
-    if ( !_logFile.Open( pszFileName, CFile::modeCreate |   
-          CFile::modeReadWrite, &fileException ) )
-    {
-        TRACE( "Can't open file %s, error = %u\n",
-            pszFileName, fileException.m_cause );
-    }
-}
-
-LogFile::~LogFile()
-{
-    _logFile.Close();
-}
-
-void LogFile::addLogInfo(CString logInfo)
-{
-    LPTSTR strBuffer = logInfo.GetBuffer(1);
-    _logFile.Write(strBuffer, strlen(strBuffer));
-    char linebreak[2] = "\n";
-    _logFile.Write(linebreak, 2);
-    logInfo.ReleaseBuffer();
-}   
-
-void LogFile::addLogInfo(char* logInfo)
-{
-    _logFile.Write(logInfo, strlen(logInfo));
-    char linebreak[2] = "\n";
-    _logFile.Write(linebreak, 2);
-}
+/////////////////////////////////////////////////////////////////////////////
 
 // helper function for tuning the given JavaScript string to assign 
 // the ultimate returned value to a predefined property of the currently 

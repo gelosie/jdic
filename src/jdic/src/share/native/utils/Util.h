@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  */ 
-#include <afx.h>
+
 #ifndef _util_h
 #define _util_h
 
@@ -77,18 +77,6 @@ protected:
     void** m_pData;   // the actual array of data
     int m_nSize;     // # of elements (upperBound - 1)
     int m_nMaxSize;  // max allocated
-};
-
-class LogFile
-{
-private:
-    CFile _logFile;
-public:
-    LogFile();
-    ~LogFile();
-public:
-    void addLogInfo(char* logInfo);
-    void addLogInfo(CString logInfo);
 };
 
 inline int WBArray::GetSize() const
