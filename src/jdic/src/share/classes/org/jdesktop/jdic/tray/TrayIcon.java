@@ -178,30 +178,40 @@ public class TrayIcon {
 
         return p;
     }
-    
+
     /**
-     *  Message type, used by balloon message.
+     * Balloon Message types. Used by <code>displayMessage(String, String, int)</code>
+     * to determine what icon to display.<p>
      */
+    /** Used for information messages. */
     public static final int INFO_MESSAGE_TYPE = 0;
+    /** Used for error messages. */
     public static final int ERROE_MESSAGE_TYPE = 1;
+    /** Used for warning messages. */
     public static final int WARNING_MESSAGE_TYPE = 2;
+    /** No icon is used. */
     public static final int NONE_MESSAGE_TYPE = 3;
 
     /**
      * Displays a popup message near the tray icon. 
-     * The message will disappear after a timeout or if user clicks on it. 
+     * The message will disappear after a timeout or if user clicks on it.
+     * <p><br>
      * Either the caption or the text may be null, 
      * but an NullPointerException is thrown if both are null.
-     * 
-     * Note: Some platforms may not support showing a message.
-     * 
+     * <p><br>
+     * <b>Note</b>: Some platforms may not support showing a message.
+     * <p>
      * @param caption the caption displayed above the text, usually in bold; may be null
      * @param text the text displayed for the particular message; may be null
-     * @param type indicating the message type
-     *   
-     * @throws NullPointerException if both caption and text are null
+     * @param type the type of message to be displayed:
+     *  <code>INFO_MESSAGE_TYPE</code>,    <code>ERROE_MESSAGE_TYPE</code>,
+     *  <code>WARNING_MESSAGE_TYPE</code>, <code>NONE_MESSAGE_TYPE</code>
+     * 
+     * @throws NullPointerException  - if both caption and text are null
      */
     public void displayMessage(String caption, String text, int type)throws NullPointerException{
+    	if(caption == null && text == null)
+    		throw new NullPointerException("Both caption and text are null.");
     	if(tis != null)
     		tis.showBalloonMessage(caption, text, type);
     }
