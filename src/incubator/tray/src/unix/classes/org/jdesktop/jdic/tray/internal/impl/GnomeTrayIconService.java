@@ -130,7 +130,9 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
 
     public void setPopupMenu(JPopupMenu m) {
         menu = m;
-        m.setLightWeightPopupEnabled(false);
+        if (m != null) {
+            m.setLightWeightPopupEnabled(false);
+        }
     }
 
     public void setIcon(Icon i) {
