@@ -69,11 +69,12 @@ public class GnomeTrayAppletService implements TrayAppletService {
     EmbeddedFrame createEmbeddedFrame(long window) {
         EmbeddedFrame ef = null;
         String version = System.getProperty("java.version");
+        String os = System.getProperty("os.name");
 
         // System.out.println("version = " + version);
         // System.out.flush();
 
-        if (version.indexOf("1.5") == -1) {
+        if ((version.indexOf("1.5") == -1) || (os.equals("SunOS"))) {
             // 1.4.2 or older JVM, use MAWT !
             long w = getWidget(window, 400, 400, 0, 0);
             // System.out.println("Widget w = " + w);

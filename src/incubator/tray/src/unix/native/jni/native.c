@@ -68,9 +68,17 @@ static void (* NoFlushUnlockIt)(JNIEnv *) = NULL;
 static void *awtHandle = NULL;
 
 #ifdef __linux__
-#define LIBARCH "i386"
+#define LIBARCH  "i386"
 #else
+#ifdef __i386
+#define LIBARCH "i386"
+#endif
+#ifdef __sparc
 #define LIBARCH "sparc"
+#endif
+#ifdef __sparcv9
+#define LIBARCH "sparcv9"
+#endif
 #endif
 
 static void initAwtHandle() {
@@ -80,7 +88,7 @@ static void initAwtHandle() {
     dprintf("%s\n",awtPath);
     awtHandle = dlopen(awtPath, RTLD_LAZY);
     if (awtHandle == NULL) {
-        // must be JDK try JDK location
+        /* must be JDK try JDK location */
         sprintf(awtPath,"%s/jre/lib/%s/libawt.so",getenv("JAVA_HOME"),LIBARCH);
         dprintf("JDK - %s\n",awtPath);
         awtHandle = dlopen(awtPath, RTLD_LAZY);
@@ -223,7 +231,7 @@ void ThreadYield(JNIEnv *env) {
      * is a huge performance win.
      */
     if (threadClass == NULL) {
-        // should enter a monitor here...
+        /* should enter a monitor here... */
         Boolean err = FALSE;
         if (threadClass == NULL) {
             jclass tc = (*env)->FindClass(env, "java/lang/Thread");
@@ -473,8 +481,8 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayApple
 
 
 
-    data[0]=2;  // width
-    data[1]=2;  // height;
+    data[0]=2;  /* width */
+    data[1]=2;  /* height */
     data[2]=0x00ff0000;
     data[3]=0x00ff0000;
     data[4]=0x00ff0000;
@@ -483,7 +491,7 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_tray_internal_impl_GnomeTrayApple
 
     XChangeProperty(display,win,_NET_WM_ICON,XA_CARDINAL,32,PropModeReplace,(const unsigned char *) data,6);
 
-    //    XMapWindow(display,win);
+    /*    XMapWindow(display,win); */
 
     XSync(display,False);
 
