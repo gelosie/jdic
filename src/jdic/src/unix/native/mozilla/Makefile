@@ -53,7 +53,7 @@ REQUIRES = xpcom \
            widget \
            pref \
            profile \
-	   nspr \
+           nspr \
            $(NULL)
 
 ifdef NS_TRACE_MALLOC
