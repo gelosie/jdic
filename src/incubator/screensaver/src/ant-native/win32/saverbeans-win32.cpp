@@ -38,6 +38,11 @@
 #define SCREENSAVER_CONTEXT_CLASS "org/jdesktop/jdic/screensaver/ScreensaverContext"
 #define EMBEDDED_FRAME_CLASS "sun/awt/windows/WEmbeddedFrame"
 
+#define SM_XVIRTUALSCREEN 76
+#define SM_YVIRTUALSCREEN 77
+#define SM_CXVIRTUALSCREEN 78
+#define SM_CYVIRTUALSCREEN 79
+
 #define SCREENSAVER_CONFIG_CLASS "org/jdesktop/jdic/screensaver/SettingsDialog"
 
 /* XXX - This hard-codes the VM to be Sun's VM - should come up with 
@@ -1062,12 +1067,27 @@ LRESULT WINAPI ScreenSaverProc( HWND hWnd, UINT uMessage,
     static int tick = 60;
     static UINT timerID;
     int valid = 1;
+    int virtualLeft, virtualTop, virtualWidth, virtualHeight;
 
     switch( uMessage ) {
         case WM_CREATE:
             if(DEBUG) log = fopen( "C:\\log.txt", "w" );
 	    if(DEBUG) fprintf( log, "Opened log.\n" );
             master_hwnd = hWnd;
+
+            // Multi-monitor support (not supported in NT or 95)
+            virtualWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+            if(virtualWidth != 0) {
+                virtualLeft = GetSystemMetrics(SM_XVIRTUALSCREEN);
+                virtualTop = GetSystemMetrics(SM_YVIRTUALSCREEN);
+                virtualHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+                if(DEBUG) fprintf( log, 
+                    "Multi monitors detected: %d %d %d %d\n", virtualLeft, 
+                    virtualTop, virtualWidth, virtualHeight );
+                MoveWindow(hWnd, virtualLeft, virtualTop, virtualWidth, 
+                    virtualHeight, TRUE);
+            }
+            
             timerID = timeSetEvent( 1000/60, 1000/60, TimerCallback, 0, 
                 TIME_PERIODIC );
             break;
