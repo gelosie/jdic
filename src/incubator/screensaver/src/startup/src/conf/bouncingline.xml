@@ -22,6 +22,10 @@ USA
 
 <!--
   - xscreensaver-style configuration file for BouncingLine screensaver.
+  -
+  - For details about the file format of this file, see the hacks/config/README
+  - file in the xscreensaver distribution, copied here for convenience:
+  - https://jdic.dev.java.net/documentation/incubator/screensaver/xscreensaver-config.txt
   -->
 <screensaver name="bouncingline" _label="Bouncing Line (Java)">
 
