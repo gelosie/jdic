@@ -72,32 +72,43 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
   native desktop such as the mailer, the browser, and registered document viewing 
   applications. Additionally it provides the mechanisms by which Java applications 
   can integrate into the native desktop such as registering Java applications 
-  as document viewers on the desktop and creating installer packages. </p>
+  as document viewers on the desktop, creating tray icons on the desktop, and creating installer packages. </p>
 	
 	
 <p> JDIC consists of a collection of Java packages (<em>JDIC API</em>), all with 
   the package name prefix <code>org.jdesktop.jdic</code>, and a JNLP application 
   packaging tool (<em>JDIC Packager</em>).</p>
-<p align="center"><font face="Arial, Helvetica, sans-serif" size="-1"><font face="Arial, Helvetica, sans-serif" size="-1"><font face="Arial, Helvetica, sans-serif" size="-1"><a href="#incubator"><font size="-2">Incubator&nbsp;Projects</font></a><font size="-2"> 
-  </font></font></font><font size="-2">| </font><font face="Arial, Helvetica, sans-serif" size="-1"><font size="-2"><a href="#documentation"> 
+	
+	
+<p> See the <a href="http://javadesktop.org/articles/jdic/">JDIC Overview article</a> for a more thorough read on the project.</p>
+<p align="center"><a href="#announcements"><font size="-2" face="Arial, Helvetica, sans-serif">Announcements</font></a><font face="Arial, Helvetica, sans-serif" size="-1"><font size="-2">
+| 
+  </font><a href="#incubator"><font size="-2">Incubator&nbsp;Projects</font></a><font size="-2"> 
+  </font><font size="-2">| </font><font face="Arial, Helvetica, sans-serif" size="-1"><font size="-2"><a href="#documentation"> 
   Documentation</a></font><font face="Arial, Helvetica, sans-serif" size="-1"><font face="Arial, Helvetica, sans-serif" size="-1"><font face="Arial, Helvetica, sans-serif" size="-1"><font size="-2">| 
   </font></font><font size="-2"> <a href="#demos"></a></font></font><font size="-2"><a href="#download">Download</a> 
   </font></font><font size="-2"> </font></font><font size="-2">| </font><font size="-2"><a href="#demos">Demos</a> 
   | </font></font><a href="#developer's page"><font size="-2" face="Arial, Helvetica, sans-serif">Developer's
 Page</font></a><font face="Arial, Helvetica, sans-serif" size="-1"> 
   | <a href="#forum"> Forum</a></font></p>
+<h3><a name="announcements">Announcements</a></h3>
+<ul>
+  <li>Sep 30, 2004 - <a href="releases.html">JDIC 0.8.6 Released</a>&nbsp;</li>
+</ul>
 <h3>Incubator Projects<a name="incubator"></a></h3>
 <p>Some projects are associated with JDIC but aren't part of the source or binary 
   distribution of the JDIC project. These <i>incubator projects</i> are released 
   as separate downloads and develop at their own speed with different quality 
   criteria. Once an incubator project complies with the requirements of JDIC, 
-  it might move into the JDIC project. Two incubator projects currently exist: 
+  it might move into the JDIC project. Below incubator project currently exists: 
 </p>
 <ul>
   <li><b><a href="documentation/incubator/screensaver/index.html">SaverBeans Screensaver 
     SDK</a></b></li>
-  <li><b><a href="documentation/incubator/tray/index.html">Tray Icon API</a></b></li>
 </ul>
+<p><b>Note:</b> The initial incubator project Tray Icon API was moved to JDIC releases from
+release 0.8.6. 
+</p>
 <h3>Documentation<a name="documentation"></a></h3>
 <p> The <a href="documentation/index.html"><b>JDIC Documentation</b></a> page 
   has links to articles, API documentation, implementation specifications, code 
@@ -141,7 +152,7 @@ Page</font></a><font face="Arial, Helvetica, sans-serif" size="-1">
         field, which can be a local file path or a URL.</p>
     </td>
   </tr>
-  <tr class="b"> 
+  <tr>
     <td> 
       <p align="center"><a href="http://javadesktop.org/jdic/demo/Browser/browser.jnlp"><b>Browser</b></a> 
         <br>
@@ -154,9 +165,25 @@ Page</font></a><font face="Arial, Helvetica, sans-serif" size="-1">
         specified in the URL text field. The top-left buttons allow the user to 
         go forward and back and to reload and stop loading pages. The status bar 
         reflects the browser's current state.</p>
-      <p><b>Note:</b> For this demo to run on the Linux/Solaris platform, you 
-        must use Mozilla 1.4 or a higher version, and the directory containing 
-        the Mozilla binary must be added to <code>LD_LIBRARY_PATH</code>.</p>
+      <p><b>Note:</b> For this demo to run, you 
+        must use Mozilla 1.4 or a higher version.</p>
+    </td>
+  </tr>
+  <tr class="b"> 
+    <td> 
+      <p align="center"><b>TrayIcon</b> 
+        <br>
+    </td>
+    <td><a href="resource/trayicon.gif"><img src="resource/trayicon-sm.gif" width="149" height="100" border="0"></a></td>
+    <td>
+      <p>This demo application demonstrates functionality 
+        in the JDIC APIs <code>org.jdesktop.jdic.tray</code> package.&nbsp;</p>
+      <p>  It creates a tray icon on the desktop (in the System Tray Area for
+      Windows platforms,
+      or in the Notification Area for Unix platforms), with a caption (text), an animated  icon, and an associated Swing menu containing icons. It also has a tooltip  displayed when the mouse hovers over the tray icon.<br>
+      <br>
+      <b>Linux Troubleshooting Note:</b> If you do not see tray icons, the notification area is probably disabled. You can enable it by right-clicking the GNOME panel and selecting Add to Panel
+      -&gt; Utility -> Notification Area.</p>
     </td>
   </tr>
 </table> 
