@@ -1,0 +1,42 @@
+error: Invalid class file format in d:\paul\release\Association.jar(com/sun/java
+ws/association/Association.class).  The major.minor version '48.0' is too recent
+ for this tool to understand.
+Win_RegisterAssociation.java:12: Class com.sun.javaws.association.Association no
+t found in import.
+import com.sun.javaws.association.Association;
+       ^
+error: Invalid class file format in d:\paul\release\Association.jar(com/sun/java
+ws/association/AssociationService.class).  The major.minor version '48.0' is too
+ recent for this tool to understand.
+Win_RegisterAssociation.java:13: Class com.sun.javaws.association.AssociationSer
+vice not found in import.
+import com.sun.javaws.association.AssociationService;
+       ^
+error: Invalid class file format in d:\paul\release\Association.jar(com/sun/java
+ws/association/AssociationAlreadyRegisteredException.class).  The major.minor ve
+rsion '48.0' is too recent for this tool to understand.
+Win_RegisterAssociation.java:14: Class com.sun.javaws.association.AssociationAlr
+eadyRegisteredException not found in import.
+import com.sun.javaws.association.AssociationAlreadyRegisteredException;
+       ^
+error: Invalid class file format in d:\paul\release\Association.jar(com/sun/java
+ws/association/RegisterFailedException.class).  The major.minor version '48.0' i
+s too recent for this tool to understand.
+Win_RegisterAssociation.java:15: Class com.sun.javaws.association.RegisterFailed
+Exception not found in import.
+import com.sun.javaws.association.RegisterFailedException;
+       ^
+error: Invalid class file format in d:\paul\release\Association.jar(com/sun/java
+ws/association/AssociationNotRegisteredException.class).  The major.minor versio
+n '48.0' is too recent for this tool to understand.
+Win_RegisterAssociation.java:16: Class com.sun.javaws.association.AssociationNot
+RegisteredException not found in import.
+import com.sun.javaws.association.AssociationNotRegisteredException;
+       ^
+error: Invalid class file format in d:\paul\release\Association.jar(com/sun/java
+ws/association/AssociationException.class).  The major.minor version '48.0' is t
+oo recent for this tool to understand.
+Win_RegisterAssociation.java:17: Class com.sun.javaws.association.AssociationExc
+eption not found in import.
+import com.sun.javaws.association.AssociationException;
+       ^

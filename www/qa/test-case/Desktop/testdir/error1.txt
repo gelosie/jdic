@@ -1,0 +1,9 @@
+GetAssociation.java:4: cannot access com.sun.javaws.association.Association
+bad class file: d:\paul\release\Association.jar(com/sun/javaws/association/Assoc
+iation.class)
+class file has wrong version 48.0, should be 47.0
+Please remove or make sure it appears in the correct subdirectory of the classpa
+th.
+import com.sun.javaws.association.Association;
+                                  ^
+1 error

@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>TrayIcon Test Report</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
+<body style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">
+<h2 align="center">TrayIcon Test Report<br>
+</h2>
+<ul>
+  <li><b>TrayIcon Version: 0.8.6</b></li>
+  <li><b>Test Date: 09/29/2004</b></li>
+  <li><span style="font-weight: bold;">QA: Conny Cheng</span> </li>
+</ul>
+<p align="center">&nbsp;</p>
+<table width="90%" border="1" align="center">
+  <tbody>
+    <tr bgcolor="#9999ff">
+      <td width="40%" style="font-weight: bold;">
+      <div align="center"> <font color="#ffffff">Test Case<br>
+      </font> </div>
+      </td>
+      <td width="15%" style="font-weight: bold;">
+      <div align="center"> <font color="#ffffff">WIN 2000<br>
+JRE:1.5.0-beta3-b57<br>
+      </font> </div>
+      </td>
+      <td width="15%" style="font-weight: bold;">
+      <div align="center"> <font color="#ffffff">Linux<br>
+JRE:1.5.0-beta3-b58 <br>
+      </font> </div>
+      </td>
+      <td width="15%" style="font-weight: bold;">
+      <div align="center"> <font color="#ffffff">Solaris (sparc)<br>
+JRE:build1.5.0-rc-b63<br>
+      </font> </div>
+      </td>
+    </tr>
+    <tr bgcolor="#ffffcc" style="font-weight: bold;">
+      <td colspan="4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+IconDemo</td>
+    </tr>
+    <tr>
+      <td width="40%"><code><b>TrayIcon</b>(javax.swing.Icon&nbsp;icon,
+java.lang.String&nbsp;caption, javax.swing.JPopupMenu&nbsp;popup)</code></td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+    </tr>
+    <tr>
+      <td width="40%">void <b>addTrayIcon</b>(TrayIcon trayIcon)</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+    </tr>
+    <tr>
+      <td width="40%">static SystemTray <code><b>getDefaultSystemTray</b>()</code></td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+    </tr>
+    <tr>
+      <td width="40%">void <b>addActionListener</b>(java.awt.event.ActionListener&nbsp;listener)</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+    </tr>
+    <tr>
+      <td width="40%">void <b>setIconAutosize</b>(boolean autosize)</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+      <td width="15%" style="text-align: center;">&nbsp;Pass</td>
+    </tr>
+    <tr bgcolor="#ffffcc" style="font-weight: bold;">
+      <td colspan="4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TrayIconTest</td>
+    </tr>
+    <tr>
+      <td width="40%"><b>TrayIcon</b>(javax.swing.Icon&nbsp;i) </td>
+      <td width="15%" style="text-align: center;">&nbsp;-</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+    </tr>
+    <tr>
+      <td width="40%">void <b>removeTrayIcon</b>(TrayIcon trayIcon)</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+    </tr>
+    <tr>
+      <td width="40%">java.awt.Point <b>getLocationOnScreen</b>()</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+    </tr>
+    <tr>
+      <td width="40%">void <b>setCaption</b>(java.lang.String&nbsp;caption)</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+    </tr>
+    <tr>
+      <td width="40%">void <b>setIcon</b>(javax.swing.Icon&nbsp;icon)</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+    </tr>
+    <tr>
+      <td width="40%">void <b>setPopupMenu</b>(javax.swing.JPopupMenu&nbsp;popup)</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+    </tr>
+    <tr>
+      <td width="40%">void <b>setToolTip</b>(java.lang.String&nbsp;tooltip)</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+      <td width="15%" style="text-align: center;">-</td>
+    </tr>
+    <tr>
+      <td width="40%"
+ style="text-align: center; font-style: italic; font-weight: bold;"><big><big>Result</big></big></td>
+      <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>&nbsp;<span
+ style="font-weight: bold;">Go</span></big></big></td>
+      <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>&nbsp;<span
+ style="font-weight: bold;">Go</span></big></big></td>
+      <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>&nbsp;<span
+ style="font-weight: bold;">Go</span></big></big></td>
+    </tr>
+  </tbody>
+</table>
+<p>&nbsp;</p>
+<br>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>TrayIcon Test Report</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
+<body style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">
+<h2 align="center">JDIC Packager Test Report<br>
+</h2>
+<ul>
+  <li><b>Packager Version: 0.8.6</b></li>
+  <li><b>Test Date: Sep. 27</b></li>
+  <li><b>QA: Conny Cheng<br>
+    </b></li>
+</ul>
+<p align="center">&nbsp;</p>
+<table width="90%" border="1" align="center">
+  <tbody> 
+  <tr bgcolor="#9999ff"> 
+    <td width="40%" style="font-weight: bold;"> 
+      <div align="center"> <font color="#ffffff">Features to be tested</font> 
+      </div>
+    </td>
+    <td width="15%" style="font-weight: bold;" colspan="2"> 
+      <div align="center"> <font color="#ffffff">WIN 2000<br>
+        J2SE:1.5.0-beta3-build57</font></div>
+    </td>
+    <td width="15%" style="font-weight: bold;" colspan="2"> 
+      <div align="center"> <font color="#ffffff">Linux<br>
+        J2SE: J2SE:1.5.0-beta3-build58</font> </div>
+    </td>
+    <td width="15%" style="font-weight: bold;" colspan="2"> 
+      <div align="center"> 
+        <p><font color="#ffffff">Solaris (x86)<br>
+          J2SE:</font></p>
+      </div>
+    </td>
+    <td width="15%" style="font-weight: bold;" colspan="2"> 
+      <div align="center"><font color="#ffffff">Solaris (sparc)<br>
+        J2SE:1.5.0-rc-build63 </font></div>
+    </td>
+  </tr>
+  <tr bgcolor="#ffffcc" style="font-weight: bold;"> 
+    <div align="center">
+    <td>Basic Feature<br>
+    </td>
+	<td>Local JNLP<br>
+    </td>
+	<td>Remote JNLP<br>
+    </td>
+	<td>Local JNLP<br>
+    </td>
+	<td>Remote JNLP<br>
+    </td>
+	<td>Local JNLP<br>
+    </td>
+	<td>Remote JNLP<br>
+    </td>
+	<td>Local JNLP<br>
+    </td>
+	  <td>Remote JNLP</td>
+	</div>
+  </tr>
+  <tr> 
+    <td width="40%"><span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp; 
+      &lt;JNLP file path&gt;</span><code></code></td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;"> pass<br>
+    </td>
+    <td width="15%" style="text-align: center;"> pass<br>
+    </td>
+	<td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;"> 
+      <p>pass</p>
+      <p><a href="https://jdic.dev.java.net/issues/show_bug.cgi?id=98">Issue98</a><br>
+      </p>
+    </td>
+    <td width="15%" style="text-align: center;">pass </td>
+  </tr>
+  <tr bgcolor="#ffffcc" style="font-weight: bold;"> 
+    <td colspan="9">Other Features<br>
+    </td>
+  </tr>
+    <tr> 
+    <td width="40%"><code>&nbsp;&nbsp;&nbsp;&nbsp; -msd/-mssdkdir&nbsp;</code></td>
+    <td width="15%" style="text-align: center;">pass</td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A </td>
+    <td width="15%" style="text-align: center;">N/A </td>
+	 
+    <td width="15%" style="text-align: center;">N/A</td>
+    <td width="15%" style="text-align: center;">N/A<br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A </td>
+    <td width="15%" style="text-align: center;">N/A </td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -od/-outputdir<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass</td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+	</td>
+	<td width="15%" style="text-align: center;">-</td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass 
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -rd/-resourcedir<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+	<td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass</td>
+    <td width="15%" style="text-align: center;"> pass</td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -ld/-licensedir<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+	<td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -pn/-packagename<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+	<td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass</td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -v/-version<br>
+    </td>
+    <td width="15%" style="text-align: center;"><br>
+      pass </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+	<td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -r/-release<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+	<td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass </td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -bjf/-bannerjpgfile<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A </td>
+    <td width="15%" style="text-align: center;">N/A <br>
+    </td>
+	<td width="15%" style="text-align: center;">N/A <br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A <br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A <br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A </td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -pjf/-paneljpgfile<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A <br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A <br>
+    </td>
+	<td width="15%" style="text-align: center;">N/A </td>
+    <td width="15%" style="text-align: center;">N/A <br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A <br>
+    </td>
+    <td width="15%" style="text-align: center;">N/A </td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -es/-enableshortcut<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+	<td width="15%" style="text-align: center;">- </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">- </td>
+    <td width="15%" style="text-align: center;">- </td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -ea/-enableassociation<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+	<td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">- </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">- </td>
+  </tr>
+  <tr> 
+    <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -esc/-enablesystemcache<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+	<td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-</td>
+  </tr>
+  <tr style="font-weight: bold;"> 
+    <td>&lt;extension&gt; tag support<br>
+    </td>
+	<td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+	<td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">-<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass<br>
+    </td>
+    <td width="15%" style="text-align: center;">pass</td>
+<tr> 
+    <td width="40%" style="text-align: center; font-style: italic;"><big><big>Result</big></big></td>
+    <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>GO&nbsp;</big></big></td>
+    <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>GO&nbsp;</big></big></td>
+    <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>GO<br>
+      </big></big></td>
+    <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>GO&nbsp;</big></big></td>
+    <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>-&nbsp;</big></big></td>
+    <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>-&nbsp;</big></big></td>
+    <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>GO<br>
+      </big></big></td>
+    <td width="15%"
+ style="text-align: center; color: rgb(0, 153, 0); font-style: italic;"><big><big>GO&nbsp;</big></big></td>
+  </tr>
+  </tbody> 
+</table>
+<p>&nbsp;</p>
+<p>N/A: means this feature is not supported on the platform.</p>
+<p>-: means this feature is not tested on this release.<br>
+</p>
+<p>&nbsp;</p>
+</body>
+</html>

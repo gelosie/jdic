@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Packager Test Plan</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<div align="center">
+<h2>Test Plan for Packager Component</h2>
+</div>
+<h3>1. Test Enviroment</h3>
+<h4> 1.1 Hardware</h4>
+<ul>
+  <li>Sunblade 100</li><p></p>
+  <li>Dell PC </li>
+</ul>
+<h4>1.2 Software</h4>
+<ul>
+  <li> Operating Systems: MS Windows2000, MS Windows XP, Linux(Redhad),
+Solairs for Sparc and Solaris for x86</li>
+  <p></p>
+  <li> Jdk: jdk 1.5.0 or higher</li>
+  <p></p>
+  <li> MS SDK (for Windows platform)</li>
+ <br>
+</ul>
+<h3>2. Features to be tested</h3>
+<blockquote>
+  <p>1). Parameters supported on each platform </p>
+  <table width="50%" border="1" align="center">
+    <tbody> 
+    <tr bgcolor="#9999ff"> 
+      <td width="40%" style="font-weight: bold;"> 
+        <div align="center"> <font color="#ffffff">Parameters</font></div>
+      </td>
+      <td width="15%" style="font-weight: bold;" > 
+        <div align="center"> <font color="#ffffff">Windows </font></div>
+      </td>
+      <td width="15%" style="font-weight: bold;" > 
+        <div align="center"> <font color="#ffffff">Linux</font></div>
+      </td>
+      <td width="15%" style="font-weight: bold;" > 
+        <div align="center"> <font color="#ffffff">Solaris (x86)</font> </div>
+      </td>
+      <td width="15%" style="font-weight: bold;" > 
+        <div align="center"><font color="#ffffff">Solaris (sparc)</font></div>
+      </td>
+    </tr>
+    <tr> 
+      <td width="40%"><span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp; 
+        &lt;JNLP file path&gt;</span><code></code></td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;"> Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+    </tr>
+    <tr> 
+      <td width="40%"><code>&nbsp;&nbsp;&nbsp;&nbsp; -msd/-mssdkdir&nbsp;</code></td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">N</td>
+      <td width="15%" style="text-align: center;">N</td>
+      <td width="15%" style="text-align: center;">N</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -od/-outputdir</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -rd/-resourcedir<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -ld/-licensedir<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -pn/-packagename<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -v/-version<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -r/-release<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -bjf/-bannerjpgfile<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">N</td>
+      <td width="15%" style="text-align: center;">N</td>
+      <td width="15%" style="text-align: center;">N</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -pjf/-paneljpgfile<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">N</td>
+      <td width="15%" style="text-align: center;">N</td>
+      <td width="15%" style="text-align: center;">N</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -es/-enableshortcut<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y<br>
+      </td>
+      <td width="15%" style="text-align: center;">N</td>
+      <td width="15%" style="text-align: center;">N</td>
+      <td width="15%" style="text-align: center;">N</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -ea/-enableassociation<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+    </tr>
+    <tr> 
+      <td width="40%">&nbsp;&nbsp;&nbsp;&nbsp; -esc/-enablesystemcache<br>
+      </td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+      <td width="15%" style="text-align: center;">Y</td>
+    </tr>
+  </tbody> 
+  </table>
+  <p>2). Generate packages from local directories</p>
+  <p>3). Generate packages from remote directories</p>
+  <p>4). &lt;extend&gt; tag support</p>
+  <p>5). New features<br>
+  </p>
+</blockquote>
+<h3>3. Test Procedure</h3>
+<p>Summary: The testing work includes generating packages by using test
+.jnlp files, installing packages and uninstalling packages. </p>
+<h4>3.1.<b>Setup environment</b></h4>
+<ul>
+  <li> Make sure the the j2sdk1.5.0 or higher version is installed on
+the system</li><p/>
+  <li> Make sure the MS SDK is installed on the system ( this setting
+is only for Windows platform)</li><p/>
+  <li> Add the jdic.jar(to be tested) to the environment variable CLASSPATH</li><p/>
+  <li> Add the javaws.jar and deploy.jar to the enviroment variable PATH</li>
+</ul>
+<h4>3.2 <b>Generate packages</b></h4>
+<ul>
+  <li> Windows: jnlp2msi [options] -msd &lt;MS SDK dir&gt; &lt;jnlp file path&gt;</li><p/>
+  <li> Linux: jnlp2rpm [options] &lt;jnlp file path&gt;</li><p/>
+  <li> Solaris (for Sparc and x86): jnlp2pkg [options] &lt;jnlp file path&gt;</li>
+</ul>
+<h4>3.3 <b>Install packages</b></h4>
+<ul>
+  <li> Windows: double click the .msi file</li>
+  <p/>
+  <li> Linux: rpm -i &lt;package name&gt;</li>
+  <p/>
+  <li> Soalris (for Sparc and x86): pkgadd -d &lt;package path&gt; &lt;package 
+    name&gt;</li>
+</ul>
+<p>Start the applications to check if the applications installed
+correctly. </p>
+<p></p>
+<h4>3.4 <b>Uninstall packages</b></h4>
+<ul>
+  <li> Windows: double click the .msi file</li>
+  <p/>
+  <li> Linux: rpm -e &lt;package name&gt;</li>
+  <p/>
+  <li> Solaris (for Sparc and x86): pkgrm &lt;package name&gt;<br>
+  </li>
+</ul>
+<h3> 4.Test Cases</h3>
+<table width="50%" border="1" align="center">
+  <tbody>
+    <tr bgcolor="#9999ff">
+      <td height="26" width="64%"> <b><font color="#ffffff">Test Case</font></b></td>
+    </tr>
+    <tr>
+      <td height="26" width="64%"><a href="cases/Packager/draw.jnlp">Draw</a></td>
+    </tr>
+    <tr>
+      <td width="64%"><a href="cases/Packager/swingset2.jnlp">The
+SwingSet Demo</a></td>
+    </tr>
+    <tr>
+      <td width="64%"><a href="cases/Packager/mg.jnlp">Military Game</a></td>
+    </tr>
+    <tr>
+      <td width="64%"><a href="cases/Packager/notepad.jnlp">A Simple
+NotePad</a></td>
+    </tr>
+    <tr>
+      <td width="64%"><a href="cases/Packager/player.jnlp">Application Manager</a></td>
+    </tr>
+    <tr>
+      <td width="64%"><a
+ href="http://glow.prc.sun.com/eng-stuff/webstart/glow.jnlp">Glow</a></td>
+    </tr>
+    <tr>
+      <td width="64%" height="2">&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="3">Websites of Jnlp demos for testing:</td>
+    </tr>
+    <tr>
+      <td colspan="3"><a
+ href="http://java.sun.com/products/javawebstart/demos.html%20">http://java.sun.com/products/javawebstart/demos.html
+      </a></td>
+    </tr>
+    <tr>
+      <td colspan="3"><a
+ href="http://javaweb.sfbay/%7Engthomas/j1_2003/">http://javaweb.sfbay/~ngthomas/j1_2003/</a></td>
+    </tr>
+    <tr>
+      <td colspan="3"><a
+ href="http://java.sun.com/products/javawebstart/partners.html">http://java.sun.com/products/javawebstart/partners.html</a></td>
+    </tr>
+    <tr>
+      <td colspan="3"><a href="http://www.up2go.net%20">http://www.up2go.net
+      </a></td>
+    </tr>
+    <tr>
+      <td colspan="3">
+      <p><a
+ href="http://java.sun.com/j2se/1.4.2/docs/guide/jws/developersguide/examples.html%20">http://java.sun.com/j2se/1.4.2/docs/guide/jws/developersguide/examples.html
+      </a></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>&nbsp;</p>
+<h3>5. Test Criteria</h3>
+The test procudure is completely finished, the test is Go.
+<h3>6. Reference</h3>
+<a href="http://java.sun.com/products/javawebstart/demos.html">Java Web Start Demo</a>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?> 
+
+<!--
+###############################################################################
+#
+# @(#)notepad.jnlp	1.7 02/09/11
+#
+# JNLP File for Notepad Demo Application
+#
+###############################################################################
+ -->
+
+
+<jnlp spec="0.2 1.0"
+      codebase="http://java.sun.com/products/javawebstart/apps"
+      href="notepad.jnlp">
+   <information> 
+      <title>Notepad App</title> 
+      <vendor>Sun Microsystems, Inc.</vendor>
+      <homepage href="http://java.sun.com/products/javawebstart/demos.html"/>
+      <description>Notepad Demo Description</description>
+      <description kind="short">Notepad Demo Short Description</description>
+      <icon href="images/notepad.gif"/>
+      <offline-allowed/> 
+   </information> 
+   <resources>
+      <j2se version="1.3+" href="http://java.sun.com/products/autodl/j2se"/>
+      <j2se version="1.3+"/>
+      <jar href="notepad.jar" main="true" download="eager"/>
+   </resources>
+   <application-desc main-class="Notepad"/>
+</jnlp> 

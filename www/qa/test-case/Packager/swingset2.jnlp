@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+###############################################################################
+#
+# @(#)swingset2.jnlp	1.5 02/09/11
+#
+# JNLP File for SwingSet2 Demo Application
+#
+###############################################################################
+ -->
+
+
+
+<jnlp spec="0.2 1.0"
+      codebase="http://java.sun.com/products/javawebstart/apps"
+      href="swingset2.jnlp">
+   <information>
+      <title>SwingSet2 App</title>
+      <vendor>Sun Microsystems, Inc.</vendor>
+      <homepage href="http://java.sun.com/products/javawebstart/demos.html"/>
+      <description>SwingSet2 Demo Description</description>
+      <description kind="short">SwingSet2 Demo Short Description</description>
+      <icon href="images/swingset2.small.jpg"/>
+      <offline-allowed/>
+   </information>
+   <resources>
+      <j2se version="1.3+" href="http://java.sun.com/products/autodl/j2se"/>
+      <j2se version="1.3+"/>
+      <jar href="swingset2.jar" main="true" download="eager"/>
+   </resources>
+   <application-desc main-class="SwingSet2"/>
+</jnlp> 
