@@ -42,12 +42,22 @@
 #
 
 # using Gecko SDK 1.4 or 1.7.
+#
+# !!!Note: Below option needs to be changed according to the Gecko SDK version.
+# For Gecko SDK 1.6 or ealier, enable USING_GECKO_SDK_1_4. Or else, enable 
+# USING_GECKO_SDK_1_7.
+#
 USING_GECKO_SDK_1_4 = 1
 #USING_GECKO_SDK_1_7 = 1
 
 # set gtk version
-#MOZ_ENABLE_GTK = 1
-MOZ_ENABLE_GTK2 = 1
+#
+# !!!Note: Below option needs to be changed according to the GTK version 
+# (1.2 or 2) Gecko SDK and the Mozilla binary used. The GTK version building
+# Gecko SDK and the Mozilla binary must be same.
+#
+MOZ_ENABLE_GTK = 1
+#MOZ_ENABLE_GTK2 = 1
 
 MODULE_NAME_PART= mozembed
 

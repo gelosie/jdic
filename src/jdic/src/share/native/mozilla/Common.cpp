@@ -90,7 +90,7 @@ nsresult GetMozillaVersion(char* versionBuf, size_t versionBufSize)
     // and checked into Mozilla 1.6a. If misc is empty, assume it's 1.4, as 
     // we just need to identify if the Mozilla version is above 1.7 or not.
     const char* miscString;
-    if (misc.IsEmpty()) {
+    if (misc.Length() == 0) {
         miscString = "1.4";
     } else {
         miscString = misc.get(); 
@@ -450,7 +450,7 @@ ExecuteScript(nsIWebNavigation *aWebNav, const char *jscript)
     rv = elt->GetAttribute(unicodeProp, attrValue);
     // Remove the attribute created by JDIC Browser.
     elt->RemoveAttribute(unicodeProp);
-    if (attrValue.IsEmpty()) 
+    if (attrValue.Length() ==0) 
         return NULL;
 
     const PRUnichar *attrStr = attrValue.get();
