@@ -250,6 +250,7 @@ public class Browser extends JPanel {
                 if (curUrl == null) {
                     // Check if the text value starts with known protocols.
                     if (inputValue.toLowerCase().startsWith("http://")
+                            || inputValue.toLowerCase().startsWith("https://")
                             || inputValue.toLowerCase().startsWith("ftp://")
                             || inputValue.toLowerCase().startsWith("gopher://")) {
                         curUrl = new URL(inputValue);
