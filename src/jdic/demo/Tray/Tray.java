@@ -26,7 +26,9 @@ import java.awt.event.*;
 
 public class Tray implements ActionListener, ItemListener {
 
-    SystemTray tray = SystemTray.getDefaultSystemTray(); 
+    SystemTray tray = SystemTray.getDefaultSystemTray();
+    TrayIcon ti;
+    JFrame frame;
     public Tray() {
 
         JPopupMenu menu;
@@ -34,7 +36,7 @@ public class Tray implements ActionListener, ItemListener {
         JMenuItem menuItem;
         JRadioButtonMenuItem rbMenuItem;
         JCheckBoxMenuItem cbMenuItem;
-       
+        
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -120,18 +122,66 @@ public class Tray implements ActionListener, ItemListener {
         // ImageIcon i = new ImageIcon("duke.gif");
         ImageIcon i = new ImageIcon(Tray.class.getResource("images/duke.gif"));
 
-        TrayIcon ti = new TrayIcon(i, "JDIC Tray Icon API Demo - TrayIcon", menu);
+        ti = new TrayIcon(i, "JDIC Tray Icon API Demo - TrayIcon", menu);
 
         ti.setIconAutoSize(true);
         ti.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, 
-                    "JDIC Tray Icon API Demo - TrayIcon", "About",
-                    JOptionPane.INFORMATION_MESSAGE);
+            	frame.setVisible(!frame.isVisible());
+//                JOptionPane.showMessageDialog(null, 
+//                    "JDIC Tray Icon API Demo - TrayIcon", "About",
+//                    JOptionPane.INFORMATION_MESSAGE);
             }
         });
         tray.addTrayIcon(ti);
-
+        
+        // Construct the GUI for balloon message.
+        frame = new JFrame("Show Balloon Message");
+        frame.getContentPane().setLayout(new BorderLayout());
+        frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+        
+        JPanel topPanel = new JPanel();
+        topPanel.setBorder(BorderFactory.createEtchedBorder());
+        topPanel.setLayout(new BorderLayout());
+        topPanel.add(new JLabel("Caption: "), BorderLayout.WEST);
+        final JTextField captionField = new JTextField("JDIC TrayIcon"); 
+        topPanel.add(captionField, BorderLayout.CENTER);
+        JPanel typePanel = new JPanel();
+        final JComboBox typeBox = new JComboBox(new String[]{"INFO", "ERROR", "WARNING", "NONE" });
+        typePanel.add(new JLabel(" Type:"), BorderLayout.WEST);
+        typePanel.add(typeBox, BorderLayout.EAST);
+        topPanel.add(typePanel, BorderLayout.EAST);
+        frame.getContentPane().add(topPanel, BorderLayout.NORTH);
+        
+        JPanel messagePanel = new JPanel();
+        messagePanel.setLayout(new BorderLayout());
+        messagePanel.add(new JLabel("Message:"), BorderLayout.NORTH);
+        final JTextArea messageArea = new JTextArea(5, 20); 
+        messageArea.setText("This is a balloon message.\nYou can set the caption, message, \nand message type");
+        messageArea.setBorder(BorderFactory.createEtchedBorder());
+        messagePanel.add(messageArea);
+        frame.getContentPane().add(messagePanel, BorderLayout.CENTER);
+        
+        JPanel buttonPanel = new JPanel();
+        final JButton okButton = new JButton("OK");
+        final JButton cancelButton = new JButton("Cancel");
+        ActionListener al = new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() == cancelButton)
+					frame.setVisible(false);
+				else if(e.getSource() == okButton){
+					ti.displayMessage(captionField.getText(), messageArea.getText(), typeBox.getSelectedIndex());
+				}
+			}
+        };
+        okButton.addActionListener(al);
+        cancelButton.addActionListener(al);
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
+        frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     // Returns just the class name -- no package info.
