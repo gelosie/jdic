@@ -47,5 +47,10 @@ class DockDemo {
 	FloatingDock fd = new FloatingDock();
 
 	fd.setSize (new Dimension (100, 100));
+	fd.setVisible (true);
+	try {
+	    Thread.sleep (5000);
+	} catch (Exception e) {}
+	fd.setVisible (false);
     }
 }
