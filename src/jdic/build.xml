@@ -219,7 +219,7 @@ Top-level target:
     <!-- build tray.dll containing the Tray Icon native code -->
     <exec dir="${win32.native.jni.dir}" executable="nmake" 
       failonerror="yes" >
-      <arg line="/f jdic.mak CFG=TRAY"/>
+      <arg line="/f jdic.mak CFG='jdic - Win32 TRAY'"/>
     </exec>                   
 
     <!-- copy generated .dll file -->
