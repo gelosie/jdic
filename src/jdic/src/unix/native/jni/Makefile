@@ -108,3 +108,4 @@ $(SO_NAME): $(SO_o)
 clean:
 	rm -f *.so
 	rm -f *.o
+	rm -f ../../../share/native/utils/*.o
