@@ -180,6 +180,11 @@ public class FileOperUtility {
     public static String getRelativePath(String path, String base) {
         if (path == null || base == null) 
             return null;
+        // On Windows Plaform, change all the path string to lower case
+        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+            path = path.toLowerCase();
+            base = base.toLowerCase();
+        }
         if (path.lastIndexOf(base) < 0) {
             int index = path.lastIndexOf("/");
         	if (index < 0) {

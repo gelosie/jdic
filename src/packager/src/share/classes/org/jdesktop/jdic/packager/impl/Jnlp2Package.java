@@ -123,11 +123,14 @@ public final class Jnlp2Package {
             }
 
             String resourceDir = System.getProperty(
-            		JnlpConstants.PROPERTY_NAME_RESOURCEDIR);
+                    "JnlpConstants.PROPERTY_NAME_RESOURCEDIR");
+
             if (resourceDir == null) {
             	resourceDir = jnlpFile.getParent();
             }
-            pkgInfo.setResourcePath(resourceDir);
+            
+            pkgInfo.setResourcePath(getValidFileArgument(resourceDir,
+                    "resource path", false));
             pkgInfo.parseLocalJnlpInfo(jnlpFile.toURL());
         }
         /* Set Localized information as titles, descriptions, etc. */
@@ -232,7 +235,7 @@ public final class Jnlp2Package {
             theFile = theFile.getCanonicalFile();
             if (theFile.canRead()) {
                 //The file is readable
-                return theFile.toString();
+                return theFile.getPath();
             } else {
                 throw new IllegalArgumentException(
                              "The given "
