@@ -34,7 +34,7 @@
 #define BUFFER_SIZE 2048
 #define OPT_SIZE 100
 #define MY_FULL_VERSION "0.8"
-#define MY_RELEASE_NO "5"
+#define MY_RELEASE_NO "6"
 // Java executable file location indicator
 #define JAVA_EXE_IN_SYSTEM    1
 #define JAVA_EXE_IN_SYSTEM32  2

@@ -1,3 +1,21 @@
+2004-09-23 George Zhang <georgez@dev.java.net>
+
+    * Release 0.8.6
+    
+    * Fixed issue list:   
+      Note: All the feature enhancements are handled via the reported issues.
+
+      ID  Pri  Summary
+      ==  ===  =======   
+      89  P2   <Extension> Jnlp key word support
+      95  P3   Remove JAVA_HOME setting to run JDIC Browser component.      
+
+    * Known issue list:   
+      Below are some of the most frequently mentioned known issues.
+      Any fixes or contributions to these issues are welcome!
+
+      87  P3   Browser component doesn't work with mozilla 1.7.
+
 2004-09-07 George Zhang <georgez@dev.java.net>
 
     * Release 0.8.5

@@ -19,7 +19,7 @@ Top-level target:
     <echo>              (Windows, Linux, Solaris or FreeBSD).</echo>
     <echo>  clean:      Remove the generated distribution.</echo>
     <echo></echo>
-    <echo>  The generated distribution is put under *dist* directory.</echo>
+    <echo>The generated distribution is put under *dist* directory.</echo>
   </target>
 
   <target name="init" description="the init target">
