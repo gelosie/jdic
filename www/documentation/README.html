@@ -1,0 +1,322 @@
+<html>
+<head>
+	<meta HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<title>JDIC Readme</title>
+	<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+	<meta NAME="AUTHOR" CONTENT=" ">
+	<meta NAME="CREATED" CONTENT="20000519;14440300">
+	<meta NAME="CHANGEDBY" CONTENT=" ">
+	<meta NAME="CHANGED" CONTENT="20000901;17584900">
+</head>
+
+<body>
+<table WIDTH="100%"  height="25" BORDER=0 CELLPADDING=4 CELLSPACING=0 bordercolor="#FFFFCC" BGCOLOR="#99CCFF" >
+  <tr> 
+    <td><p><strong><font face="sans-serif" size="3">README for
+      JDIC</font></strong></p></td>
+  </tr>
+</table>
+<h2><b>Table of Contents</b></h2>
+<ol>
+  <li><a href="#Overview">Overview</a></li>
+  <li><a href="#System Requirements">System Requirements</a></li>
+  <li><a href="#Documentation">Documentation</a></li>
+  <li><a href="#Binary">Binary</a></li>
+  <li><a href="#Build the Source">Build the Source</a></li>
+  <li><a href="#Installation">Installation</a></li>
+  <li><a href="#License">License</a></li>
+  <li><a href="#Web Pages">Web Pages</a></li>
+  <li><a href="#Contributors">Contributors</a></li>
+</ol>
+<h2><b>1. <a name="Overview">Overview</a></b></h2>
+<blockquote>
+  <p> 
+JDIC consists of a collection of Java packages (<b>JDIC API</b>), all
+with the package name prefix <code>org.jdesktop.jdic</code>, and a
+JNLP application packaging tool (<b>JDIC Packager</b>).</p>
+  <ul>
+    <li><b>JDIC API</b> is composed of below Java packages:<br>
+      <br>
+      <code>org.jdesktop.jdic.desktop</code>: APIs to automate native
+applications, including the document viewer applications associated
+with a particular file type, the system browser and the system mailer.<br>
+      <br>
+      <code>org.jdesktop.jdic.filetypes</code>: APIs to associate
+document viewer applications with filetypes.<br>
+      <br>
+      <code>org.jdesktop.jdic.browser</code>: Provides an AWT component
+to enable the embedding of the desktop's web browsing component into
+Java applications and applets. The APIs support URL navigation, a basic
+history mechanism and progress notification.&nbsp;</li>
+  </ul>
+  <ul>
+    <li><b> JDIC Packager</b> is a tool for putting JNLP applications
+into installable packages of the standard Windows, Linux, and Solaris
+formats &#8212; MSI, RPM and PKG, respectively.</li>
+  </ul>
+</blockquote>
+<h2><b>2. <a name="System Requirements">System Requirements</a></b></h2>
+<blockquote>
+  <p><b>JDIC API</b>:</p>
+<ul>
+  <li>Supported platforms
+    <ul>
+      <li>Win98/ME/NT/2000/XP/2003, Sun Java Desktop System (JDS) Release 1 or
+        later, SuSE Linux 7.1 or later, RedHat Linux 8 or later, Solaris 8 or later.</li>
+    </ul>
+  </li>
+      <li> Additional software
+        <ul>
+          <li>Windows: Internet Explorer 5 or later, or Mozilla 1.4 or later.</li>
+          <li>Linux/Solaris: Gnome 2.0, Ximian Evolution 1.4 or later, Mozilla 1.4
+            or later.</li>
+          <li>J2SE v1.4.2 or later.</li>
+        </ul>
+      </li>
+</ul>
+  <p><b>JDIC Packager</b>:</p>
+<ul>
+  <li>Supported platforms
+    <ul>
+      <li>Win98/ME/NT/2000/XP/2003, Sun Java Desktop System (JDS) Release 1 or
+        later, SuSE Linux 7.1 or later, RedHat Linux 8 or later, Solaris 8 or later.</li>
+    </ul>
+  </li>
+      <li> Additional software
+        
+    <ul>
+      <li>Windows Developers need to download and install windows <a href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/downlevel.htm">MSI 
+        SDK 1.5</a> to generate MSI packages.</li>
+      <li>End user using Windows98/NT needs MSI service package to install MSI 
+        packages. Download the following executable and install.<br>
+        <a href="http://download.microsoft.com/download/WindowsInstaller/Install/2.0/NT45/EN-US/InstMsiW.exe">Windows 
+        NT4 MSI Service Package</a>, <a href="http://download.microsoft.com/download/WindowsInstaller/Install/2.0/W9XMe/EN-US/InstMsiA.exe">Windows 
+        9x MSI Service Package</a></li>
+      <li>Linux: rpm-build package.</li>
+      <li>J2SE v1.5.0 or later.</li>
+    </ul>
+      </li>
+</ul>
+</blockquote>
+<h2><b> 3. <a name="Documentation">Documentation</a></b></h2>
+<blockquote>
+<p>The documentation for the JDIC project falls into two categories:</p>
+<ul>
+  <li><a href="index.html#api">JDIC API</a>
+  <li><a href="index.html#packager">JDIC Packager</a></li>
+</ul>
+<p>Information in this page also falls into these two categories if they vary.</p>
+</blockquote>
+<h2>4. <a name="Binary">Binary</a></h2>
+<blockquote>
+  <p>Both JDIC API and JDIC Packager binaries are released in one distribution.
+  The binary distributions are available in both gzipped tar&nbsp; (<code>jdic-&lt;version&gt;-bin-&lt;platform&gt;-[arch].tar.gz</code>)
+  and zip
+  (<code>jdic-&lt;version&gt;-bin-&lt;platform&gt;-[arch].zip</code>) formats <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.</p>
+  <p>The notation <i>&lt;version&gt;</i> represents the version number, such as <i>1.0</i>,
+  <i>1.0.2</i>, and <i>&lt;platform&gt;</i> represents the platform the
+  distribution works on, which is <i>windows</i>, <i>linux</i> or <i>solaris</i>.
+  The <i>[arch]</i> notation is only used for Solaris platform
+  (&lt;platform&gt;=solaris), which is <i>sparc</i> or <i>i586</i>. For&nbsp;
+  Windows and Linux, it's <i>x86</i> by default.</p>
+
+</blockquote>
+<h2><b>5. <a name="Build the Source">Build the Source</a></b></h2>
+<blockquote>
+  <p>JDIC source code could be checked out from the CVS <a href="https://jdic.dev.java.net/source/browse/jdic/">repository</a>.&nbsp;The source distributions are available both in gzipped tar 
+    format (<code>jdic-&lt;version&gt;-src.tar.gz</code>) or zip format (<code>jdic-&lt;version&gt;-src.zip</code>)
+  <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>,
+  including the source code for all the supported platforms.</p>
+  <p>After checking out the source code from the CVS repository, or extracting
+  the source distribution, assuming the top directory is <code> JDIC_SRC_DIR</code>, the JDIC
+  API source is under <code> &lt;JDIC_SRC_DIR&gt;/jdic</code> directory, and the JDIC Packager
+  source is under <code> &lt;JDIC_SRC_DIR&gt;/packager</code> directory.&nbsp;&nbsp;</p>
+  <p>Follow below instructions to build the source:</p>
+  <p><b>1. JDIC API:</b></p>
+  <blockquote>
+    <p><b>1.1 Requirements</b></p>
+  <ul>
+    <li><b>Jakarta Ant:</b><br>
+      JDIC comes with an Ant-based build system. Obtain and install 
+      <a href="http://ant.apache.org/" target="_blank">Ant</a> 1.5.4 or later as outlined in 
+      the manual.</li>
+    <li><b>Windows:</b>
+      <ul>
+        <li><b>Microsoft Visual C++ Compiler</b><br>
+          The Microsoft Visual C++ 6.0 Professional Edition compiler is required.</li>
+        <li><b>Microsoft Platform Software Development Kit (SDK)<br>
+          </b>It can be downloaded from <a href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">here</a>.</li>
+      </ul>
+    </li>
+    <li><b>Linux:</b>
+      <ul>
+        <li><b>GNU Make</b><br>
+      GNU make version 3.78.1 or later is required, which can be downloaded from
+          <a href="http://www.gnu.org/software/make/make.html" target="_blank">GNU 
+      make web site</a>.</li>
+        <li><b>GCC Compiler</b><br>
+          GNU gcc version 3.2.1-7 or later is required, which can be downloaded
+          from <a href="http://gcc.gnu.org/">GCC home page</a></li>
+      </ul>
+    </li>
+    <li><b>Solaris:</b>
+      <ul>
+        <li><b>GNU Make</b><br>
+      GNU make version 3.78.1 or later is required, which can be downloaded from
+          <a href="http://www.gnu.org/software/make/make.html" target="_blank">GNU 
+      make web site</a>.</li>
+        <li><b>Sun ONE Studio Compilers (formerly Forte Tools)</b><br>
+          Forte 6 Update 2 or later Sun ONE Studio 8, Compiler Collection, which
+          could be found <a href="http://wwws.sun.com/software/download/app_dev.html">here</a>
+          or from <a href="http://wwws.sun.com/software/sundev/suncc/index.html">Sun ONE Studio Developer Tools web
+          site</a>.</li>
+      </ul>
+ </li>
+  </ul>
+  <p><b>1.2. Build</b></p>
+  <ul>
+    <li>Get and build Mozilla 1.4 or later source code. Please
+    refer to <a href="http://www.mozilla.org/">http://www.mozilla.org/</a>, and <a href="http://www.mozilla.org/build/">http://www.mozilla.org/build/</a>
+    for where to download and how to build it.&nbsp;
+      <br>
+ Setup
+    the environment variable <i> MOZILLA_SRC_HOME</i> to the top directory of Mozilla source code.
+    </li>
+    <li><code>cd &lt;JDIC_SRC_DIR/jdic</code>,&nbsp; run &quot;<code>buildall</code>&quot;
+      to generate a binary distribution under a generated <code>dist</code>
+      directory. Run
+    &quot;<code>ant</code>&quot; to see all the available targets.&nbsp;</li>
+  </ul>
+  </blockquote>
+  <p><b>2. JDIC Packager:</b></p>
+  <blockquote>
+    <p><b>2.1 Requirements</b></p>
+  <ul>
+    <li><b>Jakarta Ant</b>:<br>
+      JDIC Packager comes with an Ant-based build system. Obtain and install 
+      <a href="http://ant.apache.org/" target="_blank">Ant</a> as outlined in 
+      the manual.</li>
+    <li><b>Windows:</b>
+      <ul>
+        <li><b>Microsoft Visual C++ Compiler</b><br>
+          The Microsoft Visual C++ 6.0 Professional Edition compiler is required.</li>
+        <li><b>Microsoft Platform Software Development Kit (SDK)<br>
+          </b>It can be downloaded from <a href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">here</a>.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>&nbsp;2.2 Build</strong></p>
+    <ul>
+      <li><code>cd &lt;JDIC_SRC_DIR/packager</code>,&nbsp; run &quot;<code>buildall</code>&quot;
+      to generate a binary distribution under a generated <code>dist</code>
+        directory. Run
+    &quot;<code>ant</code>&quot; to see all the available targets.</li>
+    </ul>
+  </blockquote>
+</blockquote>
+<h2><b> 6. <a name="Installation">Installation</a></b></h2>
+<blockquote> <b>JDIC API</b>:
+<ul>
+  <li>Add <i>jdic.jar</i> to CLASSPATH.
+  </li>
+  <li>Add the directory of native libraries (*.dll or *.so) to PATH (on Windows)
+    or LD_LIBRARY_PATH (on Linux/Solaris).
+  </li>
+  <li>Additional settings to use package <i><b>org.jdesktop.jdic.browser</b></i>
+    <ul>
+      <li><b>Windows</b><br>
+        - Add <i>&lt;JAVA_HOME&gt;\jre\bin</i>  to PATH.<br>
+        - Add the directory of native executable files (*.exe) to PATH.<br>
+        - The system default browser (Mozilla or Internet Explorer) is embedded. If Mozilla is the embeded browser:<br>
+        &nbsp; * Set the environment variable <i> MOZILLA_FIVE_HOME</i>  to the absolute path of the Mozilla 1.4 (or later) executable
+        file.<br>
+        &nbsp; * Copy MozEmbed.exe file to <i>MOZILLA_FIVE_HOME</i>  directory.<br>
+        &nbsp; * Add <i> MOZILLA_FIVE_HOME</i>  to PATH.</li>
+      <li><b>Linux/Solaris<br>
+        - </b>Add the directory of native executable files (MozEmbed-linux-gtk*
+        or MozEmbed-solaris-gtk*) to PATH.<br>
+        - Set the environment variable <i> MOZILLA_FIVE_HOME</i>  to the absolute path of the Mozilla 1.4 (or later) executable file.<br>
+        - Add <i> MOZILLA_FIVE_HOME</i>  to LD_LIBRARY_PATH.</li>
+    </ul>
+  </li>
+</ul>
+</blockquote>
+<blockquote>
+  <p><b>JDIC Packager</b>:
+  </p>
+  <ul>
+    <li>Add <i>jdic-packager.jar</i>
+to CLASSPATH.</li>
+    <li>Add native library (*.dll) directory to PATH (for Windows).</li>
+    <li>J2SDK/J2RE version 1.5 or later is required to be installed.
+Make sure <code>java</code> command is under PATH, or set
+JDIC_PACKAGER_JAVAHOME to the home directory of J2SDK/J2RE to override
+the PATH setting.</li>
+    <li>Add <span style="font-style: italic;">deploy.jar</span> and <span
+ style="font-style: italic;">javaws.jar</span> in J2SDK/J2RE 1.5 or
+later to CLASSPATH. For J2SDK, the path is <span style="font-style: italic"> &lt;J2SDK HOME&gt;/jre/lib</span>;
+For
+J2RE, it's at <span style="font-style: italic"> &lt;J2RE HOME&gt;/lib</span>.</li>
+    <li>Run the command line tool <i>jnlp2msi</i>(for Windows),&nbsp; <i>jnlp2rpm</i>(for
+      Linux), or <i>jnlp2pkg</i>(for Solaris).</li>
+  </ul>
+</blockquote>
+<h2><b>7. <a name="License">License</a></b></h2>
+<blockquote>
+  <p><a href="../../../../javain/cvstree/JDIC/release/cinnabar/share_doc/LICENSE">Berkeley Software Distribution (BSD)</a> </p>
+</blockquote>
+<h2><b>8. <a name="Web Pages">Web Pages</a></b></h2>
+<blockquote>
+  <p><a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">Download</a>
+  - download the API documentation and the latest release of the JDIC project.<a href="https://jdic.dev.java.net/servlets/ProjectForumView"><br>
+  Forum</a> -
+  forum for the project.<a href="https://jdic.dev.java.net/servlets/ProjectMailingListList"><br>
+  Mailing
+  List</a> - for discussion on the project.<br>
+  Bug Reports and Feedback : report bugs or send feedbacks.</p>
+</blockquote>
+<h2><b>9. <a name="Contributors">Contributors</a></b></h2>
+<blockquote> 
+  <table width="75%" border="0">
+    <tr> 
+      <td><a href="mailto:laux@dev.java.net">Thorsten Laux</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td>Stanley Man-Kit Ho</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td><a href="mailto:funchung@dev.java.net">Thomas Ng</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:paul_huang@dev.java.net">Paul (Peng) Huang</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:georgez@dev.java.net">George (Jichao) Zhang</a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td><a href="mailto:joey_shen@dev.java.net">Joey (Zhuoli) Shen</a></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Robert Chen</td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Kyle Yuan</td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Mia Xiao</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+</html>
