@@ -78,10 +78,10 @@ version and release information in the CVS repository.
       <li>Update the "version" and "release" property values in <code>&lt;JDIC
 source directory&gt;/jdic/build.xml</code>, <code> &lt;JDIC source
 directory&gt;/packager/build.xml</code> files.</li>
-      <li>Update the "PRODUCT_VERSION" and "PRODUCT_RELEASE" values in <code>
+      <li>Update the "<code>PRODUCT_VERSION</code>" and "<code>PRODUCT_RELEASE</code>" values in <code>
 &lt;JDIC source directory&gt;/packager/src/unix/jnlp2rpm</code> and <code>
 &lt;JDIC source directory&gt;/packager/src/solaris/jnlp2pkg</code>
-script files. And update the "MY_FULL_VERSION" and "MY_RELEASE_NO"
+script files. And update the "<code>MY_FULL_VERSION</code>" and "<code>MY_RELEASE_NO</code>"
 values in <code>&lt;JDIC source
 directory&gt;/packager/src/win32/script/jnlp2msi.cpp</code> file.<br>
       </li>
@@ -89,12 +89,26 @@ directory&gt;/packager/src/win32/script/jnlp2msi.cpp</code> file.<br>
 file for the latest bug fixes and updates. The bug fixes after the last
 release could be checked from <a
  href="https://jdic.dev.java.net/servlets/ProjectIssues">Issue Tracker</a>.</li>
-      <li>Update the "Version" and "Release" information in <code>&lt;JDIC
-source directory&gt;/README.html file</code>, and include any other
-changes.
-        <p> </p>
+      <li>Update the &quot;<code>Version</code>&quot; and &quot;<code>Release</code>&quot;
+        information in <code>&lt;JDIC source directory&gt;/README.html file</code>,
+        and include any other changes.
       </li>
+      <li>Update the version information of the binaries (.dll/.exe) for
+        *Windows* binary release.<br>
+        Open below Visual Studio projects under <code>&lt;JDIC
+source directory&gt;</code>:<br>
+        <code>&nbsp; jdic/src/win32/native/ie/IeEmbed.dsw<br>
+        &nbsp; jdic/src/win32/native/jni/jdic.dsw<br>
+        &nbsp; jdic/src/win32/native/mozilla/MozEmbed.dsw<br>
+        &nbsp; packager/src/win32/native/packager.dsw<br>
+        &nbsp; packager/src/win32/script/jnlp2msi.dsw<br>
+        </code>Go to &quot;Workspace&quot; window -&gt; &quot;ResourceView&quot;
+        tab -&gt; &quot;Version&quot; -&gt; &quot;VS_VERSION_INFO&quot;, change
+        below key values:<br>
+        FILEVERSION, PRODUCTVERSION, FileVersion, ProductVersion (four-digit
+        version number).</li>
     </ul>
+    <p>&nbsp;
   </li>
   <li><b>Build the source.</b><br>
 Follow the <a
