@@ -18,12 +18,13 @@
 
 package org.jdesktop.jdic.screensaver;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Frame;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import net.java.games.jogl.Animator;
 import net.java.games.jogl.GLCanvas;
 import net.java.games.jogl.GLCapabilities;
@@ -87,21 +88,61 @@ public abstract class JOGLScreensaver
                 GLDrawableFactory.getFactory().createGLCanvas(capabilities);
             canvas.addGLEventListener(this);
 
-            Component component = getContext().getComponent();
+            final Component component = getContext().getComponent();
             if(!(component instanceof Container)) {
                 logger.log(Level.WARNING,
                     "Screensaver component was not a container.");
             }
             else {
-                Container container = 
-                    (Container)getContext().getComponent();
-                container.setLayout(new BorderLayout());
-                container.add(canvas);
+                // This needs to be done on the Swing thread or the
+                // application will crash.
+                SwingUtilities.invokeLater(
+                    new Runnable() {
+                        public void run() {
+                            Container container = (Container)component;
+                            container.add(canvas);
+                            // Since the container may already be shown,
+                            // we need to validate to get the GL canvas 
+                            // to show.
+                            container.validate();
 
-                // Create the JOGL Animator which will drive the animation of
-                // this screensaver (smooth!)
-                this.animator = new Animator(canvas);
-                this.animator.start();
+                            // Create the JOGL Animator which will drive 
+                            // the animation of this screensaver (smooth!)
+                            animator = new Animator(canvas);
+                            animator.start();
+                            
+                            // Add mouse motion event to exit when mouse moves.
+                            // The JOGL canvas is hidden which causes the next
+                            // move of the mouse to be passed to Windows, 
+                            // which causes a clean exit of the screensaver.
+                            canvas.addMouseMotionListener(
+                                new MouseMotionListener() {
+                                    // For some reason, we get a spurious
+                                    // mouse movement right at the beginning,
+                                    // so ignore that one.
+                                    int numMoves = 0;
+                                    public void mouseDragged(MouseEvent e) {
+                                    }
+                                    public void mouseMoved(MouseEvent e) {
+                                        SwingUtilities.invokeLater(
+                                            new Runnable() {
+                                                public void run() {
+                                                    if(context.isFullScreen()) {
+                                                        if(numMoves > 0) {
+                                                            canvas.setVisible(
+                                                                false);
+                                                        }
+                                                        numMoves++;
+                                                    }
+                                                }
+                                            }
+                                        ); // End SwingUtilities.invokeLater()
+                                    }
+                                }
+                            ); // end canvas.addMouseMotionListener()
+                        }
+                    }
+                ); // end SwingUtilities.invokeLater()
             }
         }
     }
