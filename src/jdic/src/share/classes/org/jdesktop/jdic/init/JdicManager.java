@@ -96,20 +96,14 @@ public class JdicManager {
         }
 
         try {
-            String thisClassFileName = 
-                this.getClass().getName().replaceAll("\\.", "/") + ".class";
-            String relativePathToJarPath = 
-                thisClassFileName.replaceAll("[^/]+", "..").substring(3);
-            URL thisClassUrl = 
-                this.getClass().getClassLoader().getResource(thisClassFileName);           
-            if (thisClassUrl == null) {
-                throw new JdicInitException("Unable to locate "
-                    + thisClassFileName + " in ClassLoader");
-            }
-    
-            // Find the root path of this class.
-            URL classpathRootUrl = new URL(thisClassUrl, relativePathToJarPath);
-    
+            // Find the root path of this class.            
+        	URL cpRootUrl = 
+                this.getClass().getProtectionDomain().getCodeSource().
+                getLocation();
+
+            String cpRootPath = 
+                (new File(cpRootUrl.getFile())).toString();         
+           
             // Check the binary path including the JDIC native libraries (*.so, 
             // *.dll) and executables (*.exe, mozembed-*):
             // - If running from the file system, the binary path is set to the 
@@ -118,30 +112,21 @@ public class JdicManager {
             //   including the .class files>/RNjdic-native.jar/
             // - If running from a .jar file. it's set to the parent path of the 
             //   .jar file.  
-            if ("file".equals(classpathRootUrl.getProtocol())) {
-                // We are running from the file system.
-                binaryPath = (new File(classpathRootUrl.getFile())).toString();
+            if (!cpRootPath.endsWith(".jar")) {
+            	// We are running from the file system.
+                binaryPath = cpRootPath;
             } else {
-                URL cpParent = new URL(classpathRootUrl, "..");
-                cpParent = new URL(
-                    new URL(cpParent.toString().substring(4)), "./");
-                                     
+                // We are running from WebStart or a .jar file. 
+                binaryPath = (new File(cpRootPath, "..")).toString();
                 if (System.getProperty("javawebstart.version") != null) {
                     //  We are running under WebStart.
                     //  NOTE: for a WebStart application, the jar file including 
                     //        the native libraries/executables must use the name 
                     //        "jdic-native.jar". 
                     String cacheDirName = "RN" + "jdic-native.jar" + "/";
-                    File cacheDirFile = 
-                        new File((new URL(cpParent, cacheDirName)).getFile());
-                    binaryPath = cacheDirFile.toString();
-                } else if ("jar".equals(classpathRootUrl.getProtocol())) {
-                    // We are running from a .jar file.
-                    // The jar URL will look like this:
-                    //   jar:file:/C:/code/jury/jury.jar!
-                    // Strip it down and get rid of the JAR.
-                    binaryPath = (new File(cpParent.getFile())).toString();
-                }
+                    binaryPath = 
+                        (new File(cpRootPath, cacheDirName)).toString();
+                } 
             }                                                       
    
             if (isWindows) {
