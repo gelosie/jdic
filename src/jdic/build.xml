@@ -141,8 +141,10 @@ Top-level target:
                see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That documentation 
                contains more detailed, developer-targeted descriptions, with conceptual 
                overviews, working code examples, license terms and bug report information.
-               <p>Copyright 2003 Contributors. All rights reserved. Use is subject to 
-               license terms. </font>]]></bottom>
+               <p>Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is 
+               subject to <a href=
+               "https://jdic.dev.java.net/source/browse/jdic/src/COPYING">license terms</a>. 
+               </font>]]></bottom>
     </javadoc>
   </target>
 
