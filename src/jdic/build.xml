@@ -149,6 +149,9 @@ Top-level target:
     </condition>     
 
     <antcall target="${platform.target}" />
+    
+    <!-- build demo applications into .class files -->
+    <antcall target="builddemo" />    
   </target>
 
   <!-- *** javadoc *** -->
@@ -387,6 +390,61 @@ Top-level target:
     <copy file="${mac.native.jni.dir}/libjdic.jnilib" todir="${dist.dir}" />
   </target>
 
+  <!-- *** Build demo applications into .class files *** -->
+  <target name="builddemo" depends="init"
+    description="build demo classes">        
+    <!-- the path of demo directory -->
+    <property name="demo.dir"               value="demo" />
+    <property name="demo.browser.dir"       value="${demo.dir}/Browser" />
+    <property name="demo.filechooser.dir"   value="${demo.dir}/FileChooser" />
+    <property name="demo.fileexplorer.dir"  value="${demo.dir}/FileExplorer" />        
+    <property name="demo.filetypes.dir"     value="${demo.dir}/FileTypes" />
+    <property name="demo.simplebrowser.dir" value="${demo.dir}/SimpleBrowser" />
+    <property name="demo.tray.dir"          value="${demo.dir}/Tray" />
+
+    <!-- remove the ".class" files to rebuild the demo apps -->
+    <delete failonerror="false">
+      <fileset dir="${demo.dir}" includes="**/*.class"/>
+    </delete>
+
+    <!-- TO BE DONE: below tasks should be combined to one task -->
+    <javac srcdir="${demo.browser.dir}"
+           destdir="${demo.browser.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+    />
+    <javac srcdir="${demo.filechooser.dir}"
+           destdir="${demo.filechooser.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+    />
+    <javac srcdir="${demo.fileexplorer.dir}"
+           destdir="${demo.fileexplorer.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+    />
+    <javac srcdir="${demo.filetypes.dir}"
+           destdir="${demo.filetypes.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+    />
+    <javac srcdir="${demo.simplebrowser.dir}"
+           destdir="${demo.simplebrowser.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+    />        
+    <javac srcdir="${demo.tray.dir}"
+           destdir="${demo.tray.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+    />        
+
+    <!-- Copy demo apps to a "demo" directory under the distribution directory -->
+    <mkdir dir="${dist.dir}/demo" />   
+    <copy todir="${dist.dir}/demo">
+      <fileset dir="${demo.dir}" casesensitive="false" >
+        <include name="README"/>
+        <include name="**/*.java"/>
+        <include name="**/*.class"/>        
+        <include name="**/images/**"/>
+      </fileset>
+    </copy>
+  </target>
+
   <!-- ******************************************* -->
   <!-- ******************************************* -->
   <!-- ******************************************* -->
@@ -484,7 +542,7 @@ Top-level target:
           description="build the classes and jar file." >
     <javac srcdir="${share.classes.dir}:${unix.classes.dir}"
            destdir="${dist.dir}"
-           classpath="${dist.dir}" debug="true"
+           classpath="${dist.dir}" 
     />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">

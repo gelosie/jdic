@@ -84,18 +84,6 @@ Top-level target:
       <arg line="+x ${dist.dir}/mozembed-freebsd-gtk2" />   
     </exec>
 
-    <!-- Copy JDIC API demo applications -->
-    <!-- create a demo directory -->
-    <mkdir dir="${dist.dir}/demo" />   
-    <copy todir="${dist.dir}/demo">
-      <fileset dir="jdic/demo" casesensitive="false" >
-        <include name="README"/>
-        <include name="**/*.java"/>
-        <include name="**/*.class"/>        
-        <include name="**/images/**"/>
-      </fileset>
-    </copy>
-
     <!-- Copy JDIC Packager distribution files -->
     <copy todir="${dist.dir}">
       <fileset dir="packager/${dist.dir}" casesensitive="false" >
