@@ -55,30 +55,42 @@
   the Browser component.</p>
 </blockquote>
 <h4><a name="1.1 Background">1.1 Background</a></h4>
-<blockquote>
-  <p>As HTML is a very popular format of file, the requirement to display HTML or XML file inside Java GUI application is increasing.
-  Unfortunately, so far, in terms of capability, the existing Java API doesn't compete with what modern browsers offer. The goal of
-  Browser component is to provide a simple AWT component which enables Java applications and applets to access basic featured web browsing capability. These basic functionalities include creating browser window, web content rendering, navigation, a basic history mechanism (back &amp; forward), and progress notification.</p>
+<blockquote> 
+  <p>As HTML is a very popular file format, the need to display HTML and XML files 
+    in GUIs is increasing. Unfortunately, so far, in terms of capability, the 
+    existing Java API doesn't compete with what modern browsers have to offer. 
+    The goal of the Browser component <code> org.jdesktop.jdic.browser</code> 
+    is to provide a simple AWT component which enables Java applications and applets 
+    basic web browsing capability. The basic functionality includes creating browser 
+    windows, rendering web content, navigation, a basic history mechanism (back 
+    and forward), and progress notification.</p>
 </blockquote>
 <h4><a name="1.2 User Objectives">1.2 User Objectives</a></h4>
 <ul>
-  <li> Atomic AWT component which shall be easily incorporated in Java application and applets.</li>
-  <li> The component shall be created and painted as a rectangle area where the browsing content is displayed. In other words, the browser window will look like a rectangle with displayed content, there is no menu, button, taskbar,
-    location bar or status bar that a normal browser window has.</li>
-  <li> The component shall provide Interfaces for simple navigation functions defined in the following section “Functional Requirements”.</li>
-  <li> The component shall send event to listeners about the progress of navigation.</li>
+  <li> The browser will be an atomic AWT component that can be easily incorporated 
+    in Java application and applets.</li>
+  <li> The component will be created and painted as a rectangle area where the 
+    browsing content is displayed. In other words, the browser window will look 
+    like a rectangle with displayed content; there is no menu, button, taskbar, 
+    location bar, or status bar such as those in a standard browser window.</li>
+  <li> An API will be provided for simple navigation functions defined in the 
+    “Functional Requirements” section that follows.</li>
+  <li> The component will send events to listeners about the progress of navigation.</li>
 </ul>
 <h4><a name="1.3 Functional Requirements">1.3 Functional Requirements</a></h4>
 <ul>
   <li><b>Brower Window Creation</b><br>
     <br>
-    User shall be able to initialize either a blank browser component or a browser component
-    with a given an URL string. The browser component should appear as a rectangle area where the browsing content shall be rendered. If the size of the html file is bigger than the screen size, the browser component shall display the html file correctly with scroll bar.</li>
+    Users will be able to initialize either a blank browser component or a browser 
+    component with a given URL string. The browser component will appear as a 
+    rectangle area where the browsing content can be rendered. If the size of 
+    the rendered HTML file is bigger than the screen size, the browser component 
+    will use a scroll bar to display the HTML correctly.</li>
 </ul>
 <ul>
-  <li><b>Web Content rendering</b><br>
+  <li><b>Web Content Rendering</b><br>
     <br>
-    The content of html file should be rendered correctly as in a normal browser.<br>
+    The HTML file content will be rendered the same as in a normal browser.<br>
     <br>
     Supported Dynamic content: JavaScript, Netscape plug-ins, ActiveX, Java Plug-in.<br>
     <br>
@@ -87,123 +99,135 @@
 <ul>
   <li><b>Navigation</b><br>
     <br>
-    User shall be able to browse html files from both web or local location. When user clicks the html link inside the html file displayed, there should be no new window created, the link should be displayed in the current browser window instead.</li>
+    Users will be able to browse HTML files both from the web and locally. When 
+    the user clicks an HTML link inside an HTML file, there should be no new window 
+    created; the link should be displayed in the current browser window.</li>
 </ul>
 <ul>
   <li><b>Basic History Mechanism</b><br>
     <br>
-    The component shall keep history of web pages and support navigating back and forward, returning current
-    URL, boolean value indicating if it can navigate back or forward.</li>
+    The component will keep a web page history and support navigating back and 
+    forward, will return the current URL, and will return a boolean value indicating 
+    whether it can navigate back or forward.</li>
 </ul>
 <ul>
   <li><b>Progress Notification</b><br>
     <br>
-    The component shall notify progress messages by events. The component shall provide APIs for user to register or unregister as listener. As long as a user is a registered event listener, the component should notify the user the following events when occurs:<br>
-    DownloadStarted: when browser component starts to load a new file.<br>
-    DownloadCompleted: when browser component successfully completed loading a new
-    file.<br>
-    DownloadProgress: when a loading operation is updated.<br>
-    DownloadError: when browser component fail in or abrupt loading new file.</li>
+    The component will provide notification of progess using events. The component 
+    will provide APIs for adding and removing event listeners. The component will 
+    notify the listeners of the following events:
+	
+	<p>
+	<dl> 
+      <dt> DownloadStarted: 
+      <dd> when the browser component starts to load a new file.
+      <dt>DownloadCompleted: </dt>
+      <dd>when the browser component successfully completes loading a new file.</dd>
+      <dt>DownloadProgress: </dt>
+      <dd>when a loading operation is updated.</dd>
+      <dt>DownloadError:</dt>
+      <dd> when the browser component fails. </dd>
+    </dl>
+  </li>
 </ul>
 <h4><a name="1.4 Performance Requirements">1.4 Performance Requirements</a></h4>
 <blockquote>
-  <p>The component performance should not slow down the Java application. For instance, while the component is invoked by loading, reloading or dispatching events, the Java program don't have to wait if it takes long time in practice.</p>
+  <p>The component performance should not slow down the Java application. For 
+    instance, while the component is invoked by loading, reloading, or dispatching 
+    events, the Java program doesn't have to wait.</p>
 </blockquote>
 <h4><a name="1.5 Operational Scenarios">1.5 Operational Scenarios</a></h4>
 <ul>
-  <li>Case 1<br>
+  <li>Case 1: rich web services client use<br>
     <br>
-    There is the rich web services client use case. This is a swing application that talks to web services via SOAP or similar and displays the results in a rich and interactive way. Often these UIs provide a rich UI to some part of the service and then at some point cross the boundary to the html based web displaying a URL in a browser control.<br>
+    A Swing application talks to web services via SOAP or a similar mechanism 
+    and displays the results in a rich and interactive way. Often these applications 
+    provide a rich UI to some part of the service and then at some point cross 
+    the boundary to the HTML based web, displaying a URL in a browser control.<br>
     <br>
-    An example of this is grokker (www.groxis.com). This client e.g. can be used to search Amazon. When an article is selected it is displayed in an embedded browser control - one of the reasons grokker currently only runs on windows.<br>
+    An example of this is grokker (<a href="http://www.groxis.com">www.groxis.com</a>). 
+    This client can be used to search Amazon. When an article is selected it is 
+    displayed in an embedded browser control, which is one of the reasons grokker 
+    currently only runs on Microsoft Windows.<br>
     <br>
-    On the requirements side this at least demands loading URLs into a swing browser control. These pages will include links which the user will navigate. For basic history support the control will need to support
-    navigating links, navigating back and forward, and querying the currently displayed URL.</li>
+    On the requirements side this at least demands loading URLs into a Swing browser 
+    control. These pages will include links which the user will navigate. For 
+    basic history support the control will need to support navigating links, navigating 
+    back and forward, and querying the currently displayed URL.</li>
 </ul>
 <ul>
-  <li>Case 2:<br>
+  <li>Case 2: an email client (or calendaring, collaboration, etc).<br>
     <br>
-    Second use case is an email client (or calendaring, collaboration etc). Html attachments are common and need to be displayed within the body part of the message window. Links are usually followed in another browser window for this application (e.g. see
-    Mozilla).<br>
+    HTML attachments are common and need to be displayed within the body part 
+    of the message window. Links are usually followed in another browser window 
+    for this application (e.g. see Mozilla).<br>
     <br>
-    In addition to the above a way to intercept the users browsing actions to dispatch URLs into a separate browser window is needed in this case.</li>
+    In addition to the above a way to intercept the user's browsing actions to 
+    dispatch URLs into a separate browser window is needed in this case.</li>
 </ul>
 <hr>
 <h3><a name="2. Design Specification">2. Design Specification</a></h3>
      
 <blockquote>
-  <p style="font-style: normal; ">This section provides
- detailed, adequate    information      about the design of the Browser component.  It covers  not  only the system      architecture and UML analyze,
-but also  design considerations  and decisions. </p>
+  <p style="font-style: normal; ">This section provides detailed information about 
+    the design of the Browser component. It covers not only the system architecture 
+    and UML analysis, but also design considerations and decisions. </p>
      
 </blockquote>
      
 <h4><a name="2.1 Assumptions and Dependencies">2.1 Assumptions and Dependencies</a></h4>
      
-<blockquote>
-     
-<p>Describe any assumptions or dependencies regarding the software and its
- use. These may concern such issues as:  </p>
-     
-</blockquote>
 <ul>
   <li><b>Operating Systems</b>
     <ul>
-      <li>Win98/ME/NT/2000/XP/2003, Linux SuSE 7.1 or later, RedHat 8 or later, Solaris 8 or later.</li>
+      <li>Win98/ME/NT/2000/XP/2003</li>
+      <li>Linux SuSE 7.1 or later</li>
+      <li>RedHat 8 or later</li>
+      <li>Solaris 8 or later</li>
     </ul>
   </li>
       <li> <b> Java Environment</b>
         <ul>
-          <li>J2SE v1.4.2 or later.</li>
+          
+      <li>J2SE v1.4.2 or later</li>
         </ul>
       </li>
   <li><b>Browser Environment</b>
     <ul>
-      <li>Mozilla 1.4 or later.</li>
-      <li>Internet Explorer 5 or later.</li>
+      <li>Mozilla 1.4 or later</li>
+      <li>Internet Explorer 5 or later</li>
     </ul>
   </li>
 </ul>
          
-<h4><a name="2.2 End-user Characteristics">2.2 End-user Characteristics</a></h4>
+<h4><a name="2.2 End-user Characteristics">2.2 End-User Characteristics</a></h4>
      
 <blockquote>
      
-<p>                   The end-user is defined as Java developer who is in
- need  of  a  basic    featured   browser component in their Java application.</p>
+  <p> The end-user is defined as a Java developer who is in need of a basic browser 
+    component to be used in a Java application.</p>
      
 </blockquote>
-<h4><a name="2.3 Goals and Guideline">2.3 Goals and Guideline</a></h4>
+<h4><a name="2.3 Goals and Guideline">2.3 Goals and Guideline</a>s</h4>
      
 <ul>
-       <li>               
-    <p style="margin-bottom: 0cm; ">Simple 	and         only necessary browser
- functionalities support</p>
-       </li>
-       <li>               
-    <p style="margin-bottom: 0cm; ">Widely 	content         rendering capability</p>
-       </li>
-       <li>               
-    <p style="margin-bottom: 0cm; ">Brower 	neutral</p>
-       </li>
-       <li>               
-    <p style="margin-bottom: 0cm; ">Working,          	looking, or "feeling"
- like an existing Java APIs</p>
-       </li>
-       <li>               
-    <p> Acceptable performance</p>
-       </li>
-     
+  <li> 
+    <p style="margin-bottom: 0cm; ">Simple; support only what browser functionality 
+      is necessary </p>
+  </li>
+  <li>Widely content rendering capability</li>
+  <li>Browser neutral</li>
+  <li>Working, looking, and "feeling" like existing Java APIs</li>
+  <li>Acceptable performance</li>
 </ul>
      
 <h4><a name="2.4 Development Method">2.4 Development Method</a></h4>
      
-<blockquote>
-                    In order to support Java applets, we implement Browser component
-                    using an out-process approach. In other words, the native browser implemented
-  in C++ actually runs as a standalone process, outside the Java VM process
-  which Browser component is running in. Socket is used for communication between these two processes.
-</blockquote>
+<blockquote> To support Java applets, we implemented the Browser component using 
+  an out-process approach. In other words, the native browser implemented in C++ 
+  actually runs as a standalone process, outside the Java VM process that the 
+  Browser component is running in. Sockets are used for communication between 
+  these two processes. </blockquote>
      
 <h4><a name="2.5 Architectural Strategies">2.5 Architectural Strategies</a></h4>
      
@@ -214,15 +238,13 @@ but also  design considerations  and decisions. </p>
      
   </li>
 </ul>
-<blockquote>
-     
-<p>We provide Java APIs for developer to access         browser capability,
- but actually the Java code does not implement any    function     of browser.
- Instead, we embed a real stand alone web browser,    like Mozilla     or
-IE, which serves as a standalone application. The custom app  doesn't know
-which     browser is embed, it can only see the Browser component. The Browser component
-is responsible for calling the native implementation  
- code and communicate     with native embed browser.</p>
+<blockquote> 
+  <p>We provide Java APIs for developer to access browser capability, but actually 
+    the Java code does not implement any browser functionality. Instead, we embed 
+    a real standalone Web browser, like Mozilla or IE. The custom application 
+    doesn't know which browser is embedded; it can see only the Browser component. 
+    The Browser component is responsible for calling the native implementation 
+    code and communicating with the native embeded browser.</p>
      
 </blockquote>
 <ul>
@@ -234,13 +256,11 @@ is responsible for calling the native implementation
 </ul>
 <blockquote>
      
-<p>The Java browser component is inherited         from java.awt.Canvas. 
-                The AWT Native Interface     enables     rendering libraries
- compiled to native code to draw directly    to a Java                  Canvas 
-                  drawing surface. This means that such libraries can be used
-   without     being    converted to Java first and without significant impact
-   on performance.     The  Java browser component extends from Canvas and
- overwrites  the paint    method.</p>
+  <p>The Java browser component is inherited from java.awt.Canvas. The AWT Native 
+    Interface enables rendering libraries compiled to native code to draw directly 
+    to a Canvas drawing surface. This means that such libraries can be used without 
+    being converted to Java first and without significant impact on performance. 
+    The Java browser component extends from Canvas and overwrites the paint method.</p>
      
 </blockquote>
 <h4><a name="2.6 System Architecture">2.6 System Architecture</a></h4>
@@ -250,24 +270,15 @@ is responsible for calling the native implementation
 <p> <img src="../resource/Browser_architecture.gif" align="Left" width="584" height="173">
      <br>
      <br>
-     </p>
+  </p>
      
 </blockquote>
      
 <h2><br>
-    </h2>
+</h2>
      
 <h2><br>
-    </h2>
-     
-<p>&nbsp;
-    </p>
-     
-<p>&nbsp;
-    </p>
-     
-<p>&nbsp;
-    </p>
+</h2>
      
 <hr>
      
@@ -593,16 +604,15 @@ process the    events from nativeEvents  continuously.      </p>
  makes a new NativeEventData, which includes   the    detail  event type
 &amp;  data, and add it to the NativeEventThread's   private    event  queue
 - nativeEvents.  NativeEventThread peeks the event   from nativeEvents  
-   in run(), and send the message to native browser through  two instance
- which    communicate  through socket: MsgServer and MsgClient.</p>
+   in run(), and send the message to native browser through  two instances
+ which    communicate  through a socket: MsgServer and MsgClient.</p>
      
 <p>The details of sending an event from the browser to java are as follows.
   </p>
      
   <p>When a browser event occurrs, it sends out         the event through socket,
  NativeEventThread get this event   through            MsgClient and then
-process this event. Due to the thread-safety     reason, it invokes  the 
-dispatchWebBrowserEvent method of WebBrowser . WebBrowser.dispatchWebBrowserEvent
+process this event. Due to the thread-safety     reason, it invokes the dispatchWebBrowserEvent method of WebBrowser . WebBrowser.dispatchWebBrowserEvent
 analyzes the WebBrowseEvent and passes them   to <span style="font-style: normal; ">
                   the  registered WebBrowserListerner.</span></p>
      
@@ -646,13 +656,13 @@ analyzes the WebBrowseEvent and passes them   to <span style="font-style: normal
 <p><br>
      <img src="../resource/Browser_umlsequence_3.gif" alt="" width="841" height="398">
      <br>
-     </p>
+  </p>
      
 </blockquote>
 <hr>
 <h3><a name="4. Related Project">4. Related Project</a></h3>
 <blockquote>
-  <p>Browser component learns some ideas from <a href="http://www.mozilla.org/projects/blackwood/webclient/index.html">Webclient</a>.
+  <p>Browser component is related to some  <a href="http://www.mozilla.org/projects/blackwood/webclient/index.html">Webclient</a>.
   But unlike Webclient, Browser component targets to provide the full capability to
   build up a Java GUI's embedded browser, it's more likely a HTML/XML viewer
   that can be embedded into any Java application as an AWT component.</p>
