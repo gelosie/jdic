@@ -56,12 +56,18 @@
 <blockquote> 
   <p>JDIC is released in both binary distributions and 
     source distributions. Binary distributions are available in both gzipped tar format
-  (jdic-&lt;release number&gt;-bin-&lt;arch&gt;.tar.gz) and zip format (jdic-&lt;release 
-    number&gt;-bin-&lt;arch&gt;.zip) <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.</p>
+  (jdic-&lt;version&gt;-bin-&lt;platform&gt;-[arch].tar.gz) and zip format (jdic-&lt;version&gt;-bin-&lt;platform&gt;-[arch].zip) <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.</p>
+  <p>The notation <i>&lt;version&gt;</i> represents the version number, such as <i>1.0</i>,
+  <i>1.0.2</i>, and <i>&lt;platform&gt;</i> represents the platform the
+  distribution works on, which is <i>windows</i>, <i>linux</i> or <i>solaris</i>.
+  The <i>[arch]</i> notation is only used for Solaris platform
+  (&lt;platform&gt;=solaris), which is <i>sparc</i> or <i>i586</i>. For the
+  other platforms (Windows/Linux), it's <i>i586</i> by default.</p>
+
   <p>Extracting a binary distribution will create below directory
   structure:</p>
 
-<pre><b>jdic-&lt;release number&gt;-bin-&lt;arch&gt;</b>
+<pre><b>jdic-&lt;version&gt;-bin-&lt;platform&gt;-[arch]</b>
 +- README.html: this file.
 |
 +- LICENSE: the license file.
@@ -86,8 +92,9 @@
 <blockquote> 
   <p>JDIC source code could be checked out from CVS <a href="https://jdic.dev.java.net/source/browse/jdic/">tree</a>.&nbsp;</p>
   <p>And JDIC source distributions are available both in gzipped tar 
-    format (jdic-&lt;release number&gt;-src.tar.gz) and zip format (jdic-&lt;release number&gt;-src.zip)
-  <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.</p>
+    format (jdic-&lt;version&gt;-src.tar.gz) and zip format (jdic-&lt;version&gt;-src.zip)
+  <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>,
+  including the source code for all the supported platforms.</p>
   <p><b>4.1. Prerequisites</b></p>
   <blockquote>
   <p>The following additional tools and libraries are needed to build the JDIC source code:</p>
@@ -137,7 +144,7 @@
   <p><b>4.2. Extract the source code</b></p>
   <blockquote>
     Extracting a source distribution will create below directory
-    structure:<pre><b>JDIC-&lt;release number&gt;-src</b>
+    structure:<pre><b>JDIC-&lt;version&gt;-src</b>
 +- README.html: this file.
 |
 +- build.xml: Ant build scripts.
@@ -222,8 +229,8 @@
         - By default, the system default browser (Mozilla or Internet Explorer) will be
         embeded.
         If Mozilla is the embeded(default) browser:<br>
-        &nbsp; -- Set the environment variable <i> MOZILLA_FIVE_HOME</i> to specify
-        the path where Mozilla 1.4 (or later) executables locates.<br>
+        &nbsp; -- Set the environment variable <i> MOZILLA_FIVE_HOME</i> to point to the absolute path of the
+        Mozilla 1.4 (or later) executable file.<br>
         &nbsp; -- Copy MozEmbed.exe file to <i>MOZILLA_FIVE_HOME</i> directory.<br>
         &nbsp; -- Add <i> MOZILLA_FIVE_HOME</i> to PATH.</li>
       <li><b>Linux/Solaris<br>
