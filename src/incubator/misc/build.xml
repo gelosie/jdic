@@ -301,6 +301,17 @@ The generated distribution is put under *dist* directory.
 		</classpath>
 	</java>
   </target>
+
+  <target name="test-dockmenu" depends="buildmac_os_x">
+	<java classname="org.jdesktop.jdic.misc.test.DockMenuTest"
+            fork="true"
+        >
+		<classpath>
+			<pathelement path="/System/Library/Java/"/>
+			<pathelement path="${dist.dir}/${jar.file}"/>
+		</classpath>
+	</java>
+  </target>
   
   
   <target name="buildsharejar" depends="init">
