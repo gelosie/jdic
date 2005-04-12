@@ -147,7 +147,7 @@ The generated distribution is put under *dist* directory.
 	<!-- *** javadoc *** -->
 	<!-- disable author and version tags output -->
 	<target name="javadoc" depends="init" description="generate javadoc into ${dist.dir}/javadoc">
-		<javadoc packagenames="${pkg.misc.name}" sourcepath="${share.classes.dir}" destdir="${dist.dir}/javadoc" author="false" version="false" use="true" Windowtitle="JDIC API V${version} Release ${release}" Header="JDIC API V${version} Release ${release}">
+		<javadoc packagenames="${pkg.misc.name}" sourcepath="${share.classes.dir}" destdir="${dist.dir}/javadoc" author="true" version="false" use="true" Windowtitle="JDIC API V${version} Release ${release}" Header="JDIC API V${version} Release ${release}">
 			<docTitle>
 				<![CDATA[JDIC incubator Misc
                <br> API Specification, Version ${version} Release ${release}]]></docTitle>
