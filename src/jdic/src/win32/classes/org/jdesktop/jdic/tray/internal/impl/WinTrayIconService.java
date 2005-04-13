@@ -63,11 +63,26 @@ public class WinTrayIconService implements TrayIconService{
     private final int WINDOWS_TASKBAR_ICON_WIDTH = 16;
     private final int WINDOWS_TASKBAR_ICON_HEIGHT = 16;
 
-    JDialog popupParentFrame;
-    
+    static class PopupParent extends JDialog{
+		public PopupParent(){
+			super((Frame)null, "JDIC Tray Icon");
+	        try{
+	        	Method setAlwaysOnTop = this.getClass().getMethod("setAlwaysOnTop", new Class[]{boolean.class});
+	        	setAlwaysOnTop.invoke(this, new Object[]{Boolean.TRUE});
+	        }catch(NoSuchMethodException e){
+	        }catch(Exception e){
+	        	e.printStackTrace();
+	        }
+	        this.setUndecorated(true);
+	        this.setBounds(0, 0, 0, 0);
+		}
+    }
+    static PopupParent popupParentFrame;
+	
     boolean created;
 
     static {
+        popupParentFrame = new PopupParent();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 removeAllIcons();
@@ -83,19 +98,10 @@ public class WinTrayIconService implements TrayIconService{
 
     public WinTrayIconService() {
         iconID = noIcons++;
-        map.put(new Integer(iconID), this);
-
-        popupParentFrame = new JDialog((Frame)null, "JDIC Tray Icon");
-        try{
-        	Method setAlwaysOnTop = popupParentFrame.getClass().getMethod("setAlwaysOnTop", new Class[]{boolean.class});
-        	setAlwaysOnTop.invoke(popupParentFrame, new Object[]{Boolean.TRUE});
-        }catch(NoSuchMethodException e){
-        	//ignore this exception
-        }catch(Exception e){
-        	e.printStackTrace();
-        }
-        popupParentFrame.setUndecorated(true);
-        popupParentFrame.setBounds(0, 0, 0, 0);
+		if(popupParentFrame == null){
+			popupParentFrame = new PopupParent();
+			popupParentFrame.pack();
+		}
     }
 
     private native long createIconIndirect(int[] rData, byte[] andMask,
@@ -120,11 +126,18 @@ public class WinTrayIconService implements TrayIconService{
     	byte[] bacontent = text == null ? new byte[0] : text.getBytes();
     	showBalloonMessage(hicon, iconID, batitle, bacontent, type);
     }
+	
     public void addNotify() {
-        observer = new AnimationObserver();
+		if(popupParentFrame == null){
+			popupParentFrame = new PopupParent();
+			popupParentFrame.pack();
+		}
+        map.put(new Integer(iconID), this);
+
+		observer = new AnimationObserver();
         updateIcon(null);
         created = true;
-    }
+	}
 
     private void updateBufferedImage() {
     }
@@ -338,7 +351,12 @@ public class WinTrayIconService implements TrayIconService{
         if (hicon != 0) {
             deleteHIcon(hicon); 
         }
+		map.remove(new Integer(iconID));
         created = false;
+		if(map.size() == 0){
+			popupParentFrame.dispose();
+			popupParentFrame = null;
+		}
     }
     private static void restartTaskbar() {
             Iterator keyiterator = map.keySet().iterator();

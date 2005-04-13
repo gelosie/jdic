@@ -57,6 +57,7 @@ public class WinSystemTrayService implements SystemTrayService {
         t.sync();
         
         display_thread = new DisplayThread();
+		display_thread.setDaemon(true);
         synchronized(DisplayThread.class){
             try{
                 display_thread.start();
