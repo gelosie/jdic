@@ -77,7 +77,8 @@ public class GnomeSystemTrayService implements SystemTrayService {
                 eventLoop();
             }
         });
-
+        display_thread.setDaemon(true);
+        
         display_thread.start();
 
     }
