@@ -183,8 +183,8 @@ The generated distribution is put under *dist* directory.
 	<!-- *** Build Win32 native JNI code *** -->
 	<target name="buildwin32jni" depends="init" description="build native jni libraries.">
 
-		<exec dir="${win32.native.jni.dir}" executable="nmake" failonerror="yes">
-			<arg line="/f misc.mak" />
+		<exec dir="${win32.native.jni.dir}" executable="make" failonerror="yes">
+			<arg line="jdic_misc.dll" />
 		</exec>
 
 		<!-- copy generated .dll file -->
