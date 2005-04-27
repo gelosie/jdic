@@ -39,6 +39,13 @@ USA
     <property name="screensaver" value="picturecube" />
     <property name="screensaver.class" 
              value="org.jdesktop.jdic.screensaver.picturecube.PictureCube" />
+             
+    <!-- Values for the Windows installer -->
+    <property name="productName" value="Picture Cube Screensaver" />
+    <property name="productVersion" value="0.2" />
+    <property name="productPublisher" value="Sun Microsystems, Inc." />
+    <property name="productWebSite" 
+        value="http://screensavers.dev.java.net/" />
   </target>
   
   <target name="check" description="Check to make sure properties are set">
@@ -54,9 +61,25 @@ USA
     </fail>
   </target>
   
+  <target name="check-nsis" description="Check if NSIS is present">
+    <fail unless="nsis.path">
+      Property nsis.path not found.  Please copy
+      build.properties.sample to build.properties and
+      follow the instructions in that file.
+    </fail>
+    <available file="${nsis.path}" property="nsis.present" />
+    <fail unless="nsis.present">
+      Property nsis.path is invalid.  Please set
+      it to the installation path of NSIS.
+    </fail>
+  </target>
+  
   <target name="define" description="Define custom tasks">
     <taskdef name="foreachscreensaver" 
       classname="org.jdesktop.jdic.screensaver.autogen.ForEachScreensaver"
+      classpath="${saverbeans.path}/saverbeans-ant.jar" />
+    <taskdef name="makewin32installscript" 
+      classname="org.jdesktop.jdic.screensaver.autogen.NsiGeneratorTask"
       classpath="${saverbeans.path}/saverbeans-ant.jar" />
   </target>
     
@@ -152,6 +175,31 @@ USA
            src="${saverbeans.path}/lib/jogl/jogl-natives-solsparc.jar"/>
     <zip destfile="${dist}/${screensaver}-unix.zip" basedir="${dist}"
          includes="${screensaver}-unix/**" />
+  </target>
+
+  <target name="win32-installer" depends="init,check-nsis,dist">
+    <mkdir dir="${build}/win32-jogl" />
+    <unjar dest="${build}/win32-jogl"
+           src="${saverbeans.path}/lib/jogl/jogl-natives-win32.jar"/>
+    <mkdir dir="${build}/win32-installer" />
+    <makewin32installscript
+        productName="${productName}"
+        productVersion="${productVersion}"
+        productPublisher="${productPublisher}"
+        productWebSite="${productWebSite}"
+        licenseFile="${basedir}/COPYING"
+        outputFilename="${screensaver}-setup.exe"
+        saverbeansSdkPath="${saverbeans.path}"
+        outFile="${build}/win32-installer/${screensaver}.nsi"
+        jogl="true"
+    >
+        <fileset dir="${src}/conf" includes="*.xml" />
+    </makewin32installscript>
+    <!-- Launch makensis on script to create the installer -->
+    <exec executable="${nsis.path}/makensis.exe" failonerror="true">
+      <arg line="${build}/win32-installer/${screensaver}.nsi" />
+    </exec>
+    <echo message="Screensaver Installer generated to: ${build}/win32-installer/${screensaver}-setup.exe" />
   </target>
   
   <!-- 

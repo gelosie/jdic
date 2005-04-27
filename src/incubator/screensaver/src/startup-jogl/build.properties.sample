@@ -21,6 +21,12 @@
 # See http://jdic.dev.java.net/
 saverbeans.path=/opt/saverbeans
 
+# If you wish to create a windows installer (by running the win32-installer
+# target), you must specify the path to nsis here.  This only works on
+# Windows.  You cannot build a Windows installer from Unix.
+# See http://nsis.sourceforge.net/
+nsis.path=C:/Program Files/NSIS
+
 # Parameters to pass to screensaver during debugging
 debug.params=
 
