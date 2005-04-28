@@ -1068,6 +1068,9 @@ LRESULT WINAPI ScreenSaverProc( HWND hWnd, UINT uMessage,
     static UINT timerID;
     int valid = 1;
     int virtualLeft, virtualTop, virtualWidth, virtualHeight;
+    LONG oneMonitorWidth;
+    RECT windowRect;
+    LONG windowWidth;
 
     switch( uMessage ) {
         case WM_CREATE:
@@ -1075,17 +1078,26 @@ LRESULT WINAPI ScreenSaverProc( HWND hWnd, UINT uMessage,
 	    if(DEBUG) fprintf( log, "Opened log.\n" );
             master_hwnd = hWnd;
 
-            // Multi-monitor support (not supported in NT or 95)
-            virtualWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-            if(virtualWidth != 0) {
-                virtualLeft = GetSystemMetrics(SM_XVIRTUALSCREEN);
-                virtualTop = GetSystemMetrics(SM_YVIRTUALSCREEN);
-                virtualHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN);
-                if(DEBUG) fprintf( log, 
-                    "Multi monitors detected: %d %d %d %d\n", virtualLeft, 
-                    virtualTop, virtualWidth, virtualHeight );
-                MoveWindow(hWnd, virtualLeft, virtualTop, virtualWidth, 
-                    virtualHeight, TRUE);
+            oneMonitorWidth = GetSystemMetrics(SM_CXFULLSCREEN);
+            GetWindowRect(hWnd, &windowRect);
+            windowWidth = windowRect.right - windowRect.left;
+            if(windowWidth < oneMonitorWidth) {
+                // In preview mode.  Do nothing for multi-monitors.
+            }
+            else {
+                // Full screen mode.
+                // Multi-monitor support (not supported in NT or 95)
+                virtualWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                if(virtualWidth != 0) {
+                    virtualLeft = GetSystemMetrics(SM_XVIRTUALSCREEN);
+                    virtualTop = GetSystemMetrics(SM_YVIRTUALSCREEN);
+                    virtualHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+                    if(DEBUG) fprintf( log, 
+                        "Multi monitors detected: %d %d %d %d\n", virtualLeft, 
+                        virtualTop, virtualWidth, virtualHeight );
+                    MoveWindow(hWnd, virtualLeft, virtualTop, virtualWidth, 
+                        virtualHeight, TRUE);
+                }
             }
             
             timerID = timeSetEvent( 1000/60, 1000/60, TimerCallback, 0, 
