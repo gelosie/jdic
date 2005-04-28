@@ -191,6 +191,8 @@ USA
         outputFilename="${screensaver}-setup.exe"
         saverbeansSdkPath="${saverbeans.path}"
         outFile="${build}/win32-installer/${screensaver}.nsi"
+        jarDir="${build}/jar"
+        scrDir="${build}/win32"
         jogl="true"
     >
         <fileset dir="${src}/conf" includes="*.xml" />
