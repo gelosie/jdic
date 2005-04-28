@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -101,6 +102,12 @@ public class NsiGeneratorTask
     
     /** The file to store the final .nsi script to */
     private File outFile;
+    
+    /** The directory containing the screensaver .jar files */
+    private File jarDir;
+    
+    /** The directory containing the screensaver .scr files */
+    private File scrDir;
     
     /** Initial section number in .nsi file */
     private static final int INITIAL_SECTION_NUMBER = 2;
@@ -184,6 +191,22 @@ public class NsiGeneratorTask
         return this.outFile;
     }
     
+    public void setJarDir(File jarDir) {
+        this.jarDir = jarDir;
+    }
+    
+    public File getJarDir() {
+        return this.jarDir;
+    }
+    
+    public void setScrDir(File scrDir) {
+        this.scrDir = scrDir;
+    }
+    
+    public File getScrDir() {
+        return this.scrDir;
+    }
+    
     public void execute() 
         throws BuildException 
     {
@@ -216,6 +239,18 @@ public class NsiGeneratorTask
         if((saverbeansSdkPath == null) || !saverbeansSdkPath.isDirectory()) {
             throw new BuildException(
                 "saverbeansSdkPath parameter not specified or path " +
+                "does not exist.");
+        }
+    
+        if((jarDir == null) || !jarDir.isDirectory()) {
+            throw new BuildException(
+                "jarDir parameter not specified or path " +
+                "does not exist.");
+        }
+    
+        if((scrDir == null) || !scrDir.isDirectory()) {
+            throw new BuildException(
+                "scrDir parameter not specified or path " +
                 "does not exist.");
         }
     
@@ -257,6 +292,13 @@ public class NsiGeneratorTask
             variables.put("saverbeans_sdk", 
                 saverbeansSdkPath.getAbsolutePath());
             File buildDir = new File(getProject().getBaseDir(), "build");
+            if(!buildDir.isDirectory()) {
+                throw new BuildException(
+                    "Could not find build directory " + 
+                    buildDir.getAbsolutePath() + 
+                    ".  Be sure to build the screensavers before " +
+                    "building the installer.");
+            }
             File joglNativeDir = new File(buildDir, "win32-jogl");
             if(jogl) {
                 variables.put("jogl_files", 
@@ -295,47 +337,42 @@ public class NsiGeneratorTask
                     String name = config.getName();
                     String label = config.getLabel();
                     String description = config.getDescription();
-                    File jarDir = new File(buildDir, "jar");
-                    File win32Dir = new File(buildDir, "win32");
-                    
-                    if(!buildDir.isDirectory()) {
-                        throw new BuildException(
-                            "Could not find build directory " + 
-                            buildDir.getAbsolutePath() + 
-                            ".  Be sure to build the screensavers before " +
-                            "building the installer.");
-                    }
-                    
-                    if(!jarDir.isDirectory()) {
-                        throw new BuildException(
-                            "Could not find build JAR directory " + 
-                            jarDir.getAbsolutePath() + 
-                            ".  Be sure to build the screensavers before " +
-                            "building the installer.");
-                    }
-                    
-                    if(!win32Dir.isDirectory()) {
-                        throw new BuildException(
-                            "Could not find build win32 directory " + 
-                            win32Dir.getAbsolutePath() + 
-                            ".  Be sure to build the screensavers before " +
-                            "building the installer.");
-                    }
-                    
                     String sectionLabel = "SEC" + 
                         integerFormat.format(sectionNumber);
+                    
+                    // Find -jar argument:
+                    String jarArg = null;
+                    ArrayList options = config.getOptions();
+                    for(int j = 0; j < options.size(); j++) {
+                        HackConfig.Option opt =
+                            (HackConfig.Option)options.get(j);
+                        if(opt instanceof HackConfig.CommandOption) {
+                            HackConfig.CommandOption cmd = 
+                                (HackConfig.CommandOption)opt;
+                            String arg = cmd.getArg();
+                            if(arg.startsWith("-jar ")) {
+                                jarArg = arg.substring(5);
+                            }
+                        }
+                    }
+                    if(jarArg == null) {
+                        throw new BuildException("Error: " + 
+                            confFiles[i] + " has no command with " +
+                            "-jar argument");
+                    }
                     
                     // Create section for this saver:
                     screensaverSections.append(
                         "Section \"" + label + "\" " + sectionLabel + CRLF + 
                         "  File \"" + jarDir.getAbsolutePath() + 
-                            File.separator + name + ".jar\"" + CRLF + 
-                        "  File \"" + win32Dir.getAbsolutePath() + 
+                            File.separator + jarArg + "\"" + CRLF + 
+                        "  File \"" + scrDir.getAbsolutePath() + 
                             File.separator + name + ".scr\"" + CRLF + 
                         "SectionEnd" + CRLF
                     );
                     
                     // Create description for this saver:
+                    if(description == null) description = "";
                     description = nsiQuote(description.trim());
                     screensaverDescriptions.append(
                         "!insertmacro MUI_DESCRIPTION_TEXT ${" + 
@@ -345,7 +382,7 @@ public class NsiGeneratorTask
                     // Create delete section for this saver:
                     screensaverDelete.append(
                         "Delete \"$INSTDIR" + 
-                            File.separator + name + ".jar\"" + CRLF +
+                            File.separator + jarArg + "\"" + CRLF +
                         "Delete \"$INSTDIR" + 
                             File.separator + name + ".scr\"" + CRLF
                     );
