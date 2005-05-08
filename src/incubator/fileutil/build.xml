@@ -1,0 +1,294 @@
+<?xml version="1.0"?>
+<project name="FileUtil Incubator build script" default="showtargets" basedir=".">
+
+  <!--
+This is the master build script for use with the Jakarta Ant build tool
+to build the source code of JDIC FileUtil project.
+
+For Ant, see http://jakarta.apache.org/ant/index.html
+
+Top-level target:
+  buildall:         Build a JDIC API distribution for the current platform.
+                    Which will run one of below targets:
+    buildwin32:     on Windows to build a Windows distribuition.
+    buildlinux:     on Linux to build a Linux distribuition.
+    buildsolaris:   on Solaris to build a Solaris distribuition.
+    buildmac_os_x:  on Mac OS X to build a Mac OS X distribuition.
+  clean:            Remove the generated distribution (including files and directories).
+
+-->
+
+  <!-- the top-level package names -->
+  <property name="pkg.jdic.name" value="org.jdesktop.jdic" />
+  <property name="pkg.fileutil.name" value="${pkg.jdic.name}.fileutil" />
+
+  <!-- the path of source directory -->
+  <property name="src.dir" value="src" />
+  <property name="share.classes.dir" value="${src.dir}/share/classes" />
+  <property name="unix.classes.dir" value="${src.dir}/unix/classes" />
+  <property name="win32.classes.dir" value="${src.dir}/win32/classes" />
+  <property name="mac.classes.dir" value="${src.dir}/mac_os_x/classes" />
+
+  <property name="unix.native.dir" value="${src.dir}/unix/native" />
+  <property name="unix.native.jni.dir" value="${unix.native.dir}/jni" />
+
+  <property name="win32.native.dir" value="${src.dir}/win32/native" />
+  <property name="win32.native.jni.dir" value="${win32.native.dir}/jni" />
+
+  <property name="mac.native.dir" value="${src.dir}/mac_os_x/native" />
+  <property name="mac.native.jni.dir" value="${mac.native.dir}/jni" />
+
+  <!-- the distribution version and release of this build -->
+  <!-- which is used in javadoc and distzip targets -->
+  <property name="version" value="0.1" />
+  <property name="release" value="1" />
+
+  <!-- the generated jar file name -->
+  <property name="jar.file" value="jdic_fileutil.jar" />
+
+  <target name="showtargets" description="default target showing all available targets">
+    <echo>The top-level targets are:
+            buildall:  Build a JDIC API distribution for the current platform
+            (Windows, Linux, Solaris, or Mac OS X).
+            clean:     Remove the generated distribution.
+
+          The generated distribution is put under *dist* directory.
+    </echo>
+  </target>
+
+  <!--
+    - SHARED TARGETS
+    -->
+  <target name="init" description="the init target">
+    <property environment="env" />
+    <property name="env.DEBUG" value="OFF" />
+    <!-- default, if not supplied by environment -->
+    <property name="javac.debug" value="${env.DEBUG}" />
+
+    <!-- Create the time stamp -->
+    <tstamp />
+
+    <!-- Set platform-dependent distribution directory -->
+    <condition property="os-arch" value="windows">
+      <os family="windows" />
+    </condition>
+
+    <condition property="os-arch" value="linux">
+      <os name="linux" />
+    </condition>
+
+    <condition property="os-arch" value="solaris-sparc">
+      <os name="sunos" arch="sparc" />
+    </condition>
+
+    <condition property="os-arch" value="solaris-x86">
+      <os name="sunos" arch="x86" />
+    </condition>
+
+    <condition property="os-arch" value="mac-os_x">
+      <os name="Mac OS X" />
+    </condition>
+
+    <!-- Create the distribution directory -->
+    <property name="dist.dir" value="dist/${os-arch}" />
+    <mkdir dir="${dist.dir}" />
+
+    <echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
+    <echo>+ JDIC API build version ${version} release ${release}</echo>
+    <echo>+ The distribution directory is: .${file.separator}${dist.dir}${file.separator}</echo>
+    <echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
+  </target>
+
+  <!-- *** Top-level target *** -->
+  <!-- *** Clean the distribution directory *** -->
+  <target name="clean" depends="init" description="clean up the built directory and files">
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}" />
+    </delete>
+  </target>
+
+
+  <!-- *** Top-level target *** -->
+  <!-- *** Build a JDIC API distribution for the current platform *** -->
+  <target name="buildall" description="build a distribution for the current platform.">
+    <!-- Set the platform-dependent buildall target -->
+    <condition property="platform.target" value="buildwin32">
+      <os family="windows" />
+    </condition>
+
+    <condition property="platform.target" value="buildlinux">
+      <os name="linux" />
+    </condition>
+
+    <condition property="platform.target" value="buildsolaris">
+      <os name="sunos" />
+    </condition>
+
+    <condition property="platform.target" value="buildmac_os_x">
+      <os name="Mac OS X" />
+    </condition>
+
+    <antcall target="${platform.target}" />
+
+    <!-- build demo applications into .class files -->
+    <antcall target="builddemos" />
+    <antcall target="distzip" />
+  </target>
+
+  <!-- *** javadoc *** -->
+  <target name="javadoc" depends="init"
+          description="generate javadoc into ${dist.dir}/javadoc" >
+    <javadoc packagenames="${pkg.fileutil.name}"
+             sourcepath="${share.classes.dir}"
+             destdir="${dist.dir}/javadoc"       
+             author="false"
+             version="false"
+             use="true"
+             Windowtitle="JDIC Incubator FileUtil API V${version} Release ${release}"
+             Header="JDIC Incubator FileUtil API V${version} Release ${release}">
+             <docTitle><![CDATA[JDIC (JDesktop Integration Components) 
+               <br> API Specification, Version ${version} Release ${release}]]></docTitle>
+             <bottom><![CDATA[<font size="-1">For more information and documentation on JDIC, 
+               see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That documentation 
+               contains more detailed, developer-targeted descriptions, with conceptual 
+               overviews, working code examples, license terms and bug report information.
+               <p>Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is 
+               subject to <a href=
+               "https://jdic.dev.java.net/source/browse/jdic/src/COPYING">license terms</a>. 
+               </font>]]></bottom>
+    </javadoc>
+  </target>
+
+  <!--
+    - WIN32 DISTRIBUTION
+    -->
+  <target name="buildwin32" depends="buildwin32jar, javadoc, buildwin32jni" description="build java and native source code for Win32 platform">
+  </target>
+
+  <!-- *** Build Win32 jar file *** -->
+  <target name="buildwin32jar" depends="init" description="build the classes and jar file.">
+    <javac srcdir="${share.classes.dir}:${win32.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+      <fileset dir="${dist.dir}" includes="org/**/*.class" />
+    </jar>
+
+    <!-- remove the generated "org" directory -->
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}/org" />
+    </delete>
+  </target>
+
+  <!-- *** Build Win32 native JNI code *** -->
+  <target name="buildwin32jni" depends="init" description="build native jni libraries.">
+
+    <exec dir="${win32.native.jni.dir}" executable="make" failonerror="yes">
+      <arg line="jdic_fileutil.dll" />
+    </exec>
+
+    <!-- copy generated .dll file -->
+    <copy file="${win32.native.jni.dir}/jdic_fileutil.dll" todir="${dist.dir}" />
+  </target>
+
+  <!--
+    - LINUX DISTRIBUTION
+    -->
+  <target name="buildlinux" depends="buildunixjar, javadoc, buildunixjni" description="build java and native source code for Linux platform">
+  </target>
+
+  <!--
+    - SOLARIS DISTRIBUTION
+    -->
+  <!-- This target is the same with buildlinux. -->
+  <target name="buildsolaris" depends="buildlinux" description="build java and native source code for Solaris platform">
+  </target>
+
+  <!--
+    - SHARED TARGETS FOR UNIX DISTRIBUTIONS
+    -->
+  <!-- *** Build Unix jar file *** -->
+  <target name="buildunixjar" depends="init" description="build the classes and jar file.">
+    <javac srcdir="${share.classes.dir}:${unix.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+      <fileset dir="${dist.dir}" includes="org/**/*.class" />
+    </jar>
+
+    <!-- remove the generated "org" directory -->
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="${dist.dir}/org" />
+    </delete>
+
+  </target>
+
+  <!-- *** Build Unix native JNI code *** -->
+  <target name="buildunixjni" depends="init" description="build native jni libraries.">
+    <exec dir="${unix.native.jni.dir}" executable="make" failonerror="yes" />
+
+    <!-- copy generated .so file -->
+    <copy file="${unix.native.jni.dir}/libjdic_fileutil.so" todir="${dist.dir}" />
+  </target>
+
+  <!--
+    - MAC OS X DISTRIBUTION
+    -->
+  <target name="buildmac_os_x" depends="buildmacjar" description="build java and native source code for Mac OS X">
+  </target>
+
+  <!-- *** Build Mac jar file *** -->
+  <target name="buildmacjar" depends="init, buildsharejar" description="build the classes and jar file.">
+    <javac srcdir="${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}:/System/Library/Java" debug="${javac.debug}" />
+
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+      <fileset dir="${dist.dir}" includes="org/**/*.class" />
+    </jar>
+  </target>
+
+  <target name="buildsharejar" depends="init">
+    <javac srcdir="${share.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
+    <jar destfile="${dist.dir}/${jar.file}" update="false">
+      <fileset dir="${dist.dir}" includes="org/**/*.class" />
+    </jar>
+  </target>
+
+  <!-- *** Build Mac native JNI code *** -->
+  <target name="buildmacjni" depends="init" description="build native jni libraries.">
+    <exec dir="${mac.native.jni.dir}" executable="make" failonerror="yes" />
+
+    <!-- copy generated .jnilib file -->
+    <copy file="${mac.native.jni.dir}/libjdic_fileutil.jnilib" todir="${dist.dir}" />
+  </target>
+
+
+  <!-- rebuild single demo -->
+  <target name="-buildSingleDemo">
+    <!-- remove the ".class" files to rebuild the demo apps -->
+    <delete failonerror="false">
+      <fileset dir="${demo.dir}" includes="**/*.class" />
+    </delete>
+
+    <path id="sample.classpath">
+      <pathelement path="${dist.dir}/${jar.file}" />
+      <pathelement path="../../jdic/${dist.dir}/jdic.jar" />
+    </path>
+
+    <property name="sample.classpath.echo" refid="sample.classpath" />
+    <echo message="building ${demo.dir} with classpath ${sample.classpath.echo}" />
+
+    <javac srcdir="${demo.dir}" destdir="${demo.dir}" classpathref="sample.classpath" />
+  </target>
+
+  <!-- build all demos -->
+  <target name="builddemos" depends="init" description="build demo classes">
+
+    <antcall target="-buildSingleDemo">
+      <param name="demo.dir" value="demo/FileExplorer" />
+    </antcall>
+
+    <antcall target="-buildSingleDemo">
+      <param name="demo.dir" value="demo/FileTypes" />
+    </antcall>
+
+  </target>
+
+</project>
