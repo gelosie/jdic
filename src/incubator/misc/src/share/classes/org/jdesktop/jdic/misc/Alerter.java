@@ -20,15 +20,24 @@
 package org.jdesktop.jdic.misc;
 
 /**
- *  This class sends alerts to the user when the application is not in
+ *  <p>This class sends alerts to the user when the application is not in
  *  the foreground. On Mac OS X this will bounce the dock icon until
- *  the user selects the application. On Windows this will flash the
- *  taskbar icon until the user selects the application. There is no
- *  support for other platforms. If you would like to support another
- *  platform (say Gnome or KDE on Linux) then please join the JDIC
- *  mailing list at http://jdic.dev.java.net/
+ *  the user selects the application. On Windows (not currently
+ *  supported) this will flash the * taskbar icon until the user
+ *  selects the application. There is no support for other platforms.
+ *  If you would like to support another platform (say Gnome or KDE on
+ *  Linux) then please join the JDIC mailing list at
+ *  <a href="http://jdic.dev.java.net/">http://jdic.dev.java.net/</a></p>
+ 
+ <p><b>Example:</b> To alert the user (only if the application is not in the 
+ foreground) create an Alerter using the factory method and call alert:</p>
+ 
+ <pre><code> 
+	Alerter alerter = Alerter.newInstance();
+	alerter.alert();
+ </code></pre>
  *
- * @author     joshua@marinacci.org
+ * @author     Joshua Marinacci <a href="mailto:joshua@marinacci.org">joshua@marinacci.org</a>
  * @created    April 8, 2005
  */
 public class Alerter {
@@ -58,6 +67,8 @@ public class Alerter {
 			System.out.println("os name = " + os_name);
 			if (os_name.toLowerCase().startsWith("mac os x")) {
 				loadMac();
+			} else if (os_name.toLowerCase().startsWith("windows")) {
+				loadWin();
 			} else {
 				_alerter = new Alerter();
 			}
@@ -76,7 +87,23 @@ public class Alerter {
 					"org.jdesktop.jdic.misc.impl.MacOSXAlerter")
 					.newInstance();
 		} catch (Throwable ex) {
-			System.out.println("couldn't load the mac version");
+			System.out.println("couldn't load the Mac OS X version");
+			System.out.println("" + ex.getMessage());
+			ex.printStackTrace();
+			_alerter = new Alerter();
+		}
+	}
+	
+	/** laods the windows implementation 
+	*/
+	private static void loadWin() {
+		System.out.println("about to start the win alerter imp");
+		try {
+			_alerter = (Alerter) Alerter.class.forName(
+					"org.jdesktop.jdic.misc.impl.WinAlerter")
+					.newInstance();
+		} catch (Throwable ex) {
+			System.out.println("couldn't load the Windows version of Alerter");
 			System.out.println("" + ex.getMessage());
 			ex.printStackTrace();
 			_alerter = new Alerter();
@@ -85,7 +112,7 @@ public class Alerter {
 
 
 	/**
-	 *  Alert the user.
+	 *  Alert the user. On Mac OS X this will bounce the application's dock icon. On Windows this will flash the task bar icon (not supported yet). The alert will only show if the application is not in the foreground.  
 	 */
 	public void alert() {
 		System.out.println("alerts are not supported on this platform");

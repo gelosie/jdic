@@ -28,8 +28,45 @@ import java.util.List;
  *  volume. Currently only Mac OS X is supported. To avoid polling you
  *  can watch the volume by adding a property change listener that looks for the 
  *  'volume' property.
+
+ <p><b>Example:</b> how to get and set the current volume.</p>
+ 
+ <pre><code>
+	final Volume vol = Volume.newInstance();
+	
+	// get the volume
+	float current_volume = vol.getVolume();
+	
+	// increase volume by 10%		
+	if (vol.getVolume() < 1f) {
+		vol.setVolume(vol.getVolume() + 0.1f);
+	}
+</code></pre>
+
+<p><b>Example:</b> how to add a property listener to watch for volume changes</p>
+
+<pre><code>
+import java.beans.*;
+
+....
+
+	final Volume vol = Volume.newInstance();
+	
+	PropertyChangeListener pcl  =
+		new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				Float old_vol = (Float)evt.getOldValue();
+				Float new_vol = (Float)evt.getNewValue();
+				System.out.println("new volume is: " + new_vol);
+			}
+		};
+
+	vol.addPropertyListener(pcl);
+</code></pre>
+
+
  *
- * @author     joshua@marinacci.org
+ * @author     Joshua Marinacci <a href="mailto:joshua@marinacci.org">joshua@marinacci.org</a>
  * @created    April 8, 2005
  */
 public class Volume {
@@ -93,7 +130,7 @@ public class Volume {
 
 
 	/**
-	 *  Implemenation detail. Do not call.
+	 *  Do not call. Implemenation detail. Do not call.
 	 */
 	private static void loadMac() {
 		System.out.println("creating mac dock menu");
@@ -119,7 +156,7 @@ public class Volume {
 
 
 	/**
-	 *  Implementation detail. Only for subclass use.
+	 *  Do not call. Implementation detail. Only for subclass use.
 	 */
 	protected Volume() {
 		lists = new ArrayList();
@@ -127,7 +164,7 @@ public class Volume {
 
 
 	/**
-	 *  Implementation detail. Only for subclass use.
+	 *  Do not call. Implementation detail. Only for subclass use.
 	 *
 	 * @param  pce  Description of the Parameter
 	 */

@@ -22,15 +22,30 @@ package org.jdesktop.jdic.misc;
 import javax.swing.JMenu;
 
 /**
- *  Displays a JMenu as a DockMenu, meaning the menu you get when you
+ *  <p>Displays a JMenu as a DockMenu, meaning the menu you get when you
  *  right click, control click, or press and hold on the application's
  *  Dock icon. The DockMenu is currently only supported on Mac OS X.
  *  <b>Note: the action listeners on the dock menu will not be called
  *  from the Swing event thread. If you want to manipulate Swing
  *  objects from your event handlers you must do so using
- *  SwingUtilities.invokeLater().
+ *  <i>SwingUtilities.invokeLater().</i></b></p>
  *
- * @author     joshua@marinacci.org
+ 
+ <p><b>Example:</b> To install a JMenu as the Dock menu:</p>
+ 
+ <pre><code>
+	JMenu dock_menu = new JMenu("Dock");
+	dock_menu.add(new JMenuItem("item 1"));
+	dock_menu.add(new JMenuItem("item 2"));
+	DockMenu dm = DockMenu.newInstance();
+	dm.setMenu(dock_menu);
+ </code></pre>
+ 
+ <p>Note that the {@link DockMenu#newInstance() newInstance()}method <i><b>must be called after at least one Swing/AWT window or frame has already been shown</b></i>, or else the AWT and Cocoa event threads may clash and cause your application to lock up.
+ </p>
+ 
+ 
+ * @author     Joshua Marinacci <a href="mailto:joshua@marinacci.org">joshua@marinacci.org</a>
  * @created    April 8, 2005
  */
 
