@@ -140,7 +140,7 @@ The generated distribution is put under *dist* directory.
 		<antcall target="${platform.target}" />
 
 		<!-- build demo applications into .class files -->
-		<antcall target="builddemos" />
+		<!--<antcall target="builddemos" />-->
 		<antcall target="distzip" />
 	</target>
 

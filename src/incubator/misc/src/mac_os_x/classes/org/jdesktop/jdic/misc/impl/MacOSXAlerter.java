@@ -19,6 +19,7 @@
  */
 package org.jdesktop.jdic.misc.impl;
 
+import java.awt.Frame;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import com.apple.eawt.*;
@@ -42,11 +43,14 @@ public class MacOSXAlerter extends Alerter {
 	/**
 	 *  Alert the user.
 	 */
-	public void alert() {
-		NSApplication app  = NSApplication.sharedApplication();
-		int id             = app.requestUserAttention(
+	public void alert(Frame frame) {
+		NSApplication app = NSApplication.sharedApplication();
+		int id = app.requestUserAttention(
 				NSApplication.UserAttentionRequestCritical);
-		System.out.println("id = " + id);
+	}
+	
+	public boolean isAlertSupported() {
+		return true;
 	}
 }
 

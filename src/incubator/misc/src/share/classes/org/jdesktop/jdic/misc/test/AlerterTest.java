@@ -39,6 +39,7 @@ public class AlerterTest {
 	 * @param  args  The command line arguments
 	 */
 	public static void main(String[] args) {
+		final JFrame frame = new JFrame("asdf");
 
 		// set up the main menubar
 		JMenuBar menubar  = new JMenuBar();
@@ -55,8 +56,12 @@ public class AlerterTest {
 								} catch (Exception ex) {
 								}
 
-								Alerter alerter  = Alerter.newInstance();
-								alerter.alert();
+								try {
+									Alerter alerter  = Alerter.newInstance();
+									alerter.alert(frame);
+								} catch (Exception e) {
+									System.err.println("Couldn't load the library.");
+								}
 							}
 						}).start();
 				}
@@ -66,7 +71,6 @@ public class AlerterTest {
 		menubar.add(menu);
 
 		// show the frame
-		JFrame frame      = new JFrame("asdf");
 		frame.setJMenuBar(menubar);
 		frame.pack();
 		frame.setSize(100, 100);

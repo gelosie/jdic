@@ -19,26 +19,68 @@
  */
 package org.jdesktop.jdic.misc.impl;
 
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Timer;
 import org.jdesktop.jdic.misc.Alerter;
 
 /**
- *  Description of the Class
- *
- * @author     joshua@marinacci.org
- * @created    April 8, 2005
+ * Description of the Class
+ * 
+ * @author F‡bio Castilho Martins (fcmartins@bol.com.br)
+ * @created April 24, 2005
  */
-public class WinAlerter extends Alerter {
-	/**
-	 *  Do not use. Call the Alerter.newInstance() factory method
-	 *  instead.
-	 */
-	public MacOSXAlerter() { }
+public class WindowsAlerter extends Alerter {
 
+	private boolean isLoaded;
+	
+	private Timer loop;
 
 	/**
-	 *  Alert the user.
+	 * Do not use. Call the Alerter.newInstance() factory method instead.
+	 * @throws SecurityException
+	 * @throws UnsatisfiedLinkError
 	 */
-	public void alert() {
-		System.out.println("alerter not supported. :(");
+	public WindowsAlerter() throws SecurityException, UnsatisfiedLinkError {
+		if (isLoaded == false) {
+			System.loadLibrary("alerter");
+			isLoaded = true;
+		}
 	}
+	
+	/**
+	 * @param It will blink the TaskBar button and the Program Window at a 
+	 * regular rate (controlled by the user's preferences), until the Window 
+	 * gets the focus.
+	 */
+	public void alert(final Frame frame) {
+		int delay = (int) getBlinkRate(); //milliseconds
+		loop = new Timer(delay, new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				if (!frame.isFocusOwner()) {
+					alertWindows(frame);
+				}
+				else {
+					loop.stop();
+				}
+			}
+		});
+		loop.start();
+	}
+
+	private native void alertWindows(Frame frame);
+	
+	/**
+	 * Return the Systems Blink Rate, this is a user preference, which controls the blink rate on Windows. 
+	 * Microsoft's Design Guidelines states that an application should respect this user configuration.
+	 * @return The Native Blink Rate.
+	 */
+	private native long getBlinkRate();
+	
+	
+	public boolean isAlertSupported() {
+		return true;
+	}
+
 }
