@@ -111,5 +111,9 @@ public class DockMenu {
 		}
 	}
 
+	/** Returns true if the current platform supports Dock Menus */
+	public boolean isDockMenuSupported() {
+		return false;
+	}
 }
 

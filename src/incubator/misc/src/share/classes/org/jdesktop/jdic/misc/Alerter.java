@@ -103,8 +103,11 @@ public class Alerter {
 
 	/**
 	* Alert the user. On supported platforms, it will bounce/flash
-	the TaskBar button/Dock icon at a regular time to request user's attention.
-	On unsupported platforms it will do nothing.
+	* the TaskBar button/Dock icon at a regular time to request user's attention.
+	* On unsupported platforms it will do nothing. 
+	* @param frame Frame to use when alerting the user, if the platform supports
+	the notion of a per frame alert. Currently this parameter is required for
+	Windows. On the Mac it is not used and can be null.
 	*/
 	public void alert(Frame frame) {
 	}
