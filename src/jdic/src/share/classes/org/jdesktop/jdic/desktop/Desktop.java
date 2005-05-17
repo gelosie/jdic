@@ -56,16 +56,8 @@ public class Desktop {
      *         is not readable.
      */
     private static void checkFileValid(File file) throws DesktopException {
-        if (file.isDirectory()) {
-            throw new DesktopException("The given file is a directory.");
-        }
-
-        if (!file.exists()) {
+        if (file == null || !file.exists()) {
             throw new DesktopException("The given file doesn't exist.");
-        }
-
-        if (!file.isFile()) {
-            throw new DesktopException("The given file is not a valid file.");
         }
 
         if (!file.canRead()) {

@@ -80,6 +80,11 @@ public class WinLaunchService implements LaunchService {
      *         the associated application fails to be launched.
      */
     public void open(File file) throws LaunchFailedException {
+        if(file.isDirectory()) {
+            if( !WinAPIWrapper.WinShellExecute(file.toString(), DesktopConstants.VERB_OPEN))
+                throw new LaunchFailedException("Failed to open the given directory.");
+            return;
+        }
     	boolean findOpenNew = false;
     	//First check if we could find command for verb opennew
     	String appCommand = WinUtility.getVerbCommand(file, DesktopConstants.VERB_OPENNEW);
@@ -105,7 +110,6 @@ public class WinLaunchService implements LaunchService {
 			throw new LaunchFailedException("No application associated with the specified file");
     	}
     }
-    
     /**
      * Checks if the give file is printable.
      * 
