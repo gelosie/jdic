@@ -158,8 +158,8 @@ public class JdicManager {
             
             if (WebBrowserUtil.isDefaultBrowserMozilla()) {
             	// Mozilla is the default/embedded browser.
-                // Use the user defined env variable or the mozilla binary
-                // path as the default MOZILLA_FIVE_HOME value.
+                // Use the user defined value or the mozilla binary
+                // path as the value of MOZILLA_FIVE_HOME env variable.
                 String envMFH = InitUtility.getEnv("MOZILLA_FIVE_HOME");
                 if (envMFH == null) {
                     File browserFile = new File(browserPath);
@@ -167,7 +167,7 @@ public class JdicManager {
                         envMFH = browserFile.getCanonicalPath();
                     } else {
                         envMFH = browserFile.getCanonicalFile().getParent();
-                    }
+                    }                    
                 }
                 
                 if (!isWindows) {
@@ -197,9 +197,9 @@ public class JdicManager {
                         }                       
                         envMFH = mozGreHome;
                     }
-                }
-              
-                InitUtility.preAppendEnv("MOZILLA_FIVE_HOME", envMFH);
+                }              
+
+                InitUtility.setEnv("MOZILLA_FIVE_HOME", envMFH);
                 InitUtility.preAppendEnv(libPathEnv, envMFH);
             } // end - Mozilla is the default/embedded browser.
         } catch (Throwable e) {
