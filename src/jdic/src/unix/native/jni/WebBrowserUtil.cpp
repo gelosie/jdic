@@ -44,9 +44,9 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
   (JNIEnv *env, jclass)
 {    
     // Get environment variable MOZILLA_FIVE_HOME value.
-    char *moz5Home = getenv("MOZILLA_FIVE_HOME");
-    if (moz5Home != NULL)
-        return env->NewStringUTF(moz5Home);
+    char *moz5home_env = getenv("MOZILLA_FIVE_HOME");
+    if (moz5home_env != NULL)
+        return env->NewStringUTF(moz5home_env);
 
     /*
      * MOZILLA_FIVE_HOME not set. Search the Mozilla binary path to set it:
@@ -79,22 +79,20 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
 #ifdef DEBUG
             printf("The default browser path set in GConf: %s\n", command);
 #endif
+            // Check if the command is or points to a Mozilla binary path.
+            char *p = g_strstr_len(command, strlen(command), "mozilla");
+            if (p) {
+                // Remove the "%s" string in the command string.
+                mozpath = g_strdup_printf (command, "");
+                // Remove the leading and trailing whilespaces.
+                if (mozpath != NULL) {
+                    mozpath = g_strstrip(mozpath);
+                } 
+            }
+
             break;
         }
-    }
-                                                                                                          
-    // Check if the command is or points to a Mozilla binary path.
-    if (command != NULL) {
-        char *p = g_strstr_len(command, strlen(command), "mozilla");
-        if (p) {
-            // Remove the "%s" string in the command string.
-            mozpath = g_strdup_printf (command, "");
-            // Remove the leading and trailing whilespaces.
-            if (mozpath != NULL) {
-                mozpath = g_strstrip(mozpath);
-            } 
-        }
-    }
+    }                                                                                                          
 
     // Check if the Mozilla path is valid. Or else, check the mozilla
     // command under $PATH.
@@ -110,7 +108,7 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
 #endif
                 break; 
             } else {
-                g_free(mozpath); // Release the newly-allocated string.
+                g_free(mozpath);
                 mozpath = NULL;
             }
         }
@@ -119,72 +117,82 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
     if (mozpath == NULL) 
         return NULL;
 
-    // Check if libxpcom.so is located at the Mozilla parent path. If not, 
-    // scan the Mozilla command file for the MOZILLA_FIVE_HOME setting.
-    char *moz5home_value = NULL;
-  
-    // the file mozpath maybe a link file.
-    char *real_mozpath = (char *)malloc(PATH_MAX);
-    realpath(mozpath, real_mozpath);
-    free(mozpath);
-    mozpath = real_mozpath;
-
-    // Check if libxpcom.so exists at the same path.
-    char *str_p = g_strrstr(mozpath, "/");
-    char *parentpath = g_strndup(mozpath, str_p - mozpath);
-    char *libpath = g_strconcat (parentpath, "/libxpcom.so", NULL);
-    if (stat (libpath, &stat_p) == 0) {
-        moz5home_value = g_strdup(parentpath);
+    // Check if libxpcom.so is located under the Mozilla binary path.
+    char *moz5home = NULL;
+    while (moz5home == NULL) {
+        char *str_p = g_strrstr(mozpath, "/");
+        char *parentpath = g_strndup(mozpath, str_p - mozpath);
+        char *libpath = g_strconcat (parentpath, "/libxpcom.so", NULL);
 #ifdef DEBUG
-        printf("Found libxpcom.so under mozilla binary path: %s\n", parentpath);
+        printf("Check libxpcom.so at path: %s\n", libpath);
 #endif
-    } else {
-        g_free(libpath); // Release the newly-allocated string.
 
-        // Scan the file, which (or the symbol link target file) should
-        // be a Bourne shell script, for the MOZILLA_FIVE_HOME setting.
-        char buf[1024]; 
-        FILE *fp = fopen(mozpath, "r");
-        if (fp) {
-            while (fgets(buf, 1024, fp)) {
-                char* substr_p = g_strstr_len(buf, strlen(buf), 
-                                          "MOZILLA_FIVE_HOME=");
-                if (substr_p) {
-                    moz5home_value = 
-                      g_strdup(substr_p + strlen("MOZILLA_FIVE_HOME=")); 
-                    if (moz5home_value && strlen(moz5home_value)) {
-                        moz5home_value = g_strstrip(moz5home_value);
-                        if (moz5home_value) {
-                            // Remove the leading '"' character. 
-                            for (int i = 0; i < strlen(moz5home_value); i++) {
-                                if (moz5home_value[i] != '"') {
-                                    moz5home_value += i; 
-                                    break;
-                                }
-                            }
-                            // Remove the trailing '\n' and '"' characters.
-                            for (int i = (strlen(moz5home_value) - 1); i > 0; i--) {
-                                if ((moz5home_value[i] == '\n') 
-                                    || moz5home_value[i] == '"') { 
-                                    moz5home_value[i] = '\0'; 
-                                } else { 
-                                    break;
-                                }
-                            }
+        if (stat (libpath, &stat_p) == 0) {
+            moz5home = g_strdup(parentpath);
 #ifdef DEBUG
-                            printf("Scaned MOZILLA_FIVE_HOME setting from %s as: %s\n", 
-                                mozpath, moz5home_value);
+            printf("Found libxpcom.so at: %s\n", parentpath);
 #endif
-                        }
-                    }
-                    break;
-                } // end of "if (substr_p)"
+        } else {
+            // if mozpath is a symbol link, resolve it.
+            char *real_mozpath = (char *)malloc(PATH_MAX);
+            char *ret = realpath(mozpath, real_mozpath);
+            if (!ret) {
+                free(mozpath);
+                mozpath = real_mozpath;
+#ifdef DEBUG
+                printf("mozpath after realpath(): %s\n", mozpath);
+#endif
+            } else {
+                break;
             }
-            fclose(fp);
-        } // end of "if (p)"
+        }
     }
+
+    if (moz5home != NULL)
+        return env->NewStringUTF(moz5home);
+
+    // Scan the Mozilla command file, which should be a Bourne shell script,
+    // for the MOZILLA_FIVE_HOME setting.
+    char buf[1024]; 
+    FILE *fp = fopen(mozpath, "r");
+    if (fp) {
+        while (fgets(buf, 1024, fp)) {
+            char* substr_p = g_strstr_len(buf, strlen(buf), 
+                                      "MOZILLA_FIVE_HOME=");
+            if (substr_p) {
+                moz5home = g_strdup(substr_p + strlen("MOZILLA_FIVE_HOME=")); 
+                if (moz5home && strlen(moz5home)) {
+                    moz5home = g_strstrip(moz5home);
+                    if (moz5home) {
+                        // Remove the leading '"' character. 
+                        for (int i = 0; i < strlen(moz5home); i++) {
+                            if (moz5home[i] != '"') {
+                                moz5home += i; 
+                                break;
+                            }
+                        }
+                        // Remove the trailing '\n' and '"' characters.
+                        for (int i = (strlen(moz5home) - 1); i > 0; i--) {
+                            if ((moz5home[i] == '\n') || moz5home[i] == '"') { 
+                                moz5home[i] = '\0'; 
+                            } else { 
+                                break;
+                            }
+                        }
+#ifdef DEBUG
+                        printf("Scaned MOZILLA_FIVE_HOME setting from %s as: %s\n", 
+                            mozpath, moz5home);
+#endif
+                    }
+                }
+                break;
+            } // end of "if (substr_p)"
+        }
+        fclose(fp);
+    } // end of "if (p)"
+
     g_free(mozpath);
 
-    return (moz5home_value == NULL) ? 
-        NULL : env->NewStringUTF(moz5home_value);
+    return (moz5home == NULL) ? 
+        NULL : env->NewStringUTF(moz5home);
 }
