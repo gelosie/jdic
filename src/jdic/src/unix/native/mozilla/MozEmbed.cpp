@@ -468,6 +468,13 @@ HandleSocketMessage(gpointer data, gpointer user_data)
         }
         break;
     case JEVENT_DESTROYWINDOW:
+        pBrowser = (GtkBrowser *)gBrowserArray[instance];
+        if(pBrowser != NULL){
+            gtk_widget_destroy(pBrowser->mozEmbed);
+            gtk_object_destroy((GtkObject *)pBrowser->topLevelWindow);
+            gBrowserArray.SetAt(instance, NULL);
+        }
+        SendSocketMessage(instance, CEVENT_DISTORYWINDOW_SUCC);
         break;
     case JEVENT_SHUTDOWN:
         gtk_main_quit();
