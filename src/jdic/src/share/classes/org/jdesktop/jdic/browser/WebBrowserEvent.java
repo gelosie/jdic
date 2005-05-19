@@ -129,6 +129,12 @@ public class WebBrowserEvent extends EventObject
      */
     static final int WEBBROWSER_FOCUS_REQUEST           
         = 43 + WEBBROWSER_FIRST;
+    
+    /**
+     * Event fired when destroy of WebBrowser Window succeeds.
+     */
+    static final int WEBBROWSER_DESTROYWINDOW_SUCC           
+        = 44 + WEBBROWSER_FIRST;
 
     /**
      * Event fired when the content of the currently loaded page is requested 

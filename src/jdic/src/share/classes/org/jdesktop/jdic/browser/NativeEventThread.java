@@ -201,6 +201,7 @@ class NativeEventThread extends Thread
                 messenger.sendMessage(msg);
                 break;
             case NativeEventData.EVENT_SHUTDOWN:
+                messenger.sendMessage(msg);
                 break;
             case NativeEventData.EVENT_CREATEWINDOW:
                 int nativeWindow = browser.getNativeWindow();

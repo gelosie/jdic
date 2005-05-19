@@ -142,10 +142,32 @@ public class WebBrowser extends Canvas
      * functionality.
      */
     public void addNotify() {
+        boolean flag = super.isDisplayable();
         super.addNotify();
-        
-        eventThread.fireNativeEvent(instanceNum, 
-                NativeEventData.EVENT_CREATEWINDOW);
+        if(!flag) {
+            eventThread.fireNativeEvent(instanceNum, 
+                    NativeEventData.EVENT_CREATEWINDOW);
+        }
+    }
+    
+    public void removeNotify() {
+        Thread disposeThread = new Thread() {
+            public void run() {
+                synchronized( WebBrowser.this ){
+                    eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_DESTROYWINDOW);
+                    try {
+                        // wait untill we get the message WebBrowserEvent.WEBBROWSER_DESTROYWINDOW_SUCC
+                        // from native process.
+                        WebBrowser.this.wait();
+                    } catch (InterruptedException e) {
+                        // do nothing
+                    }
+                }
+                WebBrowser.super.removeNotify();
+                setInitialized(false);
+            }
+        };
+        disposeThread.start();
     }
 
     /**
@@ -218,6 +240,13 @@ public class WebBrowser extends Canvas
             requestFocus();
             return;
         }
+        else if (WebBrowserEvent.WEBBROWSER_DESTROYWINDOW_SUCC == eid){
+            WebBrowserUtil.trace("Got Event from brower: Distory Window Succeeds!");
+            synchronized(this){
+                // notify the disposeThread in removeNotify().
+                this.notify();
+            }
+       }
 
         // for the normal case, call the corresponding method in listeners.
         int size;
