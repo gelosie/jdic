@@ -159,6 +159,7 @@ LIBS += \
 endif
 ifdef USING_GECKO_SDK_1_7
 CPPFLAGS += \
+        -DUSING_GECKO_SDK_1_7 \
 	-include $(GECKO_SDK)/include/mozilla-config.h \
 	-I$(GECKO_SDK)/include \
 	$(NULL)

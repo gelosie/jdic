@@ -55,9 +55,12 @@
 #include "nsIHttpProtocolHandler.h"
 #include "nsIProfileInternalOld.h"
 
-// copied from the mozilla 1.7 source tree to support UTF-16 to to UTF-8
-// conversion.
+// copied from the mozilla 1.7 source tree to support the conversion of
+// UTF-16 to UTF-8 or UTF-8 to UTF-16 for mozilla 1.4, as there is no frozen 
+// API for the conversion for 1.4. It's not needed for 1.7.
+#ifndef USING_GECKO_SDK_1_7
 #include "nsUTF8Utils.h"
+#endif
 
 // from nsAppDirectoryServiceDefs.h (which is not part of the
 // Gecko SDK v1.4)
@@ -316,6 +319,12 @@ ConvertAsciiToUtf16(const char *str, nsEmbedString &result)
 PRBool
 ConvertUtf8ToUtf16(const nsEmbedCString &aSource, nsEmbedString &aDest)
 {
+#ifdef USING_GECKO_SDK_1_7    
+    // Note: Below function was frozen for Mozilla 1.7, but not available for 1.4.
+    // See bug 239123 for details:
+    //   http://bugzilla.mozilla.org/show_bug.cgi?id=239123    
+    NS_CStringToUTF16(aSource, NS_CSTRING_ENCODING_UTF8, aDest); 
+#else    
     nsEmbedCString::const_iterator source_start, source_end;
     CalculateUTF8Length calculator;
     copy_string(aSource.BeginReading(source_start),
@@ -337,6 +346,7 @@ ConvertUtf8ToUtf16(const nsEmbedCString &aSource, nsEmbedString &aDest)
         aDest.SetLength(0);
         return PR_FALSE;
     }
+#endif
 
     return PR_TRUE;
 }
@@ -345,6 +355,12 @@ ConvertUtf8ToUtf16(const nsEmbedCString &aSource, nsEmbedString &aDest)
 PRBool
 ConvertUtf16ToUtf8(const nsEmbedString &aSource, nsEmbedCString &aDest)
 {
+#ifdef USING_GECKO_SDK_1_7    
+    // Note: Below function was frozen for Mozilla 1.7, but not available for 1.4.
+    // See bug 239123 for details:
+    //   http://bugzilla.mozilla.org/show_bug.cgi?id=239123    
+    NS_UTF16ToCString(aSource, NS_CSTRING_ENCODING_UTF8, aDest); 
+#else    
     nsEmbedString::const_iterator source_start, source_end;
     CalculateUTF8Size calculator;
     copy_string(aSource.BeginReading(source_start),
@@ -366,7 +382,8 @@ ConvertUtf16ToUtf8(const nsEmbedString &aSource, nsEmbedCString &aDest)
         aDest.SetLength(0);
         return PR_FALSE;
     }
-
+#endif
+    
     return PR_TRUE;
 }
 
