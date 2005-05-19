@@ -279,11 +279,12 @@ void CommandProc(char* pInputChar)
 
     case JEVENT_DESTROYWINDOW:
         pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
-        if(pBrowserWnd == NULL) break;
-        hRes = pBrowserWnd->DispEventUnadvise(pBrowserWnd->m_pWB);
-        pBrowserWnd->DestroyWindow();
-        delete pBrowserWnd;
-        ABrowserWnd.SetAt(instanceNum, NULL);
+        if(pBrowserWnd != NULL){
+            hRes = pBrowserWnd->DispEventUnadvise(pBrowserWnd->m_pWB);
+            pBrowserWnd->DestroyWindow();
+            delete pBrowserWnd;
+            ABrowserWnd.SetAt(instanceNum, NULL);
+        }
         SendSocketMessage(instanceNum, CEVENT_DISTORYWINDOW_SUCC);
         break;
 
