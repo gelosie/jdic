@@ -31,13 +31,13 @@ import org.jdesktop.jdic.desktop.internal.ServiceManager;
 
 
 /**
- * The <code>Desktop</code> class provides several methods to interact with the system 
- * applications and facilities. It cannot be instantiated.
+ * The <code>Desktop</code> class provides several methods to interact with 
+ * the system applications and facilities. It cannot be instantiated.
  * <p>
- * The methods include invoking system programs associated with a particular file type, 
- * invoking the system default browser to show a given URL, invoking the system default 
- * mailer with or without a constructed <code>Message</code> object, and making use of
- * the printer to print a given file.
+ * The methods include invoking system programs associated with a particular 
+ * file type, invoking the system default browser to show a given URL, invoking 
+ * the system default mailer with or without a constructed <code>Message</code> 
+ * object, and making use of the printer to print a given file.
  *
  * @see Message
  * @see DesktopException
@@ -79,8 +79,8 @@ public class Desktop {
         }
         
         // Get the launch service.
-        LaunchService launchService 
-                = (LaunchService) ServiceManager.getService(ServiceManager.LAUNCH_SERVICE);
+        LaunchService launchService = (LaunchService) ServiceManager.
+            getService(ServiceManager.LAUNCH_SERVICE);
         
         File resolvedFile = launchService.resolveLinkFile(file);
 
@@ -108,8 +108,8 @@ public class Desktop {
         }
 
         // Get the launch service.
-        LaunchService launchService 
-                = (LaunchService) ServiceManager.getService(ServiceManager.LAUNCH_SERVICE);
+        LaunchService launchService = (LaunchService) ServiceManager.
+            getService(ServiceManager.LAUNCH_SERVICE);
                 
         File resolvedFile = launchService.resolveLinkFile(file);
         try {
@@ -134,8 +134,8 @@ public class Desktop {
         }
 
         // Get the launch service.
-        LaunchService launchService
-                = (LaunchService) ServiceManager.getService(ServiceManager.LAUNCH_SERVICE);
+        LaunchService launchService = (LaunchService) ServiceManager.
+            getService(ServiceManager.LAUNCH_SERVICE);
         
         File resolvedFile = launchService.resolveLinkFile(file);
                 
@@ -161,8 +161,8 @@ public class Desktop {
      * Tests whether the given file is editable.
      *
      * @param file the given file.
-     * @return <code>true</code> if the given file is valid and has an associated editor; 
-     *         <code>false</code> otherwise.
+     * @return <code>true</code> if the given file is valid and has an 
+     *         associated editor; <code>false</code> otherwise.
      */
     public static boolean isEditable(File file) { 
         if (file == null) {
@@ -170,8 +170,8 @@ public class Desktop {
         }
 
         // Get the launch service.
-        LaunchService launchService 
-                = (LaunchService) ServiceManager.getService(ServiceManager.LAUNCH_SERVICE);
+        LaunchService launchService = (LaunchService) ServiceManager.
+            getService(ServiceManager.LAUNCH_SERVICE);
                 
         File resolvedFile = launchService.resolveLinkFile(file);
                 
@@ -188,8 +188,8 @@ public class Desktop {
      * Launches the associated editor to edit the given file.
      *
      * @param file the given file.
-     * @throws DesktopException if the given file is not valid, or the given file is not 
-     *         editable, or the given editor fails to be launched. 
+     * @throws DesktopException if the given file is not valid, or the given 
+     *         file is not editable, or the given editor fails to be launched. 
      */
     public static void edit(File file) throws DesktopException {
         if (file == null) {
@@ -197,8 +197,8 @@ public class Desktop {
         }
 
         // Get the launch service.
-        LaunchService launchService
-                = (LaunchService) ServiceManager.getService(ServiceManager.LAUNCH_SERVICE);
+        LaunchService launchService = (LaunchService) ServiceManager.
+            getService(ServiceManager.LAUNCH_SERVICE);
 
         File resolvedFile = launchService.resolveLinkFile(file);
         
@@ -232,8 +232,8 @@ public class Desktop {
         }
         
         // Get the browser service.
-        BrowserService browserService 
-                = (BrowserService) ServiceManager.getService(ServiceManager.BROWSER_SERVICE);
+        BrowserService browserService = (BrowserService) ServiceManager.
+            getService(ServiceManager.BROWSER_SERVICE);
 
         try {
             browserService.show(url);
@@ -243,17 +243,17 @@ public class Desktop {
     }
 
     /**
-     * ==========================================================================
+     * ======================================================================
      * This method is not public for this release, and may be public later.
-     * ==========================================================================
+     * ======================================================================
      * Opens the given URL in the target window of the system default browser. 
      * <p>
-     * If the target windows doesn't exist, a new browser window will be created, and named
-     * as the given target name. Otherwise, the given URL will be displayed in the browser 
-     * window with the given target name.
+     * If the target windows doesn't exist, a new browser window will be 
+     * created, and named as the given target name. Otherwise, the given URL 
+     * will be displayed in the browser window with the given target name.
      * <p>
-     * If the target name is "_blank", the URL will always be displayed in a new, unnamed 
-     * browser window.
+     * If the target name is "_blank", the URL will always be displayed in a 
+     * new, unnamed browser window.
      *
      * @param url the given URL.
      * @param target the given name of a target browser window. 
@@ -269,8 +269,8 @@ public class Desktop {
         }
 
         // Get the browser service.
-        BrowserService browserService 
-                = (BrowserService) ServiceManager.getService(ServiceManager.BROWSER_SERVICE);
+        BrowserService browserService = (BrowserService) ServiceManager.
+            getService(ServiceManager.BROWSER_SERVICE);
 
         // Show the url in the browser window named as target.
         try {
@@ -289,8 +289,8 @@ public class Desktop {
      */
     public static void mail() throws DesktopException {
         // Get the mailer service.
-        MailerService mailerService
-            = (MailerService) ServiceManager.getService(ServiceManager.MAILER_SERVICE);
+        MailerService mailerService = (MailerService) ServiceManager.
+            getService(ServiceManager.MAILER_SERVICE);
     
         // Launch the mailer.
         try {
@@ -302,12 +302,12 @@ public class Desktop {
 
     /**
      * Launches the message compose window of the default mailer, and fills 
-     * in the message fields with the field values of the given <code>Message</code> 
-     * object.
+     * in the message fields with the field values of the given <code>Message
+     * </code> object.
      *
      * @param msg the constructed <code>Message</code> object.
-     * @throws DesktopException if the given message object is null, or the system 
-     *         default mailer was not found, or it fails to be launched.
+     * @throws DesktopException if the given message object is null, or the 
+     *         system default mailer was not found, or it fails to be launched.
      */
     public static void mail(Message msg) throws DesktopException {
         if (msg == null) {
@@ -315,8 +315,8 @@ public class Desktop {
         }
 
         // Get the mailerserservice
-        MailerService mailerService
-            = (MailerService) ServiceManager.getService(ServiceManager.MAILER_SERVICE);
+        MailerService mailerService = (MailerService) ServiceManager.
+            getService(ServiceManager.MAILER_SERVICE);
    
         // Launch the mailer.
         try {

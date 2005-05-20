@@ -22,8 +22,9 @@ package org.jdesktop.jdic.desktop;
 
 
 /**
- * A <code>DesktopException</code> is thrown by certain methods of <code>Desktop</code>
- * class to indicate that the passed paramaters are invalid or the operation fails.
+ * A <code>DesktopException</code> is thrown by certain methods of 
+ * <code>Desktop</code> class to indicate that the passed paramaters are invalid 
+ * or the operation fails.
  * 
  * @see Desktop
  */

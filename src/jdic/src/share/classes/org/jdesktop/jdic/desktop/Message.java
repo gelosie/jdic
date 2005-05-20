@@ -196,7 +196,8 @@ public class Message {
     /**
      * Gets an iterator of the message "Attachment" file list.
      *
-     * @return an <code>Iterator</code> object of the message "Attachment" file list.
+     * @return an <code>Iterator</code> object of the message "Attachment" file 
+     *         list.
      */
     public Iterator getAttachments() {
         return attachments.iterator();
@@ -205,8 +206,8 @@ public class Message {
     /**
      * Sets the message "Attachments" field. 
      *
-     * @param attachList the given attachment list, whose elements are the abosolute 
-     *        paths of files to be attached.
+     * @param attachList the given attachment list, whose elements are the 
+     *        abosolute paths of files to be attached.
      * @throws IOException if any of the attached files is not readable.
      */
     public void setAttachments(List attachList) throws IOException {
@@ -226,19 +227,23 @@ public class Message {
             Iterator inner_iter = attachments.iterator();
             if(inner_iter != null) {
                 while(inner_iter.hasNext()) {
-                    if(hasDuplicated = filename.equals((String)(inner_iter.next())))
+                    if(hasDuplicated 
+                            = filename.equals((String)(inner_iter.next())))
                         break;
                 }
             }
             if(hasDuplicated) 
                 continue;
             File attfile = new File(filename);
-            /* add the file to attachments if it is a readable file */
+            
+            // add the file to attachments if it is a readable file.
             if (attfile.canRead() && !attfile.isHidden()) {
                 if (attfile.isFile())
                     attachments.add(attfile.getAbsolutePath());
             } 
-            /* continue to add other files in the list if the current one unreadbale */
+            
+            // continue to add other files in the list if the current one 
+            // unreadbale.
             else { 
                 hasUnreadable = true;
                 unattachedlist.add(attfile.getAbsolutePath());
@@ -246,14 +251,15 @@ public class Message {
             }
         }
 
-        /* throw IOException if there are any unreadable files */
+        // throw IOException if there are any unreadable files.
         if(hasUnreadable) {
             Iterator unattach_iter = unattachedlist.iterator();
             if (unattach_iter != null) {
                 while(unattach_iter.hasNext()) {
                      unattach_filenames += (String)unattach_iter.next() + "\n";
                 }
-                throw new IOException("Following files cannot be added to the attachments:\n" + unattach_filenames);
+                throw new IOException("Following files cannot be added to " +
+                        "the attachments:\n" + unattach_filenames);
             }
         }
     }
