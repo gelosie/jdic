@@ -686,8 +686,8 @@ void MozEmbedApp::MessageReceived(const char * msg)
     case JEVENT_DESTROYWINDOW:
         if( m_FrameWndArray[instance] != NULL){
             ((CBrowserFrame *)m_FrameWndArray[instance])->DestroyBrowserFrame();
-            m_FrameWndArray[instance].SetAt(instance, NULL);
-		}
+            m_FrameWndArray.SetAt(instance, NULL);
+        }
         SendSocketMessage(instance, CEVENT_DISTORYWINDOW_SUCC);
         break;
     case JEVENT_SHUTDOWN:
