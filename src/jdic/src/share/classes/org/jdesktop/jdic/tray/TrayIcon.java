@@ -186,7 +186,7 @@ public class TrayIcon {
     /** Used for information messages. */
     public static final int INFO_MESSAGE_TYPE = 0;
     /** Used for error messages. */
-    public static final int ERROE_MESSAGE_TYPE = 1;
+    public static final int ERROR_MESSAGE_TYPE = 1;
     /** Used for warning messages. */
     public static final int WARNING_MESSAGE_TYPE = 2;
     /** No icon is used. */
