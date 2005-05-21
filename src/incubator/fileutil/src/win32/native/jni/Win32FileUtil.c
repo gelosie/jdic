@@ -26,7 +26,7 @@
  * author: Fábio Castilho Martins
  */
 
-JNIEXPORT jlongArray JNICALL Java_FileUtil_getFreeSpace
+JNIEXPORT jlongArray JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32FileUtil_getFreeSpace
   (JNIEnv *env, jobject obj, jstring fullPath) {
     PWCHAR wcpFullPath = (PWCHAR) (*env)->GetStringChars(env, fullPath, NULL);
     PULARGE_INTEGER lpFreeBytesAvailable = (PULARGE_INTEGER) malloc(sizeof(ULARGE_INTEGER));
@@ -51,7 +51,7 @@ JNIEXPORT jlongArray JNICALL Java_FileUtil_getFreeSpace
     return retorno;
 }
 
-JNIEXPORT jint JNICALL Java_FileUtil_recycle
+JNIEXPORT jint JNICALL JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32FileUtil_recycle
   (JNIEnv *env, jobject obj, jstring fullPath, jboolean confirm) {
         int retorno;
     PWCHAR wcpTemp = (PWCHAR) (*env)->GetStringChars(env, fullPath, NULL);

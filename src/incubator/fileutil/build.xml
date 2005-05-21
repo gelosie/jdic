@@ -25,12 +25,16 @@ Top-level target:
   <!-- the path of source directory -->
   <property name="src.dir" value="src" />
   <property name="share.classes.dir" value="${src.dir}/share/classes" />
+  <property name="solaris.classes.dir" value="${src.dir}/solaris/classes" />
   <property name="unix.classes.dir" value="${src.dir}/unix/classes" />
   <property name="win32.classes.dir" value="${src.dir}/win32/classes" />
   <property name="mac.classes.dir" value="${src.dir}/mac_os_x/classes" />
 
   <property name="unix.native.dir" value="${src.dir}/unix/native" />
   <property name="unix.native.jni.dir" value="${unix.native.dir}/jni" />
+	
+  <property name="solaris.native.dir" value="${src.dir}/solaris/native" />
+  <property name="solaris.native.jni.dir" value="${solaris.native.dir}/jni" />
 
   <property name="win32.native.dir" value="${src.dir}/win32/native" />
   <property name="win32.native.jni.dir" value="${win32.native.dir}/jni" />
@@ -130,9 +134,6 @@ Top-level target:
 
     <antcall target="${platform.target}" />
 
-    <!-- build demo applications into .class files -->
-    <antcall target="builddemos" />
-    <antcall target="distzip" />
   </target>
 
   <!-- *** javadoc *** -->
@@ -167,7 +168,7 @@ Top-level target:
 
   <!-- *** Build Win32 jar file *** -->
   <target name="buildwin32jar" depends="init" description="build the classes and jar file.">
-    <javac srcdir="${share.classes.dir}:${win32.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
+    <javac srcdir="${share.classes.dir}:${win32.classes.dir}:${unix.classes.dir}:${solaris.classes.dir}:${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
       <fileset dir="${dist.dir}" includes="org/**/*.class" />
@@ -208,7 +209,7 @@ Top-level target:
     -->
   <!-- *** Build Unix jar file *** -->
   <target name="buildunixjar" depends="init" description="build the classes and jar file.">
-    <javac srcdir="${share.classes.dir}:${unix.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
+    <javac srcdir="${share.classes.dir}:${win32.classes.dir}:${unix.classes.dir}:${solaris.classes.dir}:${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
       <fileset dir="${dist.dir}" includes="org/**/*.class" />
@@ -237,7 +238,7 @@ Top-level target:
 
   <!-- *** Build Mac jar file *** -->
   <target name="buildmacjar" depends="init, buildsharejar" description="build the classes and jar file.">
-    <javac srcdir="${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}:/System/Library/Java" debug="${javac.debug}" />
+    <javac srcdir="{share.classes.dir}:${win32.classes.dir}:${unix.classes.dir}:${solaris.classes.dir}:${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}:/System/Library/Java" debug="${javac.debug}" />
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
       <fileset dir="${dist.dir}" includes="org/**/*.class" />
@@ -257,38 +258,6 @@ Top-level target:
 
     <!-- copy generated .jnilib file -->
     <copy file="${mac.native.jni.dir}/libjdic_fileutil.jnilib" todir="${dist.dir}" />
-  </target>
-
-
-  <!-- rebuild single demo -->
-  <target name="-buildSingleDemo">
-    <!-- remove the ".class" files to rebuild the demo apps -->
-    <delete failonerror="false">
-      <fileset dir="${demo.dir}" includes="**/*.class" />
-    </delete>
-
-    <path id="sample.classpath">
-      <pathelement path="${dist.dir}/${jar.file}" />
-      <pathelement path="../../jdic/${dist.dir}/jdic.jar" />
-    </path>
-
-    <property name="sample.classpath.echo" refid="sample.classpath" />
-    <echo message="building ${demo.dir} with classpath ${sample.classpath.echo}" />
-
-    <javac srcdir="${demo.dir}" destdir="${demo.dir}" classpathref="sample.classpath" />
-  </target>
-
-  <!-- build all demos -->
-  <target name="builddemos" depends="init" description="build demo classes">
-
-    <antcall target="-buildSingleDemo">
-      <param name="demo.dir" value="demo/FileExplorer" />
-    </antcall>
-
-    <antcall target="-buildSingleDemo">
-      <param name="demo.dir" value="demo/FileTypes" />
-    </antcall>
-
   </target>
 
 </project>

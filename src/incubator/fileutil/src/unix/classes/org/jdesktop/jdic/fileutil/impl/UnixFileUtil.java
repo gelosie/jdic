@@ -84,10 +84,7 @@ public class UnixFileUtil extends FileUtil {
      */
     public boolean recycle(File file, boolean confirm) throws IOException,
             SecurityException {
-        String fullPath = file.getCanonicalPath();
-
-        System.out.println(fullPath);
-        return (recycle(fullPath, confirm) == 0 ? true : false);
+        return false;
     }
 
     /**
@@ -100,30 +97,19 @@ public class UnixFileUtil extends FileUtil {
      * @throws IOException
      */
     public BigInteger getFreeSpace(File file) throws IOException {
-        String fullPath;
-        long[] freeSpace;
-        BigInteger highPart;
-        BigInteger lowPart;
-
+        BigInteger freeSpace;
+        
         if (file.isFile()) {
-            freeSpace = getFreeSpace(file.getCanonicalFile().getParent());
-            highPart = new BigInteger(String.valueOf(freeSpace[1])).
-                shiftLeft(32);
-            lowPart = new BigInteger(String.valueOf(freeSpace[0]));
-            return highPart.add(lowPart); 
+        	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalFile().getParent())), 2);
+            return freeSpace; 
         } else if (file.isDirectory()) {
-            freeSpace = getFreeSpace(file.getCanonicalPath());
-            highPart = new BigInteger(String.valueOf(freeSpace[1])).
-                shiftLeft(32);
-            lowPart = new BigInteger(String.valueOf(freeSpace[0]));
-            return highPart.add(lowPart);
+        	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalPath())), 2);
+            return freeSpace;
         } else {
             return BigInteger.ZERO;
         }
     }
 
-    private native long[] getFreeSpace(String fullPath);
-
-    private native int recycle(String fullPath, boolean confirm);
+    private native long getFreeSpace(String fullPath);
 
 }

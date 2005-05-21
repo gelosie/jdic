@@ -27,11 +27,8 @@ import java.math.BigInteger;
 
 import org.jdesktop.jdic.fileutil.FileUtil;
 
-import com.apple.cocoa.foundation.NSPathUtilities;
-
-
 /**
- * @author padrao
+ * @author Fábio Castilho Martins
  *
  */
 public class MacOSXFileUtil extends FileUtil {
@@ -78,10 +75,7 @@ public class MacOSXFileUtil extends FileUtil {
      */
     public boolean recycle(File file, boolean confirm) throws IOException,
             SecurityException {
-        String fullPath = file.getCanonicalPath();
-
-        System.out.println(fullPath);
-        return (recycle(fullPath, confirm) == 0 ? true : false);
+        return false;
     }
 
     /**
@@ -94,8 +88,18 @@ public class MacOSXFileUtil extends FileUtil {
      * @throws IOException
      */
     public BigInteger getFreeSpace(File file) throws IOException {
-        return new BigInteger(NSPathUtilities.FileSystemFreeSize);
+    	BigInteger freeSpace;
+        
+        if (file.isFile()) {
+        	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalFile().getParent())), 2);
+            return freeSpace; 
+        } else if (file.isDirectory()) {
+        	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalPath())), 2);
+            return freeSpace;
+        } else {
+            return BigInteger.ZERO;
+        }
     }
 
-    private native int recycle(String fullPath, boolean confirm);
+    private native long getFreeSpace(String fullPath);
 }
