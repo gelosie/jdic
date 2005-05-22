@@ -37,7 +37,7 @@ public class SolarisFileUtil extends FileUtil {
 
     public SolarisFileUtil() {
         if (isLoaded == false) {
-            System.loadLibrary("solarisfileutil");
+            System.loadLibrary("jdic_fileutil");
             isLoaded = true;
         }
     }
@@ -98,13 +98,14 @@ public class SolarisFileUtil extends FileUtil {
      */
     public BigInteger getFreeSpace(File file) throws IOException {
     	BigInteger freeSpace;
+    	BigInteger bytes = new BigInteger("1048576"); // 2^20 or 1024 * 1024
         
         if (file.isFile()) {
         	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalFile().getParent())), 2);
-            return freeSpace; 
+            return freeSpace.multiply(bytes);
         } else if (file.isDirectory()) {
         	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalPath())), 2);
-            return freeSpace;
+            return freeSpace.multiply(bytes);
         } else {
             return BigInteger.ZERO;
         }

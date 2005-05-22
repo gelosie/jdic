@@ -33,6 +33,15 @@ import org.jdesktop.jdic.fileutil.FileUtil;
  */
 public class MacOSXFileUtil extends FileUtil {
 	
+	private boolean isLoaded;
+
+    public MacOSXFileUtil() {
+        if (isLoaded == false) {
+            System.loadLibrary("jdic_fileutil");
+            isLoaded = true;
+        }
+    }
+	
     /**
      * Sends the file or directory denoted by this abstract pathname to the
      * Recycle Bin/Trash Can. It's a convenience method, works in the same way
@@ -89,13 +98,14 @@ public class MacOSXFileUtil extends FileUtil {
      */
     public BigInteger getFreeSpace(File file) throws IOException {
     	BigInteger freeSpace;
+    	BigInteger bytes = new BigInteger("1048576"); // 2^20 or 1024 * 1024
         
         if (file.isFile()) {
         	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalFile().getParent())), 2);
-            return freeSpace; 
+            return freeSpace.multiply(bytes);
         } else if (file.isDirectory()) {
         	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalPath())), 2);
-            return freeSpace;
+            return freeSpace.multiply(bytes);
         } else {
             return BigInteger.ZERO;
         }
