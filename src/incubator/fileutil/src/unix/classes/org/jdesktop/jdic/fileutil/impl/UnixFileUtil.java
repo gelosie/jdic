@@ -37,7 +37,7 @@ public class UnixFileUtil extends FileUtil {
 
     public UnixFileUtil() {
         if (isLoaded == false) {
-            System.loadLibrary("unixfileutil");
+            System.loadLibrary("jdic_fileutil");
             isLoaded = true;
         }
     }
@@ -89,7 +89,7 @@ public class UnixFileUtil extends FileUtil {
 
     /**
      * Return the amount of free bytes available in the directory or file
-     * referenced by the file Object.
+     * referenced by the file Object. The returned value is the same obtained by "df" command on Linux machines, multiplied by 1024.
      * 
      * @param file
      * @return the amount of free space in the Disk. The size is wrapped in a
@@ -98,13 +98,14 @@ public class UnixFileUtil extends FileUtil {
      */
     public BigInteger getFreeSpace(File file) throws IOException {
         BigInteger freeSpace;
+        BigInteger bytes = new BigInteger("1048576"); // 2^20 or 1024 * 1024
         
         if (file.isFile()) {
         	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalFile().getParent())), 2);
-            return freeSpace; 
+            return freeSpace.multiply(bytes); 
         } else if (file.isDirectory()) {
         	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalPath())), 2);
-            return freeSpace;
+            return freeSpace.multiply(bytes);
         } else {
             return BigInteger.ZERO;
         }

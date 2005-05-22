@@ -20,9 +20,6 @@
 
 #include <jni.h>
 #include <sys/statfs.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "UnixFileUtil.h"
 
 /*
@@ -36,10 +33,10 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_UnixFileUtil_getFre
     int status;
     jlong retorno;
     
-	char* cpFullPath = (char*) (*env)->GetStringUTFChars(env, fullPath, NULL);
+    char* cpFullPath = (char*) (*env)->GetStringUTFChars(env, fullPath, NULL);
     
     status = statfs(cpFullPath, pStatfs);
-    retorno = pStatfs->f_bavail;
+    retorno = pStatfs->f_bavail * pStatfs->f_bsize;
     
     (*env)->ReleaseStringUTFChars(env, fullPath, cpFullPath);
     free(pStatfs);

@@ -37,7 +37,7 @@ public class Win32FileUtil extends FileUtil {
 
     public Win32FileUtil() {
         if (isLoaded == false) {
-            System.loadLibrary("win32fileutil");
+            System.loadLibrary("jdic_fileutil");
             isLoaded = true;
         }
     }
