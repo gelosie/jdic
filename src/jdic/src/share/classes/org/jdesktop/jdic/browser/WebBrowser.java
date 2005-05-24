@@ -150,23 +150,32 @@ public class WebBrowser extends Canvas
         }
     }
     
+    /**
+     * Makes this WebBrowser component undisplayable by destroying it native 
+     * screen resource. 
+     * <p>
+     * This method is called by the toolkit internally and should not be called 
+     * directly by programs.  
+     */     
     public void removeNotify() {
         Thread disposeThread = new Thread() {
             public void run() {
                 synchronized( WebBrowser.this ){
-                    eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_DESTROYWINDOW);
+                    eventThread.fireNativeEvent(instanceNum, 
+                            NativeEventData.EVENT_DESTROYWINDOW);
                     try {
-                        // wait untill we get the message WebBrowserEvent.WEBBROWSER_DESTROYWINDOW_SUCC
+                        // wait untill we get the message 
+                        //   WebBrowserEvent.WEBBROWSER_DESTROYWINDOW_SUCC
                         // from native process.
                         WebBrowser.this.wait();
                     } catch (InterruptedException e) {
-                        // do nothing
                     }
                 }
                 WebBrowser.super.removeNotify();
                 setInitialized(false);
             }
         };
+
         disposeThread.start();
     }
 
