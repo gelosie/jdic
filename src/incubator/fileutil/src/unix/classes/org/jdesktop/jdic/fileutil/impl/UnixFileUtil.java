@@ -35,7 +35,7 @@ public class UnixFileUtil extends FileUtil {
 	
     private boolean isLoaded;
 
-    public UnixFileUtil() {
+    UnixFileUtil() {
         if (isLoaded == false) {
             System.loadLibrary("jdic_fileutil");
             isLoaded = true;

@@ -35,7 +35,7 @@ public class SolarisFileUtil extends FileUtil {
 	
     private boolean isLoaded;
 
-    public SolarisFileUtil() {
+    SolarisFileUtil() {
         if (isLoaded == false) {
             System.loadLibrary("jdic_fileutil");
             isLoaded = true;

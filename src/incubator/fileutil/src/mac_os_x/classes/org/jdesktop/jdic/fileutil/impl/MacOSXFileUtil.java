@@ -35,7 +35,7 @@ public class MacOSXFileUtil extends FileUtil {
 	
 	private boolean isLoaded;
 
-    public MacOSXFileUtil() {
+    MacOSXFileUtil() {
         if (isLoaded == false) {
             System.loadLibrary("jdic_fileutil");
             isLoaded = true;
