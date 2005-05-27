@@ -21,14 +21,14 @@
 #include <jni.h>
 #include <sys/types.h>
 #include <sys/statvfs.h>
-#include "SolarisFileUtil.h"
+#include "SolarisNativeFileUtil.h"
 
 /*
  * author: Fábio Castilho Martins
  */
 
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisFileUtil_getFreeSpace
-  (JNIEnv *env, jobject obj, jstring fullPath) {
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUtil_getFreeSpace
+  (JNIEnv *env, jclass jc, jstring fullPath) {      
       
     struct statvfs* pStatvfs  = (struct statvfs*) malloc(sizeof(struct statvfs));
     int status;

@@ -31,18 +31,9 @@ import org.jdesktop.jdic.fileutil.FileUtil;
  * @author Fábio Castilho Martins
  *
  */
-public class UnixFileUtil extends FileUtil {
-	
-    private boolean isLoaded;
+public class UnixFileUtil implements FileUtil {
 
-    UnixFileUtil() {
-        if (isLoaded == false) {
-            System.loadLibrary("jdic_fileutil");
-            isLoaded = true;
-        }
-    }
-
-    /**
+	/**
      * Sends the file or directory denoted by this abstract pathname to the
      * Recycle Bin/Trash Can. It's a convenience method, works in the same way
      * than delete(File file, true).
@@ -98,19 +89,15 @@ public class UnixFileUtil extends FileUtil {
      */
     public BigInteger getFreeSpace(File file) throws IOException {
         BigInteger freeSpace;
-        BigInteger bytes = new BigInteger("1048576"); // 2^20 or 1024 * 1024
         
         if (file.isFile()) {
-        	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalFile().getParent())), 2);
-            return freeSpace.multiply(bytes); 
+        	freeSpace = new BigInteger(Long.toString(UnixNativeFileUtil.getFreeSpace(file.getCanonicalFile().getParent())));
+            return freeSpace; 
         } else if (file.isDirectory()) {
-        	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalPath())), 2);
-            return freeSpace.multiply(bytes);
+        	freeSpace = new BigInteger(Long.toString(UnixNativeFileUtil.getFreeSpace(file.getCanonicalPath())));
+            return freeSpace;
         } else {
             return BigInteger.ZERO;
         }
     }
-
-    private native long getFreeSpace(String fullPath);
-
 }

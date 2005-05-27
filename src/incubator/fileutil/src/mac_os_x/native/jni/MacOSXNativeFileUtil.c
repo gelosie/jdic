@@ -21,14 +21,14 @@
 #include <jni.h>
 #include <sys/param.h>
 #include <sys/mount.h>
-#include "MacOSXFileUtil.h"
+#include "MacOSXNativeFileUtil.h"
 
 /*
  * author: Fábio Castilho Martins
  */
 
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_MacOSXFileUtil_getFreeSpace
-  (JNIEnv *env, jobject obj, jstring fullPath) {
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_MacOSXNativeFileUtil_getFreeSpace
+  (JNIEnv *env, jclass jc, jstring fullPath) {      
       
     struct statfs* pStatfs  = (struct statfs*) malloc(sizeof(struct statfs));
     int status;

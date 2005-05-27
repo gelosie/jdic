@@ -25,59 +25,12 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import org.jdesktop.jdic.fileutil.impl.MacOSXFileUtil;
-import org.jdesktop.jdic.fileutil.impl.SolarisFileUtil;
-import org.jdesktop.jdic.fileutil.impl.UnixFileUtil;
-import org.jdesktop.jdic.fileutil.impl.Win32FileUtil;
-
-
 /**
  * @author Fábio Castilho Martins
  *  
  */
-public abstract class FileUtil {
-
-    private static FileUtil _fileUtil;
-	
-    /**
-     * Return a new (probably shared) FileUtil object.
-     * <p>
-     * This will create the appropriate implementation for the currently 
-     * running platform.
-     * <br>
-     * If an implementation is not available (the current platform is not 
-     * supported) then it will throw a ClassNotFoundException.
-     * 
-     * @return FileUtil for the current platform.
-     * @throws ExceptionInInitializerError if the initialization of the 
-     *         Platform implementation provoked by this method fails.
-     * @throws SecurityException if there is no permission to create a new
-     *         instance.
-     * @throws ClassNotFoundException if the platform is not supported.
-     */
-    public static FileUtil getInstance() throws IllegalAccessException,
-            InstantiationException, ClassNotFoundException {
-        String os_name = System.getProperty("os.name");
-
-        if (_fileUtil == null) {
-            if (os_name.startsWith("Mac OS X")) {
-                loadMac();
-            } else if (os_name.startsWith("Windows")) {
-                loadWin32();
-            } else if (os_name.startsWith("Linux")
-                    || os_name.startsWith("LINUX")) {
-                loadUnix();
-            } else if (os_name.startsWith("Solaris")
-                    || os_name.startsWith("SunOS")) {
-                loadSolaris();
-            } else {
-                throw new ClassNotFoundException("Platform unsupported");
-            }
-        }
-        return _fileUtil;
-
-    }
-
+public interface FileUtil {
+    
     /**
      * Sends the file or directory denoted by this abstract pathname to the
      * Recycle Bin/Trash Can. It's a convenience method, works in the same way
@@ -86,34 +39,29 @@ public abstract class FileUtil {
      * @param file the file or directory to be recycled.
      * @return <b>true</b> if and only if the file or directory is
      *         successfully recycled; <b>false</b> otherwise.
-     * @throws IOException If an I/O error occurs, which is possible because the
-     *         construction of the canonical pathname may require filesystem
-     *         queries.
+     * @throws IOException If an I/O error occurs.
      * 
      * @throws SecurityException If a required system property value cannot be 
      *         accessed.
      */
-    public abstract boolean recycle(File file) throws IOException,
+    public boolean recycle(File file) throws IOException,
             SecurityException;
 
     /**
      * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can. It will return true even if the user aborted the
-     * operation.
+     * Recycle Bin/Trash Can.
      * 
      * @param file the file or directory to be recycled.
      * @param confirm <b>true</b> shows a confirmation dialog; <b>false</b> 
      *        recycles without notification.
      * @return <b>true</b> if and only if the file or directory is successfully 
      *         recycled; <b>false</b> otherwise.
-     * @throws IOException If an I/O error occurs, which is possible because the
-     *         construction of the canonical pathname may require filesystem
-     *         queries.
+     * @throws IOException If the file doesn't exist or if an I/O error occurs.
      * 
      * @throws SecurityException If a required system property value cannot be 
      *         accessed.
      */
-    public abstract boolean recycle(File file, boolean confirm)
+    public boolean recycle(File file, boolean confirm)
             throws IOException, SecurityException;
 
     /**
@@ -125,30 +73,6 @@ public abstract class FileUtil {
      *         BigInteger due to platform-specific issues.
      * @throws IOException
      */
-    public abstract BigInteger getFreeSpace(File file) throws IOException;
-
-    private static void loadMac() throws IllegalAccessException,
-            InstantiationException, ClassNotFoundException {
-        _fileUtil = (MacOSXFileUtil) Class.forName(
-                "org.jdesktop.jdic.fileutil.impl.MacOSXFileUtil").newInstance();
-    }
-
-    private static void loadWin32() throws IllegalAccessException,
-            InstantiationException, ClassNotFoundException {
-        _fileUtil = (Win32FileUtil) Class.forName(
-                "org.jdesktop.jdic.fileutil.impl.Win32FileUtil").newInstance();
-    }
-
-    private static void loadUnix() throws IllegalAccessException,
-            InstantiationException, ClassNotFoundException {
-        _fileUtil = (UnixFileUtil) Class.forName(
-                "org.jdesktop.jdic.fileutil.impl.UnixFileUtil").newInstance();
-    }
-
-    private static void loadSolaris() throws IllegalAccessException,
-            InstantiationException, ClassNotFoundException {
-        _fileUtil = (SolarisFileUtil) Class.forName(
-                "org.jdesktop.jdic.fileutil.impl.SolarisFileUtil").newInstance();
-    }
+    public BigInteger getFreeSpace(File file) throws IOException;    
 
 }

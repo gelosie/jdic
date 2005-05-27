@@ -31,16 +31,7 @@ import org.jdesktop.jdic.fileutil.FileUtil;
  * @author Fábio Castilho Martins
  *
  */
-public class SolarisFileUtil extends FileUtil {
-	
-    private boolean isLoaded;
-
-    SolarisFileUtil() {
-        if (isLoaded == false) {
-            System.loadLibrary("jdic_fileutil");
-            isLoaded = true;
-        }
-    }
+public class SolarisFileUtil implements FileUtil {
 
     /**
      * Sends the file or directory denoted by this abstract pathname to the
@@ -101,15 +92,13 @@ public class SolarisFileUtil extends FileUtil {
     	BigInteger bytes = new BigInteger("1048576"); // 2^20 or 1024 * 1024
         
         if (file.isFile()) {
-        	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalFile().getParent())), 2);
+        	freeSpace = new BigInteger(Long.toBinaryString(SolarisNativeFileUtil.getFreeSpace(file.getCanonicalFile().getParent())), 2);
             return freeSpace.multiply(bytes);
         } else if (file.isDirectory()) {
-        	freeSpace = new BigInteger(Long.toBinaryString(getFreeSpace(file.getCanonicalPath())), 2);
+        	freeSpace = new BigInteger(Long.toBinaryString(SolarisNativeFileUtil.getFreeSpace(file.getCanonicalPath())), 2);
             return freeSpace.multiply(bytes);
         } else {
             return BigInteger.ZERO;
         }
     }
-
-    private native long getFreeSpace(String fullPath);
 }

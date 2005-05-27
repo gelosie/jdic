@@ -20,14 +20,14 @@
 
 #include <jni.h>
 #include <sys/statfs.h>
-#include "UnixFileUtil.h"
+#include "UnixNativeFileUtil.h"
 
 /*
  * author: Fábio Castilho Martins
  */
 
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_UnixFileUtil_getFreeSpace
-  (JNIEnv *env, jobject obj, jstring fullPath) {
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_UnixNativeFileUtil_getFreeSpace
+  (JNIEnv *env, jclass jc, jstring fullPath) {
       
     struct statfs* pStatfs = (struct statfs*) malloc(sizeof(struct statfs));
     int status;

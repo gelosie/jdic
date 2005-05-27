@@ -31,16 +31,7 @@ import org.jdesktop.jdic.fileutil.FileUtil;
  * @author Fábio Castilho Martins
  *
  */
-public class Win32FileUtil extends FileUtil {
-	
-    private boolean isLoaded;
-
-    public Win32FileUtil() {
-        if (isLoaded == false) {
-            System.loadLibrary("jdic_fileutil");
-            isLoaded = true;
-        }
-    }
+public class Win32FileUtil implements FileUtil {
 
     /**
      * Sends the file or directory denoted by this abstract pathname to the
@@ -63,8 +54,7 @@ public class Win32FileUtil extends FileUtil {
 
     /**
      * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can. It will return true even if the user aborted 
-     * the operation.
+     * Recycle Bin/Trash Can. Returns false if the user aborts the operation.
      * 
      * @param file the file or directory to be recycled.
      * @param confirm <b>true</b> shows a confirmation dialog; <b>false</b> 
@@ -80,8 +70,14 @@ public class Win32FileUtil extends FileUtil {
     public boolean recycle(File file, boolean confirm) throws IOException,
             SecurityException {
         String fullPath = file.getCanonicalPath();
-
-        return (recycle(fullPath, confirm) == 0 ? true : false);
+        int status = Win32NativeFileUtil.recycle(fullPath, confirm);
+        
+        if(status == 0) {
+        	return !file.exists();
+        }
+        else {
+        	throw new IOException();
+        }
     }
 
     /**
@@ -100,12 +96,12 @@ public class Win32FileUtil extends FileUtil {
         BigInteger lowPart;
 
         if (file.isFile()) {
-            freeSpace = getFreeSpace(file.getCanonicalFile().getParent());
+            freeSpace = Win32NativeFileUtil.getFreeSpace(file.getCanonicalFile().getParent());
             highPart = new BigInteger(String.valueOf(freeSpace[1])).shiftLeft(32);
             lowPart = new BigInteger(String.valueOf(freeSpace[0]));
             return highPart.add(lowPart); 
         } else if (file.isDirectory()) {
-            freeSpace = getFreeSpace(file.getCanonicalPath());
+            freeSpace = Win32NativeFileUtil.getFreeSpace(file.getCanonicalPath());
             highPart = new BigInteger(String.valueOf(freeSpace[1])).shiftLeft(32);
             lowPart = new BigInteger(String.valueOf(freeSpace[0]));
             return highPart.add(lowPart);
@@ -113,8 +109,4 @@ public class Win32FileUtil extends FileUtil {
             return BigInteger.ZERO;
         }
     }
-
-    private native long[] getFreeSpace(String fullPath);
-
-    private native int recycle(String fullPath, boolean confirm);
 }
