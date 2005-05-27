@@ -216,7 +216,12 @@ void CommandProc(char* pInputChar)
     int eventID;
     char eventMessage[1024];
 
-    int i = sscanf(pInputChar, "%d,%d,%s", &instanceNum, &eventID, &eventMessage);
+    // Decompose the socket message string.
+    // NOTE: the "," character is used as the message field delimiter to 
+    //       compose/decompose socket message strings. Which should be 
+    //       identical between the Java side and native side.
+    int i = sscanf(pInputChar, "%d,%d,%s", &instanceNum, &eventID, 
+        &eventMessage);
     if (i < 2) 
     {
         delete pInputChar;
