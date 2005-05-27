@@ -8,6 +8,29 @@
 <body>
 <h2 align="center">README</h2>
 <h2 align="center">SystemInfo (package <code>org.jdesktop.jdic.systeminfo</code>)</h2>
+
+<center>
+<table border="0" width="600">
+  <tr>
+    <td>
+      <a href="/source/browse/jdic/">
+        <font size="+1">[ CVS Checkout ]</font>
+      </a>
+    </td>
+    <td>
+      <a href="javadoc/index.html">
+        <font size="+1">[ API Documentation ]</font>
+      </a>
+    </td>
+    <td>
+      <a href="docs/MinGW Instructions.pdf">
+        <font size="+1">[ Windows Build Doc ]</font>
+      </a>
+    </td>
+  </tr>
+</table>
+</center>
+
 <h3>Introduction</h3>
 <p>
 Integration with the user desktop is increasingly important as the line
@@ -23,6 +46,7 @@ a bit. Currently we're working on support for Windows 98/NT4,
 Windows 2000/XP, *nix variants running XWindows and Solaris.
 </p>
 
+<h3>Building from CVS</h3>
 <p>
 The CVS module for the SystemInfo source code in the CVS repository is: 
 <code>[jdic]/src/incubator/systeminfo</code>. You can find instructions for 
@@ -34,8 +58,17 @@ Some quickstart instructions on how to build SystemInfo .dll's in Windows (using
 the lovely <a href="http://www.mingw.org/">MinGW project</a>) are 
 <a href="docs/MinGW%20Instructions.pdf">available in PDF format</a>.
 
+<h3>Current Status</h3>
 <p>
-Binary releases and JavaDoc info is forthcoming.
-</p> 
+<code>5/27/2005</code>
+<br>
+Currently we're working on getting session lock detection to work from X11 window
+managers, which is harder than it first sounded. Looking at source from projects
+such as xscreensaver and xlock, basically the locking happens by intercepting
+all incoming mouse/keyboard/input events and sending 'em directly to the application's
+event manager. Which essentially means that our attempts to "hear" a lock call
+gets flushed down the proverbial pipe. If you have a good idea or code to contribute,
+<a href="mailto:john.ellis@gmail.com">e-mail me</a>.
+
 </body>
 </html>
