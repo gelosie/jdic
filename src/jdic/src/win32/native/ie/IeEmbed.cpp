@@ -23,7 +23,6 @@
 #include "BrowserWindow.h"
 #include "resource.h"
 #include "Message.h"
-//#include "prthread.h"
 #include "VariantWrapper.h"
 #include "Util.h"
 #define WM_SOCKET_MSG   WM_USER + 1
@@ -32,8 +31,11 @@ CComModule _Module;
 
 HWND gMainWnd;
 
-//array of browserwindow
+//array of browser windows
 WBArray ABrowserWnd;
+
+//cached URL for POST data
+char * mURL;
 
 void SocketMsgHandler(const char* pMsg)
 {
@@ -314,6 +316,35 @@ void CommandProc(char* pInputChar)
         pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
         ATLASSERT(pBrowserWnd != NULL);
         pBrowserWnd->m_pWB->Navigate(CComBSTR(mMsgString), NULL, NULL, NULL, NULL);
+        break;
+
+    case JEVENT_NAVIGATE_POST: 
+        mURL = mMsgString;
+        break;
+
+    case JEVENT_NAVIGATE_POSTDATA: 
+        pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
+        ATLASSERT(pBrowserWnd != NULL);
+
+        // Construct the POST data with VARIANT type.
+        // Put data into safe array.
+        VARIANT vPostData;
+        LPSAFEARRAY psa;
+        
+        // mMsgString is POST data
+        psa = SafeArrayCreateVector(VT_UI1, 0, strlen(mMsgString));
+        LPSTR pPostData;
+        SafeArrayAccessData(psa, (LPVOID*)&pPostData);
+        memcpy(pPostData, mMsgString, strlen(mMsgString));
+        SafeArrayUnaccessData(psa);
+        
+        // Package the SafeArray into a VARIANT.
+        V_VT(&vPostData) = VT_ARRAY | VT_UI1;
+        V_ARRAY(&vPostData) = psa;
+
+        // Navigate to the URL, and POST the data.
+        pBrowserWnd->m_pWB->Navigate(CComBSTR(mURL), NULL, NULL,
+            &vPostData, NULL);
         break;
 
     case JEVENT_GOBACK:

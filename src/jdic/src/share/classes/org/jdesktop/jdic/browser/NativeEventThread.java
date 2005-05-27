@@ -223,6 +223,8 @@ class NativeEventThread extends Thread
                 messenger.sendMessage(msg);
                 break;
             case NativeEventData.EVENT_NAVIGATE:
+            case NativeEventData.EVENT_NAVIGATE_POST:
+            case NativeEventData.EVENT_NAVIGATE_POSTDATA:
             case NativeEventData.EVENT_SETCONTENT:
             case NativeEventData.EVENT_EXECUTESCRIPT:                
                 msg += nativeEvent.stringValue;
