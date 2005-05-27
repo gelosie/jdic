@@ -256,16 +256,15 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileU
 }
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_setHidden
-  (JNIEnv *env, jclass jc, jstring fullPath) { 
+  (JNIEnv *env, jclass jc, jstring fullPath) {
     LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
-    DWORD fileAttributes;
     
-    fileAttributes = GetFileAttributesW(wcpFullPath);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
-    if(fileAttributes & FILE_ATTRIBUTE_HIDDEN) {
+    if(SetFileAttributesW(wcpFullPath, FILE_ATTRIBUTE_HIDDEN)) {
+        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
         return JNI_TRUE;
     }
     else {
+        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
         return JNI_FALSE;
-    }    
+    }  
 }
