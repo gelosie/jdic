@@ -127,10 +127,6 @@ SOURCE=.\BrowserWindow.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\IeEmbed.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\share\native\utils\Message.h
 # End Source File
 # Begin Source File
