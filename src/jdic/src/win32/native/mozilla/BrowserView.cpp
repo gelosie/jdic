@@ -682,23 +682,24 @@ void CBrowserView::OpenURL(const PRUnichar* pUrl, const char* pPostData, const c
             unsigned long nSizeCL = strlen(szCL);
             unsigned long nSize = nSizeCL + nSizeData;
 
-            char *tmp = (char *) nsMemory::Alloc(nSize + 1); // byte stream owns this mem
-            if (tmp) 
+            // byte stream owns this memory.
+            char *tmpPostData = (char *) nsMemory::Alloc(nSize + 1); 
+            if (tmpPostData) 
             {
-                memcpy(tmp, szCL, nSizeCL);
-                memcpy(tmp + nSizeCL, pPostData, nSizeData);
-                tmp[nSize] = '\0';
+                memcpy(tmpPostData, szCL, nSizeCL);
+                memcpy(tmpPostData + nSizeCL, pPostData, nSizeData);
+                tmpPostData[nSize] = '\0';
 
                 nsCOMPtr<nsIStringInputStream> stream;
                 stream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
                 if (NS_FAILED(rv) || !stream) 
                 {
                     NS_ASSERTION(0, "cannot create PostData stream");
-                    nsMemory::Free(tmp);
+                    nsMemory::Free(tmpPostData);
                     return;
                 }
 
-                stream->AdoptData(tmp, nSize);
+                stream->AdoptData(tmpPostData, nSize);
                 postDataStream = do_QueryInterface(stream);
             }
         }
@@ -709,21 +710,22 @@ void CBrowserView::OpenURL(const PRUnichar* pUrl, const char* pPostData, const c
         unsigned long nSize = strlen(pHeader) + 1;
         if (nSize > 0) 
         {
-            char *tmp = (char *) nsMemory::Alloc(nSize); // byteArray stream owns this mem
-            if (tmp) 
+            // byteArray stream owns this memory.
+            char *tmpHeader = (char *) nsMemory::Alloc(nSize); 
+            if (tmpHeader) 
             {
-                memcpy(tmp, pHeader, nSize);
+                memcpy(tmpHeader, pHeader, nSize);
 
                 nsCOMPtr<nsIStringInputStream> stream;
                 stream = do_CreateInstance(NS_STRINGINPUTSTREAM_CONTRACTID, &rv);
                 if (NS_FAILED(rv) || !stream) 
                 {
                     NS_ASSERTION(0, "cannot create Header stream");
-                    nsMemory::Free(tmp);
+                    nsMemory::Free(tmpHeader);
                     return;
                 }
 
-                stream->AdoptData(tmp, nSize);
+                stream->AdoptData(tmpHeader, nSize);
                 headersStream = do_QueryInterface(stream);
             }
         }
