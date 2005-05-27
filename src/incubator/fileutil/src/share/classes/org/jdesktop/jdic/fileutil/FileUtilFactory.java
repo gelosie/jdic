@@ -49,7 +49,7 @@ public class FileUtilFactory {
      * @throws ClassNotFoundException if the ClassNotFoundException if the class cannot be located.
      */
 	public static FileUtil getFileUtilInstance() throws IllegalAccessException,
-			InstantiationException, ClassNotFoundException, UnsupportedPlatformException {
+			InstantiationException, ClassNotFoundException, UnsupportedOperationException {
 		String os_name = System.getProperty("os.name");
 
 		if (os_name.startsWith("Mac OS X")) {
@@ -69,12 +69,12 @@ public class FileUtilFactory {
 					"org.jdesktop.jdic.fileutil.impl.SolarisFileUtil")
 					.newInstance();
 		} else {
-			throw new UnsupportedPlatformException("Your platform is not supported yet");
+			throw new UnsupportedOperationException("Your platform is not supported yet");
 		}
 	}
 
 	public static FileProperties getFilePropertiesInstance() throws IllegalAccessException,
-	InstantiationException, ClassNotFoundException, UnsupportedPlatformException {
+	InstantiationException, ClassNotFoundException, UnsupportedOperationException {
 		String os_name = System.getProperty("os.name");
 		
 		if (os_name.startsWith("Windows")) {
@@ -83,7 +83,7 @@ public class FileUtilFactory {
 					.newInstance();
 		} 
 		else {
-			throw new UnsupportedPlatformException("Your platform is not supported yet");
+			throw new UnsupportedOperationException("Your platform is not supported yet");
 		}
 	}
 
