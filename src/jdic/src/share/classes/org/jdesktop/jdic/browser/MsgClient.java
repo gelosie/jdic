@@ -154,6 +154,10 @@ class MsgClient {
         channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
     }
 
+    // Append a sockate message string to the send buffer.
+    // NOTE: the "," character is used as the message field delimiter to 
+    //       compose/decompose socket message strings. Which should be identical 
+    //       between the Java side and native side.
     void sendMessage(String msg) {
     	sendBuffer += msg + MSG_DELIMITER;
     }
