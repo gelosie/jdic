@@ -26,7 +26,7 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_
 /*
  * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
  * Method:    getFileSystem
- * Signature: (Ljava/lang/String;)[C
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_getFileSystem
   (JNIEnv *, jclass, jstring);
@@ -42,10 +42,10 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileU
 /*
  * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
  * Method:    setArchive
- * Signature: (Ljava/lang/String;)Z
+ * Signature: (Ljava/lang/String;Z)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_setArchive
-  (JNIEnv *, jclass, jstring);
+  (JNIEnv *, jclass, jstring, jboolean);
 
 /*
  * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
@@ -82,10 +82,10 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileU
 /*
  * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
  * Method:    setSystem
- * Signature: (Ljava/lang/String;)Z
+ * Signature: (Ljava/lang/String;Z)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_setSystem
-  (JNIEnv *, jclass, jstring);
+  (JNIEnv *, jclass, jstring, jboolean);
 
 /*
  * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
@@ -98,10 +98,10 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileU
 /*
  * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
  * Method:    setTemporary
- * Signature: (Ljava/lang/String;)Z
+ * Signature: (Ljava/lang/String;Z)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_setTemporary
-  (JNIEnv *, jclass, jstring);
+  (JNIEnv *, jclass, jstring, jboolean);
 
 /*
  * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
@@ -122,10 +122,10 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileU
 /*
  * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
  * Method:    setHidden
- * Signature: (Ljava/lang/String;)Z
+ * Signature: (Ljava/lang/String;Z)Z
  */
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_setHidden
-  (JNIEnv *, jclass, jstring);
+  (JNIEnv *, jclass, jstring, jboolean);
 
 #ifdef __cplusplus
 }

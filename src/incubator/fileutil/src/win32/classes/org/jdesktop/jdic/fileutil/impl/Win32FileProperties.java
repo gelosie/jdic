@@ -95,8 +95,8 @@ public class Win32FileProperties implements FileProperties {
 	 * @return true if successful, false otherwise.
 	 * @throws IOException
 	*/
-	public boolean setArchive(File file) throws IOException {
-		return Win32NativeFileUtil.setArchive(file.getCanonicalPath());		
+	public boolean setArchive(File file, boolean status) throws IOException {
+		return Win32NativeFileUtil.setArchive(file.getCanonicalPath(), status);		
 	}
 	
 	/**
@@ -113,8 +113,8 @@ public class Win32FileProperties implements FileProperties {
 	 * @return true if successful, false otherwise.
 	 * @throws IOException
 	*/
-	public boolean setSystem(File file) throws IOException {
-		return Win32NativeFileUtil.setSystem(file.getCanonicalPath());
+	public boolean setSystem(File file, boolean status) throws IOException {
+		return Win32NativeFileUtil.setSystem(file.getCanonicalPath(), status);
 	}
 	
 	/**
@@ -122,8 +122,8 @@ public class Win32FileProperties implements FileProperties {
 	 * @return true if successful, false otherwise.
 	 * @throws IOException
 	*/
-	public boolean setTemporary(File file) throws IOException {
-		return Win32NativeFileUtil.setTemporary(file.getCanonicalPath());
+	public boolean setTemporary(File file, boolean status) throws IOException {
+		return Win32NativeFileUtil.setTemporary(file.getCanonicalPath(), status);
 	}
 	
 	/**
@@ -131,8 +131,8 @@ public class Win32FileProperties implements FileProperties {
 	 * @return true if successful, false otherwise.
 	 * @throws IOException
 	*/
-	public boolean setHidden(File file) throws IOException {
-		return Win32NativeFileUtil.setHidden(file.getCanonicalPath());
+	public boolean setHidden(File file, boolean status) throws IOException {
+		return Win32NativeFileUtil.setHidden(file.getCanonicalPath(), status);
 	}
 		
 }

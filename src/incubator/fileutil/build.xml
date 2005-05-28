@@ -265,10 +265,10 @@ Top-level target:
   </target>
   
   <target name="jni" description="generate header files.">
-    <javah classpath="dist/windows" class="org.jdesktop.jdic.fileutil.impl.Win32NativeFileUtil" outputFile="${win32.native.jni.dir}/Win32NativeFileUtil.h" old="no" verbose="no"/>
-    <javah classpath="dist/windows" class="org.jdesktop.jdic.fileutil.impl.UnixNativeFileUtil" outputFile="${unix.native.jni.dir}/UnixNativeFileUtil.h" old="no" verbose="no"/>
-    <javah classpath="dist/windows" class="org.jdesktop.jdic.fileutil.impl.MacOSXNativeFileUtil" outputFile="${mac.native.jni.dir}/MacOSXNativeFileUtil.h" old="no" verbose="no"/>
-    <javah classpath="dist/windows" class="org.jdesktop.jdic.fileutil.impl.SolarisNativeFileUtil" outputFile="${solaris.native.jni.dir}/SolarisNativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="dist" class="org.jdesktop.jdic.fileutil.impl.Win32NativeFileUtil" outputFile="${win32.native.jni.dir}/Win32NativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="dist" class="org.jdesktop.jdic.fileutil.impl.UnixNativeFileUtil" outputFile="${unix.native.jni.dir}/UnixNativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="dist" class="org.jdesktop.jdic.fileutil.impl.MacOSXNativeFileUtil" outputFile="${mac.native.jni.dir}/MacOSXNativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="dist" class="org.jdesktop.jdic.fileutil.impl.SolarisNativeFileUtil" outputFile="${solaris.native.jni.dir}/SolarisNativeFileUtil.h" old="no" verbose="no"/>
   </target>
 
 </project>

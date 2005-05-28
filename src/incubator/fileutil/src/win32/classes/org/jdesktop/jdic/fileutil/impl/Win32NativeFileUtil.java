@@ -38,7 +38,7 @@ class Win32NativeFileUtil {
 	
 	static native boolean isArchive(String fullPath);
 	
-	static native boolean setArchive(String fullPath);
+	static native boolean setArchive(String fullPath, boolean status);
 	
 	static native boolean isNormal(String fullPath);
 	
@@ -48,16 +48,16 @@ class Win32NativeFileUtil {
 	
 	static native boolean isSystem(String fullPath);
 	
-	static native boolean setSystem(String fullPath);
+	static native boolean setSystem(String fullPath, boolean status);
 	
 	static native boolean isTemporary(String fullPath);
 	
-	static native boolean setTemporary(String fullPath);
+	static native boolean setTemporary(String fullPath, boolean status);
 	
 	static native boolean isCompressed(String fullPath);
 	
 	static native boolean isEncrypted(String fullPath);
 	
-	static native boolean setHidden(String fullPath);
+	static native boolean setHidden(String fullPath, boolean status);
 
 }
