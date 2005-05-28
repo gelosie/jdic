@@ -9,12 +9,8 @@ For Ant, see http://jakarta.apache.org/ant/index.html
 
 Top-level target:
   buildall:         Build a JDIC API distribution for the current platform.
-                    Which will run one of below targets:
-    buildwin32:     on Windows to build a Windows distribuition.
-    buildlinux:     on Linux to build a Linux distribuition.
-    buildsolaris:   on Solaris to build a Solaris distribuition.
-    buildmac_os_x:  on Mac OS X to build a Mac OS X distribuition.
   clean:            Remove the generated distribution (including files and directories).
+  jni:              Generate JNI headers(.h).
 
 -->
 
@@ -96,6 +92,8 @@ Top-level target:
     <!-- Create the distribution directory -->
     <property name="dist.dir" value="dist" />
     <mkdir dir="${dist.dir}" />
+    <property name="native.dir" value="${dist.dir}/${os-arch}" />
+    <mkdir dir="${native.dir}" />
 
     <echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
     <echo>+ JDIC API build version ${version} release ${release}</echo>
@@ -161,29 +159,30 @@ Top-level target:
                "https://jdic.dev.java.net/source/browse/jdic/src/COPYING">license terms</a>. 
                </font>]]>
               </bottom>
+              <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
     </javadoc>
   </target>
-
-  <!--
-    - WIN32 DISTRIBUTION
-    -->
-  <target name="buildwin32" depends="buildwin32jar, javadoc" description="build java and native source code for Win32 platform">
-  </target>
-
-  <!-- *** Build Win32 jar file *** -->
-  <target name="buildwin32jar" depends="init" description="build the classes and jar file.">
-    <javac srcdir="${share.classes.dir}:${win32.classes.dir}:${unix.classes.dir}:${solaris.classes.dir}:${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
+  
+  <!-- *** Build jar file *** -->
+  <target name="buildjar" depends="init" description="build the classes and jar file.">
+    <javac srcdir="${share.classes.dir}:${win32.classes.dir}:${unix.classes.dir}:${solaris.classes.dir}:${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" target="1.4" source="1.4"/>
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
       <fileset dir="${dist.dir}" includes="org/**/*.class" />
     </jar>
 
     <!-- remove the generated "org" directory -->
-    <!-- delete includeEmptyDirs="true" failonerror="false">
+    <delete includeEmptyDirs="true" failonerror="false">
       <fileset dir="${dist.dir}/org" />
-    </delete -->
+    </delete>
   </target>
 
+  <!--
+    - WIN32 DISTRIBUTION
+    -->
+  <target name="buildwin32" depends="buildjar, javadoc" description="build java and native source code for Win32 platform">
+  </target>
+  
   <!-- *** Build Win32 native JNI code *** -->
   <target name="buildwin32jni" depends="init" description="build native jni libraries.">
 
@@ -192,13 +191,13 @@ Top-level target:
     </exec>
 
     <!-- copy generated .dll file -->
-    <copy file="${win32.native.jni.dir}/jdic_fileutil.dll" todir="${dist.dir}" />
+    <copy file="${win32.native.jni.dir}/jdic_fileutil.dll" todir="${native.dir}" />
   </target>
 
   <!--
     - LINUX DISTRIBUTION
     -->
-  <target name="buildlinux" depends="buildunixjar, javadoc" description="build java and native source code for Linux platform">
+  <target name="buildlinux" depends="buildjar, javadoc" description="build java and native source code for Linux platform">
   </target>
 
   <!--
@@ -208,52 +207,18 @@ Top-level target:
   <target name="buildsolaris" depends="buildlinux" description="build java and native source code for Solaris platform">
   </target>
 
-  <!--
-    - SHARED TARGETS FOR UNIX DISTRIBUTIONS
-    -->
-  <!-- *** Build Unix jar file *** -->
-  <target name="buildunixjar" depends="init" description="build the classes and jar file.">
-    <javac srcdir="${share.classes.dir}:${win32.classes.dir}:${unix.classes.dir}:${solaris.classes.dir}:${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
-
-    <jar destfile="${dist.dir}/${jar.file}" update="false">
-      <fileset dir="${dist.dir}" includes="org/**/*.class" />
-    </jar>
-
-    <!-- remove the generated "org" directory -->
-    <!-- delete includeEmptyDirs="true" failonerror="false">
-      <fileset dir="${dist.dir}/org" />
-    </delete -->
-
-  </target>
-
   <!-- *** Build Unix native JNI code *** -->
   <target name="buildunixjni" depends="init" description="build native jni libraries.">
     <exec dir="${unix.native.jni.dir}" executable="make" failonerror="yes" />
 
     <!-- copy generated .so file -->
-    <copy file="${unix.native.jni.dir}/libjdic_fileutil.so" todir="${dist.dir}" />
+    <copy file="${unix.native.jni.dir}/libjdic_fileutil.so" todir="${native.dir}" />
   </target>
 
   <!--
     - MAC OS X DISTRIBUTION
     -->
-  <target name="buildmac_os_x" depends="buildmacjar" description="build java and native source code for Mac OS X">
-  </target>
-
-  <!-- *** Build Mac jar file *** -->
-  <target name="buildmacjar" depends="init, buildsharejar" description="build the classes and jar file.">
-    <javac srcdir="{share.classes.dir}:${win32.classes.dir}:${unix.classes.dir}:${solaris.classes.dir}:${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}:/System/Library/Java" debug="${javac.debug}" />
-
-    <jar destfile="${dist.dir}/${jar.file}" update="false">
-      <fileset dir="${dist.dir}" includes="org/**/*.class" />
-    </jar>
-  </target>
-
-  <target name="buildsharejar" depends="init">
-    <javac srcdir="${share.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
-    <jar destfile="${dist.dir}/${jar.file}" update="false">
-      <fileset dir="${dist.dir}" includes="org/**/*.class" />
-    </jar>
+  <target name="buildmac_os_x" depends="buildjar" description="build java and native source code for Mac OS X">
   </target>
 
   <!-- *** Build Mac native JNI code *** -->
@@ -261,14 +226,14 @@ Top-level target:
     <exec dir="${mac.native.jni.dir}" executable="make" failonerror="yes" />
 
     <!-- copy generated .jnilib file -->
-    <copy file="${mac.native.jni.dir}/libjdic_fileutil.jnilib" todir="${dist.dir}" />
+    <copy file="${mac.native.jni.dir}/libjdic_fileutil.jnilib" todir="${native.dir}" />
   </target>
   
-  <target name="jni" description="generate header files.">
-    <javah classpath="dist" class="org.jdesktop.jdic.fileutil.impl.Win32NativeFileUtil" outputFile="${win32.native.jni.dir}/Win32NativeFileUtil.h" old="no" verbose="no"/>
-    <javah classpath="dist" class="org.jdesktop.jdic.fileutil.impl.UnixNativeFileUtil" outputFile="${unix.native.jni.dir}/UnixNativeFileUtil.h" old="no" verbose="no"/>
-    <javah classpath="dist" class="org.jdesktop.jdic.fileutil.impl.MacOSXNativeFileUtil" outputFile="${mac.native.jni.dir}/MacOSXNativeFileUtil.h" old="no" verbose="no"/>
-    <javah classpath="dist" class="org.jdesktop.jdic.fileutil.impl.SolarisNativeFileUtil" outputFile="${solaris.native.jni.dir}/SolarisNativeFileUtil.h" old="no" verbose="no"/>
+  <target name="jni" depends="init" description="generate header files.">
+    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.impl.Win32NativeFileUtil" outputFile="${win32.native.jni.dir}/Win32NativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.impl.UnixNativeFileUtil" outputFile="${unix.native.jni.dir}/UnixNativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.impl.MacOSXNativeFileUtil" outputFile="${mac.native.jni.dir}/MacOSXNativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.impl.SolarisNativeFileUtil" outputFile="${solaris.native.jni.dir}/SolarisNativeFileUtil.h" old="no" verbose="no"/>
   </target>
 
 </project>
