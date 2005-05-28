@@ -92,6 +92,8 @@ public class Win32FileProperties implements FileProperties {
 	
 	/**
 	 * Marks the file/directory for backup/removal.
+	 * 
+	 * @param status if true sets the propertie on, if false sets it off.
 	 * @return true if successful, false otherwise.
 	 * @throws IOException
 	*/
@@ -110,6 +112,8 @@ public class Win32FileProperties implements FileProperties {
 	
 	/**
 	 * Marks the file/directory for use by the operating system.
+	 * 
+	 * @param status if true sets the propertie on, if false sets it off.
 	 * @return true if successful, false otherwise.
 	 * @throws IOException
 	*/
@@ -119,6 +123,8 @@ public class Win32FileProperties implements FileProperties {
 	
 	/**
 	 * Marks the file/directory for temporary use.
+	 * 
+	 * @param status if true sets the propertie on, if false sets it off.
 	 * @return true if successful, false otherwise.
 	 * @throws IOException
 	*/
@@ -128,6 +134,8 @@ public class Win32FileProperties implements FileProperties {
 	
 	/**
 	 * Hides the file/directory. The file/directory will no be seen in an directory listing.
+	 * 
+	 * @param status if true sets the propertie on, if false sets it off.
 	 * @return true if successful, false otherwise.
 	 * @throws IOException
 	*/
