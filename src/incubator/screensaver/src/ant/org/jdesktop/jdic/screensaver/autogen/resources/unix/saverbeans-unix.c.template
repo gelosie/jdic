@@ -145,7 +145,7 @@ init_saverbeans(Display *dpy, Window window) {
      */
     
     /* We need class in the form com/acme/Foo, not com.acme.Foo */
-    realClassName = malloc( strlen( className ) );
+    realClassName = malloc( strlen( className ) + 1 );
     strcpy( realClassName, className );
     for( i = 0; i < strlen(realClassName); i++ ) {
         if( realClassName[i] == '.' ) realClassName[i] = '/';
