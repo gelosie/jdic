@@ -115,7 +115,7 @@ public class WebBrowserEvent extends EventObject
         = 24 + WEBBROWSER_FIRST;
 
     /**
-     * Event fired when initialization of WebBrowser fails.
+     * Event fired when the initialization of WebBrowser fails.
      */
     static final int WEBBROWSER_INIT_FAILED             
         = 41 + WEBBROWSER_FIRST;    

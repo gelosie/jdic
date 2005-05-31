@@ -62,7 +62,6 @@ public class WebBrowser extends Canvas
     private Vector webBrowserListeners = new Vector();
     private int instanceNum;
     private static int lastInstanceNum = 0;
-    private static boolean isRunningOnWindows = false;
     
     // WebBrowser status.
     private boolean isInitialized = false;
@@ -91,8 +90,6 @@ public class WebBrowser extends Canvas
                     }
                 }
             );
-        isRunningOnWindows 
-            = System.getProperty("os.name").indexOf("Windows") >= 0;
     }
 
     void setInitialized(boolean b) {
@@ -120,10 +117,7 @@ public class WebBrowser extends Canvas
         }
         eventThread.attachWebBrowser(this);
 
-        if (0 == instanceNum) {
-            // Get and set embedded browser native binary.
-            WebBrowserUtil.getEmbedBinaryName();
-            
+        if (0 == instanceNum) {           
             eventThread.start();
             eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_INIT);
         }
@@ -245,12 +239,13 @@ public class WebBrowser extends Canvas
             return;
         }
         else if (WebBrowserEvent.WEBBROWSER_FOCUS_REQUEST == eid) {
-            WebBrowserUtil.trace("Got Event from brower: Focus Rquest!");
+            WebBrowserUtil.trace("Got event from brower: Focus request.");
             requestFocus();
             return;
         }
         else if (WebBrowserEvent.WEBBROWSER_DESTROYWINDOW_SUCC == eid){
-            WebBrowserUtil.trace("Got Event from brower: Distory Window Succeeds!");
+            WebBrowserUtil.trace("Got event from brower: Destory window " +
+                    "succeeds.");
             synchronized(this){
                 // notify the disposeThread in removeNotify().
                 this.notify();
@@ -593,6 +588,12 @@ public class WebBrowser extends Canvas
         return instanceNum;
     }
 
+    /**
+     * Waits for a result returned from the native embedded browser.
+     * <p>
+     * This method is called by methods requiring a return value, such as
+     * getURL, getContent, executeScript.
+     */
     private boolean waitForResult() {
         if (! isInitialized) {
             WebBrowserUtil.trace("You can't call this method before " +

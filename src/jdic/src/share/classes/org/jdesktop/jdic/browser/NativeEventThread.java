@@ -64,9 +64,10 @@ class NativeEventThread extends Thread
         // create native browser process
         try {
             if (WebBrowserUtil.getEmbedBinaryName() == null) { 
-                setBrowsersInitFailReason("Embedding browser binary is not set");
-                WebBrowserUtil.trace("Embedding browser binary is not set, " +
-                        "system exit");
+                setBrowsersInitFailReason("The embedded browser binary is " +
+                        "not set.");
+                WebBrowserUtil.trace("The embedded browser binary is not set, " +
+                        "system exit.");
                 return;
             }     
             String jvmVendor = System.getProperty("java.vm.vendor");
@@ -87,9 +88,9 @@ class NativeEventThread extends Thread
                 }
             );
         } catch (PrivilegedActionException e) {
-            setBrowsersInitFailReason("Can't find native browser");
-            System.out.println("Can't execute native browser. Error message is: " 
-                    + e.getCause().getMessage());
+            setBrowsersInitFailReason("Can't find the native embedded browser.");
+            System.out.println("Can't execute the native embedded browser. " +
+                    "Error message: " + e.getCause().getMessage());
             return;
         }
      
@@ -104,9 +105,10 @@ class NativeEventThread extends Thread
                 }
             );
         } catch (PrivilegedActionException e) {          
-            System.out.println("Can't connect to native browser. Error " +
-                    "message is: " + e.getCause().getMessage());
-            setBrowsersInitFailReason("Can't connect to native browser");
+            System.out.println("Can't connect to the native embedded " +
+                    "browser. Error message: " + e.getCause().getMessage());
+            setBrowsersInitFailReason("Can't connect to the native embedded " +
+                    "browser.");
             return;
         } 
 
@@ -119,7 +121,7 @@ class NativeEventThread extends Thread
 
             try {
                 int exitValue = nativeBrowser.exitValue();
-                WebBrowserUtil.trace("Native browser died.");
+                WebBrowserUtil.trace("Native embedded browser died.");
                 return;
             } catch (IllegalThreadStateException e) {
             }
@@ -206,9 +208,9 @@ class NativeEventThread extends Thread
             case NativeEventData.EVENT_CREATEWINDOW:
                 int nativeWindow = browser.getNativeWindow();
                 if (0 == nativeWindow) {
-                    WebBrowserUtil.trace("Can't get native window handle, " +
-                            "please make sure the env variable JAVA_HOME has " +
-                            "been set.");
+                    WebBrowserUtil.trace("Can't get the JAWT window handler. " +
+                            "Make sure the environment variable JAVA_HOME " +
+                            "is set.");
                 }
                 else {
                     msg += nativeWindow;
@@ -308,7 +310,7 @@ class NativeEventThread extends Thread
             SwingUtilities.invokeLater(dispatchEvent);
         } catch (Exception e) {
             WebBrowserUtil.trace("Exception occured when invokeLater. " +
-                    "ErrMsg is " + e.getMessage());
+                    "Error message: " + e.getMessage());
         }
     }
 
