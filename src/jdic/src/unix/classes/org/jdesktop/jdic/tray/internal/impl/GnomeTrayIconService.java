@@ -96,7 +96,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                 public void run() {
                   Thread actionThread = new Thread(){
                     public void run() {
-                        ListIterator li = balloonListeners.listIterator(0);
+                        ListIterator li = actionList.listIterator(0);
                         while (li.hasNext()) {
                         ActionListener al;
                         al = (ActionListener) li.next();
@@ -415,9 +415,9 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             innerPanel.add(textLabel, BorderLayout.CENTER);
             
             outerPanel.addMouseListener(new MouseAdapter(){
-                public void mouseClicked(MouseEvent e){
+                public void mouseClicked(final MouseEvent e){
                     hideCurrentMessageWindowImmediately();
-                    ListIterator li = actionList.listIterator(0);
+                    ListIterator li = balloonListeners.listIterator(0);
                     while (li.hasNext()) {
                     ActionListener al;
                     al = (ActionListener) li.next();

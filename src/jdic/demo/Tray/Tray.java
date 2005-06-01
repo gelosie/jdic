@@ -128,11 +128,16 @@ public class Tray implements ActionListener, ItemListener {
         ti.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	frame.setVisible(!frame.isVisible());
-//                JOptionPane.showMessageDialog(null, 
-//                    "JDIC Tray Icon API Demo - TrayIcon", "About",
-//                    JOptionPane.INFORMATION_MESSAGE);
             }
         });
+        ti.addBalloonActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+              JOptionPane.showMessageDialog(null, 
+              "Balloon Message been clicked - TrayIcon", "Message",
+              JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        
         tray.addTrayIcon(ti);
         
         // Construct the GUI for balloon message.
