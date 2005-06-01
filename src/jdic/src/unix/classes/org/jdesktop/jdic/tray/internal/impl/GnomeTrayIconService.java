@@ -51,6 +51,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
     private boolean autoSize;
 
     private LinkedList actionList = new LinkedList();
+    private LinkedList balloonListeners = new LinkedList();
 
     public GnomeTrayIconService() {
         super();
@@ -95,7 +96,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                 public void run() {
                   Thread actionThread = new Thread(){
                     public void run() {
-                        ListIterator li = actionList.listIterator(0);
+                        ListIterator li = balloonListeners.listIterator(0);
                         while (li.hasNext()) {
                         ActionListener al;
                         al = (ActionListener) li.next();
@@ -415,7 +416,15 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             
             outerPanel.addMouseListener(new MouseAdapter(){
                 public void mouseClicked(MouseEvent e){
-                	hideCurrentMessageWindowImmediately();
+                    hideCurrentMessageWindowImmediately();
+                    ListIterator li = actionList.listIterator(0);
+                    while (li.hasNext()) {
+                    ActionListener al;
+                    al = (ActionListener) li.next();
+                    al.actionPerformed(new ActionEvent(GnomeTrayIconService.this,
+                                ActionEvent.ACTION_PERFORMED, "PressAction", e.getWhen(),
+                                0));
+                    }
                 }
             });
             hideAction = new ActionListener(){
@@ -566,5 +575,12 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             };
             hideThread.start();
         }
+    }
+
+    public void addBalloonActionListener(ActionListener al) {
+        balloonListeners.add(al);
+    }
+    public void removeBalloonActionListener(ActionListener al) {
+        balloonListeners.remove(al);
     }
 }
