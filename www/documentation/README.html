@@ -298,8 +298,8 @@ from <a href="http://gcc.gnu.org/">GCC home page</a>.</li>
           <li>pkg-config<br>
 pkg-config version 0.15.0 or later is required, which can be downloaded
 from <a href="http://www.freedesktop.org/Software/pkgconfig">here</a>.</li>
-          <li>Mozilla distribution<br>
-Mozilla release 1.4 or later is required, which can be downloaded from
+          <li>Mozilla binary distribution<br>
+Mozilla binary release 1.4 or later is required, which can be downloaded from
 <a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set <code> MOZILLA_DIST</code> to the directory.</li>
           <li> Gecko SDK<br>
 Mozilla Gecko SDK is required, which can be downloaded from
@@ -321,8 +321,8 @@ ONE Studio Developer Tools web site</a>.</li>
           <li>pkg-config<br>
 pkg-config version 0.15.0 or later is required, which can be downloaded
 from <a href="http://www.freedesktop.org/Software/pkgconfig">here</a>.</li>
-          <li>Mozilla distribution<br>
-Mozilla release 1.4 or later is required, which can be downloaded from
+          <li>Mozilla binary distribution<br>
+Mozilla binary release 1.4 or later is required, which can be downloaded from
 <a href="http://ftp.mozilla.org">ftp.mozilla.org</a>. Set <code> MOZILLA_DIST</code> to the directory.</li>
           <li> Gecko SDK<br>
 Mozilla Gecko SDK is required, which can be downloaded from
@@ -331,11 +331,22 @@ Mozilla Gecko SDK is required, which can be downloaded from
       </li>
     </ul>
     <ul>
-      <li><b>Note: </b>If only build the tray icon API (package <code>org.jdesktop.jdic.tray</code>)
-        code, go to <code>&lt;JDIC source directory&gt;/jdic/</code>,&nbsp; run
-        &quot;<code>ant buildtray</code>&quot; with Jakarta Ant and J2SDK v1.4.2 or later
-        installed.</li>
+      <li><b>Note:&nbsp;<br>
+        </b>1. For <b>Linux</b> and <b>Solaris</b>: after setting <code> MOZILLA_DIST</code> 
+        and <code> GECKO_SDK</code>, you may need to update <code>&lt;JDIC source directory&gt;/jdic/src/unix/native/mozilla/Makefile</code>
+        to set <code>USING_GECKO_SDK_1_4</code> (for Mozilla 1.6 or earlier) or <code>USING_GECKO_SDK_1_7</code>
+        (for 1.7 or later), and <code>MOZ_ENABLE_GTK</code> (for GTK 1.2) or <code>MOZ_ENABLE_GTK2</code>
+        (for GTK 2.0). You can check the GTK version of the Mozilla binary by
+        checking the binary release name or: launch Mozilla -&gt; input &quot;<code>about:buildconfig</code>&quot;
+        in the top address field -&gt; if there is a &quot;<code>--enable-toolkit-gtk2</code>&quot;
+        option in the &quot;<code>Configure arguments</code>&quot;, it's using
+        GTK 2.0, or else, it's GTK 1.2.</li>
     </ul>
+    <blockquote>
+      <p>2. If you only build the tray icon API (package <code>org.jdesktop.jdic.tray</code>)
+        code, go to <code>&lt;JDIC source directory&gt;/jdic/</code>,&nbsp; run
+        &quot;<code>ant buildtray</code>&quot; with Jakarta Ant and J2SDK v1.4.2 or later.</p>
+    </blockquote>
   </blockquote>
   <ul>
     <li><b>JDIC Packager:</b></li>
@@ -344,7 +355,11 @@ Mozilla Gecko SDK is required, which can be downloaded from
     <ul>
       <li>J2SDK v1.5.0 or later
         <ul>
-          <li>It can be downloaded from <a href="http://java.sun.com">http://java.sun.com</a>.</li>
+          <li>Add <code>deploy.jar</code> and <code>javaws.jar</code> to
+            CLASSPATH. For J2SDK, the path is <code>
+&lt;J2SDK HOME&gt;/jre/lib</code>;
+For
+J2RE, it's <code>&lt;J2RE HOME&gt;/lib</code>. It can be downloaded from <a href="http://java.sun.com">http://java.sun.com</a>.</li>
         </ul>
       </li>
       <li><b>Windows:</b>
@@ -354,11 +369,6 @@ The Microsoft Visual C++ 6.0 Professional Edition compiler is required.</li>
           <li>Microsoft Platform Software Development Kit (SDK)<b><br>
             </b>It can be downloaded from <a
  href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">here</a>.</li>
-          <li>Add <code>deploy.jar</code> and <code>javaws.jar</code>
-in J2SDK/J2RE 1.5 or later to CLASSPATH. For J2SDK, the path is <code>
-&lt;J2SDK HOME&gt;/jre/lib</code>;
-For
-J2RE, it's <code>&lt;J2RE HOME&gt;/lib</code>.</li>
         </ul>
       </li>
     </ul>
@@ -379,8 +389,8 @@ Forum</a> - forum for the project.<a
 Mailing List</a> - contact relevant groups with issues.<br>
   <a href="https://jdic.dev.java.net/servlets/ProjectIssues"> Bug
 Reports and Feedback</a> - report bugs or send feedback.<br>
-  <a href="faq.html">FAQ</a> - get answers to frequently asked
-questions.<br>
+  <a href="faq.html">FAQ</a> - get answers to frequently asked questions
+  regarding using the API, building the source, etc.<br>
   <a href="../developer.html">Developer's Page</a> - information for developers
   on how to contribute to JDIC and release notes.</p>
 </blockquote>
