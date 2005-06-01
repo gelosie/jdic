@@ -53,6 +53,7 @@ public class WinTrayIconService implements TrayIconService{
     static private HashMap map = new HashMap();
 
     private LinkedList actionList = new LinkedList();
+    private LinkedList balloonListeners = new LinkedList();
 
     static int noIcons;
 
@@ -233,6 +234,17 @@ public class WinTrayIconService implements TrayIconService{
                 popupParentFrame.toFront();
             }
             break;
+        case 0x0405: // NIN_BALLOONUSERCLICK
+            ListIterator ml = balloonListeners.listIterator(0);
+            ActionListener listener;
+
+            while (ml.hasNext()) {
+                listener = (ActionListener) ml.next();
+                listener.actionPerformed(new ActionEvent(this,
+                        ActionEvent.ACTION_PERFORMED, "PressAction",
+                        System.currentTimeMillis(), 0));
+            }
+            break;
         }
     }
 
@@ -368,4 +380,12 @@ public class WinTrayIconService implements TrayIconService{
                 }
             }
         }
+
+    public void addBalloonActionListener(ActionListener al) {
+        balloonListeners.add(al);
+    }
+    
+    public void removeBalloonActionListener(ActionListener al) {
+        balloonListeners.remove(al);
+    }
 }

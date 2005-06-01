@@ -44,4 +44,6 @@ public interface TrayIconService {
     public void removeActionListener(ActionListener al);
     public Point getLocationOnScreen();
     public void showBalloonMessage(String caption, String text, int type);
+    public void addBalloonActionListener(ActionListener al);
+    public void removeBalloonActionListener(ActionListener al);
 }

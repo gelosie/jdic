@@ -195,19 +195,19 @@ public class TrayIcon {
     /**
      * Displays a popup message near the tray icon. 
      * The message will disappear after a timeout or if user clicks on it.
-     * <p><br>
+     * <p>
      * Either the caption or the text may be null, 
      * but an NullPointerException is thrown if both are null.
-     * <p><br>
+     * <p>
      * <b>Note</b>: Some platforms may not support showing a message.
      * <p>
      * @param caption the caption displayed above the text, usually in bold; may be null
      * @param text the text displayed for the particular message; may be null
      * @param type the type of message to be displayed:
-     *  <code>INFO_MESSAGE_TYPE</code>,    <code>ERROE_MESSAGE_TYPE</code>,
+     *  <code>INFO_MESSAGE_TYPE</code>,    <code>ERROR_MESSAGE_TYPE</code>,
      *  <code>WARNING_MESSAGE_TYPE</code>, <code>NONE_MESSAGE_TYPE</code>
      * 
-     * @throws NullPointerException  - if both caption and text are null
+     * @throws NullPointerException  If both caption and text are null
      */
     public void displayMessage(String caption, String text, int type)throws NullPointerException{
     	if(caption == null && text == null)
@@ -215,4 +215,15 @@ public class TrayIcon {
     	if(tis != null)
     		tis.showBalloonMessage(caption, text, type);
     }
+    
+    /**
+     * Adds the specified ActionListener to the list of ActionListeners
+     * for this trayicon's balloon message.
+     * @param listener
+     */
+    public void addBalloonActionListener(ActionListener listener) {
+        if (tis != null) {
+            tis.addBalloonActionListener(listener);
+        } 
+    } 
 }
