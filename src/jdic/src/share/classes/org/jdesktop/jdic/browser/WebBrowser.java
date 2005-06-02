@@ -190,8 +190,10 @@ public class WebBrowser extends Canvas
                 new Rectangle(x, y, width, height));
     }
 
-    // dispatch a WebBrowserEvent to the embeddor, called by 
-    // NativeEventThread.processIncomingMessage.
+    /*
+     * Dispatches a WebBrowserEvent to the Java embeddor, called by 
+     * NativeEventThread.processIncomingMessage. 
+     */
     void dispatchWebBrowserEvent(WebBrowserEvent e) {
         int eid = e.getID();
 

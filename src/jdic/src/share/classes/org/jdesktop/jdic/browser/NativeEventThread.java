@@ -40,6 +40,7 @@ import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 class NativeEventThread extends Thread
 {
     private Vector webBrowsers = new Vector();
+    // Event queue for events sent from Java to the native browser.
     private Vector nativeEvents = new Vector();
     private Process nativeBrowser;
 
@@ -162,6 +163,9 @@ class NativeEventThread extends Thread
         }
     }
 
+    /*
+     * Processes events sent from Java to the native browser.
+     */
     private void processEvents() {
         int size = nativeEvents.size();
         for (int i = 0; i < size; ++i) {
@@ -260,6 +264,9 @@ class NativeEventThread extends Thread
         return new NativeEventData(instance, eventType, stringValue);
     }
 
+    /*
+     * Process an event received from the native browser 
+     */    
     private void processIncomingMessage(String msg) {
         NativeEventData eventData = parseIncomingMessage(msg);
         if (eventData == null) 
@@ -300,6 +307,8 @@ class NativeEventThread extends Thread
         final WebBrowserEvent event = new WebBrowserEvent(browser, 
                 eventData.type, eventData.stringValue);
 
+        // For thread-safety reason, invokes the dispatchWebBrowserEvent method 
+        // of WebBrowser. 
         Runnable dispatchEvent = new Runnable() {
             public void run() {
                 browser.dispatchWebBrowserEvent(event);
