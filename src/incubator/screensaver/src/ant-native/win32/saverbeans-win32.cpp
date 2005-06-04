@@ -531,6 +531,7 @@ char szAppName[40] = TEXT( "SaverBeans" );
 int terminated = 0;
 int closing = 0;
 int closed = 0;
+int destroyed = 0;
 
 /* 
  * Create the Graphics object.  The current strategy for this is to 
@@ -913,6 +914,7 @@ void on_destroy(void) {
             env->ExceptionDescribe();
         }
     }
+    destroyed = 1;
 }
 
 int start_screensaver( HWND win ) {
@@ -1118,6 +1120,10 @@ LRESULT WINAPI ScreenSaverProc( HWND hWnd, UINT uMessage,
     }
 
     if( !valid ) {
+        // Thanks to Martin Hartnagel for the following fix for destroy():
+        while(!destroyed) {
+            Sleep(50);
+        }
         if(DEBUG) fprintf( log, "Calling timeKillEvent...\n" );
         timeKillEvent( timerID );
         if(DEBUG) fprintf( log, "timeKillEvent called.\n" );
