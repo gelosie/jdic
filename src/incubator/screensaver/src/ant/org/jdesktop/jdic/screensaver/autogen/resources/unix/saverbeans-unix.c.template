@@ -458,16 +458,17 @@ jboolean InitializeJavaVM(void) {
     JNIEnv **penv = &env;
 
     JavaVMInitArgs vm_args;
-    JavaVMOption options[1];
+    JavaVMOption options[2];
     options[0].optionString = malloc( 320 + strlen(jarName) );
     /* Not all screensavers use JOGL, but it doesn't hurt to add it 
      * to the classpath. 
      */
     sprintf( options[0].optionString, "-Djava.class.path=%s%c%s%c%s", jarName,
         PATH_SEPARATOR, "saverbeans-api.jar", PATH_SEPARATOR, "jogl.jar" );
+    options[1].optionString = "-Dsun.java2d.pmoffscreen=false";
     vm_args.version = 0x00010002;
     vm_args.options = options;
-    vm_args.nOptions = 1;
+    vm_args.nOptions = 2;
     vm_args.ignoreUnrecognized = JNI_TRUE;
     /* Create the Java VM */
     res = JNI_CreateJavaVM(&jvm, (void **)penv, &vm_args);
