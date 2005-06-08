@@ -73,7 +73,10 @@ LIBS = -L$(USR_LIB_DIR) \
 
 EXTRA_BROWSER_LIBS = \
     -L$(JAVA_HOME)/jre/lib/sparc \
+    -L$(JAVA_HOME)/jre/lib/sparcv9 \
     -L$(JAVA_HOME)/jre/lib/i386 \
+    -L$(JAVA_HOME)/jre/lib/amd64 \
+    -L$(JAVA_HOME)/jre/lib/ia64 \
     -ljawt
 
 TRAY_LIBS = -L$(X11LIB) -lXt -lX11
