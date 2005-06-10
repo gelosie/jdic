@@ -52,8 +52,8 @@ navigator.appName!='Netscape'?screen.colorDepth:screen.pixelDepth;</script>
 <img border="0" alt="" src="https://www.etracker.de/cnt.php?et=ir339g&amp;java=n&amp;
 et_easy=0&amp;et_pagename=JDIC%20FAQ&amp;et_areas=&amp;et_ilevel=&amp;
 et_target=&amp;et_lpage=&amp;et_trig="/></a>
-</noscript>        
-<!-- etracker CODE END -->        
+</noscript>         
+<!-- etracker CODE END -->         
 <H1>JDIC Frequently Asked Questions (FAQ)</H1>    
 <p>As of <a href="https://jdic.dev.java.net/releases.html#JDIC%200.9">JDIC 
 release 0.9</a></p>   
@@ -110,10 +110,12 @@ release 0.9</a></p>
       <li><a href="#How can I contribute to the project?"> How can I contribute to the project?</a></li> 
     </ul>
   </li>
-  <li><a href="#Troubleshooting Using JDIC">Troubleshooting Using JDIC</a> 
+  <li><a href="#Troubleshooting Using JDIC">Troubleshooting Using JDIC</a>  
     <ul>
-      <li><a href="#The Browser demo">The Browser demo 
-        doesn't work, why?</a></li> 
+      <li><a href="#Swing">Why there are problems using JDIC Browser in a Swing 
+        application?</a></li> 
+      <li><a href="#The Browser demo">The Browser demo  
+        doesn't work, why?</a></li>  
       <li><a href="#Why the tray icon demo runs">Why the tray icon demo runs 
         without any error on my Linux/Solaris platform, but there is no tray 
         icon created?</a></li>
@@ -138,28 +140,28 @@ release 0.9</a></p>
       </ol>
       <H3>1. <a name="General">General</a></H3><b>Q. </b><a name="What is JDIC?"> What is 
 JDIC?</a><BR>
-<SPAN style="FONT-WEIGHT: bold">A.</SPAN> <A                      
-      href="http://jdic.dev.java.net/">JDIC</A> is short for JDesktop Integration            
-Components.&nbsp;The project aims to make Java technology-based applications (Java            
-applications) first-class citizens of current desktop platforms without sacrificing            
-platform independence. The JDIC project home page is: <a href="https://jdic.dev.java.net">https://jdic.dev.java.net</a>.<BR>           
+<SPAN style="FONT-WEIGHT: bold">A.</SPAN> <A                       
+      href="http://jdic.dev.java.net/">JDIC</A> is short for JDesktop Integration             
+Components.&nbsp;The project aims to make Java technology-based applications (Java             
+applications) first-class citizens of current desktop platforms without sacrificing             
+platform independence. The JDIC project home page is: <a href="https://jdic.dev.java.net">https://jdic.dev.java.net</a>.<BR>            
 <SPAN          
       style="FONT-WEIGHT: bold"><BR>Q. 
       </SPAN>  <a name="When was JDIC made public?"> When was JDIC made public?</a><SPAN     
       style="FONT-WEIGHT: bold"><br> 
-      </SPAN> <b> A.</b> The JDIC project was first open sourced during JavaOne  
-2004 (June 28 - July 1). The code is                   
-      available via CVS, and periodic binary releases.&nbsp;                  
+      </SPAN> <b> A.</b> The JDIC project was first open sourced during JavaOne   
+2004 (June 28 - July 1). The code is                    
+      available via CVS, and periodic binary releases.&nbsp;                   
       <p><span style="font-weight: bold">Q. </span><a name="What is the current version of JDIC?"> What is the current version of  
       JDIC?</a><br>
       <span style="font-weight: bold">
-      A.</span> JDIC source is continually available via CVS, and the latest versioned                  
-      binary release is available <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>                 
-      <p><span style="font-weight: bold">Q. </span><a name="Under which license terms was JDIC released?"> Under which license terms was JDIC                 
+      A.</span> JDIC source is continually available via CVS, and the latest versioned                   
+      binary release is available <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>                  
+      <p><span style="font-weight: bold">Q. </span><a name="Under which license terms was JDIC released?"> Under which license terms was JDIC                  
       released?</a><br>
-      <span style="font-weight: bold">A. </span>JDIC is released under LGPL.                 
-      Take a look at JDIC's <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">COPYING</a>                 
-      file for detailed license terms.</p>                
+      <span style="font-weight: bold">A. </span>JDIC is released under LGPL.                  
+      Take a look at JDIC's <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">COPYING</a>                  
+      file for detailed license terms.</p>                 
 <p><span style="font-weight: bold">Q. </span><a name="What are the supported platforms?"> What are the supported platforms?</a><br>
       <span style="font-weight: bold">
       A.</span>  Briefly, Windows, Linux and Solaris. Refer to the JDIC <a href="https://jdic.dev.java.net/documentation/README.html#System%20Requirements">System    
@@ -174,19 +176,19 @@ on that.</p>
 <p> The incubator   
       projects may have different platform support matrixes, refer to the JDIC <a href="https://jdic.dev.java.net/#incubator">Incubator      
       Projects</a>  space for their specific system requirements.</p>  
-<p><span style="font-weight: bold">Q.</span>  <a name="How about Mac?">How about  
+<p><span style="font-weight: bold">Q.</span>  <a name="How about Mac?">How about   
 Mac?</a><br>  
       <SPAN  
-      style="FONT-WEIGHT: bold">A.</SPAN>  Refer to the &quot;<a name="What are the supported platforms?" href="#What are the supported platforms?">What are the supported platforms?</a>&quot;  
+      style="FONT-WEIGHT: bold">A.</SPAN>  Refer to the &quot;<a name="What are the supported platforms?" href="#What are the supported platforms?">What are the supported platforms?</a>&quot;   
 question.&nbsp;</p>
-      <p><span style="font-weight: bold">Q. </span><a name="Isn't Swing enough? Why are you introducing yet another desktop toolkit?"> Isn't Swing enough? Why are you introducing yet another  
+      <p><span style="font-weight: bold">Q. </span><a name="Isn't Swing enough? Why are you introducing yet another desktop toolkit?"> Isn't Swing enough? Why are you introducing yet another   
       desktop toolkit?</a><br>
       <span style="font-weight: bold">
-      A.</span> JDIC is not a replacement for Swing/AWT (that is, a GUI widget library).   
-      It's a set of APIs and tools to integrate with system services. It's compatible with  
-      Swing: you can use the   
-      components under Swing or AWT.  It helps to make Java a more complete platform by providing   
-      new APIs that gives portable  access to some useful system services.</p><p><span style="font-weight: bold">Q.  
+      A.</span> JDIC is not a replacement for Swing/AWT (that is, a GUI widget library).    
+      It's a set of APIs and tools to integrate with system services. It's compatible with   
+      Swing: you can use the    
+      components under Swing or AWT.  It helps to make Java a more complete platform by providing    
+      new APIs that gives portable  access to some useful system services.</p><p><span style="font-weight: bold">Q.   
       </span><a name="What are the incubator projects?"> 
       What are the incubator projects?</a><br>
       <span style="font-weight: bold">A. </span>Some projects are associated with JDIC but aren't part of the source or binary distribution of the JDIC project. These incubator projects are released as separate downloads and develop at their own speed with different quality criteria. Once an incubator project complies with the requirements of JDIC, it might move into the JDIC project.</p>
@@ -211,10 +213,10 @@ instructions to setup an incubator project.</p>
   <li><code>org.jdesktop.jdic.packager</code> - JDIC Packager: Command-line tools for converting Java Web Start programs into native installers.</li>   
   <li><code>org.jdesktop.jdic.screensaver</code> - SaverBeans SDK (incubator 
     project): System screensavers in Java.</li>
-  <li><code>org.jdesktop.jdic.dock </code> - Floating Dock Toplevel Window  
-    (incubator project):&nbsp;</li>
-  <li><code>org.jdesktop.jdic.icon </code> - IconService  
-    (incubator project): accessing icons from native icon specifications.</li> 
+  <li><code>org.jdesktop.jdic.dock </code> - Floating Dock Toplevel Window   
+    (incubator project):&nbsp;</li> 
+  <li><code>org.jdesktop.jdic.icon </code> - IconService   
+    (incubator project): accessing icons from native icon specifications.</li>  
   <li><code>org.jdesktop.jdic.systeminfo </code> - SystemInfo (incubator 
     project): Java API for monitoring system information.</li>
 </ul>
@@ -222,11 +224,11 @@ instructions to setup an incubator project.</p>
 <p><span style="font-weight: bold">Q. 
       </span><a name="Where can I get a binary?"> Where can I get 
       a binary?</a><br>
-      <span style="font-weight: bold">A. </span>JDIC can be fetched as a binary              
-      in a versioned release or as a biweekly binary build. You could find the JDIC binary downloads,              
-      including the incubator projects downloads <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>            
-      <p><span style="font-weight: bold">Q. </span><a name="Where can I get the source?"> Where can I get the source?</a><br>            
-      <span style="font-weight: bold">A</span>. There are several ways you can access the JDIC source code:</p>            
+      <span style="font-weight: bold">A. </span>JDIC can be fetched as a binary               
+      in a versioned release or as a biweekly binary build. You could find the JDIC binary downloads,               
+      including the incubator projects downloads <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">here</a>.&nbsp;</p>             
+      <p><span style="font-weight: bold">Q. </span><a name="Where can I get the source?"> Where can I get the source?</a><br>             
+      <span style="font-weight: bold">A</span>. There are several ways you can access the JDIC source code:</p>             
       <ul>
         <li>Browse<br>
           Browse the up-to-the-minute latest version of the source code <a href="https://jdic.dev.java.net/source/browse/jdic/src/">online</a>.</li>
@@ -235,11 +237,11 @@ instructions to setup an incubator project.</p>
             <li><a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">FTP</a> - Download the source 
               zip file for a specific release.</li>
             <li><a href="https://jdic.dev.java.net/source/browse/jdic/">CVS</a> 
-              - The latest source could be checked out using CVS following the <a href="https://jdic.dev.java.net/source/browse/jdic/">CVS client setup instructions</a>. It lets you get up-to-the-minute changes.&nbsp;For        
-              each JDIC release, a tag is created to help people pull the              
-          right source. The tag              
-          names are of the form&nbsp; &quot;<b>JDIC_major_minor_micro</b>&quot;.              
-          For example, JDIC release 0.8.4 has a tag &quot;JDIC_0_8_4&quot;.</li>       
+              - The latest source could be checked out using CVS following the <a href="https://jdic.dev.java.net/source/browse/jdic/">CVS client setup instructions</a>. It lets you get up-to-the-minute changes.&nbsp;For         
+              each JDIC release, a tag is created to help people pull the               
+          right source. The tag               
+          names are of the form&nbsp; &quot;<b>JDIC_major_minor_micro</b>&quot;.               
+          For example, JDIC release 0.8.4 has a tag &quot;JDIC_0_8_4&quot;.</li>        
           </ul>
         </li>     
       </ul>
@@ -331,9 +333,15 @@ page, which details
  
 
 <h3>5.<a name="Troubleshooting Using JDIC">Troubleshooting Using JDIC</a></h3>
-<p><span style="font-weight: bold">Q.</span>   <a name="The Browser demo">The    
+<p><span style="font-weight: bold">Q. </span><a name="Swing">Why there are 
+problems using JDIC Browser in a Swing application?<br>
+</a><span style="font-weight: bold">A. </span>JDIC Browser was implemented as an AWT 
+(Canvas) component. Mix using it with Swing components have some known heavy/lightweight 
+interoperability issues, which are stated in details in <a href="http://java.sun.com/products/jfc/tsc/articles/mixing/">this 
+article</a>.</p>  
+<p><span style="font-weight: bold">Q.</span>   <a name="The Browser demo">The     
 Browser demo doesn't work, why?</a><br> 
-<span style="font-weight: bold">A. </span>Follow below steps to check it:</p>  
+<span style="font-weight: bold">A. </span>Follow below steps to check it:</p>   
 <ul>
   <li>Strictly follow the <a href="https://jdic.dev.java.net/documentation/README.html#Installation">installation
     instructions</a>.</li>
@@ -350,27 +358,27 @@ Browser demo doesn't work, why?</a><br>
     0.8.5 or ealier), make sure it points to a valid Mozilla binary path, and
     it's added to <code>PATH</code> (on Windows) or <code>LD_LIBRARY_PATH</code> (on Linux/Unix).
   </li>
-  <li>Help debug the problem and report the result:<br> 
-    - on Windows, set IE as the default browser first and then Mozilla;<br> 
-    - uncomment the statement &quot;<code>//webBrowser.setDebug(true);</code>&quot; 
-    in the <code>Browser.java</code> or <code>SimpleBrowser.java</code> demo 
-    source file to print out the debug information. If there is error message 
-    &quot;Can't execute native browser. ErrMsg is null&quot;, the native browser 
-    executables (<code>IeEmbed.exe</code> and <code>MozEmbed.exe</code> for 
-    Windows releases, and <code>mozembed-&lt;os&gt;-gtk&lt;version&gt;</code> 
-    for Linux/Unix releases) is not put under <code>PATH, </code>which is done 
-    by the code by default if they locate at the same place as <code>jdic.jar</code>&nbsp; 
-    If there is no error message, it's quite possible that the default browser 
-    is not a supported embeddable browser (IE/Mozilla on 
-    Windows and Mozilla on Linux/Unix).<br> 
+  <li>Help debug the problem and report the result:<br>  
+    - on Windows, set IE as the default browser first and then Mozilla;<br>  
+    - uncomment the statement &quot;<code>//webBrowser.setDebug(true);</code>&quot;  
+    in the <code>Browser.java</code> or <code>SimpleBrowser.java</code> demo  
+    source file to print out the debug information. If there is error message  
+    &quot;Can't execute native browser. ErrMsg is null&quot;, the native browser  
+    executables (<code>IeEmbed.exe</code> and <code>MozEmbed.exe</code> for  
+    Windows releases, and <code>mozembed-&lt;os&gt;-gtk&lt;version&gt;</code>  
+    for Linux/Unix releases) is not put under <code>PATH, </code>which is done  
+    by the code by default if they locate at the same place as <code>jdic.jar</code>&nbsp;  
+    If there is no error message, it's quite possible that the default browser  
+    is not a supported embeddable browser (IE/Mozilla on  
+    Windows and Mozilla on Linux/Unix).  
   </li>
 </ul>
  
 
-<p><span style="font-weight: bold">Q.</span> <a name="Why the tray icon demo runs">Why 
+<p><span style="font-weight: bold">Q.</span> <a name="Why the tray icon demo runs">Why  
 the tray icon demo runs without any error on my Linux/Solaris platform, but 
 there is no tray icon created?</a><br>
-<span style="font-weight: bold">A. </span>The Notification Area is probably disabled. You can enable it by right-clicking the GNOME panel and selecting Add to Panel -> Utility -> Notification Area.</p> 
+<span style="font-weight: bold">A. </span>The Notification Area is probably disabled. You can enable it by right-clicking the GNOME panel and selecting Add to Panel -> Utility -> Notification Area.</p>  
  
 
       <h3>6.<a name="Troubleshooting Building the JDIC Source">Troubleshooting  
