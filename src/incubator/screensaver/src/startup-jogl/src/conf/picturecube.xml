@@ -27,7 +27,7 @@ USA
   - file in the xscreensaver distribution, copied here for convenience:
   - https://jdic.dev.java.net/documentation/incubator/screensaver/xscreensaver-config.txt
   -->
-<screensaver name="picturecube" _label="Picture Cube (Java)">
+<screensaver name="picturecube" _label="Picture Cube">
 
   <command arg="-root"/>
   

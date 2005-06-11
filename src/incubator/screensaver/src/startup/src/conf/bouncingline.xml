@@ -27,7 +27,7 @@ USA
   - file in the xscreensaver distribution, copied here for convenience:
   - https://jdic.dev.java.net/documentation/incubator/screensaver/xscreensaver-config.txt
   -->
-<screensaver name="bouncingline" _label="Bouncing Line (Java)">
+<screensaver name="bouncingline" _label="Bouncing Line">
 
   <command arg="-root"/>
   

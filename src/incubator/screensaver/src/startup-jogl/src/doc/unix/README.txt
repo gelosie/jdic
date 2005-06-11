@@ -105,7 +105,7 @@ To Install:
        link picturecube and picturecube-bin to SCREENSAVER_BIN
   * Edit ~/.xscreensaver and add an entry for the screensaver.  For
     example, for picturecube, add the following to the programs section:
-      "Picture Cube (Java)" /full/path/to/picturecube -root \n\
+      "Picture Cube" /full/path/to/picturecube -root \n\
     (the picturecube.bin, saverbeans-examples.jar saverbeans-api.jar files 
     must appear in the same directory)
     NOTE: If you don't have a .xscreensaver file, go to your screensaver
@@ -124,7 +124,7 @@ To Install:
       - `which java`, if found
       - otherwise error
   * Run xscreensaver-demo to test and select.  Look for 
-    "Picture Cube (Java)".  If it works, you should see a 3D picture cube
+    "Picture Cube".  If it works, you should see a 3D picture cube
     in the preview window.  If not, look for an error message in stderr.
 
 To Run:
