@@ -24,7 +24,7 @@ SaverBeans Screensaver Pack Windows README
 Requirements:
   * Administrator access, to copy screensaver to Windows system directory
   * Windows ME/NT/2000/XP/2003
-  * Java VM 1.4.2 or higher (Get at http://java.com/)
+  * Java 5.0 virtual machine or higher (Get at http://java.com/)
 
 To Install:
   * Copy all files in this directory (except for this README) to

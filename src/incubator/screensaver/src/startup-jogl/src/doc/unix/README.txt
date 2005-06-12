@@ -132,8 +132,6 @@ To Run:
     For a basic example, look for picturecube.
 
 Troubleshooting:
-  * JDK 1.4 support is upcoming in a future release.
-
   * If it does not work but you get no error, try running picturecube 
     directly from the commandline and observe the output.
 
