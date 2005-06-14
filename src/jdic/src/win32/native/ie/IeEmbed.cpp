@@ -500,8 +500,17 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance,
     //process message
     MSG msg;
     BOOL bRet;
-    while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0)
-    { 
+    while (TRUE)
+    {
+        __try{
+        if((bRet = GetMessage(&msg, NULL, 0, 0)) == 0)
+            break;
+        }
+        __except(EXCEPTION_EXECUTE_HANDLER){
+            // patch to issue 277. this is a temporary solution.
+            bRet = -1;
+        }
+
         if (bRet == -1)
         {
             // handle the error and possibly exit
