@@ -77,7 +77,7 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
         g_free(path);
         if (command != NULL) {
 #ifdef DEBUG
-            printf("The default browser path set in GConf: %s\n", command);
+            fprintf(stderr, "The default browser path set in GConf: %s\n", command);
 #endif
             // Check if the command is or points to a Mozilla binary path.
             char *p = g_strstr_len(command, strlen(command), "mozilla");
@@ -104,7 +104,7 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
             mozpath = g_strconcat (pathfields[index], "/mozilla", NULL);
             if (stat (mozpath, &stat_p) == 0) {
 #ifdef DEBUG
-                printf("Found mozilla binary under $PATH: %s\n", mozpath);
+                fprintf(stderr, "Found mozilla binary under $PATH: %s\n", mozpath);
 #endif
                 break; 
             } else {
@@ -124,23 +124,23 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
         char *parentpath = g_strndup(mozpath, str_p - mozpath);
         char *libpath = g_strconcat (parentpath, "/libxpcom.so", NULL);
 #ifdef DEBUG
-        printf("Check libxpcom.so at path: %s\n", libpath);
+        fprintf(stderr, "Check libxpcom.so at path: %s\n", libpath);
 #endif
 
         if (stat (libpath, &stat_p) == 0) {
             moz5home = g_strdup(parentpath);
 #ifdef DEBUG
-            printf("Found libxpcom.so at: %s\n", parentpath);
+            fprintf(stderr, "Found libxpcom.so at: %s\n", parentpath);
 #endif
         } else {
             // if mozpath is a symbol link, resolve it.
             char *real_mozpath = (char *)malloc(PATH_MAX);
             char *ret = realpath(mozpath, real_mozpath);
-            if (!ret) {
+            if (ret) {
                 free(mozpath);
                 mozpath = real_mozpath;
 #ifdef DEBUG
-                printf("mozpath after realpath(): %s\n", mozpath);
+                fprintf(stderr, "mozpath after realpath(): %s\n", mozpath);
 #endif
             } else {
                 break;
@@ -180,7 +180,7 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
                             }
                         }
 #ifdef DEBUG
-                        printf("Scaned MOZILLA_FIVE_HOME setting from %s as: %s\n", 
+                        fprintf(stderr,"Scaned MOZILLA_FIVE_HOME setting from %s as: %s\n", 
                             mozpath, moz5home);
 #endif
                     }
