@@ -19,6 +19,59 @@
 ; Paths
 !define SAVERBEANS_SDK_PATH "[[saverbeans_sdk]]"
 
+; Required Java version
+!define JAVA_MAJOR 1
+!define JAVA_MINOR 5
+
+; Functions
+
+; GetJavaVersion
+;
+; Returns on top of stack
+; version number (If JRE installed)
+; or
+; '' (If JRE not installed)
+;
+; Usage:
+;   Call GetJavaVersion
+;   Pop $R0
+;   ; at this point $R0 is version number
+Function GetJavaVersion
+   Push $R0
+   ClearErrors
+   ReadRegStr $R0 HKLM "Software\JavaSoft\Java Runtime Environment" "CurrentVersion"
+   IfErrors lbl_Java_Errors lbl_Java_Okay
+
+   lbl_Java_Errors:
+     StrCpy $R0 ''
+
+   lbl_Java_Okay:
+     Exch $R0
+FunctionEnd
+
+
+Function .onInit
+  Call GetJavaVersion
+  Pop $R0
+  StrCmp $R0 "" lbl_JavaNotDetected lbl_JavaDetected
+  lbl_JavaNotDetected:
+    MessageBox MB_OK|MB_ICONSTOP "Please install Java ${JAVA_MAJOR}.${JAVA_MINOR} or greater (from http://java.com/) before installing this product."
+    Quit
+  lbl_JavaDetected:
+    ; Check version is ${JAVA_MAJOR}.${JAVA_MINOR} or greater
+    ; Check JAVA_MAJOR
+    StrCpy $0 $R0 1 0
+    IntCmp $0 ${JAVA_MAJOR} lbl_JavaDetected2 lbl_JavaLowVersion lbl_Java5Detected
+  lbl_JavaDetected2:
+    ; Check JAVA_MINOR
+    StrCpy $0 $R0 1 2
+    IntCmp $0 ${JAVA_MINOR} lbl_Java5Detected lbl_JavaLowVersion lbl_Java5Detected
+  lbl_JavaLowVersion:
+    MessageBox MB_OK|MB_ICONSTOP "You have Java $R0 installed.  Please install Java ${JAVA_MAJOR}.${JAVA_MINOR} or greater (from http://java.com/) before installing this product."
+    Quit
+  lbl_Java5Detected:
+FunctionEnd
+
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
