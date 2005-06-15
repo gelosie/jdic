@@ -71,17 +71,21 @@ void setContent(BrowserWindow* pBrowserWnd, char* pContent)
     CComPtr<IStream> pStream;
     size_t contentLen = strlen(pContent);
     HGLOBAL hHTMLText;
-    hHTMLText = GlobalAlloc(GPTR, contentLen);
+    hHTMLText = GlobalAlloc(GMEM_MOVEABLE, contentLen);
     if (hHTMLText)
     {
-        strcpy((char *) hHTMLText, pContent);
+        LPBYTE lpByte = (LPBYTE)GlobalLock(hHTMLText);
+        memcpy(lpByte, (LPBYTE)pContent, contentLen * sizeof(char));
+        GlobalUnlock(hHTMLText);
+
         HRESULT hr = CreateStreamOnHGlobal(hHTMLText, TRUE, &pStream);
         if (SUCCEEDED(hr))
         {
             LoadWebBrowserFromStream(pBrowserWnd, pStream);
         }
-    }
-    GlobalFree(hHTMLText);
+
+        GlobalFree(hHTMLText);
+    }    
 }
 
 LPSTR executeScript(BrowserWindow* pBrowserWnd, char* scriptCode)
