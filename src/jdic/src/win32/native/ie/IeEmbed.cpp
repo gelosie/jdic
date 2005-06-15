@@ -330,12 +330,19 @@ void CommandProc(char* pInputChar)
         pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
         ATLASSERT(pBrowserWnd != NULL);
 
+        VARIANT vHeaders;
+        BSTR bstrHeaders;
+        bstrHeaders = SysAllocString(
+            L"Content-Type: application/x-www-form-urlencoded\r\n");
+        V_VT(&vHeaders) = VT_BSTR;
+        V_BSTR(&vHeaders) = bstrHeaders;
+
         // Construct the POST data with VARIANT type.
         // Put data into safe array.
-        VARIANT vPostData;
         LPSAFEARRAY psa;
-        
-        // mMsgString is POST data
+        VARIANT vPostData;
+        VariantInit(&vPostData);
+
         psa = SafeArrayCreateVector(VT_UI1, 0, strlen(mMsgString));
         LPSTR pPostData;
         SafeArrayAccessData(psa, (LPVOID*)&pPostData);
@@ -348,7 +355,12 @@ void CommandProc(char* pInputChar)
 
         // Navigate to the URL, and POST the data.
         pBrowserWnd->m_pWB->Navigate(CComBSTR(mURL), NULL, NULL,
-            &vPostData, NULL);
+            &vPostData, &vHeaders);
+
+        if (bstrHeaders) {
+            SysFreeString(bstrHeaders);
+        }
+        VariantClear(&vPostData);
         break;
 
     case JEVENT_GOBACK:
