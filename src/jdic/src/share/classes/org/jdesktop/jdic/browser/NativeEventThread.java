@@ -76,14 +76,14 @@ class NativeEventThread extends Thread
                     && jvmVendor.startsWith("Sun"))
                 WebBrowserUtil.nativeSetEnv();
             final String cmd = JdicManager.getManager().getBinaryPath()+
-                File.separator+WebBrowserUtil.getEmbedBinaryName() + " -port=" 
-                + messenger.getPort();
-            
+                File.separator+WebBrowserUtil.getEmbedBinaryName();
+                
             WebBrowserUtil.trace("Executing " + cmd);
             AccessController.doPrivileged(
                 new PrivilegedExceptionAction() {
                     public Object run() throws IOException {
-                        nativeBrowser = Runtime.getRuntime().exec(cmd);
+                        nativeBrowser = Runtime.getRuntime().exec(
+                                new String[]{cmd, "-port=" + messenger.getPort()});
                         new StreamGobbler(nativeBrowser.getErrorStream()).start();
                         new StreamGobbler(nativeBrowser.getInputStream()).start();
                         return null;
