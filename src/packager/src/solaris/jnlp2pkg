@@ -70,7 +70,7 @@ print_usage()
 # Version and release number of this product.
 #
 PRODUCT_VERSION=0.9
-PRODUCT_RELEASE=0
+PRODUCT_RELEASE=1
 
 #
 # Parse options. These options correspond to the properties for the JDIC Packager 

@@ -1,11 +1,20 @@
 2005-04-11 Armin Chen <armin_chen@dev.java.net>
     
+    * Release 0.9.1
+
     * Fixed issue list:   
       ID  Pri  Summary
       ==  ===  =======
+      145 P3   IeEmbed haven't implement post data method.
       244 P3   Embedding IE requires NSPR library (nspr4.dll).
       247 P2   Carriage Returns in Script fails
+      248 P3   Make it possible for Desktop.open() to use directories.
+      249 P1   IeEmbed.exe crash on browser.setContent(String)
       250 P2   when preferred browser is not set JDIC crashes VM
+      253 P3   Tray icon prevents the application from terminating
+      277 P3   JDIC binary error message using the Browser with local files
+      280 P3   64bit Linux Support
+      286 P3   Include NetBeans project file in JDIC source tree.
 
 2005-03-18 Armin Chen <armin_chen@dev.java.net>
 
