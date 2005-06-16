@@ -27,7 +27,7 @@ import java.security.*;
 import java.io.*;
 
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
-
+import org.jdesktop.jdic.init.JdicManager;
 /**
  * An internal class for dealing with the communication between WebBrowser 
  * & native browser.
@@ -75,8 +75,10 @@ class NativeEventThread extends Thread
             if (WebBrowserUtil.getEmbedBinaryName().endsWith("IeEmbed.exe") 
                     && jvmVendor.startsWith("Sun"))
                 WebBrowserUtil.nativeSetEnv();
-            final String cmd = WebBrowserUtil.getEmbedBinaryName() + " -port=" 
+            final String cmd = JdicManager.getManager().getBinaryPath()+
+                File.separator+WebBrowserUtil.getEmbedBinaryName() + " -port=" 
                 + messenger.getPort();
+            
             WebBrowserUtil.trace("Executing " + cmd);
             AccessController.doPrivileged(
                 new PrivilegedExceptionAction() {

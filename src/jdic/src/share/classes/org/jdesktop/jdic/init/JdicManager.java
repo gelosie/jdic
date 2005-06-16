@@ -208,4 +208,7 @@ public class JdicManager {
         
         isBrowserNativeInitialized = true;
     }
+    public String getBinaryPath(){
+        return binaryPath;
+    }
 }
