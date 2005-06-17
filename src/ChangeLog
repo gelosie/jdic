@@ -15,6 +15,7 @@
       277 P3   JDIC binary error message using the Browser with local files
       280 P3   64bit Linux Support
       286 P3   Include NetBeans project file in JDIC source tree.
+      288 P3   Add ability to receive events from bubbles
 
 2005-03-18 Armin Chen <armin_chen@dev.java.net>
 
