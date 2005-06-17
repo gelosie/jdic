@@ -558,21 +558,25 @@ public class WinRegistryUtil {
      */
     public static String getIconFileNameByFileExt(String fileExt, int regLevel) {
         // Retrieve the icon key
-        String iconKey = getIconKey(fileExt, regLevel);  
-        if (iconKey != null) {
-            return getDefaultValue(iconKey, regLevel);
-        } else {
-            return null;
-        }
-    }
+		String iconKey = getIconKey(fileExt, regLevel);
+		if (iconKey == null) {
+			return null;
+		}
+		String unDealedFileName = getDefaultValue(iconKey, regLevel);
+		if (unDealedFileName == null) {
+			return null;
+		}
+		return ExpandEnvironmentStrings(unDealedFileName);
+	}
     
     /**
-     * Retrievs the icon file of the specified file extension 
-     * (From HKEY_ROOT folder).
-     *
-     * @param fileExt given file extension (not null)
-     * @return corresponding icon file, or null if none
-     */
+	 * Retrievs the icon file of the specified file extension (From HKEY_ROOT
+	 * folder).
+	 * 
+	 * @param fileExt
+	 *            given file extension (not null)
+	 * @return corresponding icon file, or null if none
+	 */
     public static String getIconFileNameByFileExt(String fileExt) {
         return (getIconFileNameByFileExt(fileExt, ROOT_LEVEL));
     }
@@ -713,7 +717,9 @@ public class WinRegistryUtil {
                             //In case cmd is a null string, we shall replace it with a empty string
                             if (temCmd == null) {
                                 temCmd = "";
-                            }
+                            } else {
+                            	temCmd = ExpandEnvironmentStrings(temCmd);
+                            }                            
                             oneAction = new Action(verbs[i], temCmd, getDefaultValue(verbKey, regLevel));
                             actionList.add(oneAction);
                         }
@@ -788,6 +794,8 @@ public class WinRegistryUtil {
                         //In case cmd is a null string, we shall replace it with a empty string
                         if (temCmd == null) {
                             temCmd = "";
+                        }else {
+                    	    temCmd = ExpandEnvironmentStrings(temCmd);
                         }
                         oneAction = new Action(verbs[i], temCmd, getDefaultValue(verbKey, ROOT_LEVEL));
                         actionList.add(oneAction);
