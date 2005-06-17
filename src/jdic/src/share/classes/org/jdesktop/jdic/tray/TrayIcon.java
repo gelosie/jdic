@@ -225,5 +225,16 @@ public class TrayIcon {
         if (tis != null) {
             tis.addBalloonActionListener(listener);
         } 
-    } 
+    }
+    /**
+     * Removes the specified ActionListener from the list of ActionListeners
+     * for this trayicon's balloon message.
+     * 
+     * @param  listener
+     */
+    public void removeBalloonActionListener(ActionListener listener){
+        if (tis != null) {
+            tis.removeBalloonActionListener(listener);
+        } 
+    }
 }
