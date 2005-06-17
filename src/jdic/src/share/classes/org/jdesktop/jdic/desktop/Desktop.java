@@ -66,12 +66,13 @@ public class Desktop {
     }
 
     /**
-     * Launches the associated application to open the given file.
-     * 
+     * Launches the associated application to open a file 
+     * <p>
+     * If the specified file is a directory, the file manager of the current 
+     * platform is launched to open it.   
      * @param file the given file.
-     * @throws DesktopException if the given file is not valid, or there 
-     *         is no associated application, or the associated application 
-     *         fails to be launched. 
+     * @throws DesktopException If the specified file has no associated 
+     * application, or the associated application fails to be launched. 
      */  
     public static void open(File file) throws DesktopException {
         if (file == null) {
