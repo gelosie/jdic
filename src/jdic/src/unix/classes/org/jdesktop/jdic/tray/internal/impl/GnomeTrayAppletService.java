@@ -254,6 +254,7 @@ public class GnomeTrayAppletService implements TrayAppletService {
         synchronized (winMap) {
             winMap.remove(new Long(getWindow()));
         }
+        frame.dispose();
         dispose(getWindow());
     }
     static {
