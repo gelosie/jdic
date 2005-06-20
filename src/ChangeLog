@@ -1,4 +1,4 @@
-2005-04-11 Armin Chen <armin_chen@dev.java.net>
+2005-06-20 Armin Chen <armin_chen@dev.java.net>
     
     * Release 0.9.1
 
@@ -6,6 +6,7 @@
       ID  Pri  Summary
       ==  ===  =======
       145 P3   IeEmbed haven't implement post data method.
+      146 P2   libjdic.so depends on libjawt.so and other libraries.
       244 P3   Embedding IE requires NSPR library (nspr4.dll).
       247 P2   Carriage Returns in Script fails
       248 P3   Make it possible for Desktop.open() to use directories.
