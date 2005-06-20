@@ -101,7 +101,6 @@ public class WinTrayIconService implements TrayIconService{
         iconID = noIcons++;
 		if(popupParentFrame == null){
 			popupParentFrame = new PopupParent();
-			popupParentFrame.pack();
 		}
     }
 
@@ -130,9 +129,9 @@ public class WinTrayIconService implements TrayIconService{
 	
     public void addNotify() {
 		if(popupParentFrame == null){
-			popupParentFrame = new PopupParent();
-			popupParentFrame.pack();
+            popupParentFrame = new PopupParent();
 		}
+        popupParentFrame.pack();
         map.put(new Integer(iconID), this);
 
 		observer = new AnimationObserver();
