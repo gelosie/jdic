@@ -83,7 +83,6 @@ public class WinTrayIconService implements TrayIconService{
     boolean created;
 
     static {
-        popupParentFrame = new PopupParent();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 removeAllIcons();
@@ -99,9 +98,9 @@ public class WinTrayIconService implements TrayIconService{
 
     public WinTrayIconService() {
         iconID = noIcons++;
-		if(popupParentFrame == null){
-			popupParentFrame = new PopupParent();
-		}
+        if(popupParentFrame == null){
+            popupParentFrame = new PopupParent();
+        }
     }
 
     private native long createIconIndirect(int[] rData, byte[] andMask,
