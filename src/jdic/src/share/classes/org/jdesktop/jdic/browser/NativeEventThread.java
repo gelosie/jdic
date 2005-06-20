@@ -75,9 +75,10 @@ class NativeEventThread extends Thread
             if (WebBrowserUtil.getEmbedBinaryName().endsWith("IeEmbed.exe") 
                     && jvmVendor.startsWith("Sun"))
                 WebBrowserUtil.nativeSetEnv();
-            final String cmd = JdicManager.getManager().getBinaryPath()+
+            String filepath = JdicManager.getManager().getBinaryPath()+
                 File.separator+WebBrowserUtil.getEmbedBinaryName();
-                
+            final String cmd = (new File(filepath).exists()) ? filepath 
+                    : WebBrowserUtil.getEmbedBinaryName();    
             WebBrowserUtil.trace("Executing " + cmd);
             AccessController.doPrivileged(
                 new PrivilegedExceptionAction() {

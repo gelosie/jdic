@@ -63,12 +63,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_init_InitUtility_setEnv
     {
         if (NULL != pEnvValue) 
         {
-               char* envStr = (char *) malloc(strlen(pEnvVar) + strlen(pEnvValue) + 2);
-               if (NULL != envStr)
-               {
-                    sprintf(envStr, "%s=%s", pEnvVar, pEnvValue);
-                    putenv(envStr);
-               }
+               setenv(pEnvVar, pEnvValue, 1);
                env->ReleaseStringUTFChars(envValue, pEnvValue);
         }
         env->ReleaseStringUTFChars(envVar, pEnvVar);
