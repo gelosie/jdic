@@ -37,6 +37,7 @@ public class TrayIconTest implements ActionListener
 	ImageIcon icon = new ImageIcon("./images/man1.gif");
 	TrayIcon ti = new TrayIcon(icon);
     TrayIcon tmp;
+	JFrame f;
 	
 	private static final String URL = "http://java.sun.com";
 	
@@ -59,7 +60,7 @@ public class TrayIconTest implements ActionListener
 		menuItem.addActionListener(this);
 		menu.add(menuItem);               
 
-        menuItem = new JMenuItem("Get Location");
+        	menuItem = new JMenuItem("Get Location");
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
 		
@@ -73,17 +74,17 @@ public class TrayIconTest implements ActionListener
 		
 		menuItem = new JMenuItem("Quit");
 		menuItem.addActionListener(this);
-	    menu.add(menuItem);
+	        menu.add(menuItem);
 
-        menuItem = new JMenuItem("Remove (??)");
+                menuItem = new JMenuItem("Remove (É¾³ý)");
 		menuItem.addActionListener(this);
-	    menu.add(menuItem);
+	        menu.add(menuItem);
                 
-        menuItem = new JMenuItem("Add (??)");
+        	menuItem = new JMenuItem("Add (Ìí¼Ó)");
 		menuItem.addActionListener(this);
-	    menu.add(menuItem);
+	        menu.add(menuItem);
 				
-	    //ti = new TrayIcon(icon, "Hello", menu);
+	        //ti = new TrayIcon(icon, "Hello", menu);
 		ti.setIconAutoSize(true);
 		ti.setCaption("Hello!");
 		ti.setPopupMenu(menu);
@@ -108,15 +109,20 @@ public class TrayIconTest implements ActionListener
 		if ( s.equalsIgnoreCase("Quit"))
 		{
 			System.out.println("Quit item is selected!");
-			System.exit(0);
+			tray.removeTrayIcon(ti);
+			ti = null;
+			tray = null;
+			f.dispose();
+			
+			//System.exit(0);
 		}
-	        if ( s.equalsIgnoreCase("Remove (??)"))
+	        if ( s.equalsIgnoreCase("Remove (É¾³ý)"))
 		{
 			System.out.println("Remove item is selected!");
 			tray.removeTrayIcon(tmp);
 		}
 
-                if ( s.equalsIgnoreCase("Add (??)"))
+                if ( s.equalsIgnoreCase("Add (Ìí¼Ó)"))
 		{
 			System.out.println("Add item is selected!");
                         tmp = new TrayIcon(new ImageIcon("./images/duke.gif"),"Test",null);
@@ -196,7 +202,8 @@ public class TrayIconTest implements ActionListener
 		Point fLocation = new Point(200, 200);
 		
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		JFrame f = new JFrame("This frame is always on top");
+		//JFrame f = new JFrame("This frame is always on top");
+		f = new JFrame("This frame is always on top");
 		f.setAlwaysOnTop(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setLocation(fLocation);
