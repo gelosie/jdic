@@ -43,7 +43,8 @@ USA
     <property name="packagename" value="saverbeans-sdk-${version}"/>
   </target>
   
-  <target description="Check to make sure properties are set" name="check-win32">
+  <target description="Check to make sure properties are set"
+          name="check-win32">
     <fail unless="cc">
       Please copy build.properties.x.sample to build.properties
       and follow the instructions in that file, where x is
@@ -68,7 +69,8 @@ USA
     </copy>
   </target>
   
-  <target depends="dist" description="Build release zip for SaverBeans SDK" name="release">
+  <target depends="dist" description="Build release zip for SaverBeans SDK"
+          name="release">
     <mkdir dir="${release}"/>
     <mkdir dir="${build}/${packagename}"/>
     <copy todir="${build}/${packagename}">
@@ -90,9 +92,11 @@ USA
   <!--
     - Saver Beans Ant Tasks
     -->
-  <target depends="init" description="Compile Saver Beans ant task" name="compile-ant">
+  <target depends="init" description="Compile Saver Beans ant task"
+          name="compile-ant">
     <mkdir dir="${build}/ant"/>
-    <javac classpath="${ant.home}/lib/ant.jar" debug="on" destdir="${build}/ant" srcdir="${src}/ant" deprecation="true"/>
+    <javac classpath="${ant.home}/lib/ant.jar" debug="on"
+           destdir="${build}/ant" srcdir="${src}/ant" deprecation="true"/>
     <copy todir="${build}/ant">
       <fileset dir="${src}/ant">
         <include name="**/*.template"/>
@@ -113,7 +117,8 @@ USA
     </copy>
   </target>
   
-  <target depends="init,compile-ant" description="Distribute Saver Beans ant task" name="dist-ant">
+  <target depends="init,compile-ant"
+          description="Distribute Saver Beans ant task" name="dist-ant">
     <mkdir dir="${dist}"/>
     <jar destfile="${dist}/saverbeans-ant.jar">
       <fileset dir="${build}/ant"/>
@@ -126,7 +131,9 @@ USA
     - task needs to be run when saverbeans-win32.cpp is modified and
     - the resulting binary needs to be checked into the SaverBeans workspace.
     -->  
-  <target depends="init,check-win32" description="Rebuild native win32 binary components" name="ant-native-win32">
+  <target depends="init,check-win32"
+          description="Rebuild native win32 binary components"
+          name="ant-native-win32">
     <mkdir dir="${build}/ant-native-${os}"/>
     
     <!-- Build resource saverbeans.res -->
@@ -144,13 +151,15 @@ USA
     <!-- Link saverbeans-win32.scr -->
     <exec dir="${src}/ant-native/win32" executable="${link}" failonerror="true">
       <arg line="${link.args}"/>
-      <arg line="/out:${basedir}\${build}\ant-native-${os}\saverbeans-win32.scr"/>
+      <arg
+         line="/out:${basedir}\${build}\ant-native-${os}\saverbeans-win32.scr"/>
       <arg line="${basedir}\${build}\ant-native-${os}\saverbeans.res"/>
       <arg line="${basedir}\${build}\ant-native-${os}\saverbeans-win32.obj"/>
       <arg line="${link.obj}"/>
     </exec>
     <!-- Copy to ant resources directory so it can be checked into CVS -->
-    <copy todir="${src}/ant/org/jdesktop/jdic/screensaver/autogen/resources/win32">
+    <copy
+       todir="${src}/ant/org/jdesktop/jdic/screensaver/autogen/resources/win32">
       <fileset dir="${build}/ant-native-${os}">
         <include name="saverbeans-win32.scr"/>
       </fileset>
@@ -163,7 +172,8 @@ USA
   <target name="compile-api" depends="init" 
           description="Compile Saver Beans APIs">
       <mkdir dir="${build}/api"/>
-      <javac classpath="${lib.jogl}/jogl.jar" debug="on" destdir="${build}/api" srcdir="${src}/api" deprecation="true"/>
+      <javac classpath="${lib.jogl}/jogl.jar" debug="on" destdir="${build}/api"
+             srcdir="${src}/api" deprecation="true"/>
   </target>
   
   <target name="javadoc-api" depends="init" 
@@ -176,19 +186,22 @@ USA
              sourcepath="${src}/api" use="true" version="false" 
              classpath="${lib.jogl}/jogl.jar">
       <docTitle><![CDATA[SaverBeans (JDesktop Integration Components Incubator) 
-      <br> API Specification, Version ${version} Release ${release}]]></docTitle>
-      <bottom><![CDATA[<font size="-1">For more information and documentation on JDIC, 
-      see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That documentation 
-      contains more detailed, developer-targeted descriptions, with conceptual 
-      overviews, working code examples, license terms and bug report information.
-      <p>Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is 
-      subject to <a href=
-      "https://jdic.dev.java.net/source/browse/jdic/src/COPYING">license terms</a>. 
-      </font>]]></bottom>
+      <br> API Specification, Version ${version} Release
+      ${release}]]></docTitle>
+      <bottom><![CDATA[<font size="-1">For more information and documentation
+      on JDIC, see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That
+      documentation contains more detailed, developer-targeted descriptions,
+      with conceptual overviews, working code examples, license terms and bug
+      report information.
+      <p>Copyright (c) 2004-2005 Sun Microsystems, Inc. All rights reserved.
+      Use is subject to
+      <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">license
+      terms</a>.</font>]]></bottom>
     </javadoc>
   </target>
   
-  <target depends="init,compile-api,javadoc-api" description="Distribute Saver Beans API JAR" name="dist-api">
+  <target depends="init,compile-api,javadoc-api"
+          description="Distribute Saver Beans API JAR" name="dist-api">
     <mkdir dir="${dist}"/>
     <jar destfile="${dist}/saverbeans-api.jar">
       <fileset dir="${build}/api"/>
