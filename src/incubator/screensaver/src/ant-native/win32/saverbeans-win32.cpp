@@ -52,7 +52,7 @@
 
 /** Copyright notice to appear in generated binaries */
 char *copyright = 
-"Copyright (c) 2004 Sun Microsystems, Inc., 4150 Network Circle, Santa \n"
+"Copyright (c) 2004-2005 Sun Microsystems, Inc., 4150 Network Circle, Santa \n"
 "Clara, California 95054, U.S.A. All rights reserved.  Use is subject \n"
 "to license terms specified in the file COPYING included in this \n"
 "distribution. Sun, Sun Microsystems and the Sun logo are \n"
