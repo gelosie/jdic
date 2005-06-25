@@ -44,7 +44,6 @@ checkpaths:
         fi;
 
 check_install_paths:
-check_install_paths:
 	@if [ ! -d "${SCREENSAVER_BIN}" ]; then \
             echo "Directory ${SCREENSAVER_BIN} not found."; \
             echo "Please set SCREENSAVER_BIN to the install directory "; \
