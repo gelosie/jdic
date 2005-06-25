@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+Copyright (c) 2004-2005 Sun Microsystems, Inc. All rights reserved. Use is
 subject to license terms.
 
 This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ USA
     <property name="lib" value="lib"/>
     <property name="lib.jogl" value="${lib}/jogl"/>
     
-    <property name="version" value="0.2-beta"/>
+    <property name="version" value="0.2"/>
     <property name="release" value="1"/>
     <property name="packagename" value="saverbeans-sdk-${version}"/>
   </target>

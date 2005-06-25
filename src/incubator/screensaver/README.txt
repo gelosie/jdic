@@ -148,7 +148,7 @@ Building the SDK
 To build the SDK from source, your system must meet the following
 requirements:
 
-    * JDK 1.4 or greater, available from http://java.sun.com/
+    * JDK 5.0 or greater, available from http://java.sun.com/
     * Ant 1.5.1 or greater, available from http://ant.apache.org/
 
 To build the SDK:
@@ -283,16 +283,20 @@ forums and mailing lists available.
 
 Revision History
 ----------------
-Version 0.2
+Version 0.2 - June 22, 2005
     * Added JOGL (OpenGL) Screensaver Startup Kit and corresponding APIs
       This allows developers to write OpenGL 3D screensavers in Java!
+    * Added installer generation for Windows screensavers (generates a
+      Nullsoft installer script).
     * Added a destroy() method to the ScreensaverBase API so that
       screensavers can release resources before shutting down.
     * Screensaver now exits on Windows when cursor moves.
     * Added isFullscreen() API on context object.
     * Mouse cursor is no longer hidden from preview in Windows.
-    * Multi-monitor support
-    * Fixed bug in settings dialog when values are out of bounds
+    * Multi-monitor support.
+    * Fixed bug in settings dialog when values are out of bounds.
+    * Fixed slow-downs on Linux for some screensavers that use alpha.
+    * Upped minimum JDK requirement to 5.0.
 
 Version 0.1.1 - June 10, 2004
     * Fixed screensavers.dev.java.net issue #1:
