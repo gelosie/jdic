@@ -323,10 +323,19 @@ public class ForEachScreensaver
         }
         if(jogl) {
             targets.append("linkjogl:\n").
+                append("\t@if [ ! -d \"${JOGL_HOME}\" ]; then \\\n").
+                append("\t    echo \"Directory ${JOGL_HOME} not found.\"; " +
+                    "\\\n").
+                append("\t    echo \"Please set JOGL_HOME to the directory " +
+                    "containing \"; \\\n").
+                append("\t    echo \"JOGL binaries.  Must contain " +
+                    "i386/*.so and/or solsparc/*.so\"; \\\n").
+                append("\t    false; \\\n").
+                append("\tfi;\n").
                 append("\t@if [ \"${PLATFORM}\" = \"Linux\" ]; then \\\n").
-                append("\t    ln -s i386/*.so . ; \\\n").
+                append("\t    ln -s ${JOGL_HOME}/i386/*.so . ; \\\n").
                 append("\telif [ \"${PLATFORM}\" = \"SunOS\" ]; then \\\n").
-                append("\t    ln -s solsparc/*.so . ; \\\n").
+                append("\t    ln -s ${JOGL_HOME}/solsparc/*.so . ; \\\n").
                 append("\tfi;");
         }
         substitute.setProperty("targets", targets.toString());
