@@ -202,7 +202,7 @@ public class WinTrayIconService implements TrayIconService{
         }
     }
 
-    public void processEvent(int mouseState, int x, int y) {
+    public void processEvent(int mouseState, int x, int y, int modifiers) {
         
         switch (mouseState) {
         case 0x200: // WM_MOUSEMOVE
@@ -216,7 +216,7 @@ public class WinTrayIconService implements TrayIconService{
                 al = (ActionListener) li.next();
                 al.actionPerformed(new ActionEvent(this,
                         ActionEvent.ACTION_PERFORMED, "PressAction",
-                        System.currentTimeMillis(), 0));
+                        System.currentTimeMillis(), modifiers));
             }
             break;
 
@@ -240,20 +240,20 @@ public class WinTrayIconService implements TrayIconService{
                 listener = (ActionListener) ml.next();
                 listener.actionPerformed(new ActionEvent(this,
                         ActionEvent.ACTION_PERFORMED, "PressAction",
-                        System.currentTimeMillis(), 0));
+                        System.currentTimeMillis(), modifiers));
             }
             break;
         }
     }
 
-    public synchronized static void notifyEvent(int id, final int mouseState, final int x, final int y) {
+    public synchronized static void notifyEvent(int id, final int mouseState, final int x, final int y, final int modifiers) {
         final  WinTrayIconService instance = (WinTrayIconService) map.get(new Integer(id));
         if(instance == null)
         	return;
         try {
             EventQueue.invokeLater(new Runnable() {
                 public void run() {
-                    instance.processEvent(mouseState, x, y);
+                    instance.processEvent(mouseState, x, y, modifiers);
                 }
             });
         } catch (Exception e) {

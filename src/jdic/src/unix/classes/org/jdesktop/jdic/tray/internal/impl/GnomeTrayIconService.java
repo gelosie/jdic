@@ -102,7 +102,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                         al = (ActionListener) li.next();
                         al.actionPerformed(new ActionEvent(GnomeTrayIconService.this,
                                     ActionEvent.ACTION_PERFORMED, "PressAction", e.getWhen(),
-                                    0));
+                                    e.getModifiers()));
                         }
                     }                  
                   };
@@ -423,7 +423,7 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
                     al = (ActionListener) li.next();
                     al.actionPerformed(new ActionEvent(GnomeTrayIconService.this,
                                 ActionEvent.ACTION_PERFORMED, "PressAction", e.getWhen(),
-                                0));
+                                e.getModifiers()));
                     }
                 }
             });

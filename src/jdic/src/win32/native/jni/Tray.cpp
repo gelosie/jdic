@@ -26,6 +26,11 @@
 #include "DisplayThread.h"
 #include "JNIloader.h"
 
+// The following three definition shoud be consistent with class java.awt.Event
+#define JAVA_SHIFT_MASK     0x1
+#define JAVA_CTRL_MASK      0x2
+#define JAVA_ATL_MASK       0x8
+
 HINSTANCE hInstance;
 
 #define IS_NT      (!(::GetVersion() & 0x80000000))
@@ -88,7 +93,7 @@ int Initialize(JNIEnv *env) {
 	
     peerCls = env->FindClass("org/jdesktop/jdic/tray/internal/impl/WinTrayIconService");
     
-    notifyEventMID = env->GetStaticMethodID(peerCls, "notifyEvent", "(IIII)V");
+    notifyEventMID = env->GetStaticMethodID(peerCls, "notifyEvent", "(IIIII)V");
 	restartTaskbarMID = env->GetStaticMethodID(peerCls, "restartTaskbar", "()V");
 	
 	return (messageWindow != NULL); 
@@ -145,8 +150,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             POINT pt;
             ::GetCursorPos(&pt);
+
+            // calculate the modifiers.
+            int modifiers = 0;
+            SHORT state = GetKeyState(VK_SHIFT);
+            modifiers |= state < 0 ? JAVA_SHIFT_MASK : 0;
+
+            state = GetKeyState(VK_CONTROL);
+            modifiers |= state < 0 ? JAVA_CTRL_MASK : 0;
+
+            state = GetKeyState(VK_MENU);
+            modifiers |= state < 0 ? JAVA_ATL_MASK : 0;
+
             JNIEnv *env = (JNIEnv *)JNU_GetEnv(jvm, JNI_VERSION_1_2);
-            env->CallStaticVoidMethod(peerCls,notifyEventMID, uMsg-TRAY_NOTIFYICON, lParam,pt.x,pt.y);
+            env->CallStaticVoidMethod(peerCls,notifyEventMID, uMsg-TRAY_NOTIFYICON, lParam,pt.x,pt.y, modifiers);
             return 1;
         }
 	
