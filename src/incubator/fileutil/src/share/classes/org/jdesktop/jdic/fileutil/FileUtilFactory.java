@@ -48,39 +48,27 @@ public class FileUtilFactory {
      *         instance.
      * @throws ClassNotFoundException if the ClassNotFoundException if the class cannot be located.
      */
-	public static FileUtil getFileUtilInstance() throws IllegalAccessException,
-			InstantiationException, ClassNotFoundException, UnsupportedOperationException {
+	public static FileUtil getFileUtilInstance() throws UnsupportedOperationException {
 		String os_name = System.getProperty("os.name");
 
 		if (os_name.startsWith("Mac OS X")) {
-			return (MacOSXFileUtil) Class.forName(
-					"org.jdesktop.jdic.fileutil.impl.MacOSXFileUtil")
-					.newInstance();
+			return new MacOSXFileUtil();
 		} else if (os_name.startsWith("Windows")) {
-			return (Win32FileUtil) Class.forName(
-					"org.jdesktop.jdic.fileutil.impl.Win32FileUtil")
-					.newInstance();
+			return new Win32FileUtil();
 		} else if (os_name.startsWith("Linux") || os_name.startsWith("LINUX")) {
-			return (UnixFileUtil) Class.forName(
-					"org.jdesktop.jdic.fileutil.impl.UnixFileUtil")
-					.newInstance();
+			return new UnixFileUtil();
 		} else if (os_name.startsWith("Solaris") || os_name.startsWith("SunOS")) {
-			return (SolarisFileUtil) Class.forName(
-					"org.jdesktop.jdic.fileutil.impl.SolarisFileUtil")
-					.newInstance();
+			return new SolarisFileUtil();
 		} else {
 			throw new UnsupportedOperationException("Your platform is not supported yet");
 		}
 	}
 
-	public static FileProperties getFilePropertiesInstance() throws IllegalAccessException,
-	InstantiationException, ClassNotFoundException, UnsupportedOperationException {
+	public static FileProperties getFilePropertiesInstance() throws UnsupportedOperationException {
 		String os_name = System.getProperty("os.name");
 		
 		if (os_name.startsWith("Windows")) {
-			return (Win32FileProperties) Class.forName(
-					"org.jdesktop.jdic.fileutil.impl.Win32FileProperties")
-					.newInstance();
+			return new Win32FileProperties();
 		} 
 		else {
 			throw new UnsupportedOperationException("Your platform is not supported yet");
