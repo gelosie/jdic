@@ -89,14 +89,13 @@ public class SolarisFileUtil implements FileUtil {
      */
     public BigInteger getFreeSpace(File file) throws IOException {
     	BigInteger freeSpace;
-    	BigInteger bytes = new BigInteger("1048576"); // 2^20 or 1024 * 1024
-        
-        if (file.isFile()) {
-        	freeSpace = new BigInteger(Long.toBinaryString(SolarisNativeFileUtil.getFreeSpace(file.getCanonicalFile().getParent())), 2);
-            return freeSpace.multiply(bytes);
+    	
+    	if (file.isFile()) {
+        	freeSpace = new BigInteger(Long.toString(SolarisNativeFileUtil.getFreeSpace(file.getCanonicalFile().getParent())));
+            return freeSpace; 
         } else if (file.isDirectory()) {
-        	freeSpace = new BigInteger(Long.toBinaryString(SolarisNativeFileUtil.getFreeSpace(file.getCanonicalPath())), 2);
-            return freeSpace.multiply(bytes);
+        	freeSpace = new BigInteger(Long.toString(SolarisNativeFileUtil.getFreeSpace(file.getCanonicalPath())));
+            return freeSpace;
         } else {
             return BigInteger.ZERO;
         }
