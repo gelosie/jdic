@@ -17,6 +17,14 @@ JNIEXPORT jlongArray JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFil
 
 /*
  * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
+ * Method:    getTotalSpace
+ * Signature: (Ljava/lang/String;)[J
+ */
+JNIEXPORT jlongArray JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_getTotalSpace
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil
  * Method:    recycle
  * Signature: (Ljava/lang/String;Z)I
  */

@@ -47,6 +47,28 @@ JNIEXPORT jlongArray JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFil
     return retorno;
 }
 
+JNIEXPORT jlongArray JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_getTotalSpace
+  (JNIEnv *env, jclass jc, jstring fullPath) {
+    PWCHAR wcpFullPath = (PWCHAR) (*env)->GetStringChars(env, fullPath, NULL);
+    ULARGE_INTEGER freeBytesAvailable;
+    ULARGE_INTEGER totalNumberOfBytes;
+    ULARGE_INTEGER totalNumberOfFreeBytes;
+    jlongArray retorno = (*env)->NewLongArray(env, 2);
+    jlong buf[2];
+    PWCHAR pTerminator = L"\0";
+
+    wcpFullPath = (PWCHAR) realloc(wcpFullPath, sizeof(WCHAR) * (wcslen(wcpFullPath) + 1));
+    wcsncat(wcpFullPath, pTerminator, 1);
+    GetDiskFreeSpaceExW(wcpFullPath, &freeBytesAvailable, &totalNumberOfBytes, 
+                             &totalNumberOfFreeBytes);
+    buf[0] = (jlong) totalNumberOfBytes.LowPart;
+    buf[1] = (jlong) totalNumberOfBytes.HighPart;
+    (*env)->SetLongArrayRegion(env, retorno, 0, 2, buf);
+    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    
+    return retorno;
+}
+
 JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_fileutil_impl_Win32NativeFileUtil_recycle
   (JNIEnv *env, jclass jc, jstring fullPath, jboolean confirm) {
         int retorno;

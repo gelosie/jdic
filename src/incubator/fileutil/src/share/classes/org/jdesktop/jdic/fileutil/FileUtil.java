@@ -73,6 +73,16 @@ public interface FileUtil {
      *         BigInteger due to platform-specific issues.
      * @throws IOException
      */
-    public BigInteger getFreeSpace(File file) throws IOException;    
+    public BigInteger getFreeSpace(File file) throws IOException;
+    
+    /**
+     * Return the size of the partition denoted by the file Object.
+     * 
+     * @param file
+     * @return the size of the partition. The size is wrapped in a
+     *         BigInteger due to platform-specific issues.
+     * @throws IOException
+     */
+    public BigInteger getTotalSpace(File file) throws IOException;
 
 }

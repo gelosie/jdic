@@ -31,5 +31,7 @@ public class MacOSXNativeFileUtil {
     }
 	
 	static native long getFreeSpace(String fullPath);
+	
+	static native long getTotalSpace(String fullPath);
 
 }

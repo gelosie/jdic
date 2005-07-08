@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUtil_getFreeSpace
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUtil
+ * Method:    getTotalSpace
+ * Signature: (Ljava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUtil_getTotalSpace
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif

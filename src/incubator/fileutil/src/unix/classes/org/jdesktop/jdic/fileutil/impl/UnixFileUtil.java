@@ -100,4 +100,18 @@ public class UnixFileUtil implements FileUtil {
             return BigInteger.ZERO;
         }
     }
+    
+    public BigInteger getTotalSpace(File file) throws IOException {
+    	BigInteger totalSpace;
+        
+        if (file.isFile()) {
+        	totalSpace = new BigInteger(Long.toString(UnixNativeFileUtil.getTotalSpace(file.getCanonicalFile().getParent())));
+            return totalSpace; 
+        } else if (file.isDirectory()) {
+        	totalSpace = new BigInteger(Long.toString(UnixNativeFileUtil.getTotalSpace(file.getCanonicalPath())));
+            return totalSpace;
+        } else {
+            return BigInteger.ZERO;
+        }
+	}
 }

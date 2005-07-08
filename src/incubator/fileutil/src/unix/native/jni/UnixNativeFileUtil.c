@@ -43,3 +43,21 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_UnixNativeFileUtil_
     
     return retorno;
 }
+
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_UnixNativeFileUtil_getTotalSpace
+  (JNIEnv *env, jclass jc, jstring fullPath) {
+      
+    struct statfs* pStatfs = (struct statfs*) malloc(sizeof(struct statfs));
+    int status;
+    jlong retorno;
+    
+    char* cpFullPath = (char*) (*env)->GetStringUTFChars(env, fullPath, NULL);
+    
+    status = statfs(cpFullPath, pStatfs);
+    retorno = pStatfs->f_blocks * pStatfs->f_bsize;
+    
+    (*env)->ReleaseStringUTFChars(env, fullPath, cpFullPath);
+    free(pStatfs);
+    
+    return retorno;
+}

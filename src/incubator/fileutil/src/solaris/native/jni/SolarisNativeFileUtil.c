@@ -44,3 +44,21 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUt
     
     return retorno;
 }
+
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUtil_getTotalSpace
+  (JNIEnv *env, jclass jc, jstring fullPath) {      
+      
+    struct statvfs* pStatvfs  = (struct statvfs*) malloc(sizeof(struct statvfs));
+    int status;
+    jlong retorno;
+    
+	char* cpFullPath = (char*) (*env)->GetStringUTFChars(env, fullPath, NULL);
+    
+    status = statvfs(cpFullPath, pStatvfs);
+    retorno = pStatvfs->f_blocks * pStatvfs->f_frsize;
+    
+    (*env)->ReleaseStringUTFChars(env, fullPath, cpFullPath);
+    free(pStatvfs);
+    
+    return retorno;
+}

@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_UnixNativeFileUtil_getFreeSpace
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     org_jdesktop_jdic_fileutil_impl_UnixNativeFileUtil
+ * Method:    getTotalSpace
+ * Signature: (Ljava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_UnixNativeFileUtil_getTotalSpace
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif

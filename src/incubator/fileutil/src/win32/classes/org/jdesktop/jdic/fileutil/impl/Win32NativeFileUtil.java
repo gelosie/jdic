@@ -32,6 +32,8 @@ class Win32NativeFileUtil {
 	
 	static native long[] getFreeSpace(String fullPath);
 
+	static native long[] getTotalSpace(String fullPath);
+	
     static native int recycle(String fullPath, boolean confirm);
 	
 	static native String getFileSystem(String fullPath);

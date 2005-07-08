@@ -90,7 +90,6 @@ public class Win32FileUtil implements FileUtil {
      * @throws IOException
      */
     public BigInteger getFreeSpace(File file) throws IOException {
-        String fullPath;
         long[] freeSpace;
         BigInteger highPart;
         BigInteger lowPart;
@@ -109,4 +108,24 @@ public class Win32FileUtil implements FileUtil {
             return BigInteger.ZERO;
         }
     }
+    
+    public BigInteger getTotalSpace(File file) throws IOException {
+    	long[] totalSpace;
+        BigInteger highPart;
+        BigInteger lowPart;
+
+        if (file.isFile()) {
+        	totalSpace = Win32NativeFileUtil.getTotalSpace(file.getCanonicalFile().getParent());
+            highPart = new BigInteger(String.valueOf(totalSpace[1])).shiftLeft(32);
+            lowPart = new BigInteger(String.valueOf(totalSpace[0]));
+            return highPart.add(lowPart); 
+        } else if (file.isDirectory()) {
+        	totalSpace = Win32NativeFileUtil.getTotalSpace(file.getCanonicalPath());
+            highPart = new BigInteger(String.valueOf(totalSpace[1])).shiftLeft(32);
+            lowPart = new BigInteger(String.valueOf(totalSpace[0]));
+            return highPart.add(lowPart);
+        } else {
+            return BigInteger.ZERO;
+        }
+	}
 }

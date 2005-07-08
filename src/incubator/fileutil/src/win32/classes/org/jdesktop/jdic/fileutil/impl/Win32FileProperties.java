@@ -33,6 +33,15 @@ import org.jdesktop.jdic.fileutil.FileProperties;
  */
 public class Win32FileProperties implements FileProperties {
 	
+	public String getFileSystem(File file) throws IOException {
+		File parent = file;
+		String parentPath = parent.getCanonicalPath();
+		while((parent = parent.getParentFile()) != null) {
+			parentPath = parent.getCanonicalPath();
+		}
+		return Win32NativeFileUtil.getFileSystem(parentPath);
+	}
+	
 	/**
 	 * Returns true if the file/directory is marked for backup/removal.
 	 * @throws IOException
