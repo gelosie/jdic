@@ -26,6 +26,7 @@
 #
 
 UNAME = $(shell uname)
+ARCH = $(shell uname -m)
 
 ifeq ($(UNAME), SunOS)
   PLATFORM = solaris
@@ -38,7 +39,7 @@ else
   ifeq ($(UNAME), Linux)
     PLATFORM = linux
     CXX = g++
-    CXXFLAGS = -c
+    CXXFLAGS = -c -fPIC
     LDFLAGS = -shared -fPIC -ldl -lrt -lpthread
   endif
   ifeq ($(UNAME), FreeBSD)
@@ -48,11 +49,19 @@ else
     LDFLAGS = -shared -fPIC -L/usr/local/lib -L/usr/X11R6/lib
   endif
   CC = gcc
-  X11LIB=/usr/X11R6/lib
+  ifeq ($(ARCH), x86_64)
+    X11LIB=/usr/X11R6/lib64
+  else
+    X11LIB=/usr/X11R6/lib
+  endif  
 endif
 
 USR_INCLUDE_DIR = /usr/include
-USR_LIB_DIR = /usr/lib
+ifeq ($(ARCH), x86_64)
+  USR_LIB_DIR = /usr/lib64
+else
+  USR_LIB_DIR = /usr/lib
+endif
 
 INCLUDES = -I$(JAVA_HOME)/include \
            -I$(JAVA_HOME)/include/$(PLATFORM)

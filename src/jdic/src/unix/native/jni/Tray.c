@@ -74,7 +74,13 @@ static void (* NoFlushUnlockIt)(JNIEnv *) = NULL;
 static void *awtHandle = NULL;
 
 #ifdef __linux__
-#define LIBARCH  "i386"
+#  if defined(__x86_64__)
+#    define LIBARCH "amd64"
+#  elif defined(__i386__)
+#    define LIBARCH "i386"
+#  else
+#    error "Unknown arch, please edit "__FILE__
+#  endif
 #else
 #ifdef __i386
 #define LIBARCH "i386"
