@@ -19,6 +19,11 @@
  */ 
  
 #include <jni.h>
+
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -63,7 +68,11 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_init_InitUtility_setEnv
     {
         if (NULL != pEnvValue) 
         {
-               setenv(pEnvVar, pEnvValue, 1);
+#ifdef WIN32
+            SetEnvironmentVariable(pEnvVar, pEnvValue);
+#else
+            setenv(pEnvVar, pEnvValue, 1);
+#endif
                env->ReleaseStringUTFChars(envValue, pEnvValue);
         }
         env->ReleaseStringUTFChars(envVar, pEnvVar);
