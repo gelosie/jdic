@@ -31,7 +31,7 @@ import org.jdesktop.jdic.misc.Alerter;
  * @author F‡bio Castilho Martins (fcmartins@bol.com.br)
  * @created April 24, 2005
  */
-public class WindowsAlerter extends Alerter {
+public class WinAlerter extends Alerter {
 
 	private boolean isLoaded;
 	
@@ -42,10 +42,12 @@ public class WindowsAlerter extends Alerter {
 	 * @throws SecurityException
 	 * @throws UnsatisfiedLinkError
 	 */
-	public WindowsAlerter() throws SecurityException, UnsatisfiedLinkError {
+	public WinAlerter() throws SecurityException, UnsatisfiedLinkError {
 		if (isLoaded == false) {
-			System.loadLibrary("alerter");
+            System.out.println("about to load the jdic_misc library");
+			System.loadLibrary("jdic_misc");
 			isLoaded = true;
+            System.out.println("loaded");
 		}
 	}
 	

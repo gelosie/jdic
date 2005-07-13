@@ -183,12 +183,25 @@ The generated distribution is put under *dist* directory.
 	<!-- *** Build Win32 native JNI code *** -->
 	<target name="buildwin32jni" depends="init" description="build native jni libraries.">
 
+		<!--
 		<exec dir="${win32.native.jni.dir}" executable="make" failonerror="yes">
 			<arg line="jdic_misc.dll" />
 		</exec>
-
+		-->
+		<!-- call nmake to do the real work of compiling the native code -->
+		<!-- I'm having trouble getting this to work. Instead I just run directly from within VSC++
+		 and then copy the finished dll file over.
+		<exec dir="${win32.native.jni.dir}/Misc" executable="nmake.exe" 
+			failonerror="yes" 
+			>
+			<arg value="/f"/>
+			<arg value="Misc.mak"/>
+			<arg value="ALL"/>
+		</exec>
+		
+		-->
 		<!-- copy generated .dll file -->
-		<copy file="${win32.native.jni.dir}/jdic_misc.dll" todir="${dist.dir}" />
+		<copy file="${win32.native.jni.dir}/Misc/Debug/jdic_misc.dll" todir="${dist.dir}" />
 	</target>
 
 	<!--
@@ -260,8 +273,10 @@ The generated distribution is put under *dist* directory.
 		</jar>
 	</target>
 
-	<target name="test-alerter" depends="buildmac_os_x">
-		<java classname="org.jdesktop.jdic.misc.test.AlerterTest" fork="true">
+	<target name="test-alerter" depends="init, buildall">
+		<echo message="my message ${dist.dir}"/>
+		<java classname="org.jdesktop.jdic.misc.test.AlerterTest" fork="true"
+			dir="${dist.dir}">
 			<classpath>
 				<pathelement path="/System/Library/Java/" />
 				<pathelement path="${dist.dir}/${jar.file}" />
@@ -280,6 +295,15 @@ The generated distribution is put under *dist* directory.
 
 	<target name="test-volume" depends="buildmac_os_x">
 		<java classname="org.jdesktop.jdic.misc.test.VolumeTest" fork="true">
+			<classpath>
+				<pathelement path="/System/Library/Java/" />
+				<pathelement path="${dist.dir}/${jar.file}" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="test-musicplayer" depends="buildall">
+		<java classname="org.jdesktop.jdic.misc.test.MusicPlayerTest" fork="true">
 			<classpath>
 				<pathelement path="/System/Library/Java/" />
 				<pathelement path="${dist.dir}/${jar.file}" />

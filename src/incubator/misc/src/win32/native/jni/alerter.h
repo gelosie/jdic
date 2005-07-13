@@ -2,8 +2,8 @@
 #include <jni.h>
 /* Header for class org_jdesktop_jdic_misc_impl_WindowsAlerter */
 
-#ifndef _Included_org_jdesktop_jdic_misc_impl_WindowsAlerter
-#define _Included_org_jdesktop_jdic_misc_impl_WindowsAlerter
+#ifndef _Included_org_jdesktop_jdic_misc_impl_WinAlerter
+#define _Included_org_jdesktop_jdic_misc_impl_WinAlerter
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -13,7 +13,7 @@ extern "C" {
  * Method:    alertW
  * Signature: (Ljava/awt/Container;)V
  */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_WindowsAlerter_alertWindows
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_WinAlerter_alertWindows
   (JNIEnv *, jobject, jobject);
 
 /*
@@ -21,7 +21,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_WindowsAlerter_alertWind
  * Method:    getBlinkRate
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_misc_impl_WindowsAlerter_getBlinkRate
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_misc_impl_WinAlerter_getBlinkRate
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

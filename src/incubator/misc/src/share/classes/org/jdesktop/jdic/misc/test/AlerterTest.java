@@ -52,11 +52,12 @@ public class AlerterTest {
 						new Runnable() {
 							public void run() {
 								try {
-									Thread.currentThread().sleep(4000);
+									Thread.currentThread().sleep(1000);
 								} catch (Exception ex) {
 								}
 
 								try {
+                                    System.out.println("calling");
 									Alerter alerter  = Alerter.newInstance();
 									alerter.alert(frame);
 								} catch (Exception e) {

@@ -18,14 +18,16 @@
  *  USA.
  */
  
-#include "jawt_md.h"
+#include <jni.h>
+#include <jawt.h>
+#include <jawt_md.h>
 #include "alerter.h"
 
 /*
 * This method will blink the program's TaskBar once.
 * It's based on  Joshua Marinacci's original code.
 */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_WindowsAlerter_alertWindows
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_WinAlerter_alertWindows
   (JNIEnv *env, jobject canvas, jobject frame) {    
     //(JAWT_Win32DrawingSurfaceInfo)
     JAWT awt;
@@ -54,7 +56,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_WindowsAlerter_alertWind
 /*
 * This method gets the Blink Rate. The GetCaretBlinkTime returns an unsigned int, hence the jlong return.
 */
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_misc_impl_WindowsAlerter_getBlinkRate
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_misc_impl_WinAlerter_getBlinkRate
   (JNIEnv *env, jobject obj) {
     jlong retorno = GetCaretBlinkTime();
     return retorno;

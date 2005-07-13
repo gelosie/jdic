@@ -27,8 +27,8 @@ DLLTOOL = dlltool
 DLLWRAP_FLAGS = --driver-name=c++ --add-stdcall-alias
 
 INCLUDE = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -g
-CFLAGS =  -g -O2 -c $(INCLUDE)
-
+LIB = -L$(JAVA_HOME)/lib
+CFLAGS =  -g -O2 -c $(INCLUDE) $(LIB)
 
 DEFFILE=libjdic_misc.def
 STATICLIB=libjdic_misc.a
@@ -48,8 +48,12 @@ check:
 clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
-jdic_misc.dll: wallpaper.o
-	$(DLLWRAP) $(DLLWRAP_FLAGS) -o jdic_misc.dll -s wallpaper.o
+jdic_misc.dll: wallpaper.o alerter.o
+	$(DLLWRAP) $(DLLWRAP_FLAGS) -o jdic_misc.dll -s wallpaper.o alerter.o
 
 wallpaper.o: wallpaper.cpp
 	$(CC) $(CFLAGS) wallpaper.cpp
+
+alerter.o: alerter.c
+	$(CC) $(CFLAGS) alerter.c
+

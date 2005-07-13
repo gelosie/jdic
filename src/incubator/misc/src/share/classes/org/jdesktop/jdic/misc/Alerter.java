@@ -98,7 +98,8 @@ public class Alerter {
 		_alerter = (Alerter) Alerter.class.forName(
 				"org.jdesktop.jdic.misc.impl.WinAlerter")
 				.newInstance();
-	}
+		System.out.println("created windows alerter instance");
+    }
 
 
 	/**
