@@ -287,10 +287,10 @@ int MsgServer::Listen()
 
 int MsgServer::RecvData()
 {    
-    char buf[BUFFER_SIZE] = "\0";
+    char recvDataBuf[BUFFER_SIZE] = "\0";
     char unfinishedMsgBuf[BUFFER_SIZE] = "\0";
 
-    int len = recv(mMsgSock, buf, BUFFER_SIZE, 0);
+    int len = recv(mMsgSock, recvDataBuf, BUFFER_SIZE, 0);
     if (len == 0) {
         // value 0 means the network connection is closed.
         WBTRACE("client socket has been closed!\n");
@@ -302,12 +302,12 @@ int MsgServer::RecvData()
         return len;
     }
     
-    buf[len] = 0;
+    recvDataBuf[len] = 0;
 
-    WBTRACE("Client socket recv %s\n", buf);
+    WBTRACE("Client socket recv %s\n", recvDataBuf);
     if (len + strlen(mRecvBuffer) < BUFFER_SIZE) {
-        strcat(mRecvBuffer, buf);
-        memset(buf, '\0', strlen(buf));
+        strcat(mRecvBuffer, recvDataBuf);
+        memset(recvDataBuf, '\0', strlen(recvDataBuf));
     } 
    
     char *delimiterPtr = strstr(mRecvBuffer, MSG_DELIMITER);
@@ -373,15 +373,13 @@ int MsgServer::RecvData()
                         }
                     }
                 }
-            }
-            else if (token[0] == '*') {
+            } else if (token[0] == '*') {
                 // this is quit message
                 if (mHandler) {
                     mHandler(&token[1]);
                 }
                 return -1;
-            }
-            else {
+            } else {
                 if (mHandler) {
                     // For each message piece ending with a message delimiter, 
                     // check whether the long message buffer is empty. If not, 
@@ -425,8 +423,8 @@ int MsgServer::RecvData()
         }
 
         // store the unhandled message since the receiver buffer is full.
-        if (strlen(buf)) {
-            strcat(mRecvBuffer, buf);
+        if (strlen(recvDataBuf)) {
+            strcat(mRecvBuffer, recvDataBuf);
         }
     }
 
