@@ -131,7 +131,7 @@ class NativeEventThread extends Thread
             }
 
             try {
-                processEvents();
+                processEventsFromJava();
             } catch (Exception e) {
                 WebBrowserUtil.trace("Exception occured when processEvent: " 
                         + e.getMessage());
@@ -140,7 +140,7 @@ class NativeEventThread extends Thread
 
             try {
                 messenger.portListening();
-                processIncomingMessage(messenger.getMessage());
+                processMessageFromNative(messenger.getMessage());
             } catch (Exception e) {
                 WebBrowserUtil.trace("Exception occured when portListening: " 
                         + e.getMessage());
@@ -169,18 +169,18 @@ class NativeEventThread extends Thread
     /*
      * Processes events sent from Java to the native browser.
      */
-    private void processEvents() {
+    private void processEventsFromJava() {
         int size = nativeEvents.size();
         for (int i = 0; i < size; ++i) {
             NativeEventData nativeEvent = (NativeEventData) nativeEvents.get(i);
-            if (processEvent(nativeEvent)) {
+            if (processEventFromJava(nativeEvent)) {
                 nativeEvents.removeElementAt(i);
                 break;
             }
         }
     }
 
-    private boolean processEvent(NativeEventData nativeEvent) {
+    private boolean processEventFromJava(NativeEventData nativeEvent) {
         WebBrowser browser = getWebBrowserFromInstance(nativeEvent.instance);
         if (null == browser) {
             return true;
@@ -192,9 +192,10 @@ class NativeEventThread extends Thread
             return false;
         }
 
-        WebBrowserUtil.trace("Got event: type = " + nativeEvent.type + 
-                " instance = " + nativeEvent.instance);
-
+        WebBrowserUtil.trace("Process event sent to the native embedded " +
+                "browser: " + nativeEvent.instance + 
+                ", " + nativeEvent.type + ", ");
+        
         String msg = nativeEvent.instance + "," + nativeEvent.type + ",";
         switch (nativeEvent.type) {
             case NativeEventData.EVENT_INIT:
@@ -244,7 +245,7 @@ class NativeEventThread extends Thread
         return true;
     }
 
-    static NativeEventData parseIncomingMessage(String msg) {
+    static NativeEventData parseMessageString(String msg) {
         if (null == msg || 0 == msg.length()) {
             return null;
         }
@@ -270,13 +271,14 @@ class NativeEventThread extends Thread
     /*
      * Process an event received from the native browser 
      */    
-    private void processIncomingMessage(String msg) {
-        NativeEventData eventData = parseIncomingMessage(msg);
+    private void processMessageFromNative(String msg) {
+        NativeEventData eventData = parseMessageString(msg);
         if (eventData == null) 
             return;
 
-        WebBrowserUtil.trace("Got event from browser " + eventData.instance 
-                + ", " + eventData.type + ", " + eventData.stringValue);
+        WebBrowserUtil.trace("Process event received from the native " +
+                "embedded browser: " + eventData.instance + 
+                ", " + eventData.type + ", " + eventData.stringValue);
 
         if (WebBrowserEvent.WEBBROWSER_INIT_FAILED == eventData.type) {
             setBrowsersInitFailReason(eventData.stringValue);

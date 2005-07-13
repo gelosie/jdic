@@ -192,12 +192,12 @@ public class WebBrowser extends Canvas
 
     /*
      * Dispatches a WebBrowserEvent to the Java embeddor, called by 
-     * NativeEventThread.processIncomingMessage. 
+     * NativeEventThread.processMessageFromNative. 
      */
     void dispatchWebBrowserEvent(WebBrowserEvent e) {
         int eid = e.getID();
 
-        WebBrowserUtil.trace("Got event from NativeEventThread " + eid);
+        WebBrowserUtil.trace("Dispatch event from NativeEventThread: " + eid);
 
         // native browser needs immediate return value for these two events.       
         // Special trigger messages beginning with a '@' character, to give 

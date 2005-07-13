@@ -71,8 +71,9 @@ public class WebBrowserUtil {
         String nativePath = WebBrowserUtil.getBrowserPath();
         if (null == nativePath) {
             trace("No default browser is found. " +
-                    "Or environment variable MOZILLA_FIVE_HOME is not set to " +
-                    "a Mozilla binary path if you are on Linux/Unix platform.");
+                    "Please set Mozilla as the default browser, or set env " +
+                    "variable MOZILLA_FIVE_HOME to the Mozilla binary path " +
+                    "if you are running Linux/Unix platform.");
             return null; 
         }
 

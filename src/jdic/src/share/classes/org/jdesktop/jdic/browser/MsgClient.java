@@ -94,7 +94,7 @@ class MsgClient {
             sc.close();
             sc = null;
             serverAddr = new InetSocketAddress("localhost", port);
-            WebBrowserUtil.trace("found a free port: " + port);
+            WebBrowserUtil.trace("Found a free socket port: " + port);
         } catch (Exception e) {
         }
     }
@@ -106,7 +106,8 @@ class MsgClient {
     void connect() throws IOException, InterruptedException {
         int retry;
         for (retry = 0; retry < MAX_RETRY; retry++) {
-            WebBrowserUtil.trace("connecting ... " + retry);
+            WebBrowserUtil.trace("Connecting to the socket server of the native " +
+                    "embedded browser ... " + retry);
 
             try {
                 channel = SocketChannel.open();
@@ -172,11 +173,11 @@ class MsgClient {
             // a short message. 
             recvBuffer = recvBuffer.substring(pos + 
                     (new String(MSG_DELIMITER).length()));
-            WebBrowserUtil.trace("get a complete short message: " + msg);            
+            WebBrowserUtil.trace("Got a complete short message: " + msg);            
             return msg;            
         } 
 
-        NativeEventData eventData = NativeEventThread.parseIncomingMessage(msg);
+        NativeEventData eventData = NativeEventThread.parseMessageString(msg);
 
         // receive a long message, consisting of one head message piece, 
         // multiple middle message pieces and one end message piece.
@@ -188,7 +189,7 @@ class MsgClient {
                     eventData.type, eventData.stringValue));
             recvBuffer = recvBuffer.substring(pos + 
                     (new String(MSG_DELIMITER_HEAD).length()));
-            WebBrowserUtil.trace("get a head message piece: " 
+            WebBrowserUtil.trace("Got a head message piece: " 
                     + eventData.stringValue);            
             return null;
         } else {           
@@ -205,7 +206,7 @@ class MsgClient {
                         msgPieces.add(newElement);
                         recvBuffer = recvBuffer.substring(pos + 
                                 (new String(MSG_DELIMITER_MIDDLE).length()));                       
-                        WebBrowserUtil.trace("got a middle message piece: " + 
+                        WebBrowserUtil.trace("Got a middle message piece: " + 
                                 eventData.stringValue);
                         return null;
                     } else if (pos == recvBuffer.indexOf(MSG_DELIMITER_END)) {
@@ -216,9 +217,9 @@ class MsgClient {
                         msgPieces.remove(element);
                         recvBuffer = recvBuffer.substring(pos + 
                                 (new String(MSG_DELIMITER_END).length()));
-                        WebBrowserUtil.trace("got an end message piece: " + 
+                        WebBrowserUtil.trace("Got an end message piece: " + 
                                 eventData.stringValue);
-                        WebBrowserUtil.trace("got a complete long message: " + 
+                        WebBrowserUtil.trace("Got a complete long message: " + 
                                 element.stringValue + eventData.stringValue);
                                                 
                         return (msg);                        
@@ -246,12 +247,12 @@ class MsgClient {
                     decoder.decode(buffer, charBuffer, false);
                     charBuffer.flip();
                     recvBuffer += charBuffer;
-                    WebBrowserUtil.trace("read data from socket: " 
+                    WebBrowserUtil.trace("Read data from the socket port: " 
                             + recvBuffer);
                 }
                 else if (key.isWritable()) {
                     if (sendBuffer.length() > 0) {
-                        WebBrowserUtil.trace("send data to socket: " 
+                        WebBrowserUtil.trace("Send data to the socket port: " 
                                 + sendBuffer);
                         ByteBuffer buf 
                             = ByteBuffer.wrap(sendBuffer.getBytes(charsetName));
