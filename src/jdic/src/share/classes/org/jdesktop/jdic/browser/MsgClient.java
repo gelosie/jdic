@@ -106,8 +106,8 @@ class MsgClient {
     void connect() throws IOException, InterruptedException {
         int retry;
         for (retry = 0; retry < MAX_RETRY; retry++) {
-            WebBrowserUtil.trace("Connecting to the socket server of the native " +
-                    "embedded browser ... " + retry);
+            WebBrowserUtil.trace("Connecting to native browser ... " + 
+                    retry);
 
             try {
                 channel = SocketChannel.open();
@@ -247,12 +247,12 @@ class MsgClient {
                     decoder.decode(buffer, charBuffer, false);
                     charBuffer.flip();
                     recvBuffer += charBuffer;
-                    WebBrowserUtil.trace("Read data from the socket port: " 
+                    WebBrowserUtil.trace("Read data from socket: " 
                             + recvBuffer);
                 }
                 else if (key.isWritable()) {
                     if (sendBuffer.length() > 0) {
-                        WebBrowserUtil.trace("Send data to the socket port: " 
+                        WebBrowserUtil.trace("Send data to socket: " 
                                 + sendBuffer);
                         ByteBuffer buf 
                             = ByteBuffer.wrap(sendBuffer.getBytes(charsetName));

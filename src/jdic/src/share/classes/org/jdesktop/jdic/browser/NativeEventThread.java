@@ -192,9 +192,8 @@ class NativeEventThread extends Thread
             return false;
         }
 
-        WebBrowserUtil.trace("Process event sent to the native embedded " +
-                "browser: " + nativeEvent.instance + 
-                ", " + nativeEvent.type + ", ");
+        WebBrowserUtil.trace("Process event to native browser: " + 
+                nativeEvent.instance + ", " + nativeEvent.type + ", ");
         
         String msg = nativeEvent.instance + "," + nativeEvent.type + ",";
         switch (nativeEvent.type) {
@@ -276,9 +275,9 @@ class NativeEventThread extends Thread
         if (eventData == null) 
             return;
 
-        WebBrowserUtil.trace("Process event received from the native " +
-                "embedded browser: " + eventData.instance + 
-                ", " + eventData.type + ", " + eventData.stringValue);
+        WebBrowserUtil.trace("Process event from native browser: " + 
+                eventData.instance + ", " + eventData.type + ", " + 
+                eventData.stringValue);
 
         if (WebBrowserEvent.WEBBROWSER_INIT_FAILED == eventData.type) {
             setBrowsersInitFailReason(eventData.stringValue);
