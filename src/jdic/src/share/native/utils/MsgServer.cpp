@@ -290,7 +290,7 @@ int MsgServer::RecvData()
     char recvDataBuf[BUFFER_SIZE] = "\0";
     char unfinishedMsgBuf[BUFFER_SIZE] = "\0";
 
-    int len = recv(mMsgSock, recvDataBuf, BUFFER_SIZE, 0);
+    int len = recv(mMsgSock, recvDataBuf, BUFFER_SIZE_HALF, 0);
     if (len == 0) {
         // value 0 means the network connection is closed.
         WBTRACE("client socket has been closed!\n");
@@ -330,7 +330,7 @@ int MsgServer::RecvData()
         // Clear the normal message buffer for incoming new messages.
         memset(mRecvBuffer, '\0', strlen(mRecvBuffer));
     } else {
-        // find the last message delimiter, the left characters are part 
+        // Find the last message delimiter, the remaining characters are part 
         // of an unfinished message. 
         char *tmpPtr;
         while (tmpPtr = strstr(delimiterPtr + strlen(MSG_DELIMITER), \
@@ -398,6 +398,7 @@ int MsgServer::RecvData()
                             mLongRecvBuffer 
                                 = new char [mLongRecvBufferSize];
                             memset(mLongRecvBuffer, '\0', mLongRecvBufferSize);
+                            strcpy(mLongRecvBuffer, tmpRecvBuffer);
                                 
                             delete [] tmpRecvBuffer;
                         }      
