@@ -25,6 +25,10 @@ NULL=
 NULL=nul
 !ENDIF 
 
+CPP=cl.exe
+MTL=midl.exe
+RSC=rc.exe
+
 !IF  "$(CFG)" == "Misc - Win32 Release"
 
 OUTDIR=.\Release
@@ -38,10 +42,8 @@ ALL : "$(OUTDIR)\Misc.dll"
 
 CLEAN :
 	-@erase "$(INTDIR)\alerter.obj"
-	-@erase "$(INTDIR)\Misc.obj"
-	-@erase "$(INTDIR)\Misc.pch"
-	-@erase "$(INTDIR)\StdAfx.obj"
 	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(INTDIR)\wallpaper.obj"
 	-@erase "$(OUTDIR)\Misc.dll"
 	-@erase "$(OUTDIR)\Misc.exp"
 	-@erase "$(OUTDIR)\Misc.lib"
@@ -49,42 +51,8 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP=cl.exe
 CPP_PROJ=/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MISC_EXPORTS" /Fp"$(INTDIR)\Misc.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-MTL=midl.exe
 MTL_PROJ=/nologo /D "NDEBUG" /mktyplib203 /win32 
-RSC=rc.exe
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\Misc.bsc" 
 BSC32_SBRS= \
@@ -93,8 +61,7 @@ LINK32=link.exe
 LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:no /pdb:"$(OUTDIR)\Misc.pdb" /machine:I386 /out:"$(OUTDIR)\Misc.dll" /implib:"$(OUTDIR)\Misc.lib" 
 LINK32_OBJS= \
 	"$(INTDIR)\alerter.obj" \
-	"$(INTDIR)\Misc.obj" \
-	"$(INTDIR)\StdAfx.obj"
+	"$(INTDIR)\wallpaper.obj"
 
 "$(OUTDIR)\Misc.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -109,16 +76,14 @@ INTDIR=.\Debug
 OutDir=.\Debug
 # End Custom Macros
 
-ALL : "$(OUTDIR)\jdic_misc.dll" "$(OUTDIR)\Misc.pch"
+ALL : "$(OUTDIR)\jdic_misc.dll"
 
 
 CLEAN :
 	-@erase "$(INTDIR)\alerter.obj"
-	-@erase "$(INTDIR)\Misc.obj"
-	-@erase "$(INTDIR)\Misc.pch"
-	-@erase "$(INTDIR)\StdAfx.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
+	-@erase "$(INTDIR)\wallpaper.obj"
 	-@erase "$(OUTDIR)\jdic_misc.dll"
 	-@erase "$(OUTDIR)\jdic_misc.exp"
 	-@erase "$(OUTDIR)\jdic_misc.ilk"
@@ -128,8 +93,24 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP=cl.exe
 CPP_PROJ=/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MISC_EXPORTS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+MTL_PROJ=/nologo /D "_DEBUG" /mktyplib203 /win32 
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\Misc.bsc" 
+BSC32_SBRS= \
+	
+LINK32=link.exe
+LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib jawt.lib /nologo /dll /incremental:yes /pdb:"$(OUTDIR)\jdic_misc.pdb" /debug /machine:I386 /out:"$(OUTDIR)\jdic_misc.dll" /implib:"$(OUTDIR)\jdic_misc.lib" /pdbtype:sept 
+LINK32_OBJS= \
+	"$(INTDIR)\alerter.obj" \
+	"$(INTDIR)\wallpaper.obj"
+
+"$(OUTDIR)\jdic_misc.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ENDIF 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -160,27 +141,6 @@ CPP_PROJ=/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /
    $(CPP) @<<
    $(CPP_PROJ) $< 
 <<
-
-MTL=midl.exe
-MTL_PROJ=/nologo /D "_DEBUG" /mktyplib203 /win32 
-RSC=rc.exe
-BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\Misc.bsc" 
-BSC32_SBRS= \
-	
-LINK32=link.exe
-LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib jawt.lib /nologo /dll /incremental:yes /pdb:"$(OUTDIR)\jdic_misc.pdb" /debug /machine:I386 /out:"$(OUTDIR)\jdic_misc.dll" /implib:"$(OUTDIR)\jdic_misc.lib" /pdbtype:sept 
-LINK32_OBJS= \
-	"$(INTDIR)\alerter.obj" \
-	"$(INTDIR)\Misc.obj" \
-	"$(INTDIR)\StdAfx.obj"
-
-"$(OUTDIR)\jdic_misc.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
-    $(LINK32) @<<
-  $(LINK32_FLAGS) $(LINK32_OBJS)
-<<
-
-!ENDIF 
 
 
 !IF "$(NO_EXTERNAL_DEPS)" != "1"
@@ -217,34 +177,10 @@ CPP_SWITCHES=/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOW
 
 !ENDIF 
 
-SOURCE=.\Misc.cpp
+SOURCE=.\wallpaper.cpp
 
-"$(INTDIR)\Misc.obj" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\Misc.pch"
+"$(INTDIR)\wallpaper.obj" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\Misc.pch"
 
-
-SOURCE=.\StdAfx.cpp
-
-!IF  "$(CFG)" == "Misc - Win32 Release"
-
-CPP_SWITCHES=/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MISC_EXPORTS" /Fp"$(INTDIR)\Misc.pch" /Yc"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
-
-"$(INTDIR)\StdAfx.obj"	"$(INTDIR)\Misc.pch" : $(SOURCE) "$(INTDIR)"
-	$(CPP) @<<
-  $(CPP_SWITCHES) $(SOURCE)
-<<
-
-
-!ELSEIF  "$(CFG)" == "Misc - Win32 Debug"
-
-CPP_SWITCHES=/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MISC_EXPORTS" /Fp"$(INTDIR)\Misc.pch" /Yc"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
-
-"$(INTDIR)\StdAfx.obj"	"$(INTDIR)\Misc.pch" : $(SOURCE) "$(INTDIR)"
-	$(CPP) @<<
-  $(CPP_SWITCHES) $(SOURCE)
-<<
-
-
-!ENDIF 
 
 
 !ENDIF 

@@ -70,6 +70,7 @@ implements Wallpaper
      */
     public void setBackground(String fileName, int mode)
     {
+        System.out.println("calling native set wallpaper");
         long result = nativeSetWallpaper(fileName, mode);
 
     }

@@ -201,7 +201,7 @@ The generated distribution is put under *dist* directory.
 		
 		-->
 		<!-- copy generated .dll file -->
-		<copy file="${win32.native.jni.dir}/Misc/Debug/jdic_misc.dll" todir="${dist.dir}" />
+		<copy file="${win32.native.jni.dir}/Debug/jdic_misc.dll" todir="${dist.dir}" />
 	</target>
 
 	<!--
@@ -311,6 +311,15 @@ The generated distribution is put under *dist* directory.
 		</java>
 	</target>
 
+	<target name="test-wallpaper" depends="init, buildall">
+		<echo message="my message ${dist.dir}"/>
+		<java classname="org.jdesktop.jdic.misc.test.WallpaperTest" fork="true"
+			dir="${dist.dir}">
+			<classpath>
+				<pathelement path="${dist.dir}/${jar.file}" />
+			</classpath>
+		</java>
+	</target>
 
 	<target name="buildsharejar" depends="init">
 		<javac srcdir="${share.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
