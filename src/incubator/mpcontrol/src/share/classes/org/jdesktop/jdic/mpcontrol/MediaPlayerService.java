@@ -29,6 +29,14 @@ import java.util.List;
 import java.util.logging.Logger;
 
 
+/**
+ * This class is the entry point to the Media Player Control API.
+ * The basic usage, is to call MediaPlayerService.getInstance(), 
+ * and get the list of the available media players from the singleton. 
+ * Please look at the demos for basic usage sample. 
+ * @author zsombor.gegesy 
+ *
+ */
 public class MediaPlayerService {
 
     static Logger log = Logger.getLogger("org.jdesktop.jdic.mpcontrol");
@@ -80,6 +88,11 @@ public class MediaPlayerService {
 		
     }
 	
+    /**
+     * Returns the singleton service class
+     * @return
+     * @throws IOException
+     */
     public static MediaPlayerService getInstance() throws IOException {
         synchronized (MediaPlayerService.class) {
             if (instance == null) {
