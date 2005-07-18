@@ -33,6 +33,11 @@
   <property name="native.dir.win32" value="src/win32/native"/>
           
   <property name="dist.dir" value="dist" />
+  
+  <!-- the distribution version and release of this build -->
+  <!-- which is used in javadoc and distzip targets -->
+  <property name="version" value="0.1" />
+  <property name="release" value="1" />  
         
   <target name="all" depends="jar,buildnative" 
     description="Build the native library and the java source">
@@ -73,9 +78,28 @@
       </fileset>
     </delete>      
   </target>
+
+  <!-- ================================= 
+       target: javadoc
+       ================================= -->            
+  <target name="javadoc" depends="_init" description="generate javadoc into ${dist.dir}/javadoc">
+    <javadoc packagenames="${pkg.mpcontrol.name}" sourcepath="${src.classes.dir}" destdir="${dist.dir}/javadoc" 
+      author="true" version="false" use="true" 
+      Windowtitle="JDIC Media Player Control API V${version} Release ${release}" 
+      Header="JDIC Media Player Control API V${version} Release ${release}">
+      <docTitle>
+        <![CDATA[JDIC Media Player Control
+        <br> API Specification, Version ${version} Release ${release}]]></docTitle>      
+      <bottom><![CDATA[<font size="-1">For more information and documentation on JDIC incubator projects,
+        see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That documentation
+        contains more detailed, developer-targeted descriptions, with conceptual
+        overviews, working code examples, license terms and bug report information.
+        </font>]]></bottom>
+    </javadoc>
+  </target>
       
   <!-- ================================= 
-        target: jar              
+       target: jar              
        ================================= -->      
   <target name="jar" depends="_init" description="Compile and jar the java source">
     <javac srcdir="${src.classes.dir}" destdir="${target.dir}/classes">  
