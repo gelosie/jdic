@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     2005.07.01. 23:46:31                                                        
+
+     mpcontrol    
+     JDIC Media Player Control library
+                   
+     author: Zsombor_Gegesy                                      
+     ====================================================================== -->
+<project name="mpcontrol" default="all">
+  <description>
+    JDIC Media Player control library
+  </description>
+
+  <!-- the top-level package names -->
+  <property name="pkg.jdic.name" value="org.jdesktop.jdic" />
+  <property name="pkg.mpcontrol.name" value="${pkg.jdic.name}.mpcontrol" />
+    
+  <property name="pkg.mpcontrol.name_underscore" value="org_jdesktop_jdic_mpcontrol" />
+  <property name="jar.name" value="mpcontrol.jar" />
+  <property name="demo.jar.name" value="demo-mpcontrol.jar" />
+
+  <property name="src.dir" value="src/share" />
+  <property name="src.classes.dir" value="${src.dir}/classes"/>
+  <property name="demo.dir" value="demo" />
+    
+  <property name="target.dir" value="target" />
+    
+  <property name="header.dir.linux" value="src/unix/headers"/>
+  <property name="header.dir.win32" value="src/win32/headers"/>
+    
+  <property name="native.dir.linux" value="src/unix/native"/>
+  <property name="native.dir.win32" value="src/win32/native"/>
+          
+  <property name="dist.dir" value="dist" />
+        
+  <target name="all" depends="jar,buildnative" 
+    description="Build the native library and the java source">
+  </target>
+    
+  <target name="_init">      
+      <mkdir dir="${target.dir}"/>
+      <mkdir dir="${target.dir}/classes"/>
+      <mkdir dir="${target.dir}/demo"/>
+      <mkdir dir="${target.dir}/native"/>
+      <mkdir dir="${dist.dir}"/>
+  </target>
+    
+  <target name="clean" description="Delete all generated file (the jars/the header files)">
+    <delete dir="${target.dir}" /> 
+    <delete dir="${dist.dir}" /> 
+    <delete failonerror="false">
+      <fileset dir="${header.dir.linux}" includes="*.h"/>
+      <fileset dir="${header.dir.win32}" includes="*.h"/>
+    </delete>
+    <delete failonerror="false">
+      <fileset dir="${native.dir.linux}/bmp"> 
+        <include name="*.o"/>
+        <include name="*.so"/>
+        <include name="${pkg.mpcontrol.name_underscore}*.h"/>
+      </fileset>
+      <fileset dir="${native.dir.linux}/rhythmbox"> 
+        <include name="*.o"/>
+        <include name="*.so"/>
+        <include name="Rhythmbox-common.c"/>
+        <include name="Rhythmbox-stubs.c"/>
+        <include name="Rhythmbox.h"/>
+        <include name="${pkg.mpcontrol.name_underscore}*.h"/>
+      </fileset>
+      <fileset dir="${native.dir.win32}/winamp"> 
+        <include name="*.dll"/>
+        <include name="${pkg.mpcontrol.name_underscore}*.h"/>
+      </fileset>
+    </delete>      
+  </target>
+      
+  <!-- ================================= 
+        target: jar              
+       ================================= -->      
+  <target name="jar" depends="_init" description="Compile and jar the java source">
+    <javac srcdir="${src.classes.dir}" destdir="${target.dir}/classes">  
+    </javac>
+    
+    <jar destfile="${dist.dir}/${jar.name}">
+      <fileset dir="${target.dir}/classes">
+        <include name="**/*.class"/>
+      </fileset>
+      <fileset dir="${src.dir}/conf">
+        <include name="*.*"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="demo" depends="jar" description="Build the demo classes">
+    <javac srcdir="${demo.dir}/java" destdir="${target.dir}/demo" classpath="${dist.dir}/${jar.name}">         
+    </javac>
+    <jar destfile="${dist.dir}/${demo.jar.name}">
+       <fileset dir="${target.dir}/demo">
+         <include name="**/*.class"/>
+       </fileset>
+    </jar>
+    <copy todir="${dist.dir}">
+      <fileset dir="${demo.dir}/script" includes="*">       
+      </fileset>
+    </copy>
+    <chmod dir="${dist.dir}" includes="*.sh" perm="a+x"/>
+    
+  </target>    
+    
+  <!-- ================================= 
+       target: build native
+       ================================= -->
+  <target name="buildnative" description="build the native libraries for the current platform." depends="headers">
+    <!-- Set the platform-dependent buildall target -->
+    <condition property="platform.target" value="_buildwin32">
+      <os family="windows" />
+    </condition>
+
+    <condition property="platform.target" value="_buildlinux">
+      <os name="linux" />
+    </condition>
+
+    <condition property="platform.target" value="_buildsolaris">
+      <os name="sunos" />
+    </condition>
+
+    <condition property="platform.target" value="_buildmac_os_x">
+      <os name="Mac OS X" />
+    </condition>
+
+    <antcall target="${platform.target}" />
+
+  </target>
+
+  <target name="headers" depends="jar" description="Generates the native headers for JNI">
+    <javah destdir="${native.dir.linux}/bmp" classpath="${dist.dir}/${jar.name}">
+      <class name="${pkg.mpcontrol.name}.bmp.BeepMediaPlayer"/>
+    </javah>
+    <javah destdir="${native.dir.linux}/rhythmbox" classpath="${dist.dir}/${jar.name}">
+      <class name="${pkg.mpcontrol.name}.rhythmbox.RhytmboxControl"/>
+    </javah>
+    <javah destdir="${native.dir.win32}/winamp" classpath="${dist.dir}/${jar.name}">
+      <class name="${pkg.mpcontrol.name}.winamp.WinampControl"/>
+      <class name="${pkg.mpcontrol.name}.winamp.Util"/>
+    </javah>
+  </target>
+        
+  <!-- ================================= 
+       target: build windows specific stuff
+       ================================= -->
+  <target name="_buildwin32" >
+    <exec dir="${native.dir.win32}/winamp" executable="gcc">
+      <arg value="-Wall"/>
+      <arg value="-mno-cygwin"/>
+      <arg value="-shared"/> 
+      <arg value="-Wl,--add-stdcall-alias"/>
+<!--      <arg value="-I..\..\headers"/> -->
+      <arg value="-I${java.home}\..\include"/>
+      <arg value="-I${java.home}\..\include\win32"/>
+      <arg value="-o"/>
+      <arg value="jdic-winamp.dll"/>
+      <arg value="mpcontrol.c" />
+    </exec>    
+    <copy file="${native.dir.win32}/winamp/jdic-winamp.dll" todir="${dist.dir}" />
+  </target>
+    
+    <!-- ================================= 
+          target: build unix specific stuff
+         ================================= -->
+    
+  <target name="_buildlinux">
+    <exec dir="${native.dir.linux}/bmp" executable="make" />
+        
+    <copy file="${native.dir.linux}/bmp/libjdic-bmp.so" todir="${dist.dir}" />
+        
+    <exec dir="${native.dir.linux}/rhythmbox" executable="make" />
+        
+    <copy file="${native.dir.linux}/rhythmbox/libjdic-rhythmbox.so" todir="${dist.dir}" />
+        
+  </target>
+  <target name="_buildsolaris"></target>
+  <target name="_buildmac_os_x"></target>
+    
+</project>
+

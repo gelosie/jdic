@@ -1,0 +1,66 @@
+#include <Bonobo.idl>
+#include <Bonobo_Property.idl>
+
+/* arch-tag: Rhythmbox Bonobo interface definition
+ */
+
+module GNOME
+{
+    interface Rhythmbox : Bonobo::Unknown
+    {
+        struct SongInfo {
+            string title;
+            string artist;
+            string genre;
+            string album;            
+            string path;
+            long track_number;
+            long duration;
+            long bitrate;
+            long filesize;
+            long rating;
+            long play_count;
+            long last_played;            
+        };
+
+        void addToLibrary (in string uri);
+        
+        void handleFile (in string uri);
+
+        void select (in string uri);
+        void play (in string uri);
+        
+        void grabFocus ();
+        
+        void playPause ();
+        void next ();
+        void previous ();
+        
+
+        long getPlayingTime ();         /* returns -1 if not playing */
+        void setPlayingTime (in long seconds);
+
+        void setRating (in long rating);
+            
+        /* Available properties:
+         * repeat:     boolean, read-write, notification
+         * shuffle:    boolean, read-write, notification
+         * play-order: string,  read-only, notification
+         * playing:    boolean, read-only, notification
+         * song:       SongInfo, read-only, notification
+         * visibility: boolean, NOT FULLY IMPLEMENTED YET
+         */
+            Bonobo::PropertyBag getPlayerProperties ();
+        
+        void quit ();
+
+            void toggleHide ();
+            void toggleMute ();
+            float getVolume ();
+            void setVolume (in float vol);
+            void volumeUp ();
+            void volumeDown ();
+            void skip (in long offset);
+    };
+};
+
