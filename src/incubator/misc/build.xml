@@ -318,6 +318,7 @@ The generated distribution is put under *dist* directory.
 			<classpath>
 				<pathelement path="${dist.dir}/${jar.file}" />
 			</classpath>
+			<arg value="test.bmp"/>
 		</java>
 	</target>
 

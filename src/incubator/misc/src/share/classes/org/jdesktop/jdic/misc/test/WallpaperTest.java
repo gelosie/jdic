@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
+import java.io.*;
 
 import org.jdesktop.jdic.misc.*;
 
@@ -38,10 +39,12 @@ public class WallpaperTest {
 	 *
 	 * @param  args  The command line arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
         Wallpaper wp = WallpaperFactory.createWallpaper();
         System.out.println("wp = " + wp);
-        wp.setBackground("fox1.gif",Wallpaper.STRETCH);
+        File file = new File(args[0]);
+        System.out.println("file = " + file.toURL());
+        wp.setBackground(file.getCanonicalPath(),Wallpaper.STRETCH);
 	}
 }
 
