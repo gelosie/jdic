@@ -47,6 +47,8 @@ Top-level target:
 	<!-- the generated jar file name -->
 	<property name="jar.file" value="jdic_misc.jar" />
 
+	<property name="target.version" value="1.4"/>
+	<!-- the version of java to target -->
 	<target name="showtargets" description="default target showing all available targets">
 		<echo>The top-level targets are:
  buildall:  Build a JDIC API distribution for the current platform
@@ -168,7 +170,9 @@ The generated distribution is put under *dist* directory.
 
 	<!-- *** Build Win32 jar file *** -->
 	<target name="buildwin32jar" depends="init" description="build the classes and jar file.">
-		<javac srcdir="${share.classes.dir}:${win32.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
+		<javac srcdir="${share.classes.dir}:${win32.classes.dir}" destdir="${dist.dir}" 
+			classpath="${dist.dir}" debug="${javac.debug}" 
+			target="${target.version}"/>
 
 		<jar destfile="${dist.dir}/${jar.file}" update="false">
 			<fileset dir="${dist.dir}" includes="org/**/*.class" />
@@ -229,7 +233,9 @@ The generated distribution is put under *dist* directory.
     -->
 	<!-- *** Build Unix jar file *** -->
 	<target name="buildunixjar" depends="init" description="build the classes and jar file.">
-		<javac srcdir="${share.classes.dir}:${unix.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
+		<javac srcdir="${share.classes.dir}:${unix.classes.dir}" destdir="${dist.dir}" 
+			classpath="${dist.dir}" debug="${javac.debug}" 
+			target="${target.version}"/>
 
 		<jar destfile="${dist.dir}/${jar.file}" update="false">
 			<fileset dir="${dist.dir}" includes="org/**/*.class" />
@@ -266,7 +272,9 @@ The generated distribution is put under *dist* directory.
 
 	<!-- *** Build Mac jar file *** -->
 	<target name="buildmacjar" depends="init, buildsharejar" description="build the classes and jar file.">
-		<javac srcdir="${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}:/System/Library/Java" debug="${javac.debug}" />
+		<javac srcdir="${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}:/System/Library/Java" 
+			debug="${javac.debug}" 
+			target="${target.version}"/>
 
 		<jar destfile="${dist.dir}/${jar.file}" update="false">
 			<fileset dir="${dist.dir}" includes="org/**/*.class" />
@@ -323,7 +331,9 @@ The generated distribution is put under *dist* directory.
 	</target>
 
 	<target name="buildsharejar" depends="init">
-		<javac srcdir="${share.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" />
+		<javac srcdir="${share.classes.dir}" destdir="${dist.dir}" 
+			classpath="${dist.dir}" debug="${javac.debug}" 
+			target="${target.version}"/>
 		<jar destfile="${dist.dir}/${jar.file}" update="false">
 			<fileset dir="${dist.dir}" includes="org/**/*.class" />
 		</jar>
@@ -353,7 +363,7 @@ The generated distribution is put under *dist* directory.
 		<property name="sample.classpath.echo" refid="sample.classpath" />
 		<echo message="building ${demo.dir} with classpath ${sample.classpath.echo}" />
 
-		<javac srcdir="${demo.dir}" destdir="${demo.dir}" classpathref="sample.classpath" />
+		<javac srcdir="${demo.dir}" destdir="${demo.dir}" classpathref="sample.classpath" target="${target.version}" />
 	</target>
 
 	<!-- build all demos -->
