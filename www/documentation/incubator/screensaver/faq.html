@@ -156,7 +156,7 @@ beans on the bottom of the screen are simply a reflection.<br>
 
 <br>
 
-<span style="font-weight: bold;">Q.</span> Is it possible to change whcih Java Virtual Machine (JVM) the screensaver will use?<br>
+<span style="font-weight: bold;">Q.</span> Is it possible to change which Java Virtual Machine (JVM) the screensaver will use?<br>
 
 <span style="font-weight: bold;">A.</span> On Unix, the virtual machine
 is automatically detected using the steps outlined in the README.&nbsp;
@@ -166,7 +166,34 @@ If this automatic detection fails, you can override it by passing <code>-jdkhome
 <span style="font-weight: bold;">A.</span> Make sure you are running
 J2SE 1.5.0 or greater, even when you are debugging.&nbsp; Earlier
 versions of the JDK may have choppy timing for animation on Linux.<br>
+<br>
 
+<span style="font-weight: bold;">Q.</span> Screensavers are crashing on 
+Windows.  I'm getting something like "The instruction xxxxxxxx referenced
+memory at xxxxxxx, the memory count not be read, click Ok to terminate", or
+something similar.  What can I do to figure out what's wrong?
+<br>
+
+<span style="font-weight: bold;">A.</span> This can be caused by a number
+of different problems.  To find out why this is happening, you need to run
+a special debug screensaver that writes a debug log in the
+<code>C:\WINDOWS\TEMP</code> directory.  Follow these instructions and post
+the results to the <a href="https://screensavers.dev.java.net/servlets/ForumMessageList?forumID=698">
+screensavers.dev.java.net forum</a> for help.
+<ol>
+  <li><a href="debugsaver-win32.zip">Download</a> the special debug
+      screensaver.</li>
+  <li>Unzip to a new folder on your hard drive.  Make sure it's a new folder
+      and you do not overwrite any existing files.</li>
+  <li>Right-click on debugsaver.scr (the one with the bean icon) and click
+      "Test".</li>
+  <li>Let the screensaver run for a bit.  You should see a blue line with
+      the text "DEBUG SCREENSAVER" at one end.</li>
+  <li>Exit the screensaver by moving the mouse or pressing a key.</li>
+  <li>Check for a file called <code>C:\WINDOWS\TEMP\saverbeans-log.txt</code>
+      and look for any error messages.  Post the log to the forum if you
+      have any questions.</li>
+</ol>
 <br>
 
 <h3>Writing Screensavers</h3>
