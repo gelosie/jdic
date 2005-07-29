@@ -120,15 +120,16 @@ endif
 ifdef MOZ_ENABLE_GTK
 CPPFLAGS += -DMOZ_WIDGET_GTK
 LIBS += -lgtksuperwin
-LIBS_PROG += -L$(MOZILLA_DIST) -lgtkembedmoz -lxpcom -lgtksuperwin
+LIBS_PROG += -lgtksuperwin
 endif
 
 ifdef MOZ_ENABLE_GTK2
 CPPFLAGS += -DMOZ_WIDGET_GTK2
 # XXX need to get these from pkg-config perhaps?
 LIBS += $(XLDFLAGS) $(XLIBS)
-LIBS_PROG += -L$(MOZILLA_DIST) -lgtkembedmoz -lxpcom
 endif
+
+LIBS_PROG += -L$(MOZILLA_DIST) -lgtkembedmoz -lxpcom -lnspr4 -lplds4 -lplc4
 
 CPPFLAGS += \
 	-DXPCOM_GLUE -DMOZILLA_STRICT_API \
