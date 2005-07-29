@@ -194,6 +194,28 @@ screensavers.dev.java.net forum</a> for help.
       and look for any error messages.  Post the log to the forum if you
       have any questions.</li>
 </ol>
+A successful run should produce a log that looks something like this:
+<blockquote>
+<pre>
+Opened log.
+Multi monitors detected: 0 0 2560 1024
+***
+Detected .scr directory: C:\local\projects\screensavers\cvs\screensavers\src\bou
+ncingline\dist\debugsaver-win32\
+-Djava.class.path=C:\local\projects\screensavers\cvs\screensavers\src\bouncingli
+ne\dist\debugsaver-win32\\debugsaver.jar;C:\local\projects\screensavers\cvs\scre
+ensavers\src\bouncingline\dist\debugsaver-win32\\saverbeans-api.jar;C:\local\pro
+jects\screensavers\cvs\screensavers\src\bouncingline\dist\debugsaver-win32\\jogl
+.jar
+WM_CLOSE
+WM_DESTROY
+on_destroy() called
+Calling timeKillEvent...
+timeKillEvent called.
+</pre>
+</blockquote>
+Of course, your exact results will vary depending on the configuration of
+your system and what directory you are running from.
 <br>
 
 <h3>Writing Screensavers</h3>
