@@ -47,16 +47,16 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
     // Load jawt.dll from <java.home>\bin    
     char dllLocation[MAX_PATH] = {0};   
     const char* javaHomeStr = env->GetStringUTFChars(javaHome, NULL);
-	sprintf(dllLocation, "%s%s", javaHomeStr, "\\bin\\jawt.dll");
-	env->ReleaseStringUTFChars(javaHome, javaHomeStr);
-		
-	_hAWT = LoadLibrary((LPCTSTR)dllLocation);
-	if (!_hAWT) 
-	{
-	    return -1;
-	}
-	else 
-	{	
+    sprintf(dllLocation, "%s%s", javaHomeStr, "\\bin\\jawt.dll");
+    env->ReleaseStringUTFChars(javaHome, javaHomeStr);
+
+    _hAWT = LoadLibrary((LPCTSTR)dllLocation);
+    if (!_hAWT) 
+    {
+        return -1;
+    }
+    else 
+    {
         PJAWT_GETAWT JAWT_GetAWT = (PJAWT_GETAWT)GetProcAddress(_hAWT, "_JAWT_GetAWT@8");
         if (JAWT_GetAWT)
         {
