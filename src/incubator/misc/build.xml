@@ -42,7 +42,7 @@ Top-level target:
 	<!-- the distribution version and release of this build -->
 	<!-- which is used in javadoc and distzip targets -->
 	<property name="version" value="0.1" />
-	<property name="release" value="1" />
+	<property name="release" value="2" />
 
 	<!-- the generated jar file name -->
 	<property name="jar.file" value="jdic_misc.jar" />
@@ -205,7 +205,7 @@ The generated distribution is put under *dist* directory.
 		
 		-->
 		<!-- copy generated .dll file -->
-		<copy file="${win32.native.jni.dir}/Debug/jdic_misc.dll" todir="${dist.dir}" />
+		<copy file="${win32.native.jni.dir}/Release/jdic_misc.dll" todir="${dist.dir}" />
 	</target>
 
 	<!--

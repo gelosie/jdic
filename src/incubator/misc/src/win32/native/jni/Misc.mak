@@ -37,33 +37,33 @@ INTDIR=.\Release
 OutDir=.\Release
 # End Custom Macros
 
-ALL : "$(OUTDIR)\Misc.dll"
+ALL : "$(OUTDIR)\jdic_misc.dll"
 
 
 CLEAN :
 	-@erase "$(INTDIR)\alerter.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\wallpaper.obj"
-	-@erase "$(OUTDIR)\Misc.dll"
-	-@erase "$(OUTDIR)\Misc.exp"
-	-@erase "$(OUTDIR)\Misc.lib"
+	-@erase "$(OUTDIR)\jdic_misc.dll"
+	-@erase "$(OUTDIR)\jdic_misc.exp"
+	-@erase "$(OUTDIR)\jdic_misc.lib"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MISC_EXPORTS" /Fp"$(INTDIR)\Misc.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MISC_EXPORTS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 MTL_PROJ=/nologo /D "NDEBUG" /mktyplib203 /win32 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\Misc.bsc" 
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:no /pdb:"$(OUTDIR)\Misc.pdb" /machine:I386 /out:"$(OUTDIR)\Misc.dll" /implib:"$(OUTDIR)\Misc.lib" 
+LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib jawt.lib /nologo /dll /incremental:no /pdb:"$(OUTDIR)\jdic_misc.pdb" /machine:I386 /out:"$(OUTDIR)\jdic_misc.dll" /implib:"$(OUTDIR)\jdic_misc.lib" 
 LINK32_OBJS= \
 	"$(INTDIR)\alerter.obj" \
 	"$(INTDIR)\wallpaper.obj"
 
-"$(OUTDIR)\Misc.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+"$(OUTDIR)\jdic_misc.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
@@ -157,9 +157,9 @@ SOURCE=.\alerter.c
 
 !IF  "$(CFG)" == "Misc - Win32 Release"
 
-CPP_SWITCHES=/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MISC_EXPORTS" /Fp"$(INTDIR)\Misc.pch" /Yu"stdafx.h" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_SWITCHES=/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MISC_EXPORTS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 
-"$(INTDIR)\alerter.obj" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\Misc.pch"
+"$(INTDIR)\alerter.obj" : $(SOURCE) "$(INTDIR)"
 	$(CPP) @<<
   $(CPP_SWITCHES) $(SOURCE)
 <<
@@ -179,7 +179,7 @@ CPP_SWITCHES=/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOW
 
 SOURCE=.\wallpaper.cpp
 
-"$(INTDIR)\wallpaper.obj" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\Misc.pch"
+"$(INTDIR)\wallpaper.obj" : $(SOURCE) "$(INTDIR)"
 
 
 
