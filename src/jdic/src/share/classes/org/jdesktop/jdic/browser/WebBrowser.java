@@ -418,6 +418,27 @@ public class WebBrowser extends Canvas
     public void stop() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_STOP);
     }
+
+    /**
+     * Prints the currently loaded document.
+     * <p>
+     * This is a convenience method to use <code>executeScript</code> to print 
+     * the currently loaded document:
+     * <code>
+     * <pre>
+     *     // Print the currently loaded document.    
+     *     WebBrowser webBrowser = new WebBrowser();
+     *     ......
+     *     webBrowser.executeScript("window.print();");
+     * </pre>
+     * </code>  
+     * 
+     * @see #executeScript(java.lang.String)
+     * @since 0.9.2
+     */
+    public void print() {
+        executeScript("window.print();");
+    }        
     
     /**
      * Sets new HTML content. 
