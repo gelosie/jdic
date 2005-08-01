@@ -33,7 +33,7 @@ import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 
 /**
  * A <code>WebBrowser</code> component represents a blank rectangular area of 
- * the screen onto which the application can display webpages or from which the
+ * the screen onto which the application can load webpages or from which the
  * application can trap events from the browser window. In order to show <code>
  * WebBrowser</code> component in GUI, users need to add <code>WebBrowser</code> 
  * to a top-level container, such as <code>Frame</code>.
@@ -335,10 +335,10 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Returns the URL of the resource that is currently being displayed.
+     * Returns the URL of the resource that is currently being loaded.
      *
-     * @return the current URL being display, or <code>null</code> if no URL is
-     *         currently displayed or the WebBrowser is not yet initialized.
+     * @return the current URL being loaded, or <code>null</code> if no URL is
+     *         currentlloadayed or the WebBrowser is not yet initialized.
      */
     public URL getURL() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_GETURL);
@@ -406,7 +406,7 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Reloads the URL that is currently displayed in the WebBrowser component.
+     * Reloads the URL that is currently loaded in the WebBrowser component.
      */
     public void refresh() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_REFRESH);
@@ -418,7 +418,7 @@ public class WebBrowser extends Canvas
     public void stop() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_STOP);
     }
-
+    
     /**
      * Sets new HTML content. 
      * 
@@ -431,9 +431,9 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Returns the HTML content of a document, opened in a browser.
+     * Returns the HTML content of a document, loaded in a browser.
      * 
-     * @return the HTML content of a document, opened in a browser.
+     * @return the HTML content of a document, loaded in a browser.
      * @since 0.9
      */
     public String getContent() {
@@ -451,11 +451,21 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Executes specified JavaScript code in a currently opened document.
-     * This should not be called until after a documentComplete event is 
-     * fired in <code>WebBrowserListener</code>. 
-     *
+     * Executes the specified JavaScript code on the currently loaded document.
+     * This should not be called until after a <code>documentCompleted</code> 
+     * event fired in <code>WebBrowserListener</code>.
+     * <p>    	   	
+     * For example, execute JavaScript to show an alert dialog:
+     * <code>
+     * <pre>
+     *     // Show a JavaScript alert dialog.    
+     *     WebBrowser webBrowser = new WebBrowser();
+     *     webBrowser.executeScript("alert('Using executeScript')");
+     * </pre>
+     * </code>
+     * 
      * @return the result of JavaScript execution, if there is any.
+     * @see WebBrowserListener#documentCompleted
      * @since 0.9 
      */
     public String executeScript(java.lang.String javaScript) {
@@ -573,7 +583,7 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Called when a new window is to be created for displaying a resource.
+     * Called when a new window is to be created for loading a resource.
      * <p>
      * A subclass can override this method to block the creation of a new 
      * window or allow it to proceed. 
