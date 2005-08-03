@@ -33,7 +33,7 @@ import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 
 /**
  * A <code>WebBrowser</code> component represents a blank rectangular area of 
- * the screen onto which the application can display webpages or from which the
+ * the screen onto which the application can load webpages or from which the
  * application can trap events from the browser window. In order to show <code>
  * WebBrowser</code> component in GUI, users need to add <code>WebBrowser</code> 
  * to a top-level container, such as <code>Frame</code>.
@@ -67,9 +67,7 @@ public class WebBrowser extends Canvas
     private boolean isInitialized = false;
     private boolean isBackEnabled = false;
     private boolean isForwardEnabled = false;
-    private String initFailureMessage = "WebBrowser is not initialized.";
-    
-    private boolean autoDispose = true;
+    private String initFailureMessage = "WebBrowser is not initialized.";       
 
     static {
         // Add the initialization code from package org.jdesktop.jdic.init.
@@ -104,70 +102,16 @@ public class WebBrowser extends Canvas
 
     /**
      * Constructs a new <code>WebBrowser</code> object with no URL specified.
-     * This instance will automatically dispose itself when removeNotify() is 
-     * called. 
-     * <p>This constructor is equivalent to WebBrowser(true).
-     * 
-     * @see #WebBrowser(boolean)
-     * @see #removeNotify()
-     * @see #dispose()
      */
     public WebBrowser() {
-        this(true);
-    }
-    
-    /**
-     * Constructs a new <code>WebBrowser</code> object with the specified 
-     * boolean value <code>autoDispose</code> as the flag which indicate whether 
-     * this instance will automatically dispose itself in removeNotify() or should
-     * be disposed by developer directly call dispose().
-     * <p>This constructor is equivalent to WebBrowser(null, autoDispose).
-     * 
-     * @param autoDispose ture to indicate this instance will automatically 
-     *        dispose itself in removeNotify(); false to indicate developer 
-     *        should call dispose() when this instance is no longer needed.
-     * 
-     * @see #removeNotify()
-     * @see #dispose()
-     */
-    public WebBrowser(boolean autoDispose){
-        this(null, autoDispose);
+        this(null);
     }
 
-
     /**
-     * Constructs a new <code>WebBrowser</code> with an URL specified. 
-     * This instance will automatically dispose itself when removeNotify() is 
-     * called. 
-     * <p>This constructor is equivalent to WebBrowser(url, true).
-
-     * @param url the URL to be shown in this instance.
-     * 
-     * @see #WebBrowser(boolean)
-     * @see #removeNotify()
-     * @see #dispose()
+     * Constructs a new <code>WebBrowser</code> with an URL specified.
      */
     public WebBrowser(URL url) {
-        this(url, true);
-    }
-    
-    /**
-     * Constructs a new <code>WebBrowser</code> with an specified URL and 
-     * boolean flag to indicate the dispose schema.
-     * 
-     * @param url the URL to be shown in this instance.
-     * @param autoDispose ture to indicate this instance will automatically 
-     *        dispose itself in removeNotify(); false to indicate developer 
-     *        should call dispose() when this instance is no longer needed.
-     *        
-     * @see #removeNotify()
-     * @see #dispose()
-     *        
-     */
-    public WebBrowser(URL url, boolean autoDispose){
-        this.autoDispose = autoDispose;
-        
-        synchronized(WebBrowser.class) {
+        synchronized(this) {
             instanceNum = lastInstanceNum;
             lastInstanceNum++;
         }
@@ -190,59 +134,29 @@ public class WebBrowser extends Canvas
      * Creates the peer for this WebBrowser component. The peer allows us to 
      * modify the appearance of the WebBrowser component without changing its 
      * functionality.
-     * 
-     * @see #removeNotify()
      */
     public void addNotify() {
-        boolean displayable = super.isDisplayable();
+        boolean flag = super.isDisplayable();
         super.addNotify();
-        if(!displayable) {
+        if(!flag) {
             eventThread.fireNativeEvent(instanceNum, 
                     NativeEventData.EVENT_CREATEWINDOW);
-        }
-        if(!autoDispose){
-            this.setVisible(true);
         }
     }
     
     /**
      * Makes this WebBrowser component undisplayable by destroying it native 
-     * screen resource if the <code>autoDispose</code> is true. Or just make
-     * this instance invisible if the <code>autoDispose</code> is false.
+     * screen resource. 
      * <p>
      * This method is called by the toolkit internally and should not be called 
-     * directly by programs. 
-     * <p>
-     * If <code>autoDispose</code> is false, developer should call dispose() 
-     * when this instance is no longer needed. Otherwise, it resource will never
-     * be released untill this JVM exit.
-     * 
-     * @see #addNotify()
-     * @see #dispose()
+     * directly by programs.  
      */     
     public void removeNotify() {
-        if(autoDispose){
-            dispose();
-        }else{
-            this.setVisible(false);
-        }
-    }
-    
-    /**
-     * Release this instance's resource and make it undisplayable.
-     * If <code>autoDispose</code> is true, this method will be called by the 
-     * toolkit internally. If <code>autoDispose</code> is false, this method
-     * should be called by developer when this instance is no longer needed.
-     * 
-     * @see #removeNotify()
-     */
-    public void dispose(){
         Thread disposeThread = new Thread() {
             public void run() {
                 synchronized( WebBrowser.this ){
                     eventThread.fireNativeEvent(instanceNum, 
                             NativeEventData.EVENT_DESTROYWINDOW);
-                    
                     try {
                         // wait untill we get the message 
                         //   WebBrowserEvent.WEBBROWSER_DESTROYWINDOW_SUCC
@@ -255,6 +169,7 @@ public class WebBrowser extends Canvas
                 setInitialized(false);
             }
         };
+
         disposeThread.start();
     }
 
@@ -420,10 +335,10 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Returns the URL of the resource that is currently being displayed.
+     * Returns the URL of the resource that is currently being loaded.
      *
-     * @return the current URL being display, or <code>null</code> if no URL is
-     *         currently displayed or the WebBrowser is not yet initialized.
+     * @return the current URL being loaded, or <code>null</code> if no URL is
+     *         currentlloadayed or the WebBrowser is not yet initialized.
      */
     public URL getURL() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_GETURL);
@@ -491,7 +406,7 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Reloads the URL that is currently displayed in the WebBrowser component.
+     * Reloads the URL that is currently loaded in the WebBrowser component.
      */
     public void refresh() {
         eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_REFRESH);
@@ -505,6 +420,27 @@ public class WebBrowser extends Canvas
     }
 
     /**
+     * Prints the currently loaded document.
+     * <p>
+     * This is a convenience method to use <code>executeScript</code> to print 
+     * the currently loaded document:
+     * <code>
+     * <pre>
+     *     // Print the currently loaded document.    
+     *     WebBrowser webBrowser = new WebBrowser();
+     *     ......
+     *     webBrowser.executeScript("window.print();");
+     * </pre>
+     * </code>  
+     * 
+     * @see #executeScript(java.lang.String)
+     * @since 0.9.2
+     */
+    public void print() {
+        executeScript("window.print();");
+    }        
+    
+    /**
      * Sets new HTML content. 
      * 
      * @param htmlContent the HTML content to set.
@@ -516,9 +452,9 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Returns the HTML content of a document, opened in a browser.
+     * Returns the HTML content of a document, loaded in a browser.
      * 
-     * @return the HTML content of a document, opened in a browser.
+     * @return the HTML content of a document, loaded in a browser.
      * @since 0.9
      */
     public String getContent() {
@@ -536,11 +472,21 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Executes specified JavaScript code in a currently opened document.
-     * This should not be called until after a documentComplete event is 
-     * fired in <code>WebBrowserListener</code>. 
-     *
+     * Executes the specified JavaScript code on the currently loaded document.
+     * This should not be called until after a <code>documentCompleted</code> 
+     * event fired in <code>WebBrowserListener</code>.
+     * <p>    	   	
+     * For example, execute JavaScript to show an alert dialog:
+     * <code>
+     * <pre>
+     *     // Show a JavaScript alert dialog.    
+     *     WebBrowser webBrowser = new WebBrowser();
+     *     webBrowser.executeScript("alert('Using executeScript')");
+     * </pre>
+     * </code>
+     * 
      * @return the result of JavaScript execution, if there is any.
+     * @see WebBrowserListener#documentCompleted
      * @since 0.9 
      */
     public String executeScript(java.lang.String javaScript) {
@@ -658,7 +604,7 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Called when a new window is to be created for displaying a resource.
+     * Called when a new window is to be created for loading a resource.
      * <p>
      * A subclass can override this method to block the creation of a new 
      * window or allow it to proceed. 
