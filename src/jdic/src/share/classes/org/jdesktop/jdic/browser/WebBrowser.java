@@ -69,6 +69,8 @@ public class WebBrowser extends Canvas
     private boolean isForwardEnabled = false;
     private String initFailureMessage = "WebBrowser is not initialized.";       
 
+    private boolean autoDispose = true;
+
     static {
         // Add the initialization code from package org.jdesktop.jdic.init.
         // To set the environment variables or initialize the set up for 
@@ -102,16 +104,70 @@ public class WebBrowser extends Canvas
 
     /**
      * Constructs a new <code>WebBrowser</code> object with no URL specified.
+     * This instance will automatically dispose itself when removeNotify() is 
+     * called. 
+     * <p>This constructor is equivalent to WebBrowser(true).
+     * 
+     * @see #WebBrowser(boolean)
+     * @see #removeNotify()
+     * @see #dispose()
      */
     public WebBrowser() {
-        this(null);
+        this(true);
+    }
+    
+    /**
+     * Constructs a new <code>WebBrowser</code> object with the specified 
+     * boolean value <code>autoDispose</code> as the flag which indicate whether 
+     * this instance will automatically dispose itself in removeNotify() or should
+     * be disposed by developer directly call dispose().
+     * <p>This constructor is equivalent to WebBrowser(null, autoDispose).
+     * 
+     * @param autoDispose ture to indicate this instance will automatically 
+     *        dispose itself in removeNotify(); false to indicate developer 
+     *        should call dispose() when this instance is no longer needed.
+     * 
+     * @see #removeNotify()
+     * @see #dispose()
+     */
+    public WebBrowser(boolean autoDispose){
+        this(null, autoDispose);
     }
 
+
     /**
-     * Constructs a new <code>WebBrowser</code> with an URL specified.
+     * Constructs a new <code>WebBrowser</code> with an URL specified. 
+     * This instance will automatically dispose itself when removeNotify() is 
+     * called. 
+     * <p>This constructor is equivalent to WebBrowser(url, true).
+
+     * @param url the URL to be shown in this instance.
+     * 
+     * @see #WebBrowser(boolean)
+     * @see #removeNotify()
+     * @see #dispose()
      */
     public WebBrowser(URL url) {
-        synchronized(this) {
+        this(url, true);
+    }
+    
+    /**
+     * Constructs a new <code>WebBrowser</code> with an specified URL and 
+     * boolean flag to indicate the dispose schema.
+     * 
+     * @param url the URL to be shown in this instance.
+     * @param autoDispose ture to indicate this instance will automatically 
+     *        dispose itself in removeNotify(); false to indicate developer 
+     *        should call dispose() when this instance is no longer needed.
+     *        
+     * @see #removeNotify()
+     * @see #dispose()
+     *        
+     */
+    public WebBrowser(URL url, boolean autoDispose){
+        this.autoDispose = autoDispose;
+        
+        synchronized(WebBrowser.class) {
             instanceNum = lastInstanceNum;
             lastInstanceNum++;
         }
@@ -134,29 +190,59 @@ public class WebBrowser extends Canvas
      * Creates the peer for this WebBrowser component. The peer allows us to 
      * modify the appearance of the WebBrowser component without changing its 
      * functionality.
+     * 
+     * @see #removeNotify()
      */
     public void addNotify() {
-        boolean flag = super.isDisplayable();
+        boolean displayable = super.isDisplayable();
         super.addNotify();
-        if(!flag) {
+        if(!displayable) {
             eventThread.fireNativeEvent(instanceNum, 
                     NativeEventData.EVENT_CREATEWINDOW);
+        }
+        if(!autoDispose){
+            this.setVisible(true);
         }
     }
     
     /**
      * Makes this WebBrowser component undisplayable by destroying it native 
-     * screen resource. 
+     * screen resource if the <code>autoDispose</code> is true. Or just make
+     * this instance invisible if the <code>autoDispose</code> is false.
      * <p>
      * This method is called by the toolkit internally and should not be called 
-     * directly by programs.  
+     * directly by programs. 
+     * <p>
+     * If <code>autoDispose</code> is false, developer should call dispose() 
+     * when this instance is no longer needed. Otherwise, it resource will never
+     * be released untill this JVM exit.
+     * 
+     * @see #addNotify()
+     * @see #dispose()
      */     
     public void removeNotify() {
+        if(autoDispose){
+            dispose();
+        }else{
+            this.setVisible(false);
+        }
+    }
+    
+    /**
+     * Release this instance's resource and make it undisplayable.
+     * If <code>autoDispose</code> is true, this method will be called by the 
+     * toolkit internally. If <code>autoDispose</code> is false, this method
+     * should be called by developer when this instance is no longer needed.
+     * 
+     * @see #removeNotify()
+     */
+    public void dispose(){
         Thread disposeThread = new Thread() {
             public void run() {
                 synchronized( WebBrowser.this ){
                     eventThread.fireNativeEvent(instanceNum, 
                             NativeEventData.EVENT_DESTROYWINDOW);
+                    
                     try {
                         // wait untill we get the message 
                         //   WebBrowserEvent.WEBBROWSER_DESTROYWINDOW_SUCC
@@ -169,7 +255,6 @@ public class WebBrowser extends Canvas
                 setInitialized(false);
             }
         };
-
         disposeThread.start();
     }
 
