@@ -69,6 +69,11 @@ public class WebBrowser extends Canvas
     private boolean isForwardEnabled = false;
     private String initFailureMessage = "WebBrowser is not initialized.";       
 
+    /**
+     * boolean flag used to indicate how to dispose this instance.
+     * @see #dispose()
+     * @see #removeNotify()
+     */
     private boolean autoDispose = true;
 
     static {
@@ -104,9 +109,9 @@ public class WebBrowser extends Canvas
 
     /**
      * Constructs a new <code>WebBrowser</code> object with no URL specified.
-     * This instance will automatically dispose itself when removeNotify() is 
-     * called. 
-     * <p>This constructor is equivalent to WebBrowser(true).
+     * This instance will automatically dispose itself when 
+     * <code>removeNotify()</code> is called. 
+     * <p>This constructor is equivalent to <code>WebBrowser(true)</code>.
      * 
      * @see #WebBrowser(boolean)
      * @see #removeNotify()
@@ -118,14 +123,17 @@ public class WebBrowser extends Canvas
     
     /**
      * Constructs a new <code>WebBrowser</code> object with the specified 
-     * boolean value <code>autoDispose</code> as the flag which indicate whether 
-     * this instance will automatically dispose itself in removeNotify() or should
-     * be disposed by developer directly call dispose().
-     * <p>This constructor is equivalent to WebBrowser(null, autoDispose).
+     * boolean value <code>autoDispose</code> as the flag which indicates 
+     * whether this instance will automatically dispose itself in 
+     * <code>removeNotify()</code> or should be disposed by the developer 
+     * directly calling <code>dispose()</code>.
+     * <p>This constructor is equivalent to 
+     * <code>WebBrowser(null, autoDispose)</code>.
      * 
      * @param autoDispose ture to indicate this instance will automatically 
-     *        dispose itself in removeNotify(); false to indicate developer 
-     *        should call dispose() when this instance is no longer needed.
+     *        dispose itself in <code>removeNotify()</code>; false to indicate
+     *        the developer should call <code>dispose()</code> when this 
+     *        instance is no longer needed.
      * 
      * @see #removeNotify()
      * @see #dispose()
@@ -137,9 +145,9 @@ public class WebBrowser extends Canvas
 
     /**
      * Constructs a new <code>WebBrowser</code> with an URL specified. 
-     * This instance will automatically dispose itself when removeNotify() is 
-     * called. 
-     * <p>This constructor is equivalent to WebBrowser(url, true).
+     * This instance will automatically dispose itself when 
+     * <code>removeNotify()</code> is called. 
+     * <p>This constructor is equivalent to <code>WebBrowser(url, true)</code>.
 
      * @param url the URL to be shown in this instance.
      * 
@@ -157,8 +165,9 @@ public class WebBrowser extends Canvas
      * 
      * @param url the URL to be shown in this instance.
      * @param autoDispose ture to indicate this instance will automatically 
-     *        dispose itself in removeNotify(); false to indicate developer 
-     *        should call dispose() when this instance is no longer needed.
+     *        dispose itself in <code>removeNotify()</code>; false to indicate
+     *        the developer should call <code>dispose()</code> when this 
+     *        instance is no longer needed.
      *        
      * @see #removeNotify()
      * @see #dispose()
@@ -213,9 +222,9 @@ public class WebBrowser extends Canvas
      * This method is called by the toolkit internally and should not be called 
      * directly by programs. 
      * <p>
-     * If <code>autoDispose</code> is false, developer should call dispose() 
-     * when this instance is no longer needed. Otherwise, it resource will never
-     * be released untill this JVM exit.
+     * If <code>autoDispose</code> is false, developer should call 
+     * <code>dispose()</code> when this instance is no longer needed. 
+     * Otherwise, it resource will never be released untill this JVM exit.
      * 
      * @see #addNotify()
      * @see #dispose()
