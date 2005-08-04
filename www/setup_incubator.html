@@ -65,70 +65,91 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
 <p>Below are detailed instructions for the incubator project proposer(s) and <a href="mailto:%20owner@jdic.dev.java.net">JDIC
 owners</a> to setup a new
 incubator project in the <a href="https://jdic.dev.java.net#incubator">Incubator
-Projects</a> section of JDIC. This doc consists of two sections: the <a href="#For incubator project proposers">For
+Projects</a> section. This document consists of two sections: the <a href="#For incubator project proposers">For
 incubator project proposers</a> section, and the <a href="#For JDIC owners">For JDIC Owners</a>
 section, which outline the tasks for the project proposers and JDIC project
 owners respectively.</p>
 <p><b><a name="For incubator project proposers">For incubator project
 proposers:</a></b></p>
 <blockquote>
-<p><b>Note</b>: If you are proposing one single method, one single class, type of
+<p><b>Note</b>: If you are proposing one single method or one single class type of
 APIs, please <a href="https://jdic.dev.java.net/servlets/ProjectMembershipRequest">apply
 for</a> a &quot;javadesktop&gt;swinglabs&gt;jdic.Misc Incubator Project Developer&quot;
 role for the <a href="https://jdic.dev.java.net/#incubator">Misc incubator
-project</a> and add your APIs to that incubator project. Or else, you need to
+project</a> and add your APIs to that incubator project. Or else, please
 apply for a separate incubator project following below instructions:</p>
 </blockquote>
 <ul>
   <li><b>Post your proposal to the <a href="http://www.javadesktop.org/forums/forum.jspa?forumID=52">JDIC
     Forum</a>.</b><br>
-    The post should be entitled like &quot;[Incubator Project Proposal] XXX&quot;.
-    It should give a brief introduction of the problem and a draft
-    specification. This helps to get the feedback from the community, and align
+    The post should be entitled like &quot;[Incubator Project Proposal] XXX&quot;,
+    which a brief introduction of the idea and the problem. A draft API
+    specification would be helpful. At the same time, enter an issue in <a href="https://jdic.dev.java.net/servlets/ProjectIssues">Issue
+    Tracker</a> to keep track of it, which can be used to share prototype code
+    and patches.&nbsp;<br>
+    <br>
+ This helps to get the feedback from the community, and align
     efforts with other individual developers and 3rd party projects in the early
     beginning.</li>
+</ul>
+<ul>
   <li><b>Get the JDIC owners' approval.&nbsp;<br>
     </b>They'll then set up the project following below <a href="#For JDIC owners">For
     JDIC owners</a> section.</li>
-  <li><b>Finalize the package name and API specification.</b><br>
-    The specs need to be discussed and agreed with among the developers and JDIC
-    owners. The API specification could contain simply one API, or a couple of
-    APIs. Refer to the <a href="https://jdic.dev.java.net/documentation/faq.html#Is%20there%20any%20Java%20package%20naming%20convention?">Java
-    package naming convention</a> while specifying the package name.</li>
+</ul>
+<ul>
+  <li><b>Finalize the project name, package name and API specification.</b><br>
+ Refer to the <a href="https://jdic.dev.java.net/documentation/faq.html#Is%20there%20any%20Java%20package%20naming%20convention?">Java
+    package naming convention</a> while specifying the package name. The specs need to be discussed and agreed with among the developers and JDIC
+    owners.&nbsp;</li>
+</ul>
+<ul>
   <li><b>Check in the code and docs to the CVS repository.</b><br>
-    At least, there needs an index.html (README) file, and a javadoc link, before
-    or after the code is ready. Please add/import the javadoc folder as <code>[jdic]/www/incubator/&lt;modulename&gt;/javadoc</code>,
+    For each project, there is an index.html (README) file, which should provide
+    a general description of the project, a javadoc link, souce code building
+    instructions and relevant information. Add/import the javadoc folder as <code>[jdic]/www/incubator/&lt;modulename&gt;/javadoc</code>,
     then the javadoc link should be like:<code> </code>https://jdic.dev.java.net/<b>nonav</b>/incubator/&lt;modulename&gt;/javadoc/.
     DO NOT miss the &quot;nonav&quot; part in the URL link.<br>
     <br>
  Follow the same <a href="https://jdic.dev.java.net/source/browse/jdic/src/jdic/">file
-    structure</a> of JDIC and all the incubator project source, which makes it
-    easy to be integrated into the central JDIC source
-    someday. A suggestion is to <a href="https://jdic.dev.java.net/source/browse/jdic/src/jdic/">download</a>
-    a JDIC or incubator project source release, and change the source.</li>
+    structure</a> of JDIC and all the incubator projects, which makes things
+    easy while integrating them together. A suggestion is to <a href="https://jdic.dev.java.net/source/browse/jdic/src/jdic/">download</a>
+    a JDIC or incubator project source release, and change the source.<br>
+    <br>
+    The code should follow the <a href="http://java.sun.com/docs/codeconv/">Code Conventions for the Java Programming Language</a>
+    by Sun. To make things easier, some source code formatter tools like <a href="http://checkstyle.sourceforge.net/"> Checkstyle</a>
+    or <a href="http://jalopy.sourceforge.net/">Jalopy</a> can be used.</li>
+</ul>
+<ul>
   <li><b>Release a source or binary download.</b><br>
-    After the owners setup the incubator project, there is a folder for the
+    After the incubator project is setup, there is a folder for the
     incubator project in the <a href="https://jdic.dev.java.net/servlets/ProjectDocumentList">Document
     &amp; files</a> page to hold downloads. There is no way to grant the upload
-    permission to the incubator project owners, unlike the source or www modules
-    in the CVS repository. If you release/remove a download by
+    permission to the incubator project owners. If you release/remove a download by
     adding/deleting new files or folders, there'll be a &quot;suggest to upload/delete
     file/folder&quot; notice sent to the JDIC owners, which will be approved shortly.</li>
 </ul>
+<ul>
+  <li><b>Make a Java Web Start demo</b><br>
+    A Java Web Start demo helps users to try out the API much easier. For
+    general information on Java Web Start, refer to Java Web Start <a href="http://java.sun.com/products/javawebstart/">website</a>.
+    You can also read <a href="documentation/deployment.html">JDIC Deployment</a>
+    page to make a Java Web Start demo. The demo will be added to the <a href="https://jdic.dev.java.net/#demos">Demos</a>
+    section of JDIC homepage.</li>
+</ul>
 <p><b><a name="For JDIC owners">For JDIC owners:</a></b></p>
 <blockquote>
-  <p>Once the JDIC owners approve the incubator project proposal, follow below
-  instructions to setup the project. To make it clear, we take the process of setting up the <i>SystemInfo</i>
+  <p>JDIC owners follow below
+  instructions to setup a new incubator project. To make it clear, we take the process of setting up the <i>SystemInfo</i>
 incubator project as an example.</p>
 </blockquote>
 <ul>
-  <li><b>Make sure the contributors/owners of the incubator project sign the JCA
-    form according to the <a href="developer.html#How%20to%20Contribute">instructions</a>.</b>
+  <li><b>There is a signed JCA form from the contributors/owners of the incubator project
+    according to the <a href="developer.html#How%20to%20Contribute">instructions</a>.</b>
   </li>
-  <li><b>Make sure the incubator project holds or refers to exactly the same <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING?rev=1.2&amp;only_with_tag=HEAD&amp;view=markup">license
-    terms</a> as the JDIC project.</b></li>
-  <li><b>Add the source code and WWW documents of the incubator project to the
-    JDIC CVS repository.</b>
+  <li><b>The incubator project holds the same JDIC <a href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING?rev=1.2&amp;only_with_tag=HEAD&amp;view=markup">license
+    terms</a>.</b></li>
+  <li><b>Add the source code and WWW documents of the incubator project to the CVS repository.</b>
   </li>
   <ul>
     <li>Create a CVS module for the source code of the incubator project in the CVS repository:
