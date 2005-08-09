@@ -290,7 +290,8 @@ class NativeEventThread extends Thread
 
         if (WebBrowserEvent.WEBBROWSER_RETURN_URL == eventData.type ||
             WebBrowserEvent.WEBBROWSER_GETCONTENT == eventData.type ||
-            WebBrowserEvent.WEBBROWSER_EXECUTESCRIPT == eventData.type) {
+            WebBrowserEvent.WEBBROWSER_EXECUTESCRIPT == eventData.type ||
+            WebBrowserEvent.WEBBROWSER_DESTROYWINDOW_SUCC == eventData.type ) {
             eventRetString = eventData.stringValue;
             notifyWebBrowser(eventData.instance);
             return;
