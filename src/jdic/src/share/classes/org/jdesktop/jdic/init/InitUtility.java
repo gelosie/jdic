@@ -32,14 +32,6 @@ public class InitUtility {
     }
     
     /**
-     * Gets the value of the environment variable.
-     *
-     * @param envVarName The name of the environment variable.
-     * @return The value of the environment variable.
-     */
-    public static native String getEnv(String envVarName);
-    
-    /**
      * Sets the environment variable. 
      *
      * @param ennVarName The name of the environment variable.
@@ -54,11 +46,8 @@ public class InitUtility {
      * @param appendValue new value to be appended.
      */
     public static void preAppendEnv(String envVarName, String appendValue) {
-        String originalValue = getEnv(envVarName);
-        String newValue = appendValue;
-        if (originalValue != null) {
-            newValue = appendValue.concat(File.pathSeparator).concat(originalValue);
-        }
-        setEnv(envVarName, newValue);
+        String oldValue = System.getenv(envVarName);
+        setEnv(envVarName, oldValue == null ? appendValue 
+                : appendValue+File.pathSeparator+oldValue);
     }
 } 
