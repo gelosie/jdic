@@ -33,7 +33,6 @@
 #ifndef PATH_MAX
 #define PATH_MAX 512
 #endif
-
 /*
  * Class:     org_jdesktop_jdic_browser_internal_WebBrowserUtil
  * Method:    nativeGetBrowserPath
@@ -45,8 +44,18 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
 {    
     // Get environment variable MOZILLA_FIVE_HOME value.
     char *moz5home_env = getenv("MOZILLA_FIVE_HOME");
-    if (moz5home_env != NULL)
-        return env->NewStringUTF(moz5home_env);
+    if (moz5home_env != NULL){
+        char *firefox = g_strconcat (moz5home_env, "/firefox", NULL);
+        struct stat stat_p;
+        int is_firefox = stat(firefox, &stat_p);
+        g_free(firefox);
+        if (is_firefox == 0) {
+            // MOZILLA_FIVE_HOME is point to firefox, unset it.
+            unsetenv("MOZILLA_FIVE_HOME");
+        }else{
+            return env->NewStringUTF(moz5home_env);
+        }
+     }
 
     /*
      * MOZILLA_FIVE_HOME not set. Search the Mozilla binary path to set it:
