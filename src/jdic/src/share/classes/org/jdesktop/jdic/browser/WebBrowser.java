@@ -118,9 +118,10 @@ public class WebBrowser extends Canvas
 
     /**
      * Constructs a new <code>WebBrowser</code> object with no URL specified.
-     * This instance will automatically dispose itself when 
-     * <code>removeNotify()</code> is called. 
-     * <p>This constructor is equivalent to <code>WebBrowser(true)</code>.
+     * This instance will automatically dispose itself when <code>removeNotify()
+     * </code> is called. 
+     * <p>
+     * This constructor is equivalent to <code>WebBrowser(true)</code>.
      * 
      * @see #WebBrowser(boolean)
      * @see #removeNotify()
@@ -133,11 +134,12 @@ public class WebBrowser extends Canvas
     /**
      * Constructs a new <code>WebBrowser</code> object with the specified 
      * boolean value <code>autoDispose</code> as the flag which indicates 
-     * whether this instance will automatically dispose itself in 
-     * <code>removeNotify()</code> or should be disposed by the developer 
-     * directly calling <code>dispose()</code>.
-     * <p>This constructor is equivalent to 
-     * <code>WebBrowser(null, autoDispose)</code>.
+     * whether this instance will automatically dispose itself in <code>
+     * removeNotify()</code> or should be disposed by the developer directly 
+     * calling <code>dispose()</code>.
+     * <p>
+     * This constructor is equivalent to <code>WebBrowser(null, autoDispose)
+     * </code>.
      * 
      * @param autoDispose ture to indicate this instance will automatically 
      *        dispose itself in <code>removeNotify()</code>; false to indicate
@@ -154,9 +156,9 @@ public class WebBrowser extends Canvas
 
 
     /**
-     * Constructs a new <code>WebBrowser</code> with an URL specified. 
-     * This instance will automatically dispose itself when 
-     * <code>removeNotify()</code> is called. 
+     * Constructs a new <code>WebBrowser</code> with an URL specified. This 
+     * instance will automatically dispose itself when <code>removeNotify()
+     * </code> is called. 
      * <p>This constructor is equivalent to <code>WebBrowser(url, true)</code>.
 
      * @param url the URL to be shown in this instance.
@@ -259,7 +261,7 @@ public class WebBrowser extends Canvas
     /**
      * Release this instance's resource and make it undisplayable. If <code>
      * isAutoDispose()</code> return true, this method will be called by the 
-     * toolkit internally. If <code>isAutoDispose</code> return false, this 
+     * toolkit internally. If <code>isAutoDispose()</code> return false, this 
      * method should be called by developer when this instance is no longer 
      * needed.
      * 
