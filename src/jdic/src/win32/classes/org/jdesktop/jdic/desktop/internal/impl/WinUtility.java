@@ -139,8 +139,8 @@ public class WinUtility {
    				WinAPIWrapper.HKEY_LOCAL_MACHINE,
 	            "SOFTWARE\\Clients\\Mail\\"+defMailer+"\\shell\\open\\command",
 				"");
-   		int lastSpace = mailerPath.lastIndexOf(' ');
-   		return mailerPath.substring(0, lastSpace);
+   		int index = mailerPath.toLowerCase().lastIndexOf(".exe");
+   		return mailerPath.substring(mailerPath.charAt(0) == '"' ? 1 : 0, index+4);
     }
     
     /**
