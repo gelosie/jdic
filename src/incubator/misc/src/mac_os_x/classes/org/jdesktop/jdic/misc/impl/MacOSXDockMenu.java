@@ -93,16 +93,42 @@ public class MacOSXDockMenu extends DockMenu {
 			System.out.println("creating dock menu");
 			//NSMenuItem showCurrItem;
 
-			NSMenu dockMenu  = dockMenu = new NSMenu();
-
+			//NSMenu dockMenu  = dockMenu = new NSMenu();
+            NSMenu dockMenu = new NSMenu();
+            addSubmenu(menu, dockMenu);
+			
+			/*
 			for (int i = 0; i < menu.getMenuComponentCount(); i++) {
 				JMenuItem item     = (JMenuItem) menu.getMenuComponent(i);
 				NSMenuItem nsitem  = new NSMenuItem(item.getText(), actionSel, "");
 				nsitem.setTarget(item);
 				dockMenu.addItem(nsitem);
 			}
+			*/
 			return dockMenu;
 		}
+		
+		private void addSubmenu(JMenu m, NSMenu submen) {
+			for (int i = 0; i<m.getItemCount(); i++) {
+				if (m.getMenuComponent(i) instanceof JSeparator) {
+					NSMenuItem nsitem = new NSMenuItem();
+					nsitem = nsitem.separatorItem();
+					submen.addItem(nsitem);
+				} else {
+					JMenuItem mi = (JMenuItem) m.getMenuComponent(i);
+					NSMenuItem nsitem  = new NSMenuItem(mi.getText(), actionSel, "");
+					nsitem.setTarget(mi);
+					submen.addItem(nsitem);
+				
+					if (mi instanceof JMenu) {
+						NSMenu submenu = new NSMenu(mi.getText());
+						submen.setSubmenuForItem(submenu, nsitem);
+						addSubmenu((JMenu)mi, submenu);
+					}
+				}
+			}
+		}
+
 
 	}
 	

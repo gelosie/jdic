@@ -73,6 +73,14 @@ public class DockMenuTest {
 				}
 			});
 		dock_menu.add(ditem);
+		
+		dock_menu.add(new JMenuItem("Separator Next"));
+		dock_menu.add(new JSeparator());
+		JMenuItem sub_menu = new JMenu("Sub Menu");
+		sub_menu.add(new JMenuItem("Item 1"));
+		sub_menu.add(new JMenuItem("Item 2"));
+		dock_menu.add(sub_menu);
+		
 
 		// set the dock menu. you must do this after
 		// after the first frame is created so that we are in AWT mode

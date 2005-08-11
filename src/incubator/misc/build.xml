@@ -38,11 +38,13 @@ Top-level target:
 
 	<property name="mac.native.dir" value="${src.dir}/mac_os_x/native" />
 	<property name="mac.native.jni.dir" value="${mac.native.dir}/jni" />
+	
+	<property name="target.version" value="1.4"/>
 
 	<!-- the distribution version and release of this build -->
 	<!-- which is used in javadoc and distzip targets -->
 	<property name="version" value="0.1" />
-	<property name="release" value="2" />
+	<property name="release" value="3" />
 
 	<!-- the generated jar file name -->
 	<property name="jar.file" value="jdic_misc.jar" />
@@ -274,7 +276,7 @@ The generated distribution is put under *dist* directory.
 	<target name="buildmacjar" depends="init, buildsharejar" description="build the classes and jar file.">
 		<javac srcdir="${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}:/System/Library/Java" 
 			debug="${javac.debug}" 
-			target="${target.version}"/>
+			source="${target.version}" target="${target.version}"/>
 
 		<jar destfile="${dist.dir}/${jar.file}" update="false">
 			<fileset dir="${dist.dir}" includes="org/**/*.class" />
