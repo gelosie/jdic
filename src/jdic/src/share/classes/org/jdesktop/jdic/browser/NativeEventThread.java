@@ -79,7 +79,7 @@ class NativeEventThread extends Thread
                 File.separator+WebBrowserUtil.getEmbedBinaryName();
             final String cmd = (new File(filepath).exists()) ? filepath 
                     : WebBrowserUtil.getEmbedBinaryName();    
-            WebBrowserUtil.trace("Executing " + cmd);
+            WebBrowserUtil.trace("Executing " + cmd +" -port="+messenger.getPort());
             AccessController.doPrivileged(
                 new PrivilegedExceptionAction() {
                     public Object run() throws IOException {
