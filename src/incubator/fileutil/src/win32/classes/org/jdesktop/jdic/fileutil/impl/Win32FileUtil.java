@@ -35,30 +35,9 @@ public class Win32FileUtil implements FileUtil {
 
     /**
      * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can. It's a convenience method, works in the same way
-     * than delete(File file, true).
+     * Recycle Bin/Trash Can.
      * 
      * @param file the file or directory to be recycled.
-     * @return <code>true</code> if and only if the file or directory is
-     *         successfully recycled; <code>false</code> otherwise.
-     * @throws IOException If an I/O error occurs, which is possible because the
-     *         construction of the canonical pathname may require filesystem
-     *         queries.
-     * 
-     * @throws SecurityException
-     *          If a required system property value cannot be accessed.
-     */
-    public boolean recycle(File file) throws IOException, SecurityException {
-        return recycle(file, true);
-    }
-
-    /**
-     * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can. Returns false if the user aborts the operation.
-     * 
-     * @param file the file or directory to be recycled.
-     * @param confirm <b>true</b> shows a confirmation dialog; <b>false</b> 
-     *        recycles without notification.
      * @return <b>true</b> if and only if the file or directory is successfully 
      *         recycled; <b>false</b> otherwise.
      * @throws IOException If an I/O error occurs, which is possible because the
@@ -67,10 +46,10 @@ public class Win32FileUtil implements FileUtil {
      * @throws SecurityException If a required system property value cannot be 
      *         accessed.
      */
-    public boolean recycle(File file, boolean confirm) throws IOException,
+    public boolean recycle(File file) throws IOException,
             SecurityException {
         String fullPath = file.getCanonicalPath();
-        int status = Win32NativeFileUtil.recycle(fullPath, confirm);
+        int status = Win32NativeFileUtil.recycle(fullPath, false);
         
         if(status == 0) {
         	return !file.exists();

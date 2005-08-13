@@ -34,48 +34,20 @@ import org.jdesktop.jdic.fileutil.FileUtil;
 public class UnixFileUtil implements FileUtil {
 
 	/**
+     * This method isn't supported on Linux. It will throw an UnsupportedOperationException.
      * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can. It's a convenience method, works in the same way
-     * than delete(File file, true).
+     * Recycle Bin/Trash Can.
      * 
      * @param file the file or directory to be recycled.
-     * @return <code>true</code> if and only if the file or directory is
-     *         successfully recycled; <code>false</code> otherwise.
-     * @throws IOException If an I/O error occurs, which is possible because the
-     *         construction of the canonical pathname may require filesystem
-     *         queries.
-     * 
+     * @return <b>true</b> if and only if the file or directory is
+     *         successfully recycled; <b>false</b> otherwise.
+     * @throws IOException If an I/O error occurs. 
      * @throws SecurityException If a required system property value cannot be 
-     *         accessed, or if a security manager exists and its <code>{@link
-     *         java.lang.SecurityManager#checkRead}</code> method denies read 
-     *         access to the file.
+     *         accessed.
+     * @throws UnsupportedOperationException If the method isn't supported in the specific platform.
      */
     public boolean recycle(File file) throws IOException, SecurityException {
-        return recycle(file, true);
-    }
-
-    /**
-     * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can. It will return true even if the user aborted the 
-     * operation.
-     * 
-     * @param file the file or directory to be recycled.
-     * @param confirm <code>true</code> shows a confirmation dialog;
-     *        <code>false</code> recycles without notification.
-     * @return <code>true</code> if and only if the file or directory is
-     *         successfully recycled; <code>false</code> otherwise.
-     * @throws IOException If an I/O error occurs, which is possible because the
-     *         construction of the canonical pathname may require filesystem
-     *         queries.
-     * 
-     * @throws SecurityException If a required system property value cannot be 
-     *         accessed, or if a security manager exists and its <code>{@link
-     *         java.lang.SecurityManager#checkRead}</code> method denies read 
-     *         access to the file.
-     */
-    public boolean recycle(File file, boolean confirm) throws IOException,
-            SecurityException {
-        return false;
+    	throw new UnsupportedOperationException("Your platform doesn't support this method");
     }
 
     /**

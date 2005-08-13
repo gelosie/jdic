@@ -33,36 +33,18 @@ public interface FileUtil {
     
     /**
      * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can. It's a convenience method, works in the same way
-     * than delete(File file, true).
+     * Recycle Bin/Trash Can.
      * 
      * @param file the file or directory to be recycled.
      * @return <b>true</b> if and only if the file or directory is
      *         successfully recycled; <b>false</b> otherwise.
-     * @throws IOException If an I/O error occurs.
-     * 
+     * @throws IOException If an I/O error occurs. 
      * @throws SecurityException If a required system property value cannot be 
      *         accessed.
+     * @throws UnsupportedOperationException If the method isn't supported in the specific platform.
      */
     public boolean recycle(File file) throws IOException,
-            SecurityException;
-
-    /**
-     * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can.
-     * 
-     * @param file the file or directory to be recycled.
-     * @param confirm <b>true</b> shows a confirmation dialog; <b>false</b> 
-     *        recycles without notification.
-     * @return <b>true</b> if and only if the file or directory is successfully 
-     *         recycled; <b>false</b> otherwise.
-     * @throws IOException If the file doesn't exist or if an I/O error occurs.
-     * 
-     * @throws SecurityException If a required system property value cannot be 
-     *         accessed.
-     */
-    public boolean recycle(File file, boolean confirm)
-            throws IOException, SecurityException;
+            SecurityException, UnsupportedOperationException;
 
     /**
      * Return the amount of free bytes available in the directory or file
@@ -72,8 +54,9 @@ public interface FileUtil {
      * @return the amount of free space in the Disk. The size is wrapped in a
      *         BigInteger due to platform-specific issues.
      * @throws IOException
+     * @throws UnsupportedOperationException If the method isn't supported in the specific platform.
      */
-    public BigInteger getFreeSpace(File file) throws IOException;
+    public BigInteger getFreeSpace(File file) throws IOException, UnsupportedOperationException;
     
     /**
      * Return the size of the partition denoted by the file Object.
@@ -82,7 +65,8 @@ public interface FileUtil {
      * @return the size of the partition. The size is wrapped in a
      *         BigInteger due to platform-specific issues.
      * @throws IOException
+     * @throws UnsupportedOperationException If the method isn't supported in the specific platform.
      */
-    public BigInteger getTotalSpace(File file) throws IOException;
+    public BigInteger getTotalSpace(File file) throws IOException, UnsupportedOperationException;
 
 }

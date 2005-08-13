@@ -33,36 +33,12 @@ import com.apple.cocoa.foundation.NSArray;
  *
  */
 public class MacOSXFileUtil implements FileUtil {
-	
-    /**
-     * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can. It's a convenience method, works in the same way
-     * than delete(File file, true).
-     * 
-     * @param file the file or directory to be recycled.
-     * @return <code>true</code> if and only if the file or directory is
-     *         successfully recycled; <code>false</code> otherwise.
-     * @throws IOException If an I/O error occurs, which is possible because 
-     *         the construction of the canonical pathname may require filesystem
-     *         queries.
-     * 
-     * @throws SecurityException If a required system property value cannot be 
-     *         accessed, or if a security manager exists and its <code>{@link
-     *         java.lang.SecurityManager#checkRead}</code> method denies read 
-     *         access to the file.
-     */
-    public boolean recycle(File file) throws IOException, SecurityException {
-        return recycle(file, true);
-    }
 
     /**
      * Sends the file or directory denoted by this abstract pathname to the
-     * Recycle Bin/Trash Can. It will return true even if the user aborted the 
-     * operation.
+     * Recycle Bin/Trash Can.
      * 
-     * @param file  the file or directory to be recycled.
-     * @param confirm <code>true</code> shows a confirmation dialog; 
-     *        <code>false</code> recycles without notification.
+     * @param file the file or directory to be recycled.
      * @return <code>true</code> if and only if the file or directory is
      *         successfully recycled; <code>false</code> otherwise.
      * @throws IOException If an I/O error occurs, which is possible because the
@@ -74,7 +50,7 @@ public class MacOSXFileUtil implements FileUtil {
      *         java.lang.SecurityManager#checkRead}</code> method denies read 
      *         access to the file.
      */
-    public boolean recycle(File file, boolean confirm) throws IOException,
+    public boolean recycle(File file) throws IOException,
             SecurityException {
     	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
     	if(file.isFile()) {
