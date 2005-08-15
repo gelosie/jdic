@@ -215,13 +215,13 @@ Top-level target:
     <!-- build jdic.dll -->
     <exec dir="${win32.native.jni.dir}" executable="nmake" 
       failonerror="yes" >
-      <arg line="/f jdic.mak CFG='jdic - Win32 Release'"/>
+      <arg line='/f jdic.mak CFG="jdic - Win32 Release"'/>
     </exec>                   
 
     <!-- build tray.dll containing the Tray Icon native code -->
     <exec dir="${win32.native.jni.dir}" executable="nmake" 
       failonerror="yes" >
-      <arg line="/f jdic.mak CFG='jdic - Win32 Tray'"/>
+      <arg line='/f jdic.mak CFG="jdic - Win32 Tray"'/>
     </exec>                   
 
     <!-- copy generated .dll file -->
@@ -231,23 +231,14 @@ Top-level target:
 
   <!-- *** Build Win32 native embeded browser code *** -->
   <target name="buildwin32embed" depends="init">
-    <!-- clean the previous build -->   
     <exec dir="${win32.native.ie.dir}" executable="nmake" failonerror="yes">
-      <arg line="/f IeEmbed.mak CLEAN"/>
+      <arg line='/f IeEmbed.mak CFG="IeEmbed - Win32 Release"'/>
     </exec>
 
     <exec dir="${win32.native.mozilla.dir}" executable="nmake" failonerror="yes">
-      <arg line="/f MozEmbed.mak CLEAN"/>
+      <arg line='/f MozEmbed.mak CFG="MozEmbed - Win32 Release"'/>
     </exec>
 
-    <exec dir="${win32.native.ie.dir}" executable="nmake" failonerror="yes">
-      <arg line="/f IeEmbed.mak CFG='IeEmbed - Win32 Release'"/>
-    </exec>
-
-    <exec dir="${win32.native.mozilla.dir}" executable="nmake" failonerror="yes">
-      <arg line="/f MozEmbed.mak CFG='MozEmbed - Win32 Release'"/>
-    </exec>
-    
     <!-- copy the embeded IE and Mozilla executable -->
     <copy file="${win32.native.ie.dir}/Release/IeEmbed.exe" todir="${dist.dir}" />
     <copy file="${win32.native.mozilla.dir}/Release/MozEmbed.exe" todir="${dist.dir}" />
@@ -535,7 +526,7 @@ Top-level target:
 
     <exec dir="${win32.native.jni.dir}" executable="nmake" 
       failonerror="yes" >
-      <arg line="/f jdic.mak CFG='jdic - Win32 Tray'"/>
+      <arg line='/f jdic.mak CFG="jdic - Win32 Tray"'/>
     </exec>                   
 
     <!-- copy generated .dll file -->
