@@ -1,5 +1,0 @@
-# Microsoft Developer Studio Generated Dependency File, included by MsiActions.mak
-
-.\StdAfx.cpp : \
-	"..\..\include\basetsd.h"
-	
