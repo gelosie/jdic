@@ -504,8 +504,8 @@ public class WebBrowser extends Canvas
      * Navigates to a resource identified by an URL using HTTP POST method.
      *
      * @param url       the URL to navigate.
-     * @param postData  data to send to the server during the HTTP POST 
-     *                  transaction.
+     * @param postData  the HTTP POST data. For example, 
+     *                  <code>"username=myid&password=mypasswd"</code>
      */
     public void setURL(URL url, String postData) {
         if (postData == null) {
