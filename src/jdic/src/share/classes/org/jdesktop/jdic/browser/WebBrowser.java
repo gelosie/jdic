@@ -494,7 +494,7 @@ public class WebBrowser extends Canvas
     /**
      * Navigates to a resource identified by an URL using HTTP GET method.
      *
-     * @param url the URL to navigate.
+     * @param url the URL to navigate to.
      */
     public void setURL(URL url) {
         setURL(url, null);
@@ -503,7 +503,7 @@ public class WebBrowser extends Canvas
     /**
      * Navigates to a resource identified by an URL using HTTP POST method.
      *
-     * @param url       the URL to navigate.
+     * @param url       the URL to navigate to.
      * @param postData  the HTTP POST data. For example, 
      *                  <code>"username=myid&password=mypasswd"</code>
      */
