@@ -34,6 +34,28 @@ extern "C" {
 
 /*
  * Class:     org_jdesktop_jdic_init_InitUtility
+ * Method:    getEnv
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_init_InitUtility_getEnv
+  (JNIEnv * env, jclass /*obj*/, jstring envVar)
+{
+    const char* pEnvVar = env->GetStringUTFChars(envVar, JNI_FALSE);
+    char * pEnvValue;
+    if (NULL != pEnvVar)
+    {
+        pEnvValue = getenv(pEnvVar);
+        env->ReleaseStringUTFChars(envVar, pEnvVar);
+        if (NULL != pEnvValue) {
+            jstring envValue = env->NewStringUTF(pEnvValue);
+            return envValue;
+        }
+    } 
+    return NULL;   
+}
+
+/*
+ * Class:     org_jdesktop_jdic_init_InitUtility
  * Method:    setEnv
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */

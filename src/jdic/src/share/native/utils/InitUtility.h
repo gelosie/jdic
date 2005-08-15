@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     org_jdesktop_jdic_init_InitUtility
+ * Method:    getEnv
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_init_InitUtility_getEnv
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     org_jdesktop_jdic_init_InitUtility
  * Method:    setEnv
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */

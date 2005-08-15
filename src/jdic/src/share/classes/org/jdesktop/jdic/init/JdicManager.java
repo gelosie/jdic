@@ -160,7 +160,7 @@ public class JdicManager {
             	// Mozilla is the default/embedded browser.
                 // Use the user defined value or the mozilla binary
                 // path as the value of MOZILLA_FIVE_HOME env variable.
-                String envMFH = System.getenv("MOZILLA_FIVE_HOME");
+                String envMFH = InitUtility.getEnv("MOZILLA_FIVE_HOME");
                 if (envMFH == null) {
                     File browserFile = new File(browserPath);
                     if (browserFile.isDirectory()) {
