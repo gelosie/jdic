@@ -215,9 +215,8 @@ class NativeEventThread extends Thread
             case NativeEventData.EVENT_CREATEWINDOW:
                 int nativeWindow = browser.getNativeWindow();
                 if (0 == nativeWindow) {
-                    WebBrowserUtil.trace("Can't get the JAWT window handler. " +
-                            "Make sure the environment variable JAVA_HOME " +
-                            "is set.");
+                    WebBrowserUtil.trace(
+                            "Can't get the JAWT native window handler.");
                 }
                 else {
                     msg += nativeWindow;
