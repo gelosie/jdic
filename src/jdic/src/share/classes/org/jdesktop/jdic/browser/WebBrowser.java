@@ -508,11 +508,12 @@ public class WebBrowser extends Canvas
      *                  <code>"username=myid&password=mypasswd"</code>
      */
     public void setURL(URL url, String postData) {
-        if (postData == null) {
+        if (url == null) {
+            return;
+        } else if (postData == null) {
             eventThread.fireNativeEvent(instanceNum, 
                     NativeEventData.EVENT_NAVIGATE, url.toString());
-        }
-        else {
+        } else {
             eventThread.fireNativeEvent(instanceNum, 
                     NativeEventData.EVENT_NAVIGATE_POST, url.toString());
             eventThread.fireNativeEvent(instanceNum, 
