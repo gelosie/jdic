@@ -638,13 +638,14 @@ NS_IMETHODIMP MozEmbedApp::CreateChromeWindow(nsIWebBrowserChrome *parent,
 
 void MozEmbedApp::MessageReceived(const char * msg)
 {
-    int instance, type;
-    char mMsgBuf[1024];
+    int instanceNum;
+    int eventID;
+    char eventMessage[1024];
 
     if (mInitFailed)
         return;
 
-    int i = sscanf(msg, "%d,%d,%s", &instance, &type, mMsgBuf);
+    int i = sscanf(msg, "%d,%d,%s", &instanceNum, &eventID, eventMessage);
     ASSERT(i >= 2);
 
     // In case that the last message string argument contains spaces, sscanf 
@@ -655,7 +656,7 @@ void MozEmbedApp::MessageReceived(const char * msg)
     mMsgString = (char*)strchr(mMsgString, ',');
     mMsgString++;
 
-    switch (type) {
+    switch (eventID) {
     case JEVENT_INIT:
         if (!InitMozilla()) {
             mInitFailed = TRUE;
@@ -669,7 +670,7 @@ void MozEmbedApp::MessageReceived(const char * msg)
     case JEVENT_CREATEWINDOW:
         {
         // only create new browser window when the instance does not exist
-        if (instance < m_FrameWndArray.GetSize() && m_FrameWndArray[instance] != NULL)
+        if (instanceNum < m_FrameWndArray.GetSize() && m_FrameWndArray[instanceNum] != NULL)
             break;
 
         if (i != 3) 
@@ -677,18 +678,18 @@ void MozEmbedApp::MessageReceived(const char * msg)
         HWND hWnd = (HWND) atoi(mMsgString);
         CBrowserFrame *pBrowserFrame = CreateEmbeddedBrowserFrame(hWnd);
         if (pBrowserFrame) {
-            m_FrameWndArray.SetAtGrow(instance, pBrowserFrame);
-            pBrowserFrame->SetBrowserId(instance);
-            SendSocketMessage(instance, CEVENT_INIT_WINDOW_SUCC);
+            m_FrameWndArray.SetAtGrow(instanceNum, pBrowserFrame);
+            pBrowserFrame->SetBrowserId(instanceNum);
+            SendSocketMessage(instanceNum, CEVENT_INIT_WINDOW_SUCC);
         }
         }
         break;
     case JEVENT_DESTROYWINDOW:
-        if( m_FrameWndArray[instance] != NULL){
-            ((CBrowserFrame *)m_FrameWndArray[instance])->DestroyBrowserFrame();
-            m_FrameWndArray.SetAt(instance, NULL);
+        if( m_FrameWndArray[instanceNum] != NULL){
+            ((CBrowserFrame *)m_FrameWndArray[instanceNum])->DestroyBrowserFrame();
+            m_FrameWndArray.SetAt(instanceNum, NULL);
         }
-        SendSocketMessage(instance, CEVENT_DISTORYWINDOW_SUCC);
+        SendSocketMessage(instanceNum, CEVENT_DISTORYWINDOW_SUCC);
         break;
     case JEVENT_SHUTDOWN:
         gQuitMode = TRUE;
@@ -700,66 +701,66 @@ void MozEmbedApp::MessageReceived(const char * msg)
         int x, y, w, h;
         i = sscanf(mMsgString, "%d,%d,%d,%d", &x, &y, &w, &h);
         if (i == 4)
-            ((CBrowserFrame *)m_FrameWndArray[instance])->SetWindowPos(NULL, x, y, w, h, SWP_NOMOVE | SWP_NOZORDER);
+            ((CBrowserFrame *)m_FrameWndArray[instanceNum])->SetWindowPos(NULL, x, y, w, h, SWP_NOMOVE | SWP_NOZORDER);
         }
         break;
     case JEVENT_NAVIGATE:
         ASSERT(i == 3);
-        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.OpenURL(mMsgString);
+        ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.OpenURL(mMsgString);
         break;
     case JEVENT_NAVIGATE_POST:
         ASSERT(i == 3);
         mURL = mMsgString;
         break;
-    case JEVENT_NAVIGATE_POSTDATA:
-        ASSERT(i == 3);
-        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.OpenURL(mURL, mMsgString, POST_HEADER);
-        break;
+//    case JEVENT_NAVIGATE_POSTDATA:
+//        ASSERT(i == 3);
+//        ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.OpenURL(mURL, mMsgString, POST_HEADER);
+//        break;
     case JEVENT_GOBACK:
-        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_BACK);
+        ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_BACK);
         break;
     case JEVENT_GOFORWARD:
-        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_FORWARD);
+        ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_FORWARD);
         break;
     case JEVENT_REFRESH:
-        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_RELOAD);
+        ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_RELOAD);
         break;
     case JEVENT_STOP:
-        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_STOP);
+        ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_STOP);
         break;
     case JEVENT_GETURL:
         {
         nsCAutoString uriString;
-        nsresult ret = ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.GetURL(uriString);
+        nsresult ret = ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.GetURL(uriString);
         if (ret == NS_OK)
-            SendSocketMessage(instance, CEVENT_RETURN_URL, uriString.get());
+            SendSocketMessage(instanceNum, CEVENT_RETURN_URL, uriString.get());
         else 
-            SendSocketMessage(instance, CEVENT_RETURN_URL, "");
+            SendSocketMessage(instanceNum, CEVENT_RETURN_URL, "");
         }
         break;
     case JEVENT_FOCUSGAINED:
-        ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.Activate(WA_ACTIVE, 0, 0);
+        ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.Activate(WA_ACTIVE, 0, 0);
         break;
     case JEVENT_FOCUSLOST:
-        //((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.Activate(WA_INACTIVE, 0, 0);
+        //((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.Activate(WA_INACTIVE, 0, 0);
         break;
     case JEVENT_GETCONTENT:
         {
         nsIWebNavigation* mWebNav =
-            ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.mWebNav;
+            ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.mWebNav;
 
         char *retStr = GetContent(mWebNav);
         if (retStr == NULL)
-            SendSocketMessage(instance, CEVENT_GETCONTENT, "");
+            SendSocketMessage(instanceNum, CEVENT_GETCONTENT, "");
         else 
-            SendSocketMessage(instance, CEVENT_GETCONTENT, retStr);
+            SendSocketMessage(instanceNum, CEVENT_GETCONTENT, retStr);
         }
         break;
     case JEVENT_SETCONTENT:
         {
         ASSERT(i == 3);
         nsIWebNavigation* mWebNav =
-            ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.mWebNav;
+            ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.mWebNav;
         SetContent(mWebNav, mMsgString);
         }
         break;
@@ -767,13 +768,13 @@ void MozEmbedApp::MessageReceived(const char * msg)
         {
         ASSERT(i == 3);
         nsIWebNavigation* mWebNav =
-            ((CBrowserFrame *)m_FrameWndArray[instance])->m_wndBrowserView.mWebNav;
+            ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.mWebNav;
        
         char *retStr = ExecuteScript(mWebNav, mMsgString);
         if (retStr == NULL)
-            SendSocketMessage(instance, CEVENT_EXECUTESCRIPT, "");
+            SendSocketMessage(instanceNum, CEVENT_EXECUTESCRIPT, "");
         else 
-            SendSocketMessage(instance, CEVENT_EXECUTESCRIPT, retStr);
+            SendSocketMessage(instanceNum, CEVENT_EXECUTESCRIPT, retStr);
         }
         break;
     }
