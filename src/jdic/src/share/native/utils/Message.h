@@ -31,7 +31,6 @@
 #define JEVENT_SET_BOUNDS        4
 #define JEVENT_NAVIGATE          5
 #define JEVENT_NAVIGATE_POST     6
-#define JEVENT_NAVIGATE_POSTDATA 7
 #define JEVENT_GOBACK            8
 #define JEVENT_GOFORWARD         9
 #define JEVENT_REFRESH           10

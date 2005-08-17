@@ -710,12 +710,30 @@ void MozEmbedApp::MessageReceived(const char * msg)
         break;
     case JEVENT_NAVIGATE_POST:
         ASSERT(i == 3);
-        mURL = mMsgString;
+
+        // Parse the post fields including url, post data and headers.
+        char urlBuf[1024], postDataBuf[1024], headersBuf[1024];
+        memset(urlBuf, '\0', 1024);
+        memset(postDataBuf, '\0', 1024);
+        memset(headersBuf, '\0', 1024);
+
+        ParsePostFields(mMsgString, instanceNum, eventID, 
+                        urlBuf, postDataBuf, headersBuf);
+
+        char tmpHeadersBuf[2048];
+        memset(tmpHeadersBuf, '\0', 2048);
+        strcpy(tmpHeadersBuf, POST_HEADER);
+        if (strlen(headersBuf) != 0) {
+            strcat(tmpHeadersBuf, headersBuf);
+        }
+
+        char* postDataParam;
+        postDataParam = (strlen(postDataBuf) == 0) ? NULL : postDataBuf;
+        
+        ((CBrowserFrame *)m_FrameWndArray[instanceNum])
+            ->m_wndBrowserView.OpenURL(urlBuf, postDataParam, tmpHeadersBuf);
+
         break;
-//    case JEVENT_NAVIGATE_POSTDATA:
-//        ASSERT(i == 3);
-//        ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.OpenURL(mURL, mMsgString, POST_HEADER);
-//        break;
     case JEVENT_GOBACK:
         ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_BACK);
         break;

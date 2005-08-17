@@ -232,7 +232,6 @@ class NativeEventThread extends Thread
                 break;
             case NativeEventData.EVENT_NAVIGATE:
             case NativeEventData.EVENT_NAVIGATE_POST:
-            case NativeEventData.EVENT_NAVIGATE_POSTDATA:
             case NativeEventData.EVENT_SETCONTENT:
             case NativeEventData.EVENT_EXECUTESCRIPT:                
                 msg += nativeEvent.stringValue;

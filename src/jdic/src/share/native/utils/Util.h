@@ -108,6 +108,23 @@ inline void*& WBArray::operator[](int nIndex)
 #define JDIC_BROWSER_INTERMEDIATE_PROP "JDIC_BROWSER_INTERMEDIATE_PROP"
 char* TuneJavaScript(const char* javaScript);
 
+// helper function for parsing the post message string fields including 
+// url, post data and headers. Which is in the format of:
+//   <url><field delimiter><post data><field delimiter><headers>
+// The <field delimiter> is a string of 
+//   "<instance number>,<event ID>,"
+// which must be identical between the Java side and native side.
+//
+// This function is used to pass multiple string values in one Socket 
+// communication.
+//
+// Return Value:
+//   On success, 0 is returned.
+//   On error, -1 is returned.
+int ParsePostFields(const char* postMessage, 
+                    const int instanceNum, const int eventID, 
+                    char* urlBuf, char* postDataBuf, char* headersBuf);
+
 // helper function for logging the given message to the predefined,
 // log file "JDIC.log" under the *current/working* directory. Usage:
 //

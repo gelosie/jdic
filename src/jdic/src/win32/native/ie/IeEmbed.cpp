@@ -31,11 +31,8 @@ CComModule _Module;
 
 HWND gMainWnd;
 
-//array of browser windows
+// Array of browser windows
 WBArray ABrowserWnd;
-
-//cached URL for POST data
-char * mURL;
 
 void SocketMsgHandler(const char* pMsg)
 {
@@ -323,46 +320,72 @@ void CommandProc(char* pInputChar)
         break;
 
     case JEVENT_NAVIGATE_POST: 
-        mURL = mMsgString;
-        break;
+        {
+            // Parse the post fields including url, post data and headers.
+            char urlBuf[1024], postDataBuf[1024], headersBuf[1024];
+            memset(urlBuf, '\0', 1024);
+            memset(postDataBuf, '\0', 1024);
+            memset(headersBuf, '\0', 1024);
 
-    case JEVENT_NAVIGATE_POSTDATA: 
-        pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
-        ATLASSERT(pBrowserWnd != NULL);
+            ParsePostFields(mMsgString, instanceNum, eventID, 
+                            urlBuf, postDataBuf, headersBuf);
 
-        VARIANT vHeaders;
-        BSTR bstrHeaders;
-        bstrHeaders = SysAllocString(
-            L"Content-Type: application/x-www-form-urlencoded\r\n");
-        V_VT(&vHeaders) = VT_BSTR;
-        V_BSTR(&vHeaders) = bstrHeaders;
+            pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
+            ATLASSERT(pBrowserWnd != NULL);
 
-        // Construct the POST data with VARIANT type.
-        // Put data into safe array.
-        LPSAFEARRAY psa;
-        VARIANT vPostData;
-        VariantInit(&vPostData);
+            // Usually, an HTTP POST includes below header:
+            //   Content-Type: application/x-www-form-urlencoded 
+            // defined as POST_HEADER.
+            // Without this header, some Web servers (particularly ASP running 
+            // on IIS) will not recognize the post data parameter.       
+            BSTR bstrHeaders;
+            VARIANT vHeaders;
+            VariantInit(&vHeaders);
 
-        psa = SafeArrayCreateVector(VT_UI1, 0, strlen(mMsgString));
-        LPSTR pPostData;
-        SafeArrayAccessData(psa, (LPVOID*)&pPostData);
-        memcpy(pPostData, mMsgString, strlen(mMsgString));
-        SafeArrayUnaccessData(psa);
+            char tmpHeadersBuf[2048];
+            memset(tmpHeadersBuf, '\0', 2048);
+            strcpy(tmpHeadersBuf, POST_HEADER);
+            if (strlen(headersBuf) != 0) {
+                strcat(tmpHeadersBuf, headersBuf);
+            }
+            WCHAR wszHeader[2048];
+            MultiByteToWideChar(CP_ACP, 0, tmpHeadersBuf, -1, wszHeader, 2048);
+
+            bstrHeaders = SysAllocString(wszHeader);
+
+            V_VT(&vHeaders) = VT_BSTR;
+            V_BSTR(&vHeaders) = bstrHeaders;
+
+            // Construct the POST data with VARIANT type.
+            // Put data into safe array.
+            LPSAFEARRAY psa;
+            VARIANT vPostData;
+            VariantInit(&vPostData);
+
+            if (strlen(postDataBuf) != 0) {
+                // post data is specified.
+                psa = SafeArrayCreateVector(VT_UI1, 0, strlen(postDataBuf));
+                LPSTR pPostData;
+                SafeArrayAccessData(psa, (LPVOID*)&pPostData);
+                memcpy(pPostData, postDataBuf, strlen(postDataBuf));
+                SafeArrayUnaccessData(psa);
         
-        // Package the SafeArray into a VARIANT.
-        V_VT(&vPostData) = VT_ARRAY | VT_UI1;
-        V_ARRAY(&vPostData) = psa;
+                // Package the SafeArray into a VARIANT.
+                V_VT(&vPostData) = VT_ARRAY | VT_UI1;
+                V_ARRAY(&vPostData) = psa;
+            }
 
-        // Navigate to the URL, and POST the data.
-        pBrowserWnd->m_pWB->Navigate(CComBSTR(mURL), NULL, NULL,
-            &vPostData, &vHeaders);
+            // Navigate to the URL, with the post data and headers.
+            pBrowserWnd->m_pWB->Navigate(CComBSTR(urlBuf), NULL, NULL,
+                &vPostData, &vHeaders);
 
-        if (bstrHeaders) {
-            SysFreeString(bstrHeaders);
+            if (bstrHeaders) {
+                SysFreeString(bstrHeaders);
+            }
+            VariantClear(&vHeaders);
+            VariantClear(&vPostData);
+            break;
         }
-        VariantClear(&vPostData);
-        break;
-
     case JEVENT_GOBACK:
         pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
         ATLASSERT(pBrowserWnd != NULL);

@@ -492,7 +492,7 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Navigates to a resource identified by an URL using HTTP GET method.
+     * Navigates to a resource identified by a URL.
      *
      * @param url the URL to navigate to.
      */
@@ -501,26 +501,53 @@ public class WebBrowser extends Canvas
     }
 
     /**
-     * Navigates to a resource identified by an URL using HTTP POST method.
+     * Navigates to a resource identified by a URL, with the HTTP POST data to 
+     * send to the server.
      *
      * @param url       the URL to navigate to.
-     * @param postData  the HTTP POST data. For example, 
-     *                  <code>"username=myid&password=mypasswd"</code>
+     * @param postData  the post data to send with the HTTP POST transaction. 
+     *                  For example, <code>"username=myid&password=mypasswd"
+     *                  </code>
      */
     public void setURL(URL url, String postData) {
-        if (url == null) {
-            return;
-        } else if (postData == null) {
-            eventThread.fireNativeEvent(instanceNum, 
-                    NativeEventData.EVENT_NAVIGATE, url.toString());
-        } else {
-            eventThread.fireNativeEvent(instanceNum, 
-                    NativeEventData.EVENT_NAVIGATE_POST, url.toString());
-            eventThread.fireNativeEvent(instanceNum, 
-                    NativeEventData.EVENT_NAVIGATE_POSTDATA, postData);
-        }
+        setURL(url, postData, null);        
     }
 
+    /**
+     * Navigates to a resource identified by a URL, with the HTTP POST data and 
+     * HTTP headers to send to the server.
+     *
+     * @param url       the URL to navigate to.
+     * @param postData  the post data to send with the HTTP POST transaction. 
+     *                  For example, <code>"username=myid&password=mypasswd"
+     *                  </code>
+     * @param headers   the HTTP headers to send with the HTTP POST transaction.
+     * @since 0.9.2                      
+     */
+    public void setURL(URL url, String postData, String headers) {
+        if (url == null) {
+            return;
+        } 
+        
+        // Both POST data and headers are null, just navigate to the URL.
+        if ((postData == null) && (headers == null)) { 
+            eventThread.fireNativeEvent(instanceNum, 
+                NativeEventData.EVENT_NAVIGATE, url.toString());
+        } else {
+            eventThread.fireNativeEvent(
+                instanceNum, 
+                NativeEventData.EVENT_NAVIGATE_POST,
+                // Note!!! Use "<instance number>,<event ID>," string as the 
+                // message field delimiter, which must be identical in the 
+                // native side used to parse the post string values.
+                url.toString() 
+                    + instanceNum + "," + NativeEventData.EVENT_NAVIGATE_POST 
+                    + "," + ((postData == null) ? "" : postData)
+                    + instanceNum + "," + NativeEventData.EVENT_NAVIGATE_POST 
+                    + "," + ((headers == null) ? "" : headers)); 
+        }
+    }
+        
     /**
      * Navigates backward one item in the history list.
      */

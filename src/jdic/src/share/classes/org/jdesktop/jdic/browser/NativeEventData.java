@@ -41,7 +41,6 @@ class NativeEventData
     final static int EVENT_SET_BOUNDS        = 4;
     final static int EVENT_NAVIGATE          = 5;
     final static int EVENT_NAVIGATE_POST     = 6;
-    final static int EVENT_NAVIGATE_POSTDATA = 7;
     final static int EVENT_GOBACK            = 8;
     final static int EVENT_GOFORWARD         = 9;
     final static int EVENT_REFRESH           = 10;

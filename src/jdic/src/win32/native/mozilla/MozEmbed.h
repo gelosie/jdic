@@ -115,7 +115,6 @@ private:
     BOOL            CreateHiddenWindow();
 
     BOOL mInitFailed;
-    CString mURL; //cached URL for POST data
 
     void MessageReceived(const char * msg);
 };

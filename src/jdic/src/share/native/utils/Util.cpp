@@ -19,6 +19,7 @@
  */ 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include "Util.h"
@@ -212,6 +213,50 @@ char* TuneJavaScript(const char* javaScript)
     delete [] resultJScript;    
     return retJScript;
 }
+
+/////////////////////////////////////////////////////////////////////////////
+
+// helper function for parsing the post message string fields including 
+// url, post data and headers. Which is in the format of:
+//   <url><field delimiter><post data><field delimiter><headers>
+// The <field delimiter> is a string of 
+//   "<instance number>,<event ID>,"
+// which must be identical between the Java side and native side.
+int ParsePostFields(const char* postMessage, 
+                    const int instanceNum, const int eventID, 
+                    char* urlBuf, char* postDataBuf, char* headersBuf)
+{
+    char instanceNumBuf[16], eventIDBuf[16];
+    itoa(instanceNum, instanceNumBuf, 10);
+    itoa(eventID, eventIDBuf, 10);
+
+    // Construct the message string field delimiter with the instance 
+    // number and the event ID.
+    char fieldDelimiter[2048];
+    memset(fieldDelimiter, '\0', 2048);
+    strcpy(fieldDelimiter, instanceNumBuf);
+    strcat(fieldDelimiter, ",");
+    strcat(fieldDelimiter, eventIDBuf);
+    strcat(fieldDelimiter, ",");
+
+    // Get URL field.
+    char *fieldPtr;
+    fieldPtr = (char*)postMessage;
+    char *delimiterPtr;
+    delimiterPtr = strstr(fieldPtr, fieldDelimiter);
+    strncpy(urlBuf, fieldPtr, delimiterPtr - fieldPtr); 
+
+    // Get post data field.
+    fieldPtr = delimiterPtr + strlen(fieldDelimiter);
+    delimiterPtr = strstr(fieldPtr, fieldDelimiter);
+    strncpy(postDataBuf, fieldPtr, delimiterPtr - fieldPtr);
+
+    // Get headers field.
+    strcpy(headersBuf, delimiterPtr + strlen(fieldDelimiter));
+
+    return 0;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 
