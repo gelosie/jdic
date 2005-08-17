@@ -18,12 +18,12 @@
  * USA.
  */
 
+
+#include "stdafx.h"
 #include <stdio.h>
-#include <windows.h>
 #include <jni.h>
 #include "wallpaper.h"
 
-/* Inaccessible static: _miscLibraryLoaded */
 /*
  * Class:     org_jdesktop_jdic_misc_Wallpaper
  * Method:    nativeSetWallpaper
@@ -32,13 +32,91 @@
 JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_misc_impl_WinWallpaper_nativeSetWallpaper
   (JNIEnv * env, jclass clazz, jstring prompt, jint mode)
 {
+    
+    const char *wallpaperFileName = env->GetStringUTFChars(prompt, 0);
+    WCHAR wszWallpaperFileName[255];
+    unsigned int wallpaperFileNameLength = (unsigned int) strlen(wallpaperFileName) + 1;
+    
+    MultiByteToWideChar(CP_UTF8, 
+                        0, 
+                        wallpaperFileName, 
+                        wallpaperFileNameLength, 
+                        wszWallpaperFileName,
+                        sizeof(wszWallpaperFileName)/sizeof(wszWallpaperFileName[0]));
+    
+    printf("Image File: %s \n", wallpaperFileName);
+    
+    // Pointer to IActiveDesktop interface.
+	IActiveDesktop* pIActiveDesktop = NULL;
+ 
+    InitCommonControls();
+    CoInitialize ( NULL );
+	HRESULT hr = CoCreateInstance(CLSID_ActiveDesktop, 
+                                  NULL, 
+                                  CLSCTX_INPROC_SERVER, 
+		                          IID_IActiveDesktop, 
+                                  (void**) &pIActiveDesktop);
 
-  const char* msg=env->GetStringUTFChars(prompt,0);
-  SystemParametersInfo (SPI_SETDESKWALLPAPER, (UINT) NULL, (PVOID) msg, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
-  env->ReleaseStringUTFChars(prompt, msg);
-  
-  return 0;
+	if (hr != S_OK)
+    {
+		pIActiveDesktop = NULL;
+    }
+
+    if (pIActiveDesktop == NULL)
+	{  
+       // Windows without Active Desktop
+       // Bitmaps only.
+       SystemParametersInfo (SPI_SETDESKWALLPAPER, (UINT) NULL, (PVOID) wallpaperFileName, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);       
+       printf("No Active Desktop BMP files only.");
+    }
+    else
+    {
+
+        
+     	WALLPAPEROPT wpOptions;
+        COMPONENTSOPT compOptions;
+    	compOptions.dwSize = sizeof(COMPONENTSOPT);
+    	compOptions.fActiveDesktop = TRUE;
+    	compOptions.fEnableComponents = TRUE;
+        
+        pIActiveDesktop->SetDesktopItemOptions(&compOptions, 0);
+    
+        wpOptions.dwSize = sizeof(WALLPAPEROPT);
+ 
+
+        // todo put magic numbers in header.
+    	if (mode == 8)
+        {   
+            wpOptions.dwStyle = WPSTYLE_TILE;
+        }
+        else if (mode == 2)
+        {
+    		wpOptions.dwStyle = WPSTYLE_CENTER;
+        }
+        else if (mode == 1)
+        {
+    		wpOptions.dwStyle = WPSTYLE_STRETCH;
+        }
+        else
+        {
+            wpOptions.dwStyle = WPSTYLE_CENTER;
+        }
+        
+    	pIActiveDesktop->SetWallpaperOptions(&wpOptions, 0);
+    	
+        // Set background wallpaper
+        pIActiveDesktop->SetWallpaper((LPCWSTR)wszWallpaperFileName, 0);
+        pIActiveDesktop->ApplyChanges(AD_APPLY_ALL);
+
+        pIActiveDesktop->Release();
+        pIActiveDesktop = NULL;
+
+     }
+    
+    CoUninitialize();
+
+    // free up resources.
+    env->ReleaseStringUTFChars(prompt, wallpaperFileName);
+
+    return 0;
 }
-
-
-
