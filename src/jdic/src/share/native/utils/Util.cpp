@@ -226,18 +226,11 @@ int ParsePostFields(const char* postMessage,
                     const int instanceNum, const int eventID, 
                     char* urlBuf, char* postDataBuf, char* headersBuf)
 {
-    char instanceNumBuf[16], eventIDBuf[16];
-    itoa(instanceNum, instanceNumBuf, 10);
-    itoa(eventID, eventIDBuf, 10);
-
     // Construct the message string field delimiter with the instance 
     // number and the event ID.
     char fieldDelimiter[2048];
     memset(fieldDelimiter, '\0', 2048);
-    strcpy(fieldDelimiter, instanceNumBuf);
-    strcat(fieldDelimiter, ",");
-    strcat(fieldDelimiter, eventIDBuf);
-    strcat(fieldDelimiter, ",");
+    sprintf(fieldDelimiter, "%d,%d,", instanceNum, eventID);
 
     // Get URL field.
     char *fieldPtr;

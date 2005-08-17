@@ -71,9 +71,6 @@ PRLock *gMsgLock;
 // the array of browser windows currently open
 WBArray gBrowserArray;
 
-//cached url for post
-char gCachedURL[1024];
-
 // the new event source for socket message
 #ifdef MOZ_WIDGET_GTK
 static GSourceFuncs event_funcs = {
@@ -505,12 +502,28 @@ HandleSocketMessage(gpointer data, gpointer user_data)
         break;
     case JEVENT_NAVIGATE_POST:
         NS_ASSERTION(i == 3, "Wrong message format\n");
-        strncpy(gCachedURL, mMsgString, sizeof(gCachedURL));
-        break;
-    case JEVENT_NAVIGATE_POSTDATA:
-        NS_ASSERTION(i == 3, "Wrong message format\n");
+
+        // Parse the post fields including url, post data and headers.
+        char urlBuf[1024], postDataBuf[1024], headersBuf[1024];
+        memset(urlBuf, '\0', 1024);
+        memset(postDataBuf, '\0', 1024);
+        memset(headersBuf, '\0', 1024);
+
+        ParsePostFields(mMsgString, instance, type, 
+                        urlBuf, postDataBuf, headersBuf);
+
+        char tmpHeadersBuf[2048];
+        memset(tmpHeadersBuf, '\0', 2048);
+        strcpy(tmpHeadersBuf, POST_HEADER);
+        if (strlen(headersBuf) != 0) {
+            strcat(tmpHeadersBuf, headersBuf);
+        }
+
+        char* postDataParam;
+        postDataParam = (strlen(postDataBuf) == 0) ? NULL : postDataBuf;
+
         pBrowser = (GtkBrowser *)gBrowserArray[instance];
-        OpenURL(pBrowser, gCachedURL, mMsgString, POST_HEADER);
+        OpenURL(pBrowser, urlBuf, postDataParam, tmpHeadersBuf);
         break;
     case JEVENT_GOBACK:
         pBrowser = (GtkBrowser *)gBrowserArray[instance];
