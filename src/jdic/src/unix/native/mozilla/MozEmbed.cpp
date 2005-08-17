@@ -332,7 +332,8 @@ set_browser_visibility (GtkBrowser *browser, gboolean visibility)
 }
 
 void
-OpenURL(GtkBrowser *pBrowser, const char *pUrl, const char *pPostData, const char *pHeader)
+OpenURL(GtkBrowser *pBrowser, const char *pUrl, 
+        const char *pPostData, const char *pHeader)
 {
     nsresult rv;
     nsCOMPtr<nsIInputStream> postDataStream;
@@ -348,7 +349,8 @@ OpenURL(GtkBrowser *pBrowser, const char *pUrl, const char *pPostData, const cha
             unsigned long nSizeCL = strlen(szCL);
             unsigned long nSize = nSizeCL + nSizeData;
 
-            char *tmp = (char *) nsMemory::Alloc(nSize + 1); // byte stream owns this mem
+            // byte stream owns this mem
+            char *tmp = (char *) nsMemory::Alloc(nSize + 1); 
             if (tmp) 
             {
                 memcpy(tmp, szCL, nSizeCL);
@@ -377,7 +379,8 @@ OpenURL(GtkBrowser *pBrowser, const char *pUrl, const char *pPostData, const cha
         unsigned long nSize = strlen(pHeader) + 1;
         if (nSize > 0) 
         {
-            char *tmp = (char *) nsMemory::Alloc(nSize); // byteArray stream owns this mem
+            // byteArray stream owns this mem
+            char *tmp = (char *) nsMemory::Alloc(nSize); 
             if (tmp) 
             {
                 memcpy(tmp, pHeader, nSize);
@@ -400,7 +403,8 @@ OpenURL(GtkBrowser *pBrowser, const char *pUrl, const char *pPostData, const cha
     }
 
     nsCOMPtr<nsIWebBrowser> webBrowser;
-    gtk_moz_embed_get_nsIWebBrowser(GTK_MOZ_EMBED(pBrowser->mozEmbed), getter_AddRefs(webBrowser));
+    gtk_moz_embed_get_nsIWebBrowser(GTK_MOZ_EMBED(pBrowser->mozEmbed), 
+                                    getter_AddRefs(webBrowser));
     nsCOMPtr<nsIWebNavigation> webNavigation(do_QueryInterface(webBrowser));
     if (!webNavigation)
         return;
@@ -441,7 +445,8 @@ HandleSocketMessage(gpointer data, gpointer user_data)
     case JEVENT_CREATEWINDOW:
         {
             // only create new browser window when the instance does not exist
-            if (instance < gBrowserArray.GetSize() && gBrowserArray[instance] != NULL)
+            if (instance < gBrowserArray.GetSize() 
+                && gBrowserArray[instance] != NULL)
                 break;
             if (i != 3)
                 break;
@@ -451,7 +456,8 @@ HandleSocketMessage(gpointer data, gpointer user_data)
             pBrowser->topLevelWindow = gtk_plug_new(javaXId);
             pBrowser->mozEmbed = gtk_moz_embed_new();
             if (pBrowser->mozEmbed) {
-                gtk_container_add(GTK_CONTAINER(pBrowser->topLevelWindow), pBrowser->mozEmbed);
+                gtk_container_add(GTK_CONTAINER(pBrowser->topLevelWindow), 
+                                  pBrowser->mozEmbed);
                 install_mozembed_cb(pBrowser);
                 gtk_moz_embed_set_chrome_mask(GTK_MOZ_EMBED(pBrowser->mozEmbed),
                     GTK_MOZ_EMBED_FLAG_DEFAULTCHROME);
@@ -519,7 +525,8 @@ HandleSocketMessage(gpointer data, gpointer user_data)
     case JEVENT_REFRESH:
         pBrowser = (GtkBrowser *)gBrowserArray[instance];
         NS_ASSERTION(pBrowser, "Can't get native browser instance\n");
-        gtk_moz_embed_reload(GTK_MOZ_EMBED(pBrowser->mozEmbed), GTK_MOZ_EMBED_FLAG_RELOADNORMAL);
+        gtk_moz_embed_reload(GTK_MOZ_EMBED(pBrowser->mozEmbed), 
+                             GTK_MOZ_EMBED_FLAG_RELOADNORMAL);
         break;
     case JEVENT_STOP:
         pBrowser = (GtkBrowser *)gBrowserArray[instance];
@@ -531,7 +538,8 @@ HandleSocketMessage(gpointer data, gpointer user_data)
             pBrowser = (GtkBrowser *)gBrowserArray[instance];
             NS_ASSERTION(pBrowser, "Can't get native browser instance\n");
             nsCOMPtr<nsIWebBrowser> webBrowser;
-            gtk_moz_embed_get_nsIWebBrowser(GTK_MOZ_EMBED(pBrowser->mozEmbed), getter_AddRefs(webBrowser));
+            gtk_moz_embed_get_nsIWebBrowser(GTK_MOZ_EMBED(pBrowser->mozEmbed), 
+                                            getter_AddRefs(webBrowser));
             nsCOMPtr<nsIWebNavigation> webNavigation(do_QueryInterface(webBrowser));
             nsCOMPtr<nsIURI> currentURI;
             webNavigation->GetCurrentURI(getter_AddRefs(currentURI));
@@ -559,7 +567,8 @@ HandleSocketMessage(gpointer data, gpointer user_data)
             GtkWidget *widget = GTK_WIDGET (pBrowser->topLevelWindow);
             GdkEvent event;
 
-            GtkWindowClass *parent_class = (GtkWindowClass*) gtk_type_class (GTK_TYPE_WINDOW);
+            GtkWindowClass *parent_class 
+                = (GtkWindowClass*) gtk_type_class (GTK_TYPE_WINDOW);
 
             if (!widget) {
                 ReportError("Failed to get browser's toplevel window !\n");
