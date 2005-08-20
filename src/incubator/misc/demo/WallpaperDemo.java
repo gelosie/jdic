@@ -145,6 +145,7 @@ extends JPanel
 
         jSetWallpaperButton.setEnabled(false);
         jSetWallpaperButton.setText("Set Wallpaper");
+        jSetWallpaperButton.setActionCommand(wallpaperStyles[0].toString());
         jSetWallpaperButton.setToolTipText("Set desktop wallpaper with the " + "selected wallpaper file and style.");
         jSetWallpaperButton.addActionListener(new WallpaperDemo_jSetWallpaperButton_actionAdapter(this));
 
