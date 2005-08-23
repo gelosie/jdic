@@ -61,9 +61,9 @@ extends JPanel
     JFileChooser jFileChooser = new JFileChooser();
     JPanel jStylePanel = new JPanel();
     JLabel jStyleLabel = new JLabel("Style:");
-    Object[] wallpaperStyles = { new WallpaperMode("Stretch", "This will stretch the picture", Wallpaper.STRETCH), 
-                                 new WallpaperMode("Center", "This will center the picture", Wallpaper.CENTER), 
-                                 new WallpaperMode("Tile", "This will tile the picture", Wallpaper.TILE)
+    WallpaperMode[] wallpaperStyles = { new WallpaperMode("Stretch", "The background image will be stretched.", Wallpaper.STRETCH), 
+                                 new WallpaperMode("Center", "The background image will be centered.", Wallpaper.CENTER), 
+                                 new WallpaperMode("Tile", "The background image will be tiled.", Wallpaper.TILE)
                                  };
     JComboBox jStyleComboBox = new JComboBox(wallpaperStyles);
     JPanel jBottomPanel = new JPanel();
@@ -131,7 +131,20 @@ extends JPanel
         jStylePanel.add(jStyleComboBox, null);
         jStyleComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                jSetWallpaperButton.setActionCommand(jStyleComboBox.getSelectedItem().toString());
+                String style = jStyleComboBox.getSelectedItem().toString();
+                jSetWallpaperButton.setActionCommand(style);
+                if (style.equalsIgnoreCase("stretch"))
+                {
+                   jSetWallpaperButton.setToolTipText("Click to set desktop wallpaper. " + wallpaperStyles[0].getDescription());
+                }
+                else if (style.equalsIgnoreCase("center"))
+                {
+                   jSetWallpaperButton.setToolTipText("Click to set desktop wallpaper. " + wallpaperStyles[1].getDescription());
+                }
+                else if (style.equalsIgnoreCase("tile"))
+                {
+                   jSetWallpaperButton.setToolTipText("Click to set desktop wallpaper. " + wallpaperStyles[2].getDescription());
+                }
             }
         });
 
@@ -146,7 +159,7 @@ extends JPanel
         jSetWallpaperButton.setEnabled(false);
         jSetWallpaperButton.setText("Set Wallpaper");
         jSetWallpaperButton.setActionCommand(wallpaperStyles[0].toString());
-        jSetWallpaperButton.setToolTipText("Set desktop wallpaper with the " + "selected wallpaper file and style.");
+        jSetWallpaperButton.setToolTipText("Click to set desktop wallpaper. " + wallpaperStyles[0].getDescription());
         jSetWallpaperButton.addActionListener(new WallpaperDemo_jSetWallpaperButton_actionAdapter(this));
 
         jCancelButton.setText("Cancel");
@@ -179,15 +192,18 @@ extends JPanel
         int mode = 0;
         if (e.getActionCommand().equalsIgnoreCase("stretch"))
         {
-           mode = Wallpaper.STRETCH;
+           mode = wallpaperStyles[0].getModeId();
+           jSetWallpaperButton.setToolTipText("Click to set desktop wallpaper. " + wallpaperStyles[0].getDescription());
         }
         else if (e.getActionCommand().equalsIgnoreCase("center"))
         {
-           mode = Wallpaper.CENTER;
+           mode = wallpaperStyles[1].getModeId();
+           jSetWallpaperButton.setToolTipText("Click to set desktop wallpaper. " + wallpaperStyles[1].getDescription());
         }
         else if (e.getActionCommand().equalsIgnoreCase("tile"))
         {
-           mode = Wallpaper.TILE;
+           mode = wallpaperStyles[2].getModeId();
+           jSetWallpaperButton.setToolTipText("Click to set desktop wallpaper. " + wallpaperStyles[2].getDescription());
         }
         
         wallpaper.setBackground(selectedFile.getAbsolutePath(), mode);
