@@ -33,6 +33,7 @@
 #ifndef PATH_MAX
 #define PATH_MAX 512
 #endif
+
 /*
  * Class:     org_jdesktop_jdic_browser_internal_WebBrowserUtil
  * Method:    nativeGetBrowserPath
@@ -55,7 +56,7 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
         }else{
             return env->NewStringUTF(moz5home_env);
         }
-     }
+    }
 
     /*
      * MOZILLA_FIVE_HOME not set. Search the Mozilla binary path to set it:
@@ -127,34 +128,30 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
         return NULL;
 
     // Check if libxpcom.so is located under the Mozilla binary path.
-    char *moz5home = NULL;
-    while (moz5home == NULL) {
-        char *str_p = g_strrstr(mozpath, "/");
-        char *parentpath = g_strndup(mozpath, str_p - mozpath);
-        char *libpath = g_strconcat (parentpath, "/libxpcom.so", NULL);
+    // if mozpath is a symbol link, resolve it.
+    char *resolved_mozpath = (char *)malloc(PATH_MAX);
+    char *ret = realpath(mozpath, resolved_mozpath);
+    if (ret) {
+        free(mozpath);
+        mozpath = resolved_mozpath;
 #ifdef DEBUG
-        fprintf(stderr, "Check libxpcom.so at path: %s\n", libpath);
+        fprintf(stderr, "mozpath after realpath(): %s\n", mozpath);
+#endif
+    }
+
+    char *moz5home = NULL;
+    char *str_p = g_strrstr(mozpath, "/");
+    char *parentpath = g_strndup(mozpath, str_p - mozpath);
+    char *libpath = g_strconcat (parentpath, "/libxpcom.so", NULL);
+#ifdef DEBUG
+    fprintf(stderr, "Check libxpcom.so at path: %s\n", libpath);
 #endif
 
-        if (stat (libpath, &stat_p) == 0) {
-            moz5home = g_strdup(parentpath);
+    if (stat (libpath, &stat_p) == 0) {
+        moz5home = g_strdup(parentpath);
 #ifdef DEBUG
-            fprintf(stderr, "Found libxpcom.so at: %s\n", parentpath);
+        fprintf(stderr, "Found libxpcom.so at: %s\n", parentpath);
 #endif
-        } else {
-            // if mozpath is a symbol link, resolve it.
-            char *real_mozpath = (char *)malloc(PATH_MAX);
-            char *ret = realpath(mozpath, real_mozpath);
-            if (ret) {
-                free(mozpath);
-                mozpath = real_mozpath;
-#ifdef DEBUG
-                fprintf(stderr, "mozpath after realpath(): %s\n", mozpath);
-#endif
-            } else {
-                break;
-            }
-        }
     }
 
     if (moz5home != NULL)
