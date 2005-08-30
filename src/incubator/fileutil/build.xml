@@ -165,7 +165,7 @@ Top-level target:
   
   <!-- *** Build jar file *** -->
   <target name="buildjar" depends="init" description="build the classes and jar file.">
-    <javac srcdir="${share.classes.dir}:${win32.classes.dir}:${unix.classes.dir}:${solaris.classes.dir}:${mac.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" target="1.4" source="1.4"/>
+    <javac srcdir="${share.classes.dir}:${win32.classes.dir}:${unix.classes.dir}:${solaris.classes.dir}" destdir="${dist.dir}" classpath="${dist.dir}" debug="${javac.debug}" target="1.4" source="1.4"/>
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
       <fileset dir="${dist.dir}" includes="org/**/*.class" />
@@ -230,10 +230,10 @@ Top-level target:
   </target>
   
   <target name="jni" depends="init" description="generate header files.">
-    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.impl.Win32NativeFileUtil" outputFile="${win32.native.jni.dir}/Win32NativeFileUtil.h" old="no" verbose="no"/>
-    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.impl.UnixNativeFileUtil" outputFile="${unix.native.jni.dir}/UnixNativeFileUtil.h" old="no" verbose="no"/>
-    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.impl.MacOSXNativeFileUtil" outputFile="${mac.native.jni.dir}/MacOSXNativeFileUtil.h" old="no" verbose="no"/>
-    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.impl.SolarisNativeFileUtil" outputFile="${solaris.native.jni.dir}/SolarisNativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.Win32NativeFileUtil" outputFile="${win32.native.jni.dir}/Win32NativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.UnixNativeFileUtil" outputFile="${unix.native.jni.dir}/UnixNativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.SolarisNativeFileUtil" outputFile="${solaris.native.jni.dir}/SolarisNativeFileUtil.h" old="no" verbose="no"/>
+    <!-- javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.MacOSXNativeFileUtil" outputFile="${mac.native.jni.dir}/MacOSXNativeFileUtil.h" old="no" verbose="no"/ -->
   </target>
 
 </project>

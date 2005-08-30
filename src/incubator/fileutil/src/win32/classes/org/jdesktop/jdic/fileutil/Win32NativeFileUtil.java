@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+ * Copyright (C) 2005 Sun Microsystems, Inc. All rights reserved. Use is
  * subject to license terms.
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -16,24 +16,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
- */ 
+ */
 
-package org.jdesktop.jdic.fileutil.impl;
+package org.jdesktop.jdic.fileutil;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import org.jdesktop.jdic.fileutil.FileUtil;
-
-
 /**
  * @author Fábio Castilho Martins
- *
+ *  
  */
-public class Win32FileUtil implements FileUtil {
-
-    /**
+class Win32NativeFileUtil extends NativeFileUtil {
+	
+	static {
+    	System.loadLibrary("jdic_fileutil");
+    }
+	
+	/**
      * Sends the file or directory denoted by this abstract pathname to the
      * Recycle Bin/Trash Can.
      * 
@@ -49,7 +50,7 @@ public class Win32FileUtil implements FileUtil {
     public boolean recycle(File file) throws IOException,
             SecurityException {
         String fullPath = file.getCanonicalPath();
-        int status = Win32NativeFileUtil.recycle(fullPath, false);
+        int status = this.recycle(fullPath, false);
         
         if(status == 0) {
         	return !file.exists();
@@ -74,12 +75,12 @@ public class Win32FileUtil implements FileUtil {
         BigInteger lowPart;
 
         if (file.isFile()) {
-            freeSpace = Win32NativeFileUtil.getFreeSpace(file.getCanonicalFile().getParent());
+            freeSpace = this.getFreeSpace(file.getCanonicalFile().getParent());
             highPart = new BigInteger(String.valueOf(freeSpace[1])).shiftLeft(32);
             lowPart = new BigInteger(String.valueOf(freeSpace[0]));
             return highPart.add(lowPart); 
         } else if (file.isDirectory()) {
-            freeSpace = Win32NativeFileUtil.getFreeSpace(file.getCanonicalPath());
+            freeSpace = this.getFreeSpace(file.getCanonicalPath());
             highPart = new BigInteger(String.valueOf(freeSpace[1])).shiftLeft(32);
             lowPart = new BigInteger(String.valueOf(freeSpace[0]));
             return highPart.add(lowPart);
@@ -94,12 +95,12 @@ public class Win32FileUtil implements FileUtil {
         BigInteger lowPart;
 
         if (file.isFile()) {
-        	totalSpace = Win32NativeFileUtil.getTotalSpace(file.getCanonicalFile().getParent());
+        	totalSpace = this.getTotalSpace(file.getCanonicalFile().getParent());
             highPart = new BigInteger(String.valueOf(totalSpace[1])).shiftLeft(32);
             lowPart = new BigInteger(String.valueOf(totalSpace[0]));
             return highPart.add(lowPart); 
         } else if (file.isDirectory()) {
-        	totalSpace = Win32NativeFileUtil.getTotalSpace(file.getCanonicalPath());
+        	totalSpace = this.getTotalSpace(file.getCanonicalPath());
             highPart = new BigInteger(String.valueOf(totalSpace[1])).shiftLeft(32);
             lowPart = new BigInteger(String.valueOf(totalSpace[0]));
             return highPart.add(lowPart);
@@ -107,4 +108,55 @@ public class Win32FileUtil implements FileUtil {
             return BigInteger.ZERO;
         }
 	}
+
+	public void close() {
+		this.findClose();
+	}
+
+	public String readFirst(String fullPath) {
+		return this.findFirst(fullPath);
+	}
+
+	public String readNext() {
+		return this.findNext();
+	}
+	
+	private native long[] getFreeSpace(String fullPath);
+
+	private native long[] getTotalSpace(String fullPath);
+	
+	private native int recycle(String fullPath, boolean confirm);
+	
+	private native String getFileSystem(String rootPath);
+	
+	private native boolean isArchive(String fullPath);
+	
+	private native boolean setArchive(String fullPath, boolean status);
+	
+	private native boolean isNormal(String fullPath);
+	
+	private native boolean setNormal(String fullPath);
+	
+	private native boolean isReadOnly(String fullPath);
+	
+	private native boolean isSystem(String fullPath);
+	
+	private native boolean setSystem(String fullPath, boolean status);
+	
+	private native boolean isTemporary(String fullPath);
+	
+	private native boolean setTemporary(String fullPath, boolean status);
+	
+	private native boolean isCompressed(String fullPath);
+	
+	private native boolean isEncrypted(String fullPath);
+	
+	private native boolean setHidden(String fullPath, boolean status);
+	
+	private native String findFirst(String fullPath);
+	
+	private native String findNext();
+	
+	private native boolean findClose();
+
 }

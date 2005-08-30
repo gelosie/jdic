@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+ * Copyright (C) 2005 Sun Microsystems, Inc. All rights reserved. Use is
  * subject to license terms.
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -16,25 +16,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
- */ 
+ */
 
-package org.jdesktop.jdic.fileutil.impl;
-
+package org.jdesktop.jdic.fileutil;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import org.jdesktop.jdic.fileutil.FileUtil;
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSArray;
 
 /**
- * @author Fábio Castilho Martins
- *
+ * @author Fábio Castilho Martins *  
  */
-public class MacOSXFileUtil implements FileUtil {
-
-    /**
+public class MacOSXNativeFileUtil extends NativeFileUtil {
+	
+	static {
+    	System.loadLibrary("jdic_fileutil");
+    }
+	
+	/**
      * Sends the file or directory denoted by this abstract pathname to the
      * Recycle Bin/Trash Can.
      * 
@@ -43,8 +42,7 @@ public class MacOSXFileUtil implements FileUtil {
      *         successfully recycled; <code>false</code> otherwise.
      * @throws IOException If an I/O error occurs, which is possible because the
      *         construction of the canonical pathname may require filesystem
-     *         queries.
-     * 
+     *         queries. 
      * @throws SecurityException If a required system property value cannot be 
      *         accessed, or if a security manager exists and its <code>{@link
      *         java.lang.SecurityManager#checkRead}</code> method denies read 
@@ -77,10 +75,10 @@ public class MacOSXFileUtil implements FileUtil {
     	BigInteger freeSpace;
     	
     	if (file.isFile()) {
-        	freeSpace = new BigInteger(Long.toString(MacOSXNativeFileUtil.getFreeSpace(file.getCanonicalFile().getParent())));
+        	freeSpace = new BigInteger(Long.toString(this.getFreeSpace(file.getCanonicalFile().getParent())));
             return freeSpace; 
         } else if (file.isDirectory()) {
-        	freeSpace = new BigInteger(Long.toString(MacOSXNativeFileUtil.getFreeSpace(file.getCanonicalPath())));
+        	freeSpace = new BigInteger(Long.toString(this.getFreeSpace(file.getCanonicalPath())));
             return freeSpace;
         } else {
             return BigInteger.ZERO;
@@ -91,13 +89,50 @@ public class MacOSXFileUtil implements FileUtil {
 		BigInteger totalSpace;
     	
     	if (file.isFile()) {
-    		totalSpace = new BigInteger(Long.toString(MacOSXNativeFileUtil.getTotalSpace(file.getCanonicalFile().getParent())));
+    		totalSpace = new BigInteger(Long.toString(this.getTotalSpace(file.getCanonicalFile().getParent())));
             return totalSpace; 
         } else if (file.isDirectory()) {
-        	totalSpace = new BigInteger(Long.toString(MacOSXNativeFileUtil.getTotalSpace(file.getCanonicalPath())));
+        	totalSpace = new BigInteger(Long.toString(this.getTotalSpace(file.getCanonicalPath())));
             return totalSpace;
         } else {
             return BigInteger.ZERO;
         }
 	}
+	
+	public void close() {
+    	this.findClose();
+	}
+
+	public String readFirst(String fullPath) {
+		String path = this.findFirst(fullPath);
+		if(path != null) {
+			if(path.equals(".") || path.equals("..")) {
+				path = this.readNext();
+			}
+			path = File.separator + path;
+		}
+		return path;
+	}
+
+	public String readNext() {
+		String path = this.findNext();
+		if(path != null) {
+			if(path.equals(".") || path.equals("..")) {
+				path = this.findNext();
+			}
+			path = File.separator + path;
+		}
+		return path;
+	}
+	
+	private native long getFreeSpace(String fullPath);
+	
+	private native long getTotalSpace(String fullPath);
+	
+	private native String findFirst(String fullPath);
+	
+	private native String findNext();
+	
+	private native boolean findClose();
+
 }

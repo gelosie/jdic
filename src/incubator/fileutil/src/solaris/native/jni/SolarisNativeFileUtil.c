@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+ * Copyright (C) 2005 Sun Microsystems, Inc. All rights reserved. Use is
  * subject to license terms.
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -19,16 +19,21 @@
  */ 
 
 #include <jni.h>
-#include <sys/types.h>
 #include <sys/statvfs.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include "SolarisNativeFileUtil.h"
 
 /*
  * author: Fábio Castilho Martins
  */
+ 
+DIR *pDir;
 
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUtil_getFreeSpace
-  (JNIEnv *env, jclass jc, jstring fullPath) {      
+struct dirent *pDirEntry;
+
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_SolarisNativeFileUtil_getFreeSpace
+  (JNIEnv *env, jobject obj, jstring fullPath) {      
       
     struct statvfs* pStatvfs  = (struct statvfs*) malloc(sizeof(struct statvfs));
     int status;
@@ -45,8 +50,8 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUt
     return retorno;
 }
 
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUtil_getTotalSpace
-  (JNIEnv *env, jclass jc, jstring fullPath) {      
+JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_SolarisNativeFileUtil_getTotalSpace
+  (JNIEnv *env, jobject obj, jstring fullPath) {      
       
     struct statvfs* pStatvfs  = (struct statvfs*) malloc(sizeof(struct statvfs));
     int status;
@@ -61,4 +66,43 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_impl_SolarisNativeFileUt
     free(pStatvfs);
     
     return retorno;
+}
+
+JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_findFirst
+  (JNIEnv *env, jobject obj, jstring fullPath) {
+    char* cpFullPath = (char*) (*env)->GetStringUTFChars(env, fullPath, NULL);
+    pDir = opendir(cpFullPath);
+    if(pDir == NULL) {
+        return NULL;
+    }
+    else {
+        pDirEntry = readdir(pDir);
+        if(pDirEntry == NULL) {
+            return NULL;
+        }
+        else {
+            return (*env)->NewStringUTF(env, pDirEntry->d_name);
+        }          
+    }
+}
+  
+JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_findNext
+  (JNIEnv *env, jobject obj) {
+    pDirEntry = readdir(pDir);
+    if(pDirEntry == NULL) {
+        return NULL;
+    }
+    else {
+        return (*env)->NewStringUTF(env, pDirEntry->d_name);;
+    }
+}
+  
+JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_findClose
+  (JNIEnv *env, jobject obj) {
+    if(closedir(pDir) == 0) {
+        return JNI_TRUE;
+    }
+    else {
+        return JNI_FALSE;
+    }
 }

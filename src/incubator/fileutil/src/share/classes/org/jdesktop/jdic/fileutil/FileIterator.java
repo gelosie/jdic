@@ -20,9 +20,36 @@
 
 package org.jdesktop.jdic.fileutil;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+
 /**
- * @author Fábio Castilho Martins 
- *  
+ * @author Fábio Castilho Martins *  
  */
-public interface FileProperties {
+public interface FileIterator {
+		
+	/**
+     * Returns <tt>true</tt> if next would return a File object in the directory.
+     *
+     * @return <tt>true</tt> if the iterator has more elements.
+     */
+	public boolean hasNext() throws IOException;
+	
+	/**
+     * Returns the next File in the directory.
+     *
+     * @return the next File in the directory.
+     * @exception NoSuchElementException if there are no more File objects in the directory.
+     */
+	public File next() throws NoSuchElementException;
+
+	/**
+     * Closes the FileIterator object, releasing resources immediately.
+     * 
+     * The FileIterator is automatically closed when hasNext returns false 
+     * or when the object is garbage collected.
+     */
+	public void close();
+	
 }
