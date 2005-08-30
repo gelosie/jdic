@@ -25,11 +25,14 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 /**
- * An iterator over a directory. The FileIterator class offer methods to traverse 
+ * An iterator over a directory. Implementations of the FileIterator interface offer methods to traverse 
  * a diretory incrementally.
  * 
  * @author Fábio Castilho Martins
  * @see File
+ * @see FileUtil#listFiles(File)
+ * @see FileUtil#listFiles(File, FileFilter)
+ * @see FileUtil#listFiles(File, FilenameFilter)
  */
 public interface FileIterator {
 		
