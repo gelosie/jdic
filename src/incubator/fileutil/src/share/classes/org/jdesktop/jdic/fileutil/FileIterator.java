@@ -25,19 +25,23 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 /**
- * @author Fábio Castilho Martins *  
+ * An iterator over a directory. The FileIterator class offer methods to traverse 
+ * a diretory incrementally.
+ * 
+ * @author Fábio Castilho Martins
+ * @see File
  */
 public interface FileIterator {
 		
 	/**
-     * Returns <tt>true</tt> if next would return a File object in the directory.
+     * Returns <tt>true</tt> if the next method would return a File object in the directory.
      *
      * @return <tt>true</tt> if the iterator has more elements.
      */
 	public boolean hasNext() throws IOException;
 	
 	/**
-     * Returns the next File in the directory.
+     * Returns the next File object in the directory.
      *
      * @return the next File in the directory.
      * @exception NoSuchElementException if there are no more File objects in the directory.
@@ -47,7 +51,7 @@ public interface FileIterator {
 	/**
      * Closes the FileIterator object, releasing resources immediately.
      * 
-     * The FileIterator is automatically closed when hasNext returns false 
+     * The FileIterator is automatically closed when the hasNext method returns false 
      * or when the object is garbage collected.
      */
 	public void close();

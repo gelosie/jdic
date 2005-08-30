@@ -20,7 +20,6 @@
 
 package org.jdesktop.jdic.fileutil;
 
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
@@ -29,11 +28,26 @@ import java.math.BigInteger;
 import java.util.NoSuchElementException;
 
 /**
- * @author Fábio Castilho Martins *  
+ * Provides extensions to the <code>java.io.File</code> class.
+ * 
+ * @author Fábio Castilho Martins
+ * @see File
+ * @see File#listFiles()
+ * @see File#listFiles(java.io.FileFilter)
+ * @see File#listFiles(java.io.FilenameFilter)
  */
 public class FileUtil {
 	
-	private NativeFileUtil fileUtil = NativeFileUtil.getNativeFileUtil();
+	private NativeFileUtil fileUtil;	
+	
+	/**
+	 * Creates a new FileUtil instance.
+	 * 
+	 * @throws UnsupportedOperationException If the method isn't supported in the specific platform.
+	 */
+	public FileUtil() throws UnsupportedOperationException {
+		this.fileUtil = NativeFileUtil.getNativeFileUtil();		
+	}
 	
 	private class InnerFileIterator implements FileIterator {
 		
@@ -169,7 +183,7 @@ public class FileUtil {
 
     /**
      * Return the amount of free bytes available in the directory or file
-     * referenced by the file Object.
+     * referenced by the File Object.
      * 
      * @param file
      * @return the amount of free space in the partition. The size is wrapped in a
@@ -182,7 +196,7 @@ public class FileUtil {
     }
     
     /**
-     * Return the size in bytes of the partition denoted by the file Object.
+     * Return the size in bytes of the partition denoted by the File Object.
      * 
      * @param file
      * @return the size of the partition. The size is wrapped in a
