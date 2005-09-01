@@ -23,14 +23,13 @@ package org.jdesktop.jdic.tray.internal.impl;
 
 import org.jdesktop.jdic.tray.internal.TrayAppletService;
 import sun.awt.EmbeddedFrame;
+
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.peer.ComponentPeer;
 import java.awt.Toolkit;
-import java.awt.Frame;
 import java.awt.Panel;
 import java.awt.Dimension;
-import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,109 +71,40 @@ public class GnomeTrayAppletService implements TrayAppletService {
     long window_id;
    
     EmbeddedFrame createEmbeddedFrame(long window) {
-        EmbeddedFrame ef = null;
-        String version = System.getProperty("java.version");
-        String os = System.getProperty("os.name");
-
-        // System.out.println("version = " + version);
-        // System.out.flush();
-
-        if ((version.indexOf("1.5") == -1) || (os.equals("SunOS"))) {
-            // 1.4.2 or older JVM, use MAWT !
-            long w = getWidget(window, 400, 400, 0, 0);
-            // System.out.println("Widget w = " + w);
-            Class clazz = null;
-
+        String className = null;
+        Class clazz = null;
+        Constructor constructor = null;
+        long w = window;
+        EmbeddedFrame frame = null;
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        
+        if(toolkit instanceof sun.awt.motif.MToolkit){
+            w = getWidget(window, 400, 400, 0, 0);
+            className = "sun.awt.motif.MEmbeddedFrame";
+        }else{ // sun.awt.X11.XToolkit
+            className = "sun.awt.X11.XEmbeddedFrame";
+        }
+        try {
+            clazz = Class.forName(className);
+            constructor = clazz.getConstructor(new Class[]{long.class});
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
             try {
-                clazz = Class.forName("sun.awt.motif.MEmbeddedFrame");
-            } catch (Throwable e) {
+                constructor = clazz.getConstructor(new Class[]{int.class});
+            } catch (NoSuchMethodException e1) {
+                e1.printStackTrace();
+            }
+        }
+        if(constructor != null){
+            try {
+                frame = (EmbeddedFrame)constructor.newInstance(new Object[]{new Long(w)});
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            Constructor constructor = null;
-
-            try {
-                constructor = clazz.getConstructor(new Class[] {int.class});
-            } catch (Throwable e1) {
-                try {
-                    constructor = clazz.getConstructor(new Class[] {long.class});
-                } catch (Throwable e2) {
-                    e1.printStackTrace();
-                }
-            }
-            Object value = null;
-
-            try {
-                value = constructor.newInstance(new Object[] {new Long(w)});
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-            ef = (EmbeddedFrame) value;
-        } else {   
-            // 1.5  JVM decide on which EmbeddedFrame to use 
-            Toolkit toolkit = Toolkit.getDefaultToolkit();
-
-            // System.out.println("toolkit = " + toolkit);
-            // System.out.flush();
-            if (toolkit instanceof sun.awt.motif.MToolkit) {
-                Class clazz = null;
-
-                try {
-                    clazz = Class.forName("sun.awt.motif.MEmbeddedFrame");
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-                Constructor constructor = null;
-
-                try {
-                    constructor = clazz.getConstructor(new Class[] {int.class});
-                } catch (Throwable e1) {
-                    try {
-                        constructor = clazz.getConstructor(new Class[] {long.class});
-                    } catch (Throwable e2) {
-                        e1.printStackTrace();
-                    }
-                }
-                Object value = null;
-
-                try {
-                    value = constructor.newInstance(new Object[] {new Long(window)});
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-
-                ef = (EmbeddedFrame) value;
-
-            } else {
-                Class clazz = null;
-
-                try {
-                    clazz = Class.forName("sun.awt.X11.XEmbeddedFrame");
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-                Constructor constructor = null;
-
-                try {
-                    constructor = clazz.getConstructor(new Class[] {int.class});
-                } catch (Throwable e1) {
-                    try {
-                        constructor = clazz.getConstructor(new Class[] {long.class});
-                    } catch (Throwable e2) {
-                        e1.printStackTrace();
-                    }
-                }
-                Object value = null;
-
-                try {
-                    value = constructor.newInstance(new Object[] {new Long(window)});
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-
-                ef = (EmbeddedFrame) value;
-            }
-        } 
-        return ef; 
+        }
+        
+        return frame;
     }
 
     void init() {
