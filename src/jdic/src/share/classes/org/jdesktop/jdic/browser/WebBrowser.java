@@ -460,7 +460,7 @@ public class WebBrowser extends Canvas
      * @since 0.9 
      */
     public WebBrowserListener[] getWebBrowserListeners() {
-        return (WebBrowserListener[])webBrowserListeners.toArray();
+        return (WebBrowserListener[])webBrowserListeners.toArray(new WebBrowserListener[0]);
     }
 
     /**
