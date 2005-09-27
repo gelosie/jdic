@@ -563,6 +563,7 @@ Top-level target:
 
     <jar destfile="${dist.dir}/${jar.file}" update="false">
          <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+         <fileset dir="${unix.classes.dir}" includes="org/**/*.png"/>
     </jar>
 
     <!-- remove the generated "org" directory -->
