@@ -152,7 +152,7 @@ class MsgClient {
         }
 
         WebBrowserUtil.trace("connected");
-        channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        channel.register(selector, SelectionKey.OP_READ);
     }
 
     // Append a sockate message string to the send buffer.
@@ -161,6 +161,7 @@ class MsgClient {
     //       between the Java side and native side.
     void sendMessage(String msg) {
     	sendBuffer += msg + MSG_DELIMITER;
+        channel.keyFor(selector).interestOps(SelectionKey.OP_READ|SelectionKey.OP_WRITE);
     }
    
     String getMessage() {
@@ -258,6 +259,7 @@ class MsgClient {
                             = ByteBuffer.wrap(sendBuffer.getBytes(charsetName));
                         keyChannel.write(buf);
                         sendBuffer = "";
+                        key.interestOps(SelectionKey.OP_READ);
                     }
                 }
             }
