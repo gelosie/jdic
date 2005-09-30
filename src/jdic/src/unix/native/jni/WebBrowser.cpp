@@ -40,14 +40,9 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebBrowser_nativeGetWindow
     jboolean result;
     jint lock;
     Drawable handle_x11 = 0;
-    void *jawt_handle;
-    typedef jboolean (*JAWT_GetAWT)(JNIEnv*, JAWT*);
-    JAWT_GetAWT jawt_getawt;
-    jawt_handle = dlopen("libjawt.so", RTLD_LAZY);
-    jawt_getawt = (JAWT_GetAWT) dlsym(jawt_handle, "JAWT_GetAWT");
 
     awt.version = JAWT_VERSION_1_3;
-    result = jawt_getawt(env, &awt);
+    result = JAWT_GetAWT(env, &awt);
     if (result != JNI_FALSE)
     {
         ds = awt.GetDrawingSurface(env, canvas);

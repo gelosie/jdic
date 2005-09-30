@@ -90,6 +90,7 @@ public class WebBrowser extends Canvas
         // To set the environment variables or initialize the set up for 
         // native libraries and executable files.
         try {
+            Toolkit.getDefaultToolkit(); // Load libjawt.so/jawt.dll
             JdicManager jm = JdicManager.getManager();
             jm.initShareNative();
             jm.initBrowserNative();

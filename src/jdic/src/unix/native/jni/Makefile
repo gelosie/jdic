@@ -85,7 +85,8 @@ EXTRA_BROWSER_LIBS = \
     -L$(JAVA_HOME)/jre/lib/sparcv9 \
     -L$(JAVA_HOME)/jre/lib/i386 \
     -L$(JAVA_HOME)/jre/lib/amd64 \
-    -L$(JAVA_HOME)/jre/lib/ia64
+    -L$(JAVA_HOME)/jre/lib/ia64 \
+    -ljawt
 
 TRAY_LIBS = -L$(X11LIB) -lXt -lX11
 
@@ -107,7 +108,7 @@ TRAY_CSRC = Tray.c
 JDIC_SO_NAME = libjdic.so
 TRAY_SO_NAME = libtray.so
 
-all: clean $(JDIC_SO_NAME) $(TRAY_SO_NAME)
+all: $(JDIC_SO_NAME) $(TRAY_SO_NAME)
 
 JDIC_SO_OBJS = $(CPPSRCS:.cpp=.o)
 
@@ -120,7 +121,7 @@ $(JDIC_SO_NAME): $(JDIC_SO_OBJS)
 #
 # Build libtray.so containing only the Tray Icon API native code.
 #
-tray: clean $(TRAY_SO_NAME)
+tray: $(TRAY_SO_NAME)
 
 $(TRAY_SO_NAME): $(TRAY_CSRC)
 	$(CC) $(INCLUDES) $(LDFLAGS) -ldl -L$(X11LIB) -lXt -lX11 $(TRAY_CSRC) -o $@

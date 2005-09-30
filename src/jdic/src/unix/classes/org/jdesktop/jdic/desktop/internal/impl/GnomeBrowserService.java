@@ -20,6 +20,7 @@
 
 package org.jdesktop.jdic.desktop.internal.impl;
 
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.URL;
 
@@ -31,6 +32,7 @@ import org.jdesktop.jdic.desktop.internal.LaunchFailedException;
  */
 public class GnomeBrowserService implements BrowserService {
     static {
+        Toolkit.getDefaultToolkit();
         System.loadLibrary("jdic");
     }
 
