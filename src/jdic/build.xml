@@ -127,11 +127,9 @@ Top-level target:
 
 
   <!-- *** Top-level target *** -->
-  <!-- *** Build a JDIC API distribution for the current platform *** -->
-  
+  <!-- *** Build a JDIC API distribution for the current platform *** -->  
   <target name="buildall"
-          description="build a distribution for the current platform.">
-          
+          description="build a distribution for the current platform.">          
     <!-- Set the platform-dependent buildall target -->
     <condition property="platform.target" value="buildwin32">
       <os family="windows" />      
