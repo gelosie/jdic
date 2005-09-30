@@ -18,11 +18,11 @@
       311 P3  Seperate JDIC API release from JDIC Packager
       317 P3  Newmethod WebBrowser.setURL(URL, Strin postData, String headers)
       320 P3  ant buildtray forgets to include the png's
-			321 P3  WinTrayIconService should call actionPerformed on WM_RBUTTONUP
-			322 P1  Browser hangs and keeps consuming memory
-			324 P3  Browser message client uses excessive CPU
-			326 P3  JVM crash if using the JDK1.6
-			328 P3  bind Server Socket to loopback device only to avoid firewall issues
+      321 P3  WinTrayIconService should call actionPerformed on WM_RBUTTONUP
+      322 P1  Browser hangs and keeps consuming memory
+      324 P3  Browser message client uses excessive CPU
+      326 P3  JVM crash if using the JDK1.6
+      328 P3  bind Server Socket to loopback device only to avoid firewall issues
       332 P3  WebBrowser.getWebBrowserListeners() throws ClassCastException
       
     * Known issue list:   
