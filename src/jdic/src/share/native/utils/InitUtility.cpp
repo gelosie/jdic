@@ -71,7 +71,11 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_init_InitUtility_setEnv
 #ifdef WIN32
             SetEnvironmentVariable(pEnvVar, pEnvValue);
 #else
-            setenv(pEnvVar, pEnvValue, 1);
+            char *newEnv = (char*)malloc(strlen(pEnvVar) + strlen(pEnvValue) + 2);
+            strcpy(newEnv, pEnvVar);
+            strcat(newEnv, "=");
+            strcat(newEnv, pEnvValue);
+            putenv(newEnv);
 #endif
                env->ReleaseStringUTFChars(envValue, pEnvValue);
         }

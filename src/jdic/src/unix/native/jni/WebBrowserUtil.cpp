@@ -52,7 +52,7 @@ Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
         g_free(firefox);
         if (is_firefox == 0) {
             // MOZILLA_FIVE_HOME is point to firefox, unset it.
-            unsetenv("MOZILLA_FIVE_HOME");
+            putenv("MOZILLA_FIVE_HOME");
         }else{
             return env->NewStringUTF(moz5home_env);
         }
