@@ -7,13 +7,13 @@
       ==  ===  =======
       152 P2  Add API destroy() or dispose() to WebBrowser.
       265 P3  getIconFileName doesn't escape path variables like %ProgramFiles% in icon paths
-      266 P3 	File types API does not work correctly with Adobe Reader 7.0
-      292 P3 	IndexOutOfBounds in WinUtility.getMozMailerLocation()
-      293 P3 	Tray ActionListener does not respect key masks
-      299 P3 	WebBrowser.setContent() not working with large content.
+      266 P3  File types API does not work correctly with Adobe Reader 7.0
+      292 P3  IndexOutOfBounds in WinUtility.getMozMailerLocation()
+      293 P3  Tray ActionListener does not respect key masks
+      299 P3  WebBrowser.setContent() not working with large content.
       301 P3  Add support for requesting browser to print
-      305 P3 	NullPointerException on WebBrowser.removeNotify()
-      306 P3 	Web start demo doesn't work when clicking in firefox.            
+      305 P3  NullPointerException on WebBrowser.removeNotify()
+      306 P3  Web start demo doesn't work when clicking in firefox.            
       310 P1  StringIndexOutOfBounds Exception in WinUtility when launching Mozilla Thunderbird
       311 P3  Seperate JDIC API release from JDIC Packager
       317 P3  Newmethod WebBrowser.setURL(URL, Strin postData, String headers)
