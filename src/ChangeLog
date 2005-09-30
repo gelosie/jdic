@@ -4,9 +4,9 @@
 
     * Fixed issue list:   
       ID  Pri  Summary
-      ==  ===  =======      
-			152 P2  Add API destroy() or dispose() to WebBrowser.
-			265 P3  getIconFileName doesn't escape path variables like %ProgramFiles% in icon paths
+      ==  ===  =======
+      152 P2  Add API destroy() or dispose() to WebBrowser.
+      265 P3  getIconFileName doesn't escape path variables like %ProgramFiles% in icon paths
       266 P3 	File types API does not work correctly with Adobe Reader 7.0
       292 P3 	IndexOutOfBounds in WinUtility.getMozMailerLocation()
       293 P3 	Tray ActionListener does not respect key masks
@@ -15,10 +15,10 @@
       305 P3 	NullPointerException on WebBrowser.removeNotify()
       306 P3 	Web start demo doesn't work when clicking in firefox.            
       310 P1  StringIndexOutOfBounds Exception in WinUtility when launching Mozilla Thunderbird
-      311 P3  Seperate JDIC API release from JDIC Packager			
-			317 P3  Newmethod WebBrowser.setURL(URL, Strin postData, String headers)
-			320 P3  ant buildtray forgets to include the png's
-			321 P3  WinTrayIconService should call actionPerformed on WM_RBUTTONUP			
+      311 P3  Seperate JDIC API release from JDIC Packager
+      317 P3  Newmethod WebBrowser.setURL(URL, Strin postData, String headers)
+      320 P3  ant buildtray forgets to include the png's
+			321 P3  WinTrayIconService should call actionPerformed on WM_RBUTTONUP
 			322 P1  Browser hangs and keeps consuming memory
 			324 P3  Browser message client uses excessive CPU
 			326 P3  JVM crash if using the JDK1.6
