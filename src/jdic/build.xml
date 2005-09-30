@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="JDIC API source code building script" default="showtargets" basedir=".">
+<project name="JDIC API source code building script" default="buildall" basedir=".">
 
 <!--
 This is the master build script for use with the Jakarta Ant build tool 
@@ -29,6 +29,7 @@ Top-level target:
   <property name="pkg.tray.name"      value="${pkg.jdic.name}.tray" />
 
   <!-- the path of source directory -->
+  <property name="readme.dir"        value="../" />
   <property name="src.dir"           value="src" />
   <property name="share.classes.dir" value="${src.dir}/share/classes" />
   <property name="unix.classes.dir"  value="${src.dir}/unix/classes" />
@@ -150,12 +151,21 @@ Top-level target:
     
     <condition property="platform.target" value="buildmac_os_x">
       <os name="Mac OS X" />      
-    </condition>     
+    </condition>
 
     <antcall target="${platform.target}" />
     
     <!-- build demo applications into .class files -->
-    <antcall target="builddemo" />    
+    <antcall target="builddemo" />
+    
+    <antcall target="copyreadme" />
+  </target>
+  
+  <!--copy readme changelog and copyright files-->
+  <target name="copyreadme" depends="init">
+  	<copy file="${readme.dir}/README.html" todir="${dist.dir}" />
+  	<copy file="${readme.dir}/COPYING" todir="${dist.dir}" />
+  	<copy file="${readme.dir}/ChangeLog" todir="${dist.dir}" />
   </target>
 
   <!-- *** javadoc *** -->
