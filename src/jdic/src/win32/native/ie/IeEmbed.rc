@@ -75,8 +75,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,9,1,0
- PRODUCTVERSION 0,9,1,0
+ FILEVERSION 2005,09,30,0
+ PRODUCTVERSION 2005,09,30,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -94,7 +94,7 @@ BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "JDesktop Integration Components (JDIC) Project\0"
             VALUE "FileDescription", "JDesktop Integration Components binary\0"
-            VALUE "FileVersion", "0.9.1.0\0"
+            VALUE "FileVersion", "20050930\0"
             VALUE "InternalName", "IeEmbed\0"
             VALUE "LegalCopyright", "LGPL\0"
             VALUE "LegalTrademarks", "\0"
@@ -102,7 +102,7 @@ BEGIN
             VALUE "OriginalFilename", "IeEmbed.EXE\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "JDesktop Integration Components (JDIC)\0"
-            VALUE "ProductVersion", "0.9.1.0\0"
+            VALUE "ProductVersion", "20050930\0"
             VALUE "SpecialBuild", "\0"
         END
     END

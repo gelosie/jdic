@@ -54,8 +54,8 @@ Top-level target:
 
   <!-- the distribution version and release of this build -->
   <!-- which is only used in javadoc target -->
-  <property name="version" value="0.9" />
-  <property name="release" value="1" />
+  <property name="version" value="2005" />
+  <property name="release" value="0930" />
 
   <!-- the generated jar file name -->
   <property name="jar.file" value="jdic.jar" />
@@ -127,8 +127,10 @@ Top-level target:
 
   <!-- *** Top-level target *** -->
   <!-- *** Build a JDIC API distribution for the current platform *** -->
+  
   <target name="buildall"
           description="build a distribution for the current platform.">
+          
     <!-- Set the platform-dependent buildall target -->
     <condition property="platform.target" value="buildwin32">
       <os family="windows" />      
