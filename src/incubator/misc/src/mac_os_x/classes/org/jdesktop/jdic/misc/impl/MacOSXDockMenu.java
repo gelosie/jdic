@@ -23,6 +23,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import com.apple.eawt.*;
 import java.awt.event.ActionEvent;
+import java.awt.Component;
 import javax.swing.*;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -92,25 +93,27 @@ public class MacOSXDockMenu extends DockMenu {
 		 * @param  sender  Description of the Parameter
 		 * @return         Description of the Return Value
 		 */
+         /*
 		public NSMenu applicationDockMenu(NSApplication sender) {
 			System.out.println("creating dock menu");
 			//NSMenuItem showCurrItem;
 
 			//NSMenu dockMenu  = dockMenu = new NSMenu();
             NSMenu dockMenu = new NSMenu();
-            addSubmenu(menu, dockMenu);
+            //addSubmenu(menu, dockMenu);
 			
-			/*
+			
 			for (int i = 0; i < menu.getMenuComponentCount(); i++) {
 				JMenuItem item     = (JMenuItem) menu.getMenuComponent(i);
 				NSMenuItem nsitem  = new NSMenuItem(item.getText(), actionSel, "");
 				nsitem.setTarget(item);
 				dockMenu.addItem(nsitem);
 			}
-			*/
+			
 			return dockMenu;
 		}
-		
+        */
+		/*
 		private void addSubmenu(JMenu m, NSMenu submen) {
 			for (int i = 0; i<m.getItemCount(); i++) {
                 
@@ -136,35 +139,57 @@ public class MacOSXDockMenu extends DockMenu {
 			}
 		}
         
-        
+        */
 
 
 	}
 	
-    class JMenuDelegate {
-    }
-    
     List menuitems;
     public void buildDelegateMenu(JMenu menu) {
-        menuitems = new ArrayList();
+        menuitems = buildDelegateList(menu);
+    }
+    
+    private List buildDelegateList(JMenu menu) {
+        List items = new ArrayList();
 		for (int i = 0; i<menu.getItemCount(); i++) {
-            if(menu.getMenuComponent(i) instanceof JMenuItem) {
+            Component comp = menu.getMenuComponent(i);
+            
+            if(comp instanceof JSeparator) {
+                items.add(new JMenuItemDelegate(true));
+                continue;
+            }
+            
+            if(comp instanceof JMenu) {
+                JMenu mn = (JMenu) comp;
+                JMenuItemDelegate del = new JMenuItemDelegate(mn);
+                del.submenu = buildDelegateList(mn);
+                items.add(del);
+                continue;
+            }
+
+            if(comp instanceof JMenuItem) {
                 JMenuItem mi = (JMenuItem) menu.getMenuComponent(i);
-                menuitems.add(new JMenuItemDelegate(mi));
+                items.add(new JMenuItemDelegate(mi));
+                continue;
             }
         }
+        return items;
     }
     
     class JMenuItemDelegate {
         JMenuItem jmenuitem;
         String text;
-        
+        List submenu = new ArrayList();
+        boolean isSeparator;
         public JMenuItemDelegate(JMenuItem item) {
             jmenuitem = item;
             text = item.getText();
         }
+        public JMenuItemDelegate(boolean isSeparator) {
+            this.isSeparator = isSeparator;
+        }
         public void doClick() {
-            System.out.println("do click called");
+            //System.out.println("do click called");
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     jmenuitem.doClick();
@@ -174,7 +199,12 @@ public class MacOSXDockMenu extends DockMenu {
         public String getText() {
             return text;
         }
+        public boolean isSeparator() {
+            return isSeparator;
+        }
+       
     }
+    
     
     class Delegate2 extends ApplicationAdapter {
         MacOSXDockMenu dock;
@@ -185,12 +215,38 @@ public class MacOSXDockMenu extends DockMenu {
                 new NSSelector("doClick", new Class[]{});
     
         public NSMenu applicationDockMenu(NSApplication sender) {
-            NSMenu dockMenu = new NSMenu();
-            for(int i=0; i<menuitems.size(); i++) {
-                JMenuItemDelegate mi = (JMenuItemDelegate) menuitems.get(i);
-                NSMenuItem nsitem  = new NSMenuItem(mi.getText(), actionSel, "");
-                nsitem.setTarget(mi);
-                dockMenu.addItem(nsitem);
+            return buildMenu(menuitems, null);
+        }
+        private NSMenu buildMenu(List list, String str) {
+            NSMenu dockMenu;
+            if(str != null) {
+                dockMenu = new NSMenu(str);
+            } else {
+                dockMenu = new NSMenu();
+            }
+            for(int i=0; i<list.size(); i++) {
+                if(list.get(i) instanceof JMenuItemDelegate) {
+                    JMenuItemDelegate mi = (JMenuItemDelegate) list.get(i);
+                    
+                    // handle separators first
+                    if(mi.isSeparator()) {
+                        NSMenuItem nsitem = new NSMenuItem();
+                        nsitem = nsitem.separatorItem();
+                        dockMenu.addItem(nsitem);
+                        continue;
+                    }
+                    
+                    // build a new item
+                    System.out.println("adding: " + mi.getText());
+                    NSMenuItem nsitem  = new NSMenuItem(mi.getText(), actionSel, "");
+                    nsitem.setTarget(mi);
+                    dockMenu.addItem(nsitem);
+                    
+                    if(mi.submenu.size() > 0) {
+                        NSMenu submenu = buildMenu(mi.submenu,mi.getText());
+                        dockMenu.setSubmenuForItem(submenu, nsitem);
+                    }
+                }
             }
             return dockMenu;
         }
