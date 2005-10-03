@@ -60,8 +60,11 @@ public class MacOSXDockMenu extends DockMenu {
         buildDelegateMenu(menu);
 		//Delegate delegate  = new Delegate(menu);
 		NSApplication app  = NSApplication.sharedApplication();
-		app.setDelegate(new Delegate2(this));
+        this.delegate = new Delegate2(this); 
+		app.setDelegate(delegate);
 	}
+    
+    private Delegate2 delegate;
 
 	/**
 	 *  Implementation detail. Do not use!
