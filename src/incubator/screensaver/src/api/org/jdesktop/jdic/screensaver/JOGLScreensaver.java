@@ -154,7 +154,18 @@ public abstract class JOGLScreensaver
         if(animator != null) {
             animator.stop();
         }
+        joglScreensaverDestroy();
         System.exit(0);
+    }
+    
+    /**
+     * Subclasses can optionally override this method to perform any
+     * orderly shutdown procedures before the screensaver exits.
+     * The animator will have been fully stopped at this point.
+     *
+     * @since 0.3
+     */
+    protected void joglScreensaverDestroy() {
     }
     
     /**
