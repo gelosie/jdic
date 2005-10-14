@@ -69,7 +69,7 @@ LDFLAGS = -shared -fPIC -Wl,--version-script=gnu-ld-script
 MODULE_NAME_PART = mozembed-linux-gtk
 endif
 ifeq ($(OS_ARCH), SunOS)
-CXX = CC
+CXX = CC -norunpath
 LDFLAGS = -G -M gnu-ld-script
 MODULE_NAME_PART = mozembed-solaris-gtk
 endif

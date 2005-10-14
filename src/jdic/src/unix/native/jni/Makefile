@@ -30,7 +30,7 @@ ARCH = $(shell uname -m)
 
 ifeq ($(UNAME), SunOS)
   PLATFORM = solaris
-  CXX = CC
+  CXX = CC -norunpath
   CC = cc  
   CXXFLAGS = -c
   LDFLAGS = -G -ldl -lrt -lpthread
