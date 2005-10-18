@@ -18,11 +18,6 @@
  * USA.
  */ 
 
-/*
- * Created on Apr 29, 2005
- *
- * mpcontrol
- */
 package org.jdesktop.jdic.mpcontrol.winamp;
 
 
@@ -93,14 +88,14 @@ public class WinampControl implements IMediaPlayer {
      * @see net.sf.mpcontrol.IMediaPlayer#setVolume(float)
      */
     public void setVolume(float volume) {
-        Util.sendMessage(hwnd, WM_WA_IPC, (int) (volume * 255), 122);
+        Util.sendMessage(hwnd, WM_WA_IPC, (int) (volume * 255), IPC_SETVOLUME);
     }
     
     /* (non-Javadoc)
      * @see net.sf.mpcontrol.IMediaPlayer#play()
      */
     public void play() {
-        Util.sendMessage(hwnd, WM_WA_IPC, 0, 102);
+        Util.sendMessage(hwnd, WM_WA_IPC, 0, IPC_STARTPLAY);
     }
     
     public String getVersion() {
@@ -109,11 +104,25 @@ public class WinampControl implements IMediaPlayer {
         return "Winamp " + (wers >> 16) + "." + (wers & 0xff);
     }
     
+    
+    private static int IPC_STARTPLAY = 102;
+    private static int IPC_ISPLAYING = 104;
+    private static int IPC_SETVOLUME = 122;
+    
+    
     private static int WM_WA_IPC = 1024;
     private static int WM_USER = 1024;
+    private static int WM_COMMAND = 273 ;
+    
+		private static int WM_PREV  = 40044;
+		private static int WM_PLAY  = 40045;
+		private static int WM_PAUSE = 40046;
+		private static int WM_STOP  = 40047;
+		private static int WM_NEXT  = 40048;
+    
     
     public boolean isPlaying() {
-        long res = Util.sendMessage(hwnd, WM_WA_IPC, 0, 104);
+        long res = Util.sendMessage(hwnd, WM_WA_IPC, 0, IPC_ISPLAYING);
 
         // case 0 : stoped
         // case 1 : playing
@@ -125,22 +134,24 @@ public class WinampControl implements IMediaPlayer {
      * @see net.sf.mpcontrol.IMediaPlayer#next()
      */
     public void next() {
-        log.warning(this.getClass().getName() + ".next() not implemented");
-
+        hwnd = findWindow(); 
+        long res = Util.sendMessage(hwnd, WM_COMMAND, WM_NEXT, 0);
     }
     
     /* (non-Javadoc)
      * @see net.sf.mpcontrol.IMediaPlayer#pause()
      */
     public void pause() {
-        log.warning(this.getClass().getName() + ".pause() not implemented");
+        hwnd = findWindow(); 
+        long res = Util.sendMessage(hwnd, WM_COMMAND, WM_PAUSE, 0);
     }
     
     /* (non-Javadoc)
      * @see net.sf.mpcontrol.IMediaPlayer#previous()
      */
     public void previous() {
-        log.warning(this.getClass().getName() + ".previous() not implemented");
+        hwnd = findWindow(); 
+        long res = Util.sendMessage(hwnd, WM_COMMAND, WM_PREV, 0);
 
     }
     
@@ -179,7 +190,7 @@ public class WinampControl implements IMediaPlayer {
         if (isRunning()) {
             return true;
         }
-        return ProcessUtil.execute("winamp.exe");
+        return ProcessUtil.execute("winamp.exe") || ProcessUtil.execute("C:\\Program Files\\Winamp\\winamp.exe");
     }
 
 }
