@@ -24,6 +24,10 @@ package org.jdesktop.jdic.mpcontrol;
 /**
  * Some of the players provides a more detailed description about the song, in this case they will return this interface, 
  * instead of the basic ISongInfo   
+ *
+ * @see org.jdesktop.jdic.mpcontrol.ISongInfo
+ * @see org.jdesktop.jdic.mpcontrol.IMediaPlayer
+ *
  * @author zsombor.gegesy
  *
  */

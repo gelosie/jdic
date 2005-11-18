@@ -19,7 +19,7 @@
   <property name="pkg.mpcontrol.name" value="${pkg.jdic.name}.mpcontrol" />
     
   <property name="pkg.mpcontrol.name_underscore" value="org_jdesktop_jdic_mpcontrol" />
-  <property name="jar.name" value="mpcontrol.jar" />
+  <property name="jar.name" value="jdic-mpcontrol.jar" />
   <property name="demo.jar.name" value="demo-mpcontrol.jar" />
 
   <property name="src.dir" value="src/share" />
@@ -102,6 +102,14 @@
     </javadoc>
   </target>
       
+  <!-- ================================= 
+       target: dist              
+       ================================= -->      
+  <target name="dist" depends="all,javadoc" description="Create a full distribution">
+	<zip destfile="jdic-mpcontrol-${version}.zip" basedir="dist" />
+
+  </target>
+
   <!-- ================================= 
        target: jar              
        ================================= -->      

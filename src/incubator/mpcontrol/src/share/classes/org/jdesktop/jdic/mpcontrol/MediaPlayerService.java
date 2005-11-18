@@ -90,7 +90,7 @@ public class MediaPlayerService {
 	
     /**
      * Returns the singleton service class
-     * @return
+     * @return the singleton.
      * @throws IOException
      */
     public static MediaPlayerService getInstance() throws IOException {
@@ -103,8 +103,7 @@ public class MediaPlayerService {
     }
 	
     /**
-     * returns the list of the available media players on this platform.
-     * @return
+     * @return the list of the available media players on this platform.
      */
     public List getMediaPlayers() {
         return mediaPlayers;

@@ -22,7 +22,12 @@ package org.jdesktop.jdic.mpcontrol;
 
 
 /**
- * This interface encapsulates the informations about a song. Most of the  
+ * This interface encapsulates basic informations about a music file: title,
+ * the path to file, and the position in the track list. An IMediaPlayer is free to 
+ * provide more information, in that case, the object also implement IExtendedSongInfo.
+ *
+ * @see org.jdesktop.jdic.mpcontrol.IExtendedSongInfo 
+ * @see org.jdesktop.jdic.mpcontrol.IMediaPlayer 
  * @author zsombor.gegesy
  *
  */
@@ -35,7 +40,7 @@ public interface ISongInfo {
 
     /**
      * 
-     * @return the path to the media file
+     * @return the path to the media file.
      */
     public abstract String getPath();
     

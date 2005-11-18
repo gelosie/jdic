@@ -25,15 +25,18 @@ import java.net.URL;
 
 
 /**
- * This is the main interface for communicating with the native players.
+ * This is the main interface for communicating with the native players, encapsulate the various functionality.
+ * Current instances can be acquired from the MediaPlayerService singelton.
+ * Implementation must contains a public no-arg constructor. 
+ *
+ * @see org.jdesktop.jdic.mpcontrol.MediaPlayerService
  * @author zsombor.gegesy
  *
  */
 public interface IMediaPlayer {
 
     /**
-     * returns true if the media player is supported on this platform.
-     * @return
+     * @return true if the media player is supported on this platform.
      */
     public abstract boolean isAvailableMediaPlayer();
 	
@@ -57,8 +60,7 @@ public interface IMediaPlayer {
     public abstract void destroy();
 
     /**
-     * returns true if the external process is currently running.
-     * @return 
+     * @return true if the external process is currently running.
      */
     public boolean isRunning(); 
 
@@ -70,7 +72,7 @@ public interface IMediaPlayer {
     
     /**
      * gets the volume. This value is between 0.0 and 1.0.
-     * @return
+     * @return the current volume.
      */
     public abstract float getVolume();
 
@@ -105,8 +107,7 @@ public interface IMediaPlayer {
     public abstract void previous();
 
     /**
-     * returns the currently played song.
-     * @return
+     * @return the currently played song.
      */
     public abstract ISongInfo getCurrentSong();	
     

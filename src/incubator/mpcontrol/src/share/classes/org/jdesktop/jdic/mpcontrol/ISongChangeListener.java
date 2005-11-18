@@ -21,7 +21,15 @@
 package org.jdesktop.jdic.mpcontrol;
 
 
+/**
+ * This callback interface used to notify the application about a song change.
+ * For example the user manually switched to an other song, or after finishing 
+ * the previous song, the player advanced in the track list.
+ */
 public interface ISongChangeListener {
 
+    /**
+     * This method is called when the current song is changed on the player.
+     */
     public void onChange(ISongInfo newSong);
 }

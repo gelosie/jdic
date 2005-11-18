@@ -21,13 +21,38 @@
 package org.jdesktop.jdic.mpcontrol;
 
 
+/**
+ *
+ * If a IMediaPlayer implements this interface, then it can notify the registered listeners to song change events.
+ * There is no strict guarentee, that the notification will be prompt. If there isn't a built in native functionality, 
+ * then IMediaPlayer can implement a <i>polling</i> behaviour, to simulate.
+ *
+ * @see org.jdesktop.jdic.mpcontrol.IMediaPlayer
+ * @see org.jdesktop.jdic.mpcontrol.ISongChangeListener
+ *
+ * @author Zsombor Gegesy
+ */
 public interface ISongChangeEventProducer {
 
+
+    /**
+     * add a new listener which consumes song change events.
+     */
     public void addListener(ISongChangeListener listener);
 	
+    /**
+     * remove a listener which consumes song change events.
+     */
     public void removeListener(ISongChangeListener listener);
-	
+
+    /**
+     * initiate the listening for the song change events.
+     */	
     public void startListening();
 	
+    /**
+     * stop listening. This will release any native resource which created/acquired when the listening initiated.
+     * 
+     */
     public void stopListening();
 }
