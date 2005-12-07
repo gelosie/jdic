@@ -146,7 +146,7 @@
   <!-- ================================= 
        target: build native
        ================================= -->
-  <target name="buildnative" description="build the native libraries for the current platform." depends="headers">
+  <target name="buildnative" description="build the native libraries for the current platform." depends="headers" unless="skip.native">
     <!-- Set the platform-dependent buildall target -->
     <condition property="platform.target" value="_buildwin32">
       <os family="windows" />
