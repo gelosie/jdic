@@ -25,7 +25,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -42,6 +44,8 @@ public class MediaPlayerService {
     static Logger log = Logger.getLogger("org.jdesktop.jdic.mpcontrol");
 	
     private static MediaPlayerService instance;
+
+	private static Map properties;
 	
     private List mediaPlayers;
 	
@@ -98,6 +102,7 @@ public class MediaPlayerService {
             if (instance == null) {
                 instance = new MediaPlayerService();
             }
+            
             return instance;
         }
     }
@@ -108,5 +113,14 @@ public class MediaPlayerService {
     public List getMediaPlayers() {
         return mediaPlayers;
     }
-	
+
+    /**
+     * various implementation related properties, this is where the implementation should store/retrieve their configuration.
+     * @return
+     */
+    public static synchronized Map getProperties() {
+    	if (properties==null)
+    		properties = new HashMap();
+    	return properties;
+    }
 }
