@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import org.jdesktop.jdic.mpcontrol.IMediaPlayer;
 import org.jdesktop.jdic.mpcontrol.ISongInfo;
+import org.jdesktop.jdic.mpcontrol.MediaPlayerService;
 import org.jdesktop.jdic.mpcontrol.impl.ProcessUtil;
 
 
@@ -190,7 +191,11 @@ public class WinampControl implements IMediaPlayer {
         if (isRunning()) {
             return true;
         }
-        return ProcessUtil.execute("winamp.exe") || ProcessUtil.execute("C:\\Program Files\\Winamp\\winamp.exe");
+        
+        return ProcessUtil.execute(System.getProperty("org.jdesktop.jdic.mpcontrol.winamp.path")) || 
+        	ProcessUtil.execute((String) MediaPlayerService.getProperties().get("org.jdesktop.jdic.mpcontrol.winamp.path")) ||
+        	ProcessUtil.execute("winamp.exe") || 
+        	ProcessUtil.execute("C:\\Program Files\\Winamp\\winamp.exe");
     }
 
 }
