@@ -33,6 +33,8 @@ public class ProcessUtil {
 
     public static boolean execute(String command) {
         try {
+        	if (command==null)
+        		return false;
             Runtime.getRuntime().exec(command);
             // return p.exitValue() ==0;
             return true;
