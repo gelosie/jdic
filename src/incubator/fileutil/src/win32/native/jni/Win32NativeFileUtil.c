@@ -25,50 +25,46 @@
  * author: Fábio Castilho Martins
  */
  
-WIN32_FIND_DATA FindFileData;
-HANDLE hFind = INVALID_HANDLE_VALUE;
-DWORD dwError;
-
 JNIEXPORT jlongArray JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_getFreeSpace
   (JNIEnv *env, jobject obj, jstring fullPath) {
-    PWCHAR wcpFullPath = (PWCHAR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     ULARGE_INTEGER freeBytesAvailable;
     ULARGE_INTEGER totalNumberOfBytes;
     ULARGE_INTEGER totalNumberOfFreeBytes;
     jlongArray retorno = (*env)->NewLongArray(env, 2);
     jlong buf[2];
-    PWCHAR pTerminator = L"\0";
+    wchar_t* pTerminator = L"\0";
 
-    wcpFullPath = (PWCHAR) realloc(wcpFullPath, sizeof(WCHAR) * (wcslen(wcpFullPath) + 1));
-    wcsncat(wcpFullPath, pTerminator, 1);
-    GetDiskFreeSpaceExW(wcpFullPath, &freeBytesAvailable, &totalNumberOfBytes, 
+    pFullPath = (wchar_t*) realloc(pFullPath, sizeof(wchar_t) * (wcslen(pFullPath) + 1));
+    wcsncat(pFullPath, pTerminator, 1);
+    GetDiskFreeSpaceExW(pFullPath, &freeBytesAvailable, &totalNumberOfBytes, 
                              &totalNumberOfFreeBytes);
     buf[0] = (jlong) freeBytesAvailable.LowPart;
     buf[1] = (jlong) freeBytesAvailable.HighPart;
     (*env)->SetLongArrayRegion(env, retorno, 0, 2, buf);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     
     return retorno;
 }
 
 JNIEXPORT jlongArray JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_getTotalSpace
   (JNIEnv *env, jobject obj, jstring fullPath) {
-    PWCHAR wcpFullPath = (PWCHAR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     ULARGE_INTEGER freeBytesAvailable;
     ULARGE_INTEGER totalNumberOfBytes;
     ULARGE_INTEGER totalNumberOfFreeBytes;
     jlongArray retorno = (*env)->NewLongArray(env, 2);
     jlong buf[2];
-    PWCHAR pTerminator = L"\0";
+    wchar_t* pTerminator = L"\0";
 
-    wcpFullPath = (PWCHAR) realloc(wcpFullPath, sizeof(WCHAR) * (wcslen(wcpFullPath) + 1));
-    wcsncat(wcpFullPath, pTerminator, 1);
-    GetDiskFreeSpaceExW(wcpFullPath, &freeBytesAvailable, &totalNumberOfBytes, 
+    pFullPath = (wchar_t*) realloc(pFullPath, sizeof(wchar_t) * (wcslen(pFullPath) + 1));
+    wcsncat(pFullPath, pTerminator, 1);
+    GetDiskFreeSpaceExW(pFullPath, &freeBytesAvailable, &totalNumberOfBytes, 
                              &totalNumberOfFreeBytes);
     buf[0] = (jlong) totalNumberOfBytes.LowPart;
     buf[1] = (jlong) totalNumberOfBytes.HighPart;
     (*env)->SetLongArrayRegion(env, retorno, 0, 2, buf);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     
     return retorno;
 }
@@ -76,8 +72,8 @@ JNIEXPORT jlongArray JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil
 JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_recycle
   (JNIEnv *env, jobject obj, jstring fullPath, jboolean confirm) {
         int retorno;
-    PWCHAR wcpTemp = (PWCHAR) (*env)->GetStringChars(env, fullPath, NULL);
-    PWCHAR wcpFullPath;
+    wchar_t* wcpTemp = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath;
     SHFILEOPSTRUCTW FileOp;    
     FileOp.hwnd = NULL;
     FileOp.wFunc = FO_DELETE;
@@ -87,15 +83,15 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_recyc
     be terminated by a single NULL character and an additional NULL character 
     must be appended to the end of the final name to indicate the end of pFrom.
     */
-    wcpFullPath = (PWCHAR) malloc(sizeof(WCHAR) * (wcslen(wcpTemp) + 2));
-    wcpFullPath = wcsncpy(wcpFullPath, wcpTemp, wcslen(wcpTemp) + 2);
-    FileOp.pFrom = wcpFullPath;
+    pFullPath = (wchar_t*) malloc(sizeof(wchar_t) * (wcslen(wcpTemp) + 2));
+    pFullPath = wcsncpy(pFullPath, wcpTemp, wcslen(wcpTemp) + 2);
+    FileOp.pFrom = pFullPath;
     FileOp.pTo = NULL;
     FileOp.fFlags = (confirm == JNI_TRUE) ? FOF_ALLOWUNDO : FOF_ALLOWUNDO | FOF_NOCONFIRMATION;
     FileOp.hNameMappings = NULL;
     FileOp.lpszProgressTitle = NULL;
     retorno = SHFileOperationW(&FileOp);
-    free(wcpFullPath);
+    free(pFullPath);
     (*env)->ReleaseStringChars(env, fullPath, wcpTemp);
     
     return retorno;
@@ -103,30 +99,28 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_recyc
 
 JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_getFileSystem
   (JNIEnv *env, jobject obj, jstring rootPath) {
-    LPCWSTR wcpRootPath = (LPCWSTR) (*env)->GetStringChars(env, rootPath, NULL);
+    wchar_t* pRootPath = (wchar_t*) (*env)->GetStringChars(env, rootPath, NULL);
     DWORD dwMaximumComponentLength;
     DWORD dwFileSystemFlags;
     DWORD dwLength;
-    WCHAR lpFileSystemNameBuffer[MAX_PATH + 1];
+    wchar_t pFileSystemNameBuffer[MAX_PATH + 1];
     jstring retorno;
     
-    GetVolumeInformationW(wcpRootPath, NULL, 0, NULL, &dwMaximumComponentLength, &dwFileSystemFlags, lpFileSystemNameBuffer, MAX_PATH + 1);
+    GetVolumeInformationW(pRootPath, NULL, 0, NULL, &dwMaximumComponentLength, &dwFileSystemFlags, pFileSystemNameBuffer, MAX_PATH + 1);
     
-    dwLength = wcslen(lpFileSystemNameBuffer);
-    
-    retorno = (*env)->NewString(env, lpFileSystemNameBuffer, dwLength);
-    (*env)->ReleaseStringChars(env, rootPath, wcpRootPath);
+    retorno = (*env)->NewString(env, pFileSystemNameBuffer, wcslen(pFileSystemNameBuffer));
+    (*env)->ReleaseStringChars(env, rootPath, pRootPath);
     
     return retorno;      
 }
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_isArchive
   (JNIEnv *env, jobject obj, jstring fullPath) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     DWORD dwFileAttributes;
     
-    dwFileAttributes = GetFileAttributesW(wcpFullPath);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    dwFileAttributes = GetFileAttributesW(pFullPath);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     if(dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) {
         return JNI_TRUE;
     }
@@ -137,8 +131,8 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_i
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_setArchive
   (JNIEnv *env, jobject obj, jstring fullPath, jboolean status) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
-    DWORD dwFileAttributes = GetFileAttributesW(wcpFullPath);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
+    DWORD dwFileAttributes = GetFileAttributesW(pFullPath);
     
     if(status) {
         dwFileAttributes = dwFileAttributes | FILE_ATTRIBUTE_ARCHIVE;
@@ -147,23 +141,23 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_s
         dwFileAttributes = dwFileAttributes & (~FILE_ATTRIBUTE_ARCHIVE);
     }
     
-    if(SetFileAttributesW(wcpFullPath, dwFileAttributes)) {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    if(SetFileAttributesW(pFullPath, dwFileAttributes)) {
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_TRUE;
     }
     else {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_FALSE;
     } 
 }
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_isNormal
   (JNIEnv *env, jobject obj, jstring fullPath) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     DWORD dwFileAttributes;
     
-    dwFileAttributes = GetFileAttributesW(wcpFullPath);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    dwFileAttributes = GetFileAttributesW(pFullPath);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     if(dwFileAttributes & FILE_ATTRIBUTE_NORMAL) {
         return JNI_TRUE;
     }
@@ -174,25 +168,25 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_i
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_setNormal
   (JNIEnv *env, jobject obj, jstring fullPath) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     
-    if(SetFileAttributesW(wcpFullPath, FILE_ATTRIBUTE_NORMAL)) {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    if(SetFileAttributesW(pFullPath, FILE_ATTRIBUTE_NORMAL)) {
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_TRUE;
     }
     else {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_FALSE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_isReadOnly
   (JNIEnv *env, jobject obj, jstring fullPath) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     DWORD dwFileAttributes;
     
-    dwFileAttributes = GetFileAttributesW(wcpFullPath);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    dwFileAttributes = GetFileAttributesW(pFullPath);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     if(dwFileAttributes & FILE_ATTRIBUTE_READONLY) {
         return JNI_TRUE;
     }
@@ -203,11 +197,11 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_i
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_isSystem
   (JNIEnv *env, jobject obj, jstring fullPath) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     DWORD dwFileAttributes;
     
-    dwFileAttributes = GetFileAttributesW(wcpFullPath);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    dwFileAttributes = GetFileAttributesW(pFullPath);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     if(dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) {
         return JNI_TRUE;
     }
@@ -218,8 +212,8 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_i
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_setSystem
   (JNIEnv *env, jobject obj, jstring fullPath, jboolean status) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
-    DWORD dwFileAttributes = GetFileAttributesW(wcpFullPath);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
+    DWORD dwFileAttributes = GetFileAttributesW(pFullPath);
     
     if(status) {
         dwFileAttributes = dwFileAttributes | FILE_ATTRIBUTE_SYSTEM;
@@ -228,23 +222,23 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_s
         dwFileAttributes = dwFileAttributes & (~FILE_ATTRIBUTE_SYSTEM);
     } 
             
-    if(SetFileAttributesW(wcpFullPath, dwFileAttributes)) {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    if(SetFileAttributesW(pFullPath, dwFileAttributes)) {
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_TRUE;
     }
     else {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_FALSE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_isTemporary
   (JNIEnv *env, jobject obj, jstring fullPath) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     DWORD dwFileAttributes;
     
-    dwFileAttributes = GetFileAttributesW(wcpFullPath);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    dwFileAttributes = GetFileAttributesW(pFullPath);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     if(dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY) {
         return JNI_TRUE;
     }
@@ -255,8 +249,8 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_i
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_setTemporary
   (JNIEnv *env, jobject obj, jstring fullPath, jboolean status) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
-    DWORD dwFileAttributes = GetFileAttributesW(wcpFullPath);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
+    DWORD dwFileAttributes = GetFileAttributesW(pFullPath);
     
     if(status) {
         dwFileAttributes = dwFileAttributes | FILE_ATTRIBUTE_TEMPORARY;
@@ -265,23 +259,23 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_s
         dwFileAttributes = dwFileAttributes & (~FILE_ATTRIBUTE_TEMPORARY);
     }    
     
-    if(SetFileAttributesW(wcpFullPath, dwFileAttributes)) {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    if(SetFileAttributesW(pFullPath, dwFileAttributes)) {
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_TRUE;
     }
     else {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_FALSE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_isCompressed
   (JNIEnv *env, jobject obj, jstring fullPath) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     DWORD dwFileAttributes;
     
-    dwFileAttributes = GetFileAttributesW(wcpFullPath);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    dwFileAttributes = GetFileAttributesW(pFullPath);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     if(dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED) {
         return JNI_TRUE;
     }
@@ -292,11 +286,11 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_i
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_isEncrypted
   (JNIEnv *env, jobject obj, jstring fullPath) { 
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
     DWORD dwFileAttributes;
     
-    dwFileAttributes = GetFileAttributesW(wcpFullPath);
-    (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    dwFileAttributes = GetFileAttributesW(pFullPath);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     if(dwFileAttributes & FILE_ATTRIBUTE_ENCRYPTED) {
         return JNI_TRUE;
     }
@@ -307,8 +301,8 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_i
 
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_setHidden
   (JNIEnv *env, jobject obj, jstring fullPath, jboolean status) {
-    LPCWSTR wcpFullPath = (LPCWSTR) (*env)->GetStringChars(env, fullPath, NULL);
-    DWORD dwFileAttributes = GetFileAttributesW(wcpFullPath);
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
+    DWORD dwFileAttributes = GetFileAttributesW(pFullPath);
     
     if(status) {
         dwFileAttributes = dwFileAttributes | FILE_ATTRIBUTE_HIDDEN;
@@ -317,43 +311,80 @@ JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_s
         dwFileAttributes = dwFileAttributes & (~FILE_ATTRIBUTE_HIDDEN);
     }
 
-    if(SetFileAttributesW(wcpFullPath, dwFileAttributes)) {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+    if(SetFileAttributesW(pFullPath, dwFileAttributes)) {
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_TRUE;
     }
     else {
-        (*env)->ReleaseStringChars(env, fullPath, wcpFullPath);
+        (*env)->ReleaseStringChars(env, fullPath, pFullPath);
         return JNI_FALSE;
     }  
 }
 
 JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_findFirst
   (JNIEnv *env, jobject obj, jstring fullPath) {
-    char *wcpFullPath = (char*) (*env)->GetStringUTFChars(env, fullPath, NULL);
-    wcpFullPath = (char*) realloc(wcpFullPath, sizeof(WCHAR) * (strlen(wcpFullPath) + 3));
-    strncat(wcpFullPath, "\\*\0", 3);    
+    wchar_t* pFullPath = (wchar_t*) (*env)->GetStringChars(env, fullPath, NULL);
+    pFullPath = (wchar_t*) realloc(pFullPath, sizeof(wchar_t) * (wcslen(pFullPath) + 3));
+    wcsncat(pFullPath, L"\\*\0", 3);
+
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fid= (*env)->GetFieldID(env, cls, "handle", "I");
     
-    hFind = FindFirstFile(wcpFullPath, &FindFileData);
+    if (fid == NULL) {
+        return; /* failed to find the field */
+    }
+    jint handle = (*env)->GetIntField(env, obj, fid);
+    
+    WIN32_FIND_DATAW findFileData;
+    
+    HANDLE hFind = FindFirstFileW(pFullPath, &findFileData);
+    (*env)->ReleaseStringChars(env, fullPath, pFullPath);
     if(hFind == INVALID_HANDLE_VALUE) {
         return NULL;
     }
     else {
-        return (*env)->NewStringUTF(env, FindFileData.cFileName);
+        handle = (jint) hFind;
+        (*env)->SetIntField(env, obj, fid, handle);
+        return (*env)->NewString(env, findFileData.cFileName, wcslen(findFileData.cFileName));
     }
 }
   
 JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_findNext
-  (JNIEnv *env, jobject obj) {
-    if(FindNextFile(hFind, &FindFileData) == 0) {
+  (JNIEnv *env, jobject obj) {      
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fid= (*env)->GetFieldID(env, cls, "handle", "I");
+    
+    if (fid == NULL) {
+        return; /* failed to find the field */
+    }
+    jint handle = (*env)->GetIntField(env, obj, fid);
+    
+    WIN32_FIND_DATAW findFileData;
+    HANDLE hFind = (HANDLE) handle;
+      
+    if(FindNextFileW(hFind, &findFileData) == 0) {
         return NULL;
     }
     else {
-        return (*env)->NewStringUTF(env, FindFileData.cFileName);
+        handle = (jint) hFind;
+        (*env)->SetIntField(env, obj, fid, handle);
+        return (*env)->NewString(env, findFileData.cFileName, wcslen(findFileData.cFileName));
     }
 }
   
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_Win32NativeFileUtil_findClose
   (JNIEnv *env, jobject obj) {
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fid = fid = (*env)->GetFieldID(env, cls, "handle", "I");
+    
+    if (fid == NULL) {
+        return; /* failed to find the field */
+    }
+    
+    jint handle = (*env)->GetIntField(env, obj, fid);
+    
+    HANDLE hFind = (HANDLE) handle;
+        
     if(FindClose(hFind) != 0) {
         return JNI_TRUE;
     }

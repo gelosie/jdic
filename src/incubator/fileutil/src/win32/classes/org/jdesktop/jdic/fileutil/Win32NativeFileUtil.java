@@ -35,6 +35,11 @@ class Win32NativeFileUtil extends NativeFileUtil {
     }
 	
 	/**
+	 * Stores the Windows file HANDLE
+	 */
+	private int handle;
+	
+	/**
      * Sends the file or directory denoted by this abstract pathname to the
      * Recycle Bin/Trash Can.
      * 

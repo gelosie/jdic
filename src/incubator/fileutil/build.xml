@@ -40,7 +40,7 @@ Top-level target:
 
   <!-- the distribution version and release of this build -->
   <!-- which is used in javadoc and distzip targets -->
-  <property name="version" value="0.1" />
+  <property name="version" value="0.2" />
   <property name="release" value="1" />
 
   <!-- the generated jar file name -->
@@ -146,6 +146,7 @@ Top-level target:
              Header="JDIC Incubator FileUtil API V${version} Release ${release}">
              <fileset dir="${src.dir}" defaultexcludes="yes">
                <include name="**/*.java"/>
+               <exclude name="**/*MacOS*"/>
              </fileset>
              <docTitle><![CDATA[JDIC (JDesktop Integration Components) 
                <br> API Specification, Version ${version} Release ${release}]]>
@@ -154,7 +155,7 @@ Top-level target:
                see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That documentation 
                contains more detailed, developer-targeted descriptions, with conceptual 
                overviews, working code examples, license terms and bug report information.
-               <p>Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is 
+               <p>Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved. Use is 
                subject to <a href=
                "https://jdic.dev.java.net/source/browse/jdic/src/COPYING">license terms</a>. 
                </font>]]>
@@ -231,6 +232,7 @@ Top-level target:
   
   <target name="jni" depends="init" description="generate header files.">
     <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.Win32NativeFileUtil" outputFile="${win32.native.jni.dir}/Win32NativeFileUtil.h" old="no" verbose="no"/>
+    <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.Win32NativeRecentlyUsed" outputFile="${win32.native.jni.dir}/Win32NativeRecentlyUsed.h" old="no" verbose="no"/>
     <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.UnixNativeFileUtil" outputFile="${unix.native.jni.dir}/UnixNativeFileUtil.h" old="no" verbose="no"/>
     <javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.SolarisNativeFileUtil" outputFile="${solaris.native.jni.dir}/SolarisNativeFileUtil.h" old="no" verbose="no"/>
     <!-- javah classpath="${dist.dir}/${jar.file}" class="org.jdesktop.jdic.fileutil.MacOSXNativeFileUtil" outputFile="${mac.native.jni.dir}/MacOSXNativeFileUtil.h" old="no" verbose="no"/ -->

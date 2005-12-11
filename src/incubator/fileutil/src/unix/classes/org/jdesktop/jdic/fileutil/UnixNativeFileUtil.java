@@ -36,6 +36,8 @@ class UnixNativeFileUtil extends NativeFileUtil {
     	System.loadLibrary("jdic_fileutil");
     }
 	
+	private int handle;
+	
 	/**
      * This method isn't supported on Linux. It will throw an UnsupportedOperationException.
      * <p>

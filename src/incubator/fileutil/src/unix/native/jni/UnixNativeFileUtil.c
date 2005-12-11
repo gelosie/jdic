@@ -28,10 +28,6 @@
  * author: Fábio Castilho Martins
  */
  
-DIR *pDir;
-
-struct dirent *pDirEntry;
-
 JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_getFreeSpace
   (JNIEnv *env, jobject obj, jstring fullPath) {
       
@@ -42,7 +38,7 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_getFr
     char* cpFullPath = (char*) (*env)->GetStringUTFChars(env, fullPath, NULL);
     
     status = statfs(cpFullPath, pStatfs);
-    retorno = pStatfs->f_bavail * pStatfs->f_bsize;
+    retorno = (jlong) pStatfs->f_bavail * pStatfs->f_bsize;
     
     (*env)->ReleaseStringUTFChars(env, fullPath, cpFullPath);
     free(pStatfs);
@@ -60,7 +56,7 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_getTo
     char* cpFullPath = (char*) (*env)->GetStringUTFChars(env, fullPath, NULL);
     
     status = statfs(cpFullPath, pStatfs);
-    retorno = pStatfs->f_blocks * pStatfs->f_bsize;
+    retorno = (jlong) pStatfs->f_blocks * pStatfs->f_bsize;
     
     (*env)->ReleaseStringUTFChars(env, fullPath, cpFullPath);
     free(pStatfs);
@@ -71,7 +67,18 @@ JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_getTo
 JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_findFirst
   (JNIEnv *env, jobject obj, jstring fullPath) {
     char* cpFullPath = (char*) (*env)->GetStringUTFChars(env, fullPath, NULL);
-    pDir = opendir(cpFullPath);
+    
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fid= (*env)->GetFieldID(env, cls, "handle", "I");
+    
+    if (fid == NULL) {
+        return; /* failed to find the field */
+    }
+    jint handle = (*env)->GetIntField(env, obj, fid);
+    
+    struct dirent *pDirEntry;
+    
+    DIR *pDir = opendir(cpFullPath);
     if(pDir == NULL) {
         return NULL;
     }
@@ -81,6 +88,8 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_fin
             return NULL;
         }
         else {
+            handle = (jint) pDir;
+            (*env)->SetIntField(env, obj, fid, handle);
             return (*env)->NewStringUTF(env, pDirEntry->d_name);
         }          
     }
@@ -88,17 +97,42 @@ JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_fin
   
 JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_findNext
   (JNIEnv *env, jobject obj) {
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fid= (*env)->GetFieldID(env, cls, "handle", "I");
+    
+    if (fid == NULL) {
+        return; /* failed to find the field */
+    }
+    jint handle = (*env)->GetIntField(env, obj, fid);
+    
+    struct dirent *pDirEntry; 
+    DIR *pDir = (DIR*) handle;
+      
     pDirEntry = readdir(pDir);
+        
     if(pDirEntry == NULL) {
         return NULL;
     }
     else {
+        handle = (jint) pDir;
+        (*env)->SetIntField(env, obj, fid, handle);
         return (*env)->NewStringUTF(env, pDirEntry->d_name);;
     }
 }
   
 JNIEXPORT jboolean JNICALL Java_org_jdesktop_jdic_fileutil_UnixNativeFileUtil_findClose
   (JNIEnv *env, jobject obj) {
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fid = fid = (*env)->GetFieldID(env, cls, "handle", "I");
+    
+    if (fid == NULL) {
+        return; /* failed to find the field */
+    }
+    
+    jint handle = (*env)->GetIntField(env, obj, fid);
+    
+    DIR *pDir = (DIR*) handle;
+    
     if(closedir(pDir) == 0) {
         return JNI_TRUE;
     }

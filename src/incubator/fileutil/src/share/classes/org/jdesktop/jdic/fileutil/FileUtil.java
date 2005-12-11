@@ -38,16 +38,19 @@ import java.util.NoSuchElementException;
  */
 public class FileUtil {
 	
-	private NativeFileUtil fileUtil;	
+	private NativeFileUtil fileUtil;
+	
+	private File internalFile;
 	
 	/**
 	 * Creates a new FileUtil instance.
 	 * 
 	 * @throws UnsupportedOperationException If the method isn't supported in the specific platform.
 	 */
-	public FileUtil() throws UnsupportedOperationException {
-		this.fileUtil = NativeFileUtil.getNativeFileUtil();		
-	}
+	public FileUtil(File file) throws UnsupportedOperationException {
+		this.fileUtil = NativeFileUtil.getNativeFileUtil();
+		this.internalFile = file;
+	}	
 	
 	private class InnerFileIterator implements FileIterator {
 		
@@ -59,8 +62,11 @@ public class FileUtil {
 		
 		private boolean firstRead;
 		
-		public InnerFileIterator(File file) {
-			this.directory = file;
+		private NativeFileUtil internalFileUtil;
+		
+		public InnerFileIterator() {
+			this.internalFileUtil = NativeFileUtil.getNativeFileUtil();
+			this.directory = FileUtil.this.internalFile;
 			this.firstRead = true;
 			this.closed = true;
 		}
@@ -69,12 +75,12 @@ public class FileUtil {
 			if(this.directory.isDirectory()) {
 				String name;
 				if(this.firstRead) {
-					name = FileUtil.this.fileUtil.readFirst(this.directory.getCanonicalPath());
+					name = this.internalFileUtil.readFirst(this.directory.getCanonicalPath());
 					this.firstRead = false;
 					this.closed = false;
 				}
 				else {
-					name = FileUtil.this.fileUtil.readNext();
+					name = this.internalFileUtil.readNext();
 				}
 				
 				if(name != null) {
@@ -103,7 +109,7 @@ public class FileUtil {
 
 		public void close() {
 			if(!closed) {
-				FileUtil.this.fileUtil.close();
+				this.internalFileUtil.close();
 				this.closed = true;
 			}
 		}
@@ -117,8 +123,8 @@ public class FileUtil {
 		
 		private FileFilter filter;
 		
-		public InnerFileFilterIterator(File file, FileFilter filter) {
-			super(file);
+		public InnerFileFilterIterator(FileFilter filter) {
+			super();
 			this.filter = filter;
 		}
 
@@ -143,9 +149,9 @@ public class FileUtil {
 		
 		private File directory;
 		
-		public InnerFilenameFilterIterator(File file, FilenameFilter filter) {
-			super(file);
-			this.directory = file;
+		public InnerFilenameFilterIterator(FilenameFilter filter) {
+			super();
+			this.directory = FileUtil.this.internalFile;
 			this.filter = filter;
 		}
 
@@ -168,7 +174,6 @@ public class FileUtil {
      * Sends the file or directory denoted by this abstract pathname to the
      * Recycle Bin/Trash Can.
      * 
-     * @param file the file or directory to be recycled.
      * @return <b>true</b> if and only if the file or directory is
      *         successfully recycled; <b>false</b> otherwise.
      * @throws IOException If an I/O error occurs. 
@@ -176,36 +181,34 @@ public class FileUtil {
      *         accessed.
      * @throws UnsupportedOperationException if the method isn't supported in the specific platform.
      */
-    public boolean recycle(File file) throws IOException,
+    public boolean recycle() throws IOException,
             SecurityException, UnsupportedOperationException {
-    	return this.fileUtil.recycle(file);
+    	return this.fileUtil.recycle(internalFile);
     }
 
     /**
      * Return the amount of free bytes available in the directory or file
      * referenced by the File Object.
      * 
-     * @param file
      * @return the amount of free space in the partition. The size is wrapped in a
      *         BigInteger due to platform-specific issues.
      * @throws IOException
      * @throws UnsupportedOperationException if the method isn't supported in the specific platform.
      */
-    public BigInteger getFreeSpace(File file) throws IOException, UnsupportedOperationException {
-    	return this.fileUtil.getFreeSpace(file);
+    public BigInteger getFreeSpace() throws IOException, UnsupportedOperationException {
+    	return this.fileUtil.getFreeSpace(internalFile);
     }
     
     /**
      * Return the size in bytes of the partition denoted by the File Object.
      * 
-     * @param file
      * @return the size of the partition. The size is wrapped in a
      *         BigInteger due to platform-specific issues.
      * @throws IOException
      * @throws UnsupportedOperationException if the method isn't supported in the specific platform.
      */
-    public BigInteger getTotalSpace(File file) throws IOException, UnsupportedOperationException {
-    	return this.fileUtil.getTotalSpace(file);
+    public BigInteger getTotalSpace() throws IOException, UnsupportedOperationException {
+    	return this.fileUtil.getTotalSpace(internalFile);
     }
        
     /**
@@ -213,11 +216,10 @@ public class FileUtil {
      * denoted by the File argument. The files in this FileIterator will not be in 
      * any particular order. 
      * 
-     * @param file the directory to be listed.
      * @return a FileIterator object.
      */
-    public FileIterator listFiles(File file) {
-    	return new InnerFileIterator(file);
+    public FileIterator listFiles() {
+    	return new InnerFileIterator();
     }
     
     /**
@@ -225,12 +227,11 @@ public class FileUtil {
      * denoted by the File argument. Only the files that satisfy the given filter will 
      * appear in this FileIterator and they'll not be in any particular order. 
      * 
-     * @param file the directory to be listed.
      * @param filter the filter to aply to the contents of the directory.
      * @return a FileIterator object.
      */
-    public FileIterator listFiles(File file, FileFilter filter) {
-    	return new InnerFileFilterIterator(file, filter);
+    public FileIterator listFiles(FileFilter filter) {
+    	return new InnerFileFilterIterator(filter);
     }
     
     /**
@@ -238,12 +239,11 @@ public class FileUtil {
      * denoted by the File argument. Only the files that satisfy the given filter will 
      * appear in this FileIterator and they'll not be in any particular order. 
      * 
-     * @param file the directory to be listed.
      * @param filter the filter to aply to the contents of the directory.
      * @return a FileIterator object.
      */
-    public FileIterator listFiles(File file, FilenameFilter filter) {
-    	return new InnerFilenameFilterIterator(file, filter);
+    public FileIterator listFiles(FilenameFilter filter) {
+    	return new InnerFilenameFilterIterator(filter);
     }
 
 }

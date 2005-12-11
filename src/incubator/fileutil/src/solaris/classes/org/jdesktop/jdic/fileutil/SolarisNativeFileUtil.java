@@ -34,6 +34,8 @@ class SolarisNativeFileUtil extends NativeFileUtil {
     	System.loadLibrary("jdic_fileutil");
     }
 	
+	private int handle;
+	
 	/**
      * This method isn't supported on Solaris. It will throw an UnsupportedOperationException.
      * <p>
