@@ -21,6 +21,8 @@
 package org.jdesktop.jdic.mpcontrol.winamp;
 
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -52,11 +54,33 @@ public class WinampControl implements IMediaPlayer {
         }
     }
 
+    private static int IPC_STARTPLAY = 102;
+    private static int IPC_ISPLAYING = 104;
+    private static int IPC_SETPLAYLISTPOS = 121;
+    private static int IPC_SETVOLUME = 122;
+    private static int IPC_GETLISTLENGTH = 124;
+    private static int IPC_GETLISTPOS =125;
+
+    
+    private static int WM_WA_IPC = 1024;
+    private static int WM_USER = 1024;
+    private static int WM_COMMAND = 273 ;
+    
+	private static int WM_PREV  = 40044;
+	private static int WM_PLAY  = 40045;
+	private static int WM_PAUSE = 40046;
+	private static int WM_STOP  = 40047;
+	private static int WM_NEXT  = 40048;
+    
     private int hwnd;
     
     private static native int findWindow();
     
     private static native long getVersion(int hwnd);
+
+    private static native String getFileNameFromPlayList(int hwnd, int playListPosition);
+    
+    private static native void addToPlayList(int hwnd, String fileName);
     
     public WinampControl() {}
     
@@ -92,6 +116,8 @@ public class WinampControl implements IMediaPlayer {
         Util.sendMessage(hwnd, WM_WA_IPC, (int) (volume * 255), IPC_SETVOLUME);
     }
     
+    
+    
     /* (non-Javadoc)
      * @see net.sf.mpcontrol.IMediaPlayer#play()
      */
@@ -106,20 +132,6 @@ public class WinampControl implements IMediaPlayer {
     }
     
     
-    private static int IPC_STARTPLAY = 102;
-    private static int IPC_ISPLAYING = 104;
-    private static int IPC_SETVOLUME = 122;
-    
-    
-    private static int WM_WA_IPC = 1024;
-    private static int WM_USER = 1024;
-    private static int WM_COMMAND = 273 ;
-    
-		private static int WM_PREV  = 40044;
-		private static int WM_PLAY  = 40045;
-		private static int WM_PAUSE = 40046;
-		private static int WM_STOP  = 40047;
-		private static int WM_NEXT  = 40048;
     
     
     public boolean isPlaying() {
@@ -161,13 +173,16 @@ public class WinampControl implements IMediaPlayer {
         int pos = txt.indexOf('.') + 1;
         int endPos = txt.indexOf(" - ");
         int titleEndPos = txt.indexOf(" - Winamp");
-        int trackNumber = Integer.parseInt(txt.substring(0, pos - 1));
+        //int trackNumber = Integer.parseInt(txt.substring(0, pos - 1));
 
+        int playListPosition = getPlayListPosition();
+        String fileName = getFileName(playListPosition);
+        
         if (endPos == titleEndPos) {
-            return new SongInfo(trackNumber, "",
+            return new SongInfo(fileName, playListPosition+1, "",
                     txt.substring(pos + 1, titleEndPos));
         } else {
-            return new SongInfo(trackNumber, txt.substring(pos, endPos),
+            return new SongInfo(fileName, playListPosition+1, txt.substring(pos, endPos),
                     txt.substring(endPos + 3, titleEndPos));
         }
     }
@@ -181,10 +196,22 @@ public class WinampControl implements IMediaPlayer {
     }
 
     public void setMediaLocation(URL location) {
-        log.warning(
-                this.getClass().getName() + ".setMediaLocation(" + location
-                + ") not implemented");
-		
+
+        if ("file".equals(location.getProtocol())) {
+
+        	String path = location.getPath();
+        	if (path.startsWith("/")) 
+        		path = path.substring(1);
+        	
+        	log.info("path:"+path);
+
+        	addMedia(path);
+        	
+        } else {
+            log.warning(
+                    this.getClass().getName() + ".setMediaLocation(" + location
+                    + ") not implemented");
+        }
     }
 
     public boolean startPlayerProcess() {
@@ -198,4 +225,65 @@ public class WinampControl implements IMediaPlayer {
         	ProcessUtil.execute("C:\\Program Files\\Winamp\\winamp.exe");
     }
 
+    // misc. methods
+    
+    public void setPlayListPosition(int position) {
+    	Util.sendMessage(hwnd,WM_WA_IPC,position,IPC_SETPLAYLISTPOS);
+    }
+    
+    public int getPlayListPosition() {
+    	return (int) Util.sendMessage(hwnd,WM_WA_IPC,0,IPC_GETLISTPOS);
+    }
+    
+    public int getPlayListLength() {
+    	return (int) Util.sendMessage(hwnd,WM_WA_IPC,0,IPC_GETLISTLENGTH);
+    }
+    
+    public String getCurrentFileName() {
+    	return getFileNameFromPlayList(hwnd, getPlayListPosition());
+    }
+    
+    public String getFileName(int position) {
+    	return getFileNameFromPlayList(hwnd, position);
+    }
+    
+    public void addMedia(String fileName) {
+        hwnd = findWindow(); 
+    	addToPlayList(hwnd, fileName);
+    }
+    
+    public static void main(String[] args) {
+    	WinampControl wc = new WinampControl();
+    	wc.init();
+    	
+    	if (wc.isRunning()) {
+    		System.out.println("Winamp is running");
+    	} else {
+    		if (!wc.startPlayerProcess()) {
+    			System.out.println("Winamp is not running, and i'm unable to start it!");
+    			return;
+    		}
+    	}
+    	
+    	System.out.println("play list length:"+wc.getPlayListLength());
+    	System.out.println("play list position:"+wc.getPlayListPosition());
+    	System.out.println("current file :"+wc.getCurrentFileName());
+    	
+    	
+    	if (args.length>0) {
+    		//wc.addMedia(args[0]);
+    		try {
+				wc.setMediaLocation(new File(args[0]).toURL());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+        	System.out.println("play list length:"+wc.getPlayListLength());
+        	System.out.println("play list position:"+wc.getPlayListPosition());
+        	System.out.println("current file :"+wc.getCurrentFileName());
+    	}
+    }
+    
+    
 }

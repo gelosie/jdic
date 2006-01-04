@@ -57,6 +57,88 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_mpcontrol_winamp_WinampControl_fin
   
 }
 
+jstring createString(JNIEnv * env, char* buf) { 
+	int i;
+	
+	int size = strlen(buf)+1;
+    jchar* temp = malloc(sizeof(jchar)*size);
+	for (i=0;i<size;i++) {
+		temp[i] = (jchar) buf[i];
+	}
+    jstring ret = (*env)->NewString(env, temp, size-1);
+	free(temp);
+	return ret;
+}
+
+char* createCharBuf(JNIEnv * env, jstring str) { 
+    const jchar* chr;
+    jsize size;
+    char * result;
+    int i;
+
+    chr     = (jchar*) ((*env)->GetStringChars(env, str, (jboolean*)NULL));
+    size = (*env)->GetStringLength(env, str);
+
+    result = malloc(sizeof(char)*(size+1));
+
+	for(i=0;i<size;i++) {
+		result[i] = (char) chr[i];
+	}
+	result[size] = '\0';
+
+	(*env)->ReleaseStringChars (env, str, chr);
+	
+	return result;
+} 
+
+
+JNIEXPORT jstring JNICALL Java_org_jdesktop_jdic_mpcontrol_winamp_WinampControl_getFileNameFromPlayList
+   (JNIEnv * env, jclass clz, jint hwnd_winamp, jint position) { 
+   
+   DWORD winampProcId;
+   HANDLE winampProc; 
+   char * winampFileName;
+   
+   char * buffer;
+   
+   jstring result = NULL;
+   
+   GetWindowThreadProcessId( (HWND)hwnd_winamp,&winampProcId);
+   
+   winampProc = OpenProcess(PROCESS_VM_OPERATION|PROCESS_VM_WRITE|PROCESS_VM_READ,FALSE,winampProcId);
+
+   winampFileName=(char *) SendMessage((HWND)hwnd_winamp,WM_WA_IPC,position,IPC_GETPLAYLISTFILE);
+
+
+
+   if (winampFileName != NULL) { 
+		buffer = malloc(1024);
+   		ReadProcessMemory(winampProc,winampFileName,buffer,1024,NULL);
+   		result = createString(env, buffer);
+   		free(buffer);
+   		
+   }
+   CloseHandle(winampProc);
+   
+   return result;
+}
+
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_mpcontrol_winamp_WinampControl_addToPlayList
+   (JNIEnv * env, jclass clz, jint hwnd_winamp, jstring str) {
+ 
+   char * buf;
+ 
+   buf = createCharBuf(env,str);
+ 
+   COPYDATASTRUCT data;
+   data.dwData = 100;
+   data.lpData = buf;
+   data.cbData = (*env)->GetStringLength(env, str);
+   
+   SendMessage((HWND)hwnd_winamp, 0x4A,0,(long) &data);
+   
+}
+
 
 
 JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_mpcontrol_winamp_WinampControl_getVersion

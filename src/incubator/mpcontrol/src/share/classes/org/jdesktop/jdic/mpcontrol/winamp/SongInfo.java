@@ -38,15 +38,18 @@ import org.jdesktop.jdic.mpcontrol.ISongInfo;
  */
 public class SongInfo implements ISongInfo, IExtendedSongInfo {
 
+	String path;
     String artist;
     String title;
     int trackNumber;
     
     /**
-     * @param author
+     * @param path the path to the music file 
+     * @param artist
      * @param title
      */
-    public SongInfo(int trackNumber, String artist, String title) {
+    SongInfo(String path,int trackNumber, String artist, String title) {
+    	this.path = path;
         this.trackNumber = trackNumber;
         this.artist = artist;
         this.title = title;
@@ -70,7 +73,7 @@ public class SongInfo implements ISongInfo, IExtendedSongInfo {
      * @see net.sf.mpcontrol.ISongInfo#getPath()
      */
     public String getPath() {
-        return "";
+        return path;
     }
 
     /* (non-Javadoc)
