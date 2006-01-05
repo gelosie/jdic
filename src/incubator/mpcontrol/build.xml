@@ -105,9 +105,41 @@
   <!-- ================================= 
        target: dist              
        ================================= -->      
-  <target name="dist" depends="all,javadoc" description="Create a full distribution">
+  <target name="dist" depends="all,javadoc,demo" description="Create a full distribution">
 	<zip destfile="jdic-mpcontrol-${version}.zip" basedir="dist" />
-
+	<zip destfile="jdic-mpcontrol-src-${version}.zip" >
+	  <zipfileset prefix="src" dir="src">
+	    <include name="**/*.java"/>
+	    <include name="**/*.c"/>
+	    <include name="**/Makefile"/>
+	    <include name="**/*.cmd"/>
+	    <include name="**/wa_ipc.h"/>
+	    <exclude name="**/Rhythmbox-*.c"/>
+	    <exclude name="**/CVS"/>
+	  </zipfileset>
+	  <zipfileset prefix="demo" dir="demo">
+	    <include name="**/*.java"/>
+	    <include name="**/*.sh"/>
+	    <include name="**/*.cmd"/>
+	    <exclude name="**/CVS"/>
+	  </zipfileset>
+<!--
+	  <zipfileset prefix="src/unix" dir="${native.dir.linux}">
+	    <include name="**/*.c"/>
+	    <include name="**/Makefile"/>
+	    <exclude name="**/Rhythmbox-*.c"/>
+	  </zipfileset>
+	  <zipfileset prefix="src/win32" dir="${native.dir.win32}">
+	    <include name="**/*.c"/>
+	    <include name="**/*.cmd"/>
+	    <include name="**/wa_ipc.h"/>
+	  </zipfileset>
+          <zipfileset prefix="conf" dir="${src.dir}/conf">
+            <include name="*.*"/>
+          </zipfileset>
+	  <zipfileset prefix="demo" dir="demo"/> -->
+	  <zipfileset prefix="javadoc" dir="dist/javadoc"/>
+	</zip>
   </target>
 
   <!-- ================================= 
