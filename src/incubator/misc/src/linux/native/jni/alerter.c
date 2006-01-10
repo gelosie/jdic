@@ -23,19 +23,18 @@
 #include <jawt_md.h>
 
 /*
-* This method will blink the program's TaskBar once.
-* It's based on  Joshua Marinacci's original code.
+* This method will set the urgency hint. Some Window Managers use this hint to alert the user.
 */
-JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_WinAlerter_alertWindows
-  (JNIEnv *env, jobject canvas, jobject frame) {    
+JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_LinuxAlerter_setUrgencyHint
+  (JNIEnv *env, jobject canvas, jobject frame, jboolean alert)
+{
     JAWT awt;
     JAWT_DrawingSurface* ds;
     JAWT_DrawingSurfaceInfo* dsi;
-    JAWT_Win32DrawingSurfaceInfo* dsi_win32;
+    JAWT_X11DrawingSurfaceInfo* dsi_x11;
     jboolean result;
     jint lock;
-  
-    BOOL retorno;
+    XWMHints* hints;
     
     awt.version = JAWT_VERSION_1_4;
     
@@ -44,7 +43,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_WinAlerter_alertWindows
     if(result == JNI_FALSE) {
         return;
     }
-  
+
     ds = awt.GetDrawingSurface(env, frame);
     /*Error checking*/
     if(ds == NULL) {
@@ -58,21 +57,26 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_misc_impl_WinAlerter_alertWindows
     }
     
     dsi = ds->GetDrawingSurfaceInfo(ds);
-    dsi_win32 = (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
-    retorno = FlashWindow(dsi_win32->hwnd, TRUE);
+    dsi_x11 = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
     
+    /*Setting the urgency hint*/
+    hints = XGetWMHints(dsi_x11->display, dsi_x11->drawable);
+    /*Error checking*/
+    if(hints == NULL) {
+        return;
+    }
+    
+    if(alert) {
+        hints->flags = hints->flags | XUrgencyHint;
+    }
+    else {
+        hints->flags = hints->flags ^ XUrgencyHint;   
+    }
+
+    XSetWMHints(dsi_x11->display, dsi_x11->drawable, hints);        
+    XFree(hints);
+
     ds->FreeDrawingSurfaceInfo(dsi);
     ds->Unlock(ds);
     awt.FreeDrawingSurface(ds);
-    
 }
-
-/*
-* This method gets the Blink Rate. The GetCaretBlinkTime returns an unsigned int, hence the jlong return.
-*/
-JNIEXPORT jlong JNICALL Java_org_jdesktop_jdic_misc_impl_WinAlerter_getBlinkRate
-  (JNIEnv *env, jobject obj) {
-    jlong retorno = GetCaretBlinkTime();
-    return retorno;
-}
-

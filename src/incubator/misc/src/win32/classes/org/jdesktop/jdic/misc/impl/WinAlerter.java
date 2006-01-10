@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004 Sun Microsystems, Inc. All rights reserved. Use is
+ *  Copyright (C) 2005 Sun Microsystems, Inc. All rights reserved. Use is
  *  subject to license terms.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -22,20 +22,44 @@ package org.jdesktop.jdic.misc.impl;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.Timer;
 import org.jdesktop.jdic.misc.Alerter;
 
 /**
- * Description of the Class
+ * Windows Alerter
  * 
- * @author F‡bio Castilho Martins (fcmartins@bol.com.br)
+ * @author Fábio Castilho Martins (fcmartins@bol.com.br)
  * @created April 24, 2005
  */
 public class WinAlerter extends Alerter {
 
 	private boolean isLoaded;
 	
-	private Timer loop;
+	private static Timer loop;
+	
+	private class AlerterListener implements ActionListener {
+		
+		private Frame internalFrame;
+		
+		private AlerterListener(Frame frame) {
+			this.internalFrame = frame;
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			if(!internalFrame.isActive()) {
+				alertWindows(internalFrame);
+			}
+			else {
+				loop.removeActionListener(this);
+			}
+			
+			//Stop the loop when there are no frames to listen, saving resources
+			if(loop.getActionListeners().length == 0 && loop.isRunning()) {
+				loop.stop();
+			}
+		}		
+	}
 
 	/**
 	 * Do not use. Call the Alerter.newInstance() factory method instead.
@@ -44,10 +68,8 @@ public class WinAlerter extends Alerter {
 	 */
 	public WinAlerter() throws SecurityException, UnsatisfiedLinkError {
 		if (isLoaded == false) {
-            System.out.println("about to load the jdic_misc library");
 			System.loadLibrary("jdic_misc");
 			isLoaded = true;
-            System.out.println("loaded");
 		}
 	}
 	
@@ -56,25 +78,38 @@ public class WinAlerter extends Alerter {
 	 * regular rate (controlled by the user's preferences), until the Window 
 	 * gets the focus.
 	 */
-	public void alert(final Frame frame) {
-		int delay = (int) getBlinkRate(); //milliseconds
-		loop = new Timer(delay, new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				if (!frame.isFocusOwner()) {
-					alertWindows(frame);
+	public void alert(Frame frame) {
+		if(!frame.isActive()) {
+			if(loop != null) {
+				ActionListener[] listeners = loop.getActionListeners();
+				AlerterListener listener;
+				//Make sure we don't put the same frame more than 1 time in loop
+				for(int i = 0; i < listeners.length; i++) {
+					if (listeners[i] instanceof AlerterListener) {
+						listener = (AlerterListener) listeners[i];
+						if(listener.internalFrame.equals(frame)) {
+							return;
+						}
+					}
 				}
-				else {
-					loop.stop();
-				}
+			
+				loop.addActionListener(new AlerterListener(frame));
+				if(!loop.isRunning()) {
+					loop.start();
+				}			
 			}
-		});
-		loop.start();
+			else {
+				int delay = (int) getBlinkRate(); //milliseconds
+				loop = new Timer(delay, new AlerterListener(frame));
+				loop.start();
+			}
+		}
 	}
-
+	
 	private native void alertWindows(Frame frame);
 	
 	/**
-	 * Return the Systems Blink Rate, this is a user preference, which controls the blink rate on Windows. 
+	 * Return the System's Blink Rate, which is a user preference, that controls the blink rate on Windows. 
 	 * Microsoft's Design Guidelines states that an application should respect this user configuration.
 	 * @return The Native Blink Rate.
 	 */

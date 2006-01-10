@@ -27,7 +27,7 @@ import com.apple.eawt.*;
 import org.jdesktop.jdic.misc.Alerter;
 
 /**
- *  Description of the Class
+ *  Mac OS X Alerter
  *
  * @author     joshua@marinacci.org
  * @created    April 8, 2005
