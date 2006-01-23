@@ -18,9 +18,11 @@
  * USA.
  */ 
 
-package org.jdesktop.jdic.browser;
+package org.jdesktop.jdic.browser.internal;
 
 import java.awt.Rectangle;
+
+import org.jdesktop.jdic.browser.WebBrowser;
 
 /**
  * An internal class that declares an event class used to be dispatched 
@@ -32,25 +34,25 @@ import java.awt.Rectangle;
  * @author Kyle Yuan
  * @version 0.1, 03/07/17
  */
-class NativeEventData
+public class NativeEventData
 {
-    final static int EVENT_INIT              = 0;
-    final static int EVENT_CREATEWINDOW      = 1;
-    final static int EVENT_DESTROYWINDOW     = 2;
-    final static int EVENT_SHUTDOWN          = 3;
-    final static int EVENT_SET_BOUNDS        = 4;
-    final static int EVENT_NAVIGATE          = 5;
-    final static int EVENT_NAVIGATE_POST     = 6;
-    final static int EVENT_GOBACK            = 8;
-    final static int EVENT_GOFORWARD         = 9;
-    final static int EVENT_REFRESH           = 10;
-    final static int EVENT_STOP              = 11;
-    final static int EVENT_GETURL            = 12;
-    final static int EVENT_FOCUSGAINED       = 13;
-    final static int EVENT_FOCUSLOST         = 14;
-    final static int EVENT_GETCONTENT        = 15;
-    final static int EVENT_SETCONTENT        = 16;
-    final static int EVENT_EXECUTESCRIPT     = 17;
+	public   final static int EVENT_INIT              = 0;
+	public   final static int EVENT_CREATEWINDOW      = 1;
+	public   final static int EVENT_DESTROYWINDOW     = 2;
+	public   final static int EVENT_SHUTDOWN          = 3;
+	public   final static int EVENT_SET_BOUNDS        = 4;
+	public   final static int EVENT_NAVIGATE          = 5;
+	public   final static int EVENT_NAVIGATE_POST     = 6;
+	public   final static int EVENT_GOBACK            = 8;
+	public   final static int EVENT_GOFORWARD         = 9;
+	public   final static int EVENT_REFRESH           = 10;
+	public   final static int EVENT_STOP              = 11;
+	public   final static int EVENT_GETURL            = 12;
+	public   final static int EVENT_FOCUSGAINED       = 13;
+	public   final static int EVENT_FOCUSLOST         = 14;
+	public   final static int EVENT_GETCONTENT        = 15;
+	public   final static int EVENT_SETCONTENT        = 16;
+	public   final static int EVENT_EXECUTESCRIPT     = 17;
     
     int instance;
     int type;

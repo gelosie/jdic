@@ -16,169 +16,147 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
- */ 
+ */
 package org.jdesktop.jdic.browser.internal;
 
-import java.io.File;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * Utility class for <code>WebBrowser</code> class.
  */
 public class WebBrowserUtil {
-    // Native browser embedding binary: IeEmbed.exe or MozEmbed.exe on Windows, 
-    // mozembed-<os>-gtk<version> on Linux/Unix. Which runs as a standalone
-    // native instance.
-    private static final String EMBED_BINARY_WINDOWS_IE 
-        = "IeEmbed.exe";
-    private static final String EMBED_BINARY_WINDOWS_MOZILLA 
-        = "MozEmbed.exe";
-    private static final String EMBED_BINARY_LINUX_GTK1 
-        = "mozembed-linux-gtk1.2";
-    private static final String EMBED_BINARY_LINUX_GTK2 
-        = "mozembed-linux-gtk2";
-    private static final String EMBED_BINARY_FREEBSD_GTK1 
-        = "mozembed-freebsd-gtk1.2";
-    private static final String EMBED_BINARY_FREEBSD_GTK2 
-        = "mozembed-freebsd-gtk2";
-    private static final String EMBED_BINARY_SOLARIS_GTK1 
-        = "mozembed-solaris-gtk1.2";
-    private static final String EMBED_BINARY_SOLARIS_GTK2 
-        = "mozembed-solaris-gtk2";
 
-    private static String embedBinary;
-    
-    private static String browserPath = null;
-    
-    /* native functions */
-    private static native String nativeGetBrowserPath();
-    private static native String nativeGetMozillaGreHome();
-    
-    // Flag to enable or disable debug message output.
-    private static boolean isDebugOn = false;
+	/** Returns the name of the Operating system we are currently on. */
+	public static final String OS_NAME = System.getProperty("os.name");
 
-    static {
-        System.loadLibrary("jdic");
-    }
-        
-    /**
-     * Returns the name of the native browser embedding binary. If no default
-     * browser is set, null is returned.  
-     */
-    public static String getEmbedBinaryName() {
-        if (embedBinary != null && embedBinary.length() > 0)
-            return embedBinary;
+	/** The java.home property value is required to load jawt.dll on Windows */
+	public static final String JAVA_DOT_HOME = "java.home";
 
-        String nativePath = WebBrowserUtil.getBrowserPath();
-        if (null == nativePath) {
-            trace("No default browser is found. " +
-                    "Please set Mozilla as the default browser, or set env " +
-                    "variable MOZILLA_FIVE_HOME to the Mozilla binary path " +
-                    "if you are running Linux/Unix platform.");
-            return null; 
-        }
+	/** True if the current operating system is Windows, false otherwise */
+	public final static boolean IS_OS_WINDOWS = isCurrentOS("Windows");
 
-        String osname = System.getProperty("os.name");
-        if (osname.indexOf("Windows") >= 0) {
-            String windowspath = nativePath;
-            int index = windowspath.indexOf("mozilla.exe");
-            if (index >= 0)
-                embedBinary = EMBED_BINARY_WINDOWS_MOZILLA;
-            else
-                embedBinary = EMBED_BINARY_WINDOWS_IE;
-        }
-        else {
-            String libwidgetpath = nativePath + File.separator +
-                                   "components" + File.separator + 
-                                   "libwidget_gtk2.so";
-            File file = new File(libwidgetpath);
-            if (!file.exists()) {
-                if (osname.indexOf("Linux") >= 0) {
-                    embedBinary = EMBED_BINARY_LINUX_GTK1;
-                }
-                else if (osname.indexOf("SunOS") >= 0) {
-                    embedBinary = EMBED_BINARY_SOLARIS_GTK1;
-                }
-                else if (osname.indexOf("FreeBSD") >= 0) {
-                    embedBinary = EMBED_BINARY_FREEBSD_GTK1;
-                }
-            }
-            else {
-                if (osname.indexOf("Linux") >= 0) {
-                    embedBinary = EMBED_BINARY_LINUX_GTK2;
-                }
-                else if (osname.indexOf("SunOS") >= 0) {
-                    embedBinary = EMBED_BINARY_SOLARIS_GTK2;
-                }
-                else if (osname.indexOf("FreeBSD") >= 0) {
-                    embedBinary = EMBED_BINARY_FREEBSD_GTK2;
-                }
-            }
-        }
-                
-        return embedBinary;
-    }    
-    
-    /**
-     *  Gets the native browser path.
-     *  @return the path of the default browser in the current system
-     */
-    public static String getBrowserPath() {
-        if (browserPath == null) {
-            browserPath = nativeGetBrowserPath();
-        }
-        return browserPath;
-    }
-    
-    /**
-     * Checks if the default browser for the current platform is Mozilla.
-     * @return true on Solaris and Linux and true on Windows platform if Mozilla
-     * is set as the default browser.
-     */
-    public static boolean isDefaultBrowserMozilla() {
-        String osName = System.getProperty("os.name").toLowerCase();
-        
-        if ((osName.indexOf("solaris") >= 0) ||
-            (osName.indexOf("linux") >= 0) ) {
-            return true;
-        } else {
-            String nativeBrowserPath = getBrowserPath();
-            // Only when Mozilla is set as the default browser, return true. 
-            // Or else, fall back to Internet Explorer.
-            // FireFox 1.0 is statically linked into Gecko and therefore can not 
-            // be embedded. If FireFox is embeddable for some future version,
-            // we would have to explicitly check for both Mozilla and FireFox. 
-            if (nativeBrowserPath.indexOf("mozilla") >= 0) {
-            	return true;
-            } else {
-                return false;                
-            }
-        }
-    }
+	/** True if the current operating system is Linux, false otherwise */
+	public static final boolean IS_OS_LINUX = isCurrentOS("Linux");
 
-    /**
-     *  Gets the native Mozilla GRE home directory installed with a .exe package.
-     *  @return the GRE home directory of the currently installed Mozilla.
-     */
-    public static String getMozillaGreHome() {
-        return nativeGetMozillaGreHome();
-    }    
+	/** True if the current operating system is SunOS, false otherwise */
+	public static final boolean IS_OS_SUNOS = isCurrentOS("SunOS");
 
-    public static void enableDebugMessages(boolean b) {
-        isDebugOn = b;
-    }
-    
-    /**
-     * Helper method to output given debug message.
-     * 
-     * @param msg the given debug message.
-     */
-    public static void trace(String msg) {
-        if (isDebugOn)
-            System.out.println("*** Jtrace: " + msg);
-    }
-    
-    /*
-     * Sets native environment variables for running native browser binary.
-     */
-    public static native void nativeSetEnv();    
+	/** True if the current operating system is FreeBSD, false otherwise */
+	public static final boolean IS_OS_FREEBSD = isCurrentOS("FreeBSD");
+
+	/** True if the current operating system is Mac, false otherwise */
+	public static final boolean IS_OS_MAC = isCurrentOS("Mac");
+
+	private static final String JDIC_LIB_NAME = "jdic";
+
+	private static final String LD_LIBRARY_PATH = "LD_LIBRARY_PATH";
+
+	/** The environment variable for library path setting */
+	private final static String PATH = "PATH";
+
+	/** The environment variable for library path setting */
+	public final static String LIB_PATH_ENV = WebBrowserUtil.IS_OS_WINDOWS ? PATH
+			: LD_LIBRARY_PATH;
+
+	private static String browserPath = null;
+
+	private static boolean nativeLibLoaded = false;
+
+	private static boolean isDebugOn = false;
+
+	/* native functions */
+	private static native String nativeGetBrowserPath();
+
+	private static native String nativeGetMozillaGreHome();
+
+	private static native void nativeSetEnv();
+
+	/** Loads the jdic library (unless it has already been loaded) */
+	public static void loadLibrary() {
+		if (!nativeLibLoaded) {
+			AccessController.doPrivileged(new PrivilegedAction() {
+				public Object run() {
+					System.loadLibrary(JDIC_LIB_NAME);
+					return null;
+				}
+			});
+			nativeLibLoaded = true;
+		}
+	}
+
+	/**
+	 * Gets the native browser path.
+	 * 
+	 * @return the path of the default browser in the current system
+	 */
+	public static String getDefaultBrowserPath() {
+		if (browserPath == null) {
+			loadLibrary();
+			browserPath = nativeGetBrowserPath();
+		}
+		return browserPath;
+	}
+
+	/**
+	 * Gets the native Mozilla GRE home directory installed with a .exe package.
+	 * 
+	 * @return the GRE home directory of the currently installed Mozilla.
+	 */
+	public static String getMozillaGreHome() {
+		loadLibrary();
+		return nativeGetMozillaGreHome();
+	}
+
+	/**
+	 * Used to check whether the current operating system matches a operating
+	 * system name (osname).
+	 * 
+	 * @param osname
+	 *            Name of an operating system we are looking for as being part
+	 *            of the Sytem property os.name
+	 * @return true, if osname matches the current operating system,false if not
+	 *         and if osname is null
+	 */
+	public static boolean isCurrentOS(String osname) {
+		if (osname == null) {
+			return false;
+		} else {
+			return (OS_NAME.indexOf(osname) >= 0);
+		}
+	}
+
+	/* debug helper */
+	public static void trace(String msg) {
+		if (isDebugOn)
+			System.out.println("*** Jtrace: " + msg);
+	}
+
+	public static void error(String msg) {
+		System.err.println("*** Error: " + msg);
+	}
+
+	/**
+	 * Sets trace messages on or off. If on, the trace messages will be printed
+	 * out in the console.
+	 * 
+	 * @param b
+	 *            <code>true</code> if enable the trace messages; otherwise,
+	 *            <code>false</code>.
+	 */
+	public static void enableDebugMessages(boolean b) {
+		isDebugOn = b;
+	}
+
+	/**
+	 * Get the boolean which indicates is debug on or off
+	 */
+	public static boolean getDebug() {
+		return isDebugOn;
+	}
+
+	public static void nativeSetEnvironment() {
+		loadLibrary();
+		nativeSetEnv();
+	}
 }
