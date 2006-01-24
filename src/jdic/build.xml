@@ -63,7 +63,7 @@ Top-level target:
   <!-- the generated jar file name -->
   <property name="jar.file" value="jdic.jar" />
   
-  <property name="toDebug" value="false"/>
+  <property name="toDebug" value="off"/>
 
   <target name="showtargets" description="default target showing all available targets">
     <echo>The top-level targets are:</echo>
