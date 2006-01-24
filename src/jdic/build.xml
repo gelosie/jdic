@@ -27,6 +27,8 @@ Top-level target:
   <property name="pkg.filetypes.name" value="${pkg.jdic.name}.filetypes" />
   <property name="pkg.browser.name"   value="${pkg.jdic.name}.browser" />
   <property name="pkg.tray.name"      value="${pkg.jdic.name}.tray" />
+  <property name="pkg.init.name"      value="${pkg.jdic.name}.init" />
+  
 
   <!-- the path of source directory -->
   <property name="readme.dir"        value="../" />
@@ -61,7 +63,7 @@ Top-level target:
   <!-- the generated jar file name -->
   <property name="jar.file" value="jdic.jar" />
   
-  <property name="toDebug" value="off"/>
+  <property name="toDebug" value="false"/>
 
   <target name="showtargets" description="default target showing all available targets">
     <echo>The top-level targets are:</echo>
@@ -170,7 +172,7 @@ Top-level target:
   <!-- disable author and version tags output -->
   <target name="javadoc" depends="init"
           description="generate javadoc into ${dist.dir}/javadoc" >
-    <javadoc packagenames="${pkg.desktop.name}, ${pkg.filetypes.name}, ${pkg.browser.name}, ${pkg.tray.name}"
+    <javadoc packagenames="${pkg.desktop.name}, ${pkg.filetypes.name}, ${pkg.browser.name}, ${pkg.tray.name},${pkg.init.name}"
              sourcepath="${share.classes.dir}"
              destdir="${dist.dir}/javadoc"            
              author="false"
