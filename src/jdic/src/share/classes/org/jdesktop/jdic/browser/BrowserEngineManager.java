@@ -163,7 +163,7 @@ public class BrowserEngineManager {
 	public boolean removeBrowserEngine(String engineName) {
 		if (!engines.containsKey(engineName))
 			return true;
-		IWebBrowser engine = (IWebBrowser) engines.get(engineName);
+		IBrowserEngine engine = (IBrowserEngine) engines.get(engineName);
 
 		if (engine == activeEngine) {
 			WebBrowserUtil.error("Can't remove active engine!");
