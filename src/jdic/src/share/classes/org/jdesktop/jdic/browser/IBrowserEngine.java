@@ -28,7 +28,7 @@ import org.jdesktop.jdic.init.JdicInitException;
  * embedded browser engine on the current system.
  * 
  * @author Alexander Hars, Inventivio GmbH Michael Shan
- * @created 2005-01-20
+ * @since 2005-01-20
  */
 public interface IBrowserEngine {
 
@@ -81,9 +81,8 @@ public interface IBrowserEngine {
 	public boolean isDefaultBrowser(String browserPath);
 
 	/**
-	 * Return embeded name of current browser.
-	 * 
-	 * @return
+	 *
+	 * @return embeded name of current browser.
 	 */
 	public String getEmbeddedBinaryName();
 
@@ -93,7 +92,6 @@ public interface IBrowserEngine {
 	 * path of it. It will often be used with <code>BrowserEngineManger</code>'s
 	 * setActiveEngine() method.
 	 * 
-	 * @return
 	 */
 	public void setEnginePath(String fullPath);
 
@@ -105,24 +103,23 @@ public interface IBrowserEngine {
 	public void initialize() throws JdicInitException;
 
 	/**
-	 * Return browser's default charset used to de/encode messages.
 	 * 
-	 * @return
+	 * @return browser's default charset used to de/encode messages.
 	 */
 	public String getCharsetName();
 
 	/**
-	 * Return browser's file protocol prefix("file:/").
-	 * 
-	 * @return
+	 *
+	 * @return browser's file protocol prefix (eg. "file:/")
 	 */
 	public String getFileProtocolURLPrefix();
 
 	/**
-	 * Return if the browser engine has been intialized. It needs only be
+	 * check if the browser engine has been intialized. It needs only be
 	 * initialized once.
 	 * 
-	 * @return
+	 * @return if initialized return true else return false 
+	 *
 	 */
 	public boolean isInitialized();
 

@@ -41,7 +41,7 @@ import java.net.URL;
  * @author Michael Samblanet 
  *         Paul Huang 
  *         George Zhang
- * @created July 29, 2004
+ * @since July 29, 2004
  */
 public class JdicManager {
 	private boolean isShareNativeInitialized = false;

@@ -24,8 +24,8 @@ package org.jdesktop.jdic.init;
 /**
  *  Wrapper exception for unexpected errors during JDIC initialization
  *
- * @author     Michael Samblanet
- * @created    August 2, 2004
+ * @author   Michael Samblanet
+ * @since    August 2, 2004
  */
 public class JdicInitException extends Exception {
     public JdicInitException() { }
