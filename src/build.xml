@@ -79,7 +79,7 @@ Top-level target:
     <chmod dir="${dist.dir}" perm="+x" includes="*mozembed-*-gtk*" />
 
     <!-- Copy JDIC Packager distribution files -->
-    <copy todir="${dist.dir}">
+    <copy todir="${dist.dir}" failonerror="false">
       <fileset dir="packager/${dist.dir}" casesensitive="false" >
         <include name="*.jar"/>
         <include name="*.dll"/>
