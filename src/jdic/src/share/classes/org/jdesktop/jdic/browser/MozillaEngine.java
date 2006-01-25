@@ -109,9 +109,9 @@ public class MozillaEngine implements IBrowserEngine {
 	/**
 	 * Checks whether mozilla is default Browser on the current system.
 	 * 
-	 * @param defaultBrowserPath
+	 * @param browserPath
 	 *            taken from the OS or whereever
-	 * @return
+	 * @return if default browser return ture else return false
 	 * 
 	 */
 	public boolean isDefaultBrowser(String browserPath) {
