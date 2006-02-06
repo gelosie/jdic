@@ -15,14 +15,17 @@ Top-level target:
     buildsolaris:   on Solaris to build a Solaris distribuition.
     buildfreebsd:   on FreeBSD to build a FreeBSD distribuition.
     buildmac_os_x:  on Mac OS X to build a Mac OS X distribuition.
-  buildtray:        Build the Tray Icon API (package org.jdesktop.jdic.tray) 
+    buildtray:      Build the Tray Icon API (package org.jdesktop.jdic.tray) 
                     binary for the current platform.
-  clean:            Remove the generated distribution (including files and directories).
+    buildtest:			build ut test cases
+    runtest:				run ut test cases
+    clean:            Remove the generated distribution (including files and directories).
 
 -->
+  
 
   <!-- the top-level package names -->
-  <property name="pkg.jdic.name"      value="org.jdesktop.jdic" /> 
+  <property name="pkg.jdic.name"      value="org.jdesktop.jdic" />
   <property name="pkg.desktop.name"   value="${pkg.jdic.name}.desktop" /> 
   <property name="pkg.filetypes.name" value="${pkg.jdic.name}.filetypes" />
   <property name="pkg.browser.name"   value="${pkg.jdic.name}.browser" />
@@ -33,6 +36,7 @@ Top-level target:
   <!-- the path of source directory -->
   <property name="readme.dir"        value="../" />
   <property name="src.dir"           value="src" />
+  <property name="test.dir"          value="test"/>
   <property name="share.classes.dir" value="${src.dir}/share/classes" />
   <property name="unix.classes.dir"  value="${src.dir}/unix/classes" />
   <property name="win32.classes.dir" value="${src.dir}/win32/classes" />
@@ -156,7 +160,9 @@ Top-level target:
     <antcall target="${platform.target}" />
     
     <!-- build demo applications into .class files -->
-    <antcall target="builddemo" />
+    <antcall target="builddemo" />    
+
+    <antcall target="buildtest" />    
     
     <antcall target="copyreadme" />
   </target>
@@ -468,6 +474,42 @@ Top-level target:
       </fileset>
     </copy>
   </target>
+
+ 
+  <target name="buildtest" depends="init"
+    description="build test classes">    
+    <!-- remove the ".class" files to rebuild the test apps -->
+    <delete failonerror="false">
+      <fileset dir="${test.dir}" includes="*.xml,**/*.xml, **/*.class,*.class,*.bak"/>
+    </delete>         
+     <javac debug="${toDebug}" srcdir="${test.dir}"
+           destdir="${test.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
+           source="1.4"
+    />    
+  </target>
+  
+  <!--Attention: pre set junit.jar to classpath to run these tests-->
+  <target name="runtest" depends="init" description="run test classes">
+    <echo message="ATTENTION: Pre set junit.jar to classpath to run these tests!"/>
+    <!--define classpath-->
+    <path id="appclasspath">
+      <fileset dir="${dist.dir}">
+          <include name="*.jar"/>
+      </fileset>
+      <pathelement location="${test.dir}"/>
+    </path>
+    <junit haltonfailure="false"
+        printsummary="withOutAndErr">
+      <classpath refid="appclasspath"/>
+      <batchtest todir="${test.dir}">
+         <fileset dir="${test.dir}" includes="ut/bm/*Test*.class"/>         
+      </batchtest>
+        <formatter type="xml"/>
+    </junit>
+  </target>
+
 
   <!-- ******************************************* -->
   <!-- ******************************************* -->
