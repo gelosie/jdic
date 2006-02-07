@@ -19,14 +19,7 @@ import org.jdesktop.jdic.init.JdicInitException;
  *  
  */
 public class BrowserEngineManagerTest extends TestCase {
-
-	protected void setUp() {
-		System.out.println("setUp");
-		BrowserEngineManager engineManager = BrowserEngineManager.instance();
-		IBrowserEngine browserEngine = engineManager.getActiveEngine();
-		System.out.println("end setUp");
-	}
-
+	
 	//Register an exiting engine
 	public void testRegisterBrowserEngine() {
 		BrowserEngineManager engineManager = BrowserEngineManager.instance();
