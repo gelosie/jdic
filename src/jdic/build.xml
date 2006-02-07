@@ -161,8 +161,6 @@ Top-level target:
     
     <!-- build demo applications into .class files -->
     <antcall target="builddemo" />    
-
-    <antcall target="buildtest" />    
     
     <antcall target="copyreadme" />
   </target>
@@ -475,10 +473,11 @@ Top-level target:
     </copy>
   </target>
 
- 
+   <!--Attention: pre set junit.jar to classpath to build these tests-->
   <target name="buildtest" depends="init"
     description="build test classes">    
-    <!-- remove the ".class" files to rebuild the test apps -->
+    <echo message="ATTENTION: Pre set junit.jar to classpath to build these tests!"/>
+
     <delete failonerror="false">
       <fileset dir="${test.dir}" includes="*.xml,**/*.xml, **/*.class,*.class,*.bak"/>
     </delete>         
