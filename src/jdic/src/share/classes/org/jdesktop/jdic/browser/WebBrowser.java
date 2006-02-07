@@ -20,18 +20,24 @@
 
 package org.jdesktop.jdic.browser;
 
-import java.util.Vector;
-import java.net.URL;
+import java.awt.Canvas;
+import java.awt.Component;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.awt.*;
-import java.awt.event.*;
-import java.security.*;
+import java.net.URL;
+import java.security.AccessControlException;
+import java.util.Vector;
 
-import org.jdesktop.jdic.init.JdicInitException;
-import org.jdesktop.jdic.init.JdicManager;
 import org.jdesktop.jdic.browser.internal.NativeEventData;
 import org.jdesktop.jdic.browser.internal.NativeEventThread;
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
+import org.jdesktop.jdic.init.JdicInitException;
+import org.jdesktop.jdic.init.JdicManager;
 
 /**
  * A <code>WebBrowser</code> component represents a blank rectangular area of
@@ -58,6 +64,8 @@ import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
  * @version 0.1, 03/07/17
  */
 public class WebBrowser extends Canvas implements IWebBrowser {
+	private static final String FILE_PROTOCOL = "file:///";
+	private static final String FILE = "file";
 	private MyFocusListener focusListener = new MyFocusListener();
 
 	// eventThread should be initialized after JdicManager.initShareNative()
@@ -78,7 +86,6 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	private boolean isForwardEnabled = false;
 
 	private String initFailureMessage = "WebBrowser is not initialized.";
-
 
 	/**
 	 * boolean flag used to indicate how to dispose this instance.
@@ -104,8 +111,8 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		try {
 			Toolkit.getDefaultToolkit(); // Load libjawt.so/jawt.dll
 			JdicManager jm = JdicManager.getManager();
-			jm.initShareNative();			
-			WebBrowserUtil.loadLibrary();			
+			jm.initShareNative();
+			WebBrowserUtil.loadLibrary();
 			eventThread = new NativeEventThread();
 		} catch (JdicInitException e) {
 			WebBrowserUtil.error(e.getCause().getMessage());
@@ -358,7 +365,8 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 			} catch (MalformedURLException ex1) {
 				try {
 					// IE omits the file:/ protocol for local files, append it.
-					url = new URL(BrowserEngineManager.instance().getActiveEngine().getFileProtocolURLPrefix()
+					url = new URL(BrowserEngineManager.instance()
+							.getActiveEngine().getFileProtocolURLPrefix()
 							+ e.getData());
 				} catch (MalformedURLException ex2) {
 					WebBrowserUtil.error(ex2.getMessage());
@@ -548,18 +556,33 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		if (url == null) {
 			return;
 		}
+		String urlString = url.toString();
+		if (url.getProtocol().equals(FILE)) {
+			String fileName = url.getFile();
+			if (fileName.startsWith("/")) {
+				fileName = fileName.substring(1);
+			}
+			File file = new File(fileName);
+			try {
+				String filePath = file.getCanonicalFile().getAbsolutePath();
+				urlString = FILE_PROTOCOL + filePath;
+			} catch (IOException e) {
+				WebBrowserUtil.error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
 
 		// Both POST data and headers are null, just navigate to the URL.
 		if ((postData == null) && (headers == null)) {
 			eventThread.fireNativeEvent(instanceNum,
-					NativeEventData.EVENT_NAVIGATE, url.toString());
+					NativeEventData.EVENT_NAVIGATE, urlString);
 		} else {
 			eventThread.fireNativeEvent(instanceNum,
 					NativeEventData.EVENT_NAVIGATE_POST,
 					// Note!!! Use "<instance number>,<event ID>," string as the
 					// message field delimiter, which must be identical in the
 					// native side used to parse the post string values.
-					url.toString() + instanceNum + ","
+					urlString + instanceNum + ","
 							+ NativeEventData.EVENT_NAVIGATE_POST + ","
 							+ ((postData == null) ? "" : postData)
 							+ instanceNum + ","
@@ -607,11 +630,37 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 *  
 	 *   
 	 *    
+	 *     
 	 *      
-	 *          // Print the currently loaded document.    
-	 *          WebBrowser webBrowser = new WebBrowser();
-	 *           ......
-	 *          webBrowser.executeScript(&quot;window.print();&quot;);
+	 *       
+	 *        
+	 *         
+	 *          
+	 *           
+	 *            
+	 *             
+	 *              
+	 *               
+	 *                
+	 *                 
+	 *                   
+	 *                       // Print the currently loaded document.    
+	 *                       WebBrowser webBrowser = new WebBrowser();
+	 *                        ......
+	 *                       webBrowser.executeScript(&quot;window.print();&quot;);
+	 *                   
+	 *                  
+	 *                 
+	 *                
+	 *               
+	 *              
+	 *             
+	 *            
+	 *           
+	 *          
+	 *         
+	 *        
+	 *       
 	 *      
 	 *     
 	 *    
@@ -724,7 +773,8 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 *             exposed and will be removed in a future release.
 	 */
 	public static String getBrowserBinary() {
-		return BrowserEngineManager.instance().getActiveEngine().getEmbeddedBinaryName();
+		return BrowserEngineManager.instance().getActiveEngine()
+				.getEmbeddedBinaryName();
 	}
 
 	/**
