@@ -22,6 +22,9 @@ package org.jdesktop.jdic.browser.internal;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.jdesktop.jdic.init.JdicInitException;
+import org.jdesktop.jdic.init.JdicManager;
+
 /**
  * Utility class for <code>WebBrowser</code> class.
  */
@@ -75,6 +78,13 @@ public class WebBrowserUtil {
 	/** Loads the jdic library (unless it has already been loaded) */
 	public static void loadLibrary() {
 		if (!nativeLibLoaded) {
+			
+			try {
+				JdicManager.getManager().initShareNative();
+			} catch (JdicInitException e) {
+				e.printStackTrace();
+				WebBrowserUtil.error(e.getMessage());
+			}
 			AccessController.doPrivileged(new PrivilegedAction() {
 				public Object run() {
 					System.loadLibrary(JDIC_LIB_NAME);

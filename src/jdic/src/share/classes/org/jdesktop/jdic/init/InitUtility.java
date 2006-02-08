@@ -21,6 +21,8 @@ package org.jdesktop.jdic.init;
 
 import java.io.File;
 
+import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
+
 /**
  * Utility class for JDIC initialization.
  * @author Paul Huang
@@ -28,6 +30,12 @@ import java.io.File;
  */
 public class InitUtility {
     static {
+    	try {
+			JdicManager.getManager().initShareNative();
+		} catch (JdicInitException e) {
+			e.printStackTrace();
+			WebBrowserUtil.error(e.getMessage());
+		}
         System.loadLibrary("jdic");
     }
     
