@@ -337,7 +337,7 @@ public class MozillaEngine implements IBrowserEngine {
 	 * 
 	 */
 	public String getFileProtocolURLPrefix() {
-		return null;
+		return "";
 	}
 
 	/*

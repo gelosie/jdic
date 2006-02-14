@@ -369,7 +369,8 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 							.getActiveEngine().getFileProtocolURLPrefix()
 							+ e.getData());
 				} catch (MalformedURLException ex2) {
-					WebBrowserUtil.error(ex2.getMessage());
+					//For javascript to set/getcontent,the url to be opened is bad,but we could igore that.So just a warning here.
+					WebBrowserUtil.trace(ex2.toString());
 				}
 			}
 
