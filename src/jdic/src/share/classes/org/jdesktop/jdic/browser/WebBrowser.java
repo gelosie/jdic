@@ -22,6 +22,7 @@ package org.jdesktop.jdic.browser;
 
 import java.awt.Canvas;
 import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
@@ -226,16 +227,12 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		setFocusable(true);
 		addFocusListener(focusListener);
 	}
-
+	
 	/**
-	 * Creates the peer for this WebBrowser component. The peer allows us to
-	 * modify the appearance of the WebBrowser component without changing its
-	 * functionality.
-	 * 
-	 * @see #removeNotify()
+	 * Could only get HWND when this method is called.This will fix the can't get awt HWND error.
 	 */
-	public void addNotify() {
-		super.addNotify();
+	public void paint(Graphics g){
+		super.paint(g);
 		if (!isInitialized) {
 			eventThread.fireNativeEvent(instanceNum,
 					NativeEventData.EVENT_CREATEWINDOW);
@@ -251,7 +248,17 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		}
 		if (!autoDispose) {
 			this.setVisible(true);
-		}
+		}		
+	}
+	/**
+	 * Creates the peer for this WebBrowser component. The peer allows us to
+	 * modify the appearance of the WebBrowser component without changing its
+	 * functionality.
+	 * 
+	 * @see #removeNotify()
+	 */
+	public void addNotify() {
+		super.addNotify();
 	}
 
 	/**
