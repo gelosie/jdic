@@ -48,8 +48,9 @@ public:
     void __stdcall OnCommandStateChange(long lCommand, VARIANT_BOOL bEnable);
     void __stdcall OnBeforeNavigate(IDispatch *pDisp,VARIANT *URL,
                                     VARIANT *Flags,VARIANT *TargetFrameName,VARIANT *PostData,VARIANT *Headers,
-                                    VARIANT_BOOL *Cancel);
-    void __stdcall OnNewWindow2(IDispatch **ppDisp,VARIANT_BOOL *Cancel);
+                                    VARIANT_BOOL *Cancel);    
+	void __stdcall OnNewWindow3(IDispatch **ppDisp,VARIANT_BOOL *Cancel,DWORD dwFlags,BSTR bstrUrlContext,
+		BSTR bstrUrl);
     void __stdcall OnDownloadBegin();
     void __stdcall OnNavigateComplete(IDispatch* pDisp, VARIANT* URL);
     void __stdcall OnDocumentComplete(IDispatch* pDisp, VARIANT* URL);
@@ -62,8 +63,8 @@ public:
     BEGIN_SINK_MAP(BrowserWindow)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_COMMANDSTATECHANGE, OnCommandStateChange)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_DOWNLOADBEGIN, OnDownloadBegin)
-        SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_BEFORENAVIGATE2, OnBeforeNavigate)
-        SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_NEWWINDOW2, OnNewWindow2)
+        SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_BEFORENAVIGATE2, OnBeforeNavigate)       
+        SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_NEWWINDOW3, OnNewWindow3)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_NAVIGATECOMPLETE2, OnNavigateComplete)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_DOCUMENTCOMPLETE, OnDocumentComplete)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_PROGRESSCHANGE, OnNavigateProgress)

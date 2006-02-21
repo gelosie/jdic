@@ -100,11 +100,38 @@ void __stdcall BrowserWindow::OnBeforeNavigate(IDispatch *pDisp,VARIANT *URL,
     } 
 }
 
+void __stdcall BrowserWindow::OnNewWindow3(IDispatch **ppDisp,VARIANT_BOOL *Cancel,DWORD dwFlags,BSTR bstrUrlContext,
+		BSTR bstrUrl)
+{	
+	int bCmdCanceled = -1, waitCount = 0;
+    AddTrigger(m_InstanceID, CEVENT_BEFORE_NEWWINDOW, &bCmdCanceled); 
+
+	char buf[1024];
+    int len = wcslen(bstrUrl);
+	if (len > 0) {
+		if (WideCharToMultiByte(CP_ACP, 0, bstrUrl, -1, buf, sizeof(buf) - 1, NULL, NULL) > 0)
+			SendSocketMessage(m_InstanceID, CEVENT_BEFORE_NEWWINDOW,buf);
+	}    
+
+    while (bCmdCanceled < 0 && waitCount++ < MAX_WAIT) {
+        Sleep(1);
+    } 
+
+    if (bCmdCanceled == 1) {
+        *Cancel = VARIANT_TRUE;
+    }
+    else {
+        *Cancel = VARIANT_FALSE;
+    }
+}
+
+/*
 void __stdcall BrowserWindow::OnNewWindow2(IDispatch **ppDisp,VARIANT_BOOL *Cancel)
 {
 	int bCmdCanceled = -1, waitCount = 0;
     AddTrigger(m_InstanceID, CEVENT_BEFORE_NEWWINDOW, &bCmdCanceled); 
     SendSocketMessage(m_InstanceID, CEVENT_BEFORE_NEWWINDOW);
+
 
     while (bCmdCanceled < 0 && waitCount++ < MAX_WAIT) {
         Sleep(1);
@@ -117,6 +144,7 @@ void __stdcall BrowserWindow::OnNewWindow2(IDispatch **ppDisp,VARIANT_BOOL *Canc
         *Cancel = VARIANT_FALSE;
     } 
 }
+*/
 
 void __stdcall BrowserWindow::OnDownloadBegin()
 {
