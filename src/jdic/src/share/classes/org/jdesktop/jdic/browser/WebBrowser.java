@@ -385,7 +385,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 			eventThread.getMessenger().sendMessage(msg);
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_BEFORE_NEWWINDOW == eid) {
-			msg += willOpenWindow() ? "0" : "1";
+			msg += willOpenWindow(e.getData()) ? "0" : "1";
 			eventThread.getMessenger().sendMessage(msg);
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_COMMAND_STATE_CHANGE == eid) {
@@ -633,47 +633,10 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * <p>
 	 * This is a convenience method to use <code>executeScript</code> to print
 	 * the currently loaded document: <code>
-	 * <pre>
-	 * 
-	 *  
-	 *   
-	 *    
-	 *     
-	 *      
-	 *       
-	 *        
-	 *         
-	 *          
-	 *           
-	 *            
-	 *             
-	 *              
-	 *               
-	 *                
-	 *                 
-	 *                   
-	 *                       // Print the currently loaded document.    
-	 *                       WebBrowser webBrowser = new WebBrowser();
-	 *                        ......
-	 *                       webBrowser.executeScript(&quot;window.print();&quot;);
-	 *                   
-	 *                  
-	 *                 
-	 *                
-	 *               
-	 *              
-	 *             
-	 *            
-	 *           
-	 *          
-	 *         
-	 *        
-	 *       
-	 *      
-	 *     
-	 *    
-	 *   
-	 *  
+	 * <pre>	
+	 * WebBrowser webBrowser = new WebBrowser();
+	 *        ......
+	 * webBrowser.executeScript(&quot;window.print();&quot;);	  
 	 * </pre>
 	 * </code>
 	 * 
@@ -855,11 +818,12 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * A subclass can override this method to block the creation of a new window
 	 * or allow it to proceed.
 	 * 
+	 * @param url string value of url to be opened 
 	 * @return <code>false</code> will block the creation of a new window;
 	 *         <code>true</code> otherwise. By default, it returns <code>
 	 *         true</code>.
-	 */
-	protected boolean willOpenWindow() {
+	 */	
+	protected boolean willOpenWindow(String url) {		
 		return true;
 	}
 
