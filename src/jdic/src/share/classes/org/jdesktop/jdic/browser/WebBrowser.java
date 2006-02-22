@@ -365,8 +365,9 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		// the native browser a yes or no to continue an operation(navigating
 		// an URL or openning a new window).
 		String msg = "@" + instanceNum + "," + eid + ",";
+		URL url = null;
 		if (WebBrowserEvent.WEBBROWSER_BEFORE_NAVIGATE == eid) {
-			URL url = null;
+			
 			try {
 				url = new URL(e.getData());
 			} catch (MalformedURLException ex1) {
@@ -385,7 +386,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 			eventThread.getMessenger().sendMessage(msg);
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_BEFORE_NEWWINDOW == eid) {
-			msg += willOpenWindow(e.getData()) ? "0" : "1";
+			msg += willOpenWindow(url) ? "0" : "1";
 			eventThread.getMessenger().sendMessage(msg);
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_COMMAND_STATE_CHANGE == eid) {
@@ -823,7 +824,8 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 *         <code>true</code> otherwise. By default, it returns <code>
 	 *         true</code>.
 	 */	
-	protected boolean willOpenWindow(String url) {		
+	protected boolean willOpenWindow(URL url) {		
+		WebBrowserUtil.trace("willOpenWindow " + url.toString());
 		return true;
 	}
 
