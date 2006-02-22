@@ -754,8 +754,35 @@ CBrowserFrame* CBrowserView::CreateNewBrowserFrame(
 
 void CBrowserView::OpenURLInNewWindow(const PRUnichar* pUrl)
 {
+	LogMsg("In BrowserView.cpp");
+	LogMsg("Enter method OpenURLInNewWindow");
+	
     if (!pUrl)
         return;
+
+	//native browser needs a yes or no notification from Java side
+	//for event CEVENT_BEFORE_NEWWINDOW
+	PRInt32 pid=mpBrowserFrame->GetBrowserId();	
+	
+	if(pid >= 0)
+	{
+		int bCmdCanceled = -1,waitCount = 0;
+		AddTrigger(pid,CEVENT_BEFORE_NEWWINDOW,&bCmdCanceled);
+		SendSocketMessage(pid,CEVENT_BEFORE_NEWWINDOW,NS_ConvertUCS2toUTF8(pUrl).get());
+		LogMsg(NS_ConvertUCS2toUTF8(pUrl).get());
+		while(bCmdCanceled < 0 && waitCount++ < MAX_WAIT){
+			Sleep(1);
+		}
+
+		if(bCmdCanceled == 1){
+			return ;
+		}
+	}
+	else
+	{
+		LogMsg("pid <0 will ignore the check.");
+	}
+
 
     CBrowserFrame* pFrm = CreateNewBrowserFrame();
     if (!pFrm)
@@ -796,7 +823,7 @@ void CBrowserView::OnCopyLinkLocation()
 }
 
 void CBrowserView::OnOpenLinkInNewWindow()
-{
+{	
     if (mCtxMenuLinkUrl.Length())
         OpenURLInNewWindow(mCtxMenuLinkUrl.get());
 }
