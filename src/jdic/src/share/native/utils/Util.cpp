@@ -34,6 +34,7 @@ void WBTrace(const char *format, ...)
     char buffer[1024];
     sprintf(buffer, format, args);
     printf(buffer);
+	LogMsg(buffer);
 
     va_end(args);
 }

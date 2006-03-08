@@ -31,15 +31,12 @@ import org.jdesktop.jdic.init.JdicManager;
 /**
  * Handles the communication with Mozilla's Gecko Runtime Engine (GRE).
  * 
- * @author Alexander Hars, Inventivio GmbH Michael Shan
+ * @author Alexander Hars, Inventivio GmbH
+ * @author Michael Shan
  */
 public class MozillaEngine implements IBrowserEngine {
 
-	private static final String XPCOM_DLL = "xpcom.dll";
-
 	private static final String BROWSER_NAME = BrowserEngineManager.MOZILLA;
-
-	private static final String PATH = "PATH";
 
 	private static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME";
 
@@ -69,13 +66,14 @@ public class MozillaEngine implements IBrowserEngine {
 	/**
 	 * Path to the mozilla executable,which must contain the xpcom.dll file.
 	 */
-	private static String envMozillaFiveHome;
+	private static String envXPComPath;
 
 	private static String browserBinary;
 
 	private String runningPath;
 
-	private String browserFullPath;
+	/** The full path containing xpcom.dll which is set by user */
+	private String xpcomPathSetByUser;
 
 	/**
 	 * @return The standardized name of the embedded browser engine. May not be
@@ -112,7 +110,7 @@ public class MozillaEngine implements IBrowserEngine {
 	 * @param browserPath
 	 *            taken from the OS or whereever
 	 * @return if default browser return ture else return false
-	 * 
+	 *  
 	 */
 	public boolean isDefaultBrowser(String browserPath) {
 		if (browserPath == null) {
@@ -124,105 +122,136 @@ public class MozillaEngine implements IBrowserEngine {
 	}
 
 	/**
-	 * Checks whether Mozilla is available and sets environment variables as
-	 * needed.MOZILLA_FIVE_HOME and browser binaryName
+	 * get and set env variables For xpcom under win,it maybe under mozilla path
+	 * or under gre path. It can be set by: 1. setEnginePath()
+	 * 2.MOZILLA_FIVE_PATH 3.
 	 * 
 	 * @throws JdicInitException
 	 */
-	protected boolean prepareVariables() throws JdicInitException {
-		String mozillaPath = browserFullPath;
+
+	//TODO:Bug,for installed gre,can't show <input>element.
+	protected void setEnvVariables() throws JdicInitException {
+		//current running path
 		runningPath = JdicManager.getManager().getBinaryPath();
 
-		if (mozillaPath == null) {
-			// isn't set by user
-			if (!isDefaultBrowser(WebBrowserUtil.getDefaultBrowserPath())) {
-				// mozilla isn't default browser but is set as the active
-				mozillaPath = browserFullPath;
-				if (null == mozillaPath) {
-					WebBrowserUtil
-							.error("Need Mozilla's full path,you must specify it with setEnginePath().");
-					throw new JdicInitException(
-							"Need Mozilla's full path,you must specify it with setEnginePath().");
-				}
-			} else {
-				mozillaPath = WebBrowserUtil.getDefaultBrowserPath();
-			}
+		//if set by user
+		if (setXPComPath(xpcomPathSetByUser)) {
+			WebBrowserUtil.trace("Got xpcom from user set");
+			return;
 		}
 
-		envMozillaFiveHome = InitUtility.getEnv(MOZILLA_FIVE_HOME);
-		if (envMozillaFiveHome == null) {
-			// not set, set it by mozilla path
-			WebBrowserUtil.trace(MOZILLA_FIVE_HOME
-					+ " isn't set, will set it by " + mozillaPath);
-			setMoz5HomeByMozPath(mozillaPath);
+		//check env
+		if (setXPComPath(InitUtility.getEnv(MOZILLA_FIVE_HOME))) {
+			WebBrowserUtil.trace("Got xpcom from MOZILLA_FIVE_HOME");
+			return;
+		}
+
+		String defaultBrowserPath = WebBrowserUtil.getDefaultBrowserPath();
+		//check error
+		if (!isDefaultBrowser(defaultBrowserPath)) {
+			WebBrowserUtil
+					.error("Mozilla isn't default browser but set as active one, you must set its path(folder contains xpcom lib) through setEnginePath() or env MOZILLA_FIVE_HOME.");
+			throw new JdicInitException(
+					"Mozilla isn't default browser but set as active one, you must set its path(folder contains xpcom lib) through setEnginePath() or env MOZILLA_FIVE_HOME.");
+
+		}
+
+		//query from win registry or path under unix
+		if (setXPComPath(defaultBrowserPath)) {
+			WebBrowserUtil.trace("Got xpcom from registry(win)/path(unix)");
+			return;
 		}
 
 		if (WebBrowserUtil.IS_OS_WINDOWS) {
-			browserBinary = BIN_WIN_MOZILLA;
-			String xpcomPath = envMozillaFiveHome + File.separator + XPCOM_DLL;
-			if (!(new File(xpcomPath).isFile())) {
-				// try GRE path, maybe installed
-				setMoz5HomeByGRE();
+			//for win only
+			//query registry's GRE path for Mozilla installed from a .exe 
+			if (setXPComPath(WebBrowserUtil.getMozillaGreHome())) {
+				WebBrowserUtil.trace("Got xpcom from GREHome");
+				return;
 			}
-		} else if (WebBrowserUtil.IS_OS_LINUX || WebBrowserUtil.IS_OS_SUNOS
-				|| WebBrowserUtil.IS_OS_FREEBSD) {
-			String xpcomPath = envMozillaFiveHome + File.separator
-					+ "libxpcom.so";
-			if (!new File(xpcomPath).isFile()) {
-				WebBrowserUtil.error("libxpcom.so doesn't exist under "
-						+ envMozillaFiveHome);
-				throw new JdicInitException("libxpcom.so doesn't exist under "
-						+ envMozillaFiveHome);
-			}
-			// change setUnixBinaryName(mozillaPath) to below
-			setUnixBinaryName(envMozillaFiveHome);
-		} else {
-			// other operating system
-			WebBrowserUtil.trace("Not suppored OS now!");
-			isEngineAvailable = false;
 		}
-		return true;
+
+		//error
+		isEngineAvailable = false;
+		WebBrowserUtil
+				.error("Can't find xpcom.dll/libxpcom.so!You must set its path(folder contains xpcom lib) through setEnginePath() or env MOZILLA_FIVE_HOME.");
+		throw new JdicInitException(
+				"Can't find xpcom.dll/libxpcom.so!You must set its path(folder contains xpcom lib) through setEnginePath() or env MOZILLA_FIVE_HOME.");
 	}
 
 	/**
-	 * @param mozillaPath
+	 * Set the path of xpcom.dll/libxpcom.so.
+	 * 
+	 * @param containingPath
+	 * @return
 	 * @throws JdicInitException
 	 */
-	private void setMoz5HomeByMozPath(String mozillaPath)
+	private boolean setXPComPath(String containingPath)
 			throws JdicInitException {
-		File browserFile = new File(mozillaPath);
+		String xpcomFolder = null;
+
+		if (containingPath == null) {
+			return false;
+		}
+		//get path's folder
+		File browserFile = new File(containingPath);
 		try {
 			if (browserFile.isDirectory()) {
-				envMozillaFiveHome = browserFile.getCanonicalPath();
+				xpcomFolder = browserFile.getCanonicalPath();
 			} else {
-				envMozillaFiveHome = browserFile.getCanonicalFile().getParent();
+				xpcomFolder = browserFile.getCanonicalFile().getParent();
 			}
 		} catch (IOException ex) {
+			WebBrowserUtil.trace(ex.toString());
 			throw new JdicInitException(ex.getMessage());
+		}
+
+		if (isXPComPathValid(xpcomFolder)) {
+			envXPComPath = xpcomFolder;//set global
+			setEnvs();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @throws JdicInitException
+	 */
+	private boolean isXPComPathValid(String xpcomFileContainPath)
+			throws JdicInitException {
+		String xpcomFileExtention = null;
+
+		if (WebBrowserUtil.IS_OS_WINDOWS) {
+			xpcomFileExtention = "xpcom.dll";
+		} else {
+			xpcomFileExtention = "libxpcom.so";
+		}
+		String xpcomFile = xpcomFileContainPath + File.separator
+				+ xpcomFileExtention;
+		if ((new File(xpcomFile).exists())) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 
 	/**
-	 * Set mozilla home by gre path. Mozilla on Windows, reset MOZILLA_FIVE_HOME
-	 * to the GRE directory path: [Common Files]\mozilla.org\GRE\1.x_BUILDID, if
-	 * Mozilla installs from a .exe package.
-	 * 
 	 * @throws JdicInitException
 	 */
-	private void setMoz5HomeByGRE() throws JdicInitException {
-		WebBrowserUtil.trace(envMozillaFiveHome + " doesn't contain "
-				+ XPCOM_DLL + " will recaculate it.");
-		// Mozilla installs from a .exe package. Check the
-		// installed GRE directory.
-		String mozGreHome = WebBrowserUtil.getMozillaGreHome();
-		if (mozGreHome == null) {
-			isEngineAvailable = false;
-			throw new JdicInitException("Can't find " + XPCOM_DLL + "!");
-		} else {
-			envMozillaFiveHome = mozGreHome;
-			WebBrowserUtil.trace(MOZILLA_FIVE_HOME + " is set to "
-					+ envMozillaFiveHome);
+	private void setBinaryLibName() throws JdicInitException {
+		if (WebBrowserUtil.IS_OS_WINDOWS) {
+			browserBinary = BIN_WIN_MOZILLA;
+			return;
 		}
+		if (WebBrowserUtil.IS_OS_LINUX || WebBrowserUtil.IS_OS_SUNOS
+				|| WebBrowserUtil.IS_OS_FREEBSD) {
+			setUnixBinaryName(envXPComPath);
+			return;
+		}
+		// other os
+		WebBrowserUtil.trace("Not suppored OS now!");
+		isEngineAvailable = false;
+		throw new JdicInitException("Un supported OS!");
 	}
 
 	/**
@@ -255,22 +284,17 @@ public class MozillaEngine implements IBrowserEngine {
 	}
 
 	/**
-	 * prepares the environment. Returns false if the preparation was not
-	 * successful.
+	 * Set variable to env.
 	 */
 	protected void setEnvs() throws JdicInitException {
 		InitUtility.preAppendEnv(libPathEnv, runningPath);
-		InitUtility.setEnv(MOZILLA_FIVE_HOME, envMozillaFiveHome);
-		WebBrowserUtil.trace(MOZILLA_FIVE_HOME + " is set to"
-				+ InitUtility.getEnv(MOZILLA_FIVE_HOME));
-		InitUtility.preAppendEnv(libPathEnv, envMozillaFiveHome);
-
+		InitUtility.preAppendEnv(libPathEnv, envXPComPath);
+		InitUtility.setEnv(MOZILLA_FIVE_HOME, envXPComPath);
 		if (WebBrowserUtil.IS_OS_LINUX || WebBrowserUtil.IS_OS_SUNOS
 				|| WebBrowserUtil.IS_OS_FREEBSD) {
 			if (!grantXToBin())
 				return;
 		}
-
 	}
 
 	/**
@@ -298,10 +322,9 @@ public class MozillaEngine implements IBrowserEngine {
 	 */
 	public void initialize() throws JdicInitException {
 		if (!initialized) {
-			this.prepareVariables();
-			this.setEnvs();
+			this.setEnvVariables();
+			this.setBinaryLibName();
 			initialized = true;
-			WebBrowserUtil.trace("Engine initialize once!");
 		}
 	}
 
@@ -320,7 +343,7 @@ public class MozillaEngine implements IBrowserEngine {
 	 * @see org.jdesktop.jdic.browser.IWebBrowserEngine#setBrowserFullPath()
 	 */
 	public void setEnginePath(String fullPath) {
-		browserFullPath = fullPath;
+		xpcomPathSetByUser = fullPath;
 	}
 
 	/*
@@ -334,7 +357,7 @@ public class MozillaEngine implements IBrowserEngine {
 
 	/**
 	 * Mozilla will not omit this prefix
-	 * 
+	 *  
 	 */
 	public String getFileProtocolURLPrefix() {
 		return "";

@@ -25,6 +25,7 @@
 #include "nsEmbedString.h"
 #include "nsID.h"
 #include "nsIWebNavigation.h"
+#include "Util.h"
 
 nsresult InitializeProfile();
 void ReportError(const char* msg);

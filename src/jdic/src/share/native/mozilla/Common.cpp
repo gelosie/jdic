@@ -127,7 +127,7 @@ static nsresult GetPrivateProfileDir(nsIFile **profileDir)
 {
     nsresult rv;
 
-    nsCOMPtr<nsIFile> profileRootDir;
+    nsCOMPtr<nsIFile> profileRootDir;	
     rv = GetSpecialDirectory(NS_APP_USER_PROFILES_ROOT_DIR, 
                              getter_AddRefs(profileRootDir));
     NS_ENSURE_SUCCESS(rv, rv);
@@ -297,6 +297,7 @@ nsresult InitializeProfile()
 
 void ReportError(const char* msg)
 {
+	LogMsg(msg);
     SendSocketMessage(-1, CEVENT_INIT_FAILED, msg);
 }
 

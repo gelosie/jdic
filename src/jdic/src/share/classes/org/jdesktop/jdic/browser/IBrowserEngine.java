@@ -27,8 +27,8 @@ import org.jdesktop.jdic.init.JdicInitException;
  * information about the browser type being used, the availability of the
  * embedded browser engine on the current system.
  * 
- * @author Alexander Hars, Inventivio GmbH Michael Shan
- * @since 2005-01-20
+ * @author Alexander Hars, Inventivio GmbH 
+ * @author Michael Shan
  */
 public interface IBrowserEngine {
 
@@ -89,7 +89,7 @@ public interface IBrowserEngine {
 	/**
 	 * Set browser's full path(folder and exe name). When active brower isn't
 	 * set as the default browser, will have to use this method to specify the
-	 * path of it. It will often be used with <code>BrowserEngineManger</code>'s
+	 * path of it. It's often used after <code>BrowserEngineManger</code>'s
 	 * setActiveEngine() method.
 	 * 
 	 */

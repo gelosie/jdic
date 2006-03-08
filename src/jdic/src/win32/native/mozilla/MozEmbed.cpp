@@ -73,6 +73,11 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+#include <stdlib.h>
+
 // this is for overriding the Mozilla default PromptService component
 #include "nsIComponentRegistrar.h"
 #include "PromptService.h"
@@ -337,99 +342,19 @@ void MozEmbedApp::OnNewBrowser()
 // XXX Below code is partly duplicate of WebBrowserUtil.cpp, which needs to 
 // refactored somehow.
 PRBool GetGREPath(char* pathBuf, size_t pathBufSize)
-{
-    HKEY hKey;
-    const char* mozExe = "mozilla.exe";
-    char browserPath[_MAX_PATH+1] = "\0";      
-    DWORD cb = sizeof(browserPath);
-
-    // Get the default browser path by checking the http protocol handler.
-    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", 0, 
-        KEY_READ, &hKey) != ERROR_SUCCESS)
-        return PR_FALSE;
-    
-    if (RegQueryValueEx(hKey, "", NULL, NULL, (BYTE*)browserPath,
-          &cb) != ERROR_SUCCESS) {
-        RegCloseKey(hKey); 
-        return PR_FALSE;
-    } 
-    RegCloseKey(hKey);
-
-    // Check if the default browser is mozilla.
-    char* exePtr;
-    char* lwrBrowserPath = strlwr(strdup(browserPath));
-    if (!(exePtr = strstr(lwrBrowserPath, mozExe)))
-        // The default browser is not Mozilla.
-        return PR_FALSE;
-   
-    // Remove the trailing part after the first space character at the rail 
-    // of mozilla.exe.
-    cb = strlen(browserPath);
-    for (int i = (exePtr - lwrBrowserPath + strlen(mozExe)); i < (int)cb; i++) {
-        if (browserPath[i] == ' ') {
-            browserPath[i] = '\0';
-            break;   
-        }
-    }
-    
-    // Check if xpcom.dll exists under the same parent directory as mozilla.exe.   
-    char* ptr = strrchr(browserPath, '\\');
-    char parentPath[_MAX_PATH+1] = "\0";
-    strncpy(parentPath, browserPath, ptr - browserPath);
-    char* xpcomFilePath = strcat(parentPath, "\\xpcom.dll");
-
-    if (fopen(xpcomFilePath,"r")) {
-        // xpcom.dll exists, Mozilla is installed with a .zip package.        
-        strncpy(pathBuf, browserPath, ptr - browserPath);
-        pathBuf[ptr - browserPath] = '\0';
-    } else {
-        // xpcom.dll doesn't exist, Mozilla is installed with an .exe package.
-        // Check the installed GRE directory:
-        // [Common Files]\mozilla.org\GRE\<GRE version>       
-        const char* greParentKey = "Software\\mozilla.org\\GRE\\";
-        DWORD loop = 0;
-        char  greVersionKey[256];   
-        DWORD greVersionKeyLen = 256;
-        char *lastVersionKey = NULL;
-
-        // !!!Note: here it returns the latest GRE directory, which should be 
-        // fixed to return the GRE directory matching the currently running
-        // Mozilla binary.
-        if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, greParentKey, 0, KEY_READ, &hKey) 
-            == ERROR_SUCCESS) {
-            while(RegEnumKeyEx(hKey, loop++, greVersionKey, &greVersionKeyLen,
-                               NULL, NULL, NULL, NULL) != ERROR_NO_MORE_ITEMS) {
-                lastVersionKey = greVersionKey;                   
-                greVersionKeyLen = 256;
-            }
-            RegCloseKey(hKey);     
-        }
-
-        if (lastVersionKey == NULL) {
-            return PR_FALSE;
-        }
-
-        char szKey[256], greHome[_MAX_PATH+1];
-        strcpy(szKey, greParentKey);
-        strcat(szKey, lastVersionKey);       
-        cb = sizeof(greHome);   
-
-        if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, szKey, 0, KEY_QUERY_VALUE, &hKey) 
-            != ERROR_SUCCESS) {
-            return PR_FALSE;
-        }
-     
-        if (RegQueryValueEx(hKey, "GreHome", NULL, NULL, (BYTE *)greHome,
-            &cb) != ERROR_SUCCESS) {
-            RegCloseKey(hKey); 
-            return PR_FALSE;
-        } 
-        RegCloseKey(hKey); 
-   
-        strncpy(pathBuf, greHome, pathBufSize);
-    } // end of xpcom.dll doesn't exist.
-   
-    return PR_TRUE;
+{	
+	//must have been set to the right path
+	char * greHome="MOZILLA_FIVE_HOME";
+	char * pEnvValue = getenv(greHome);
+	if(!pEnvValue) {
+	 //shound'n get here
+		LogMsg("MOZILLA_FIVE_HOME isn't set!");
+		return PR_FALSE;
+	}	
+	strncpy(pathBuf,pEnvValue,pathBufSize);
+	LogMsg("greHome got:");
+	LogMsg(pathBuf);	
+	return PR_TRUE;
 }
 
 BOOL MozEmbedApp::InitMozilla()
@@ -440,50 +365,52 @@ BOOL MozEmbedApp::InitMozilla()
     TCHAR xpcomFilePath[_MAX_PATH+1] = "\0";   
     
     if (!GetGREPath(greDirPath, sizeof(greDirPath))) {
-        ReportError("GetGREPath failed: can't locate the GRE path of the \
+        LogMsg("GetGREPath failed: can't locate the GRE path of the \
                      installed Mozilla binary!");
         return FALSE;
-    }
+    }	
     strcpy(xpcomFilePath, greDirPath);
     strcat(xpcomFilePath, "\\xpcom.dll");
+	LogMsg("xpcomFilePath is:");
+	LogMsg(xpcomFilePath);
 
-    rv = XPCOMGlueStartup(xpcomFilePath);
+    rv = XPCOMGlueStartup(xpcomFilePath);	
     if (NS_FAILED(rv)) {
-        ReportError("XPCOMGlueStartup failed!");
+        LogMsg("XPCOMGlueStartup failed!");
         return FALSE;
     }
 
     nsCOMPtr<nsILocalFile> greDir;
     rv = NS_NewNativeLocalFile(nsEmbedCString(T2A(greDirPath)), TRUE, getter_AddRefs(greDir));
     if (NS_FAILED(rv)) {
-        ReportError("NS_NewNativeLocalFile failed!");
+        LogMsg("NS_NewNativeLocalFile failed!");
         return FALSE;
     }
 
     rv = NS_InitXPCOM2(nsnull, greDir, nsnull); 
     if (NS_FAILED(rv)) {
-        ReportError("NS_InitXPCOM2 failed!");
+        LogMsg("NS_InitXPCOM2 failed!");
         return FALSE;
     }
 
     rv = OverrideComponents();
     if (NS_FAILED(rv))
     {
-        ReportError("OverrideComponents failed!");
+        LogMsg("OverrideComponents failed!");
         return FALSE;
     }
 
     rv = InitializeWindowCreator();
     if (NS_FAILED(rv))
     {
-        ReportError("InitializeWindowCreator failed!");
+        LogMsg("InitializeWindowCreator failed!");
         return FALSE;
     }
 
     rv = InitializeProfile();
     if (NS_FAILED(rv))
     {
-        ReportError("InitializeProfiles failed!");
+        LogMsg("InitializeProfiles failed!");
         return FALSE;
     }
 

@@ -30,7 +30,8 @@ import org.jdesktop.jdic.init.JdicManager;
 /**
  * Handles the communication with Internet Explorer.
  * 
- * @author Alexander Hars, Inventivio GmbH Michael Shan
+ * @author Alexander Hars, Inventivio GmbH 
+ * @author Michael Shan
  */
 public class InternetExplorerEngine implements IBrowserEngine {
 
