@@ -60,7 +60,7 @@ public class WebBrowserTest implements ActionListener
 			wb1.setVisible(true);
 			wb1.setSize(600, 1000);
 			
-			System.out.println(WebBrowserUtil.getBrowserPath());
+			System.out.println(WebBrowserUtil.getDefaultBrowserPath());
 			
 			wb2 = new WebBrowser();
 			wb2.setVisible(true);
