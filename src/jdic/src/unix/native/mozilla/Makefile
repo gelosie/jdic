@@ -106,7 +106,9 @@ CXXFLAGS = -O2 -fPIC
 
 # link against the version of gtkembedmoz included with a
 # mozilla distribution
+
 LIBS = -L$(MOZILLA_DIST) -lgtkembedmoz
+LIBS_PROG = -L$(MOZILLA_DIST) -lgtkembedmoz -lxpcom -lnspr4 -lplds4 -lplc4
 
 # libembedstring.a from the 1.4.2 gecko sdk requires __ctype_tolower,
 # but for some reason that isn't available from the version of glibc
@@ -129,7 +131,7 @@ CPPFLAGS += -DMOZ_WIDGET_GTK2
 LIBS += $(XLDFLAGS) $(XLIBS)
 endif
 
-LIBS_PROG += -L$(MOZILLA_DIST) -lgtkembedmoz -lxpcom -lnspr4 -lplds4 -lplc4
+
 
 CPPFLAGS += \
 	-DXPCOM_GLUE -DMOZILLA_STRICT_API \
