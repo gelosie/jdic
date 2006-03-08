@@ -724,20 +724,6 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	}
 
 	/**
-	 * Returns a <code>Status</code> object, which indicates the status of
-	 * this <code>WebBrowser</code> object.
-	 * 
-	 * @deprecated The <code>WebBrowser.Status</code> inner class is
-	 *             deprecated as of release 0.9 of JDIC. Its APIs have been
-	 *             moved to this <code>Browser</code> class. This API is no
-	 *             longer used, and will be removed in a future release.
-	 * @see Status
-	 */
-	public Status getStatus() {
-		return new Status(this);
-	}
-
-	/**
 	 * Returns the name of the embedded browser's native binary, which runs as a
 	 * standalone native process.
 	 * 
@@ -865,65 +851,6 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 
 	/* native functions */
 	private native int nativeGetWindow(String javaHome);
-
-	/**
-	 * An inner class which is used for retrieving the WebBrowser's properties,
-	 * such as the initialization status, back and forward status.
-	 * 
-	 * @deprecated As of release 0.9 of JDIC. Its APIs have been moved to
-	 *             <code>org.jdesktop.jdic.browser.WebBrowser</code> class.
-	 *             Will be removed in a future release.
-	 */
-	public static class Status {
-		WebBrowser webBrowser;
-
-		Status(WebBrowser curWebBrowser) {
-			webBrowser = curWebBrowser;
-		}
-
-		/**
-		 * Checks whether this <code>WebBrowser</code> object is initialized
-		 * successfully.
-		 * 
-		 * @deprecated As of release 0.9 of JDIC, replaced by
-		 *             <code>WebBrowser.isInitialized()</code>.
-		 * @return <code>true</code> if the <code>WebBrowser</code> object
-		 *         is initialized successfully; otherwise, <code>false</code>.
-		 */
-		public boolean isInitialized() {
-			return webBrowser.isInitialized();
-		}
-
-		/**
-		 * Checks whether this <code>WebBrowser</code> object's back command
-		 * is enabled.
-		 * 
-		 * @deprecated As of release 0.9 of JDIC, replaced by
-		 *             <code>WebBrowser.isBackEnabled()</code>.
-		 * @return <code>true</code> if the WebBrowser can navigate to the
-		 *         previous session history item, and <code>false</code>
-		 *         otherwise.
-		 * @see #back
-		 */
-		public boolean isBackEnabled() {
-			return webBrowser.isBackEnabled();
-		}
-
-		/**
-		 * Checks whether this <code>WebBrowser</code> object's forward
-		 * command is enabled.
-		 * 
-		 * @deprecated As of release 0.9 of JDIC, replaced by
-		 *             <code>WebBrowser.isForwardEnabled()</code>.
-		 * @return <code>true</code> if the WebBrowser can navigate to the
-		 *         next session history item, and <code>false</code>
-		 *         otherwise.
-		 * @see #forward
-		 */
-		public boolean isForwardEnabled() {
-			return webBrowser.isForwardEnabled();
-		}
-	}
 
 	class MyFocusListener implements FocusListener {
 		public void focusGained(FocusEvent e) {

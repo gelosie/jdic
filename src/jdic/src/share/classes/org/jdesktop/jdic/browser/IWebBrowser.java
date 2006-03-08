@@ -23,8 +23,6 @@ package org.jdesktop.jdic.browser;
 import java.awt.Component;
 import java.net.URL;
 
-import org.jdesktop.jdic.browser.WebBrowser.Status;
-
 /**
  * A <code>IWebBrowser</code> component represents a blank rectangular area of
  * the screen onto which the application can display webpages or from which the
@@ -149,14 +147,6 @@ public interface IWebBrowser {
 	 * Stops loading of the current URL.
 	 */
 	public void stop();
-
-	/**
-	 * Returns a <code>Status</code> object, which indicates the status of
-	 * this <code>WebBrowser</code> object.
-	 * 
-	 * @see Status
-	 */
-	public Status getStatus();
 
 	/**
 	 * The BrowserEngine that was responsible for creating the browser instance.
