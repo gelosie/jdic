@@ -1,3 +1,34 @@
+2006-03-08 Michael Shan <michael_shan@dev.java.net>
+    
+    * Build 20050308
+
+    * Fixed issue list:   
+      ID  Pri  Summary
+      ==  ===  =======      
+      167 P3  Refactoring browser package; introducing Factory pattern
+      181 P3  We need the method: static public void setUseNativeBrowser(boolean useNative)
+      183 P3  Specify embedded browser instead of using system defaul
+      237 P3  Deprecate willOpenWindow() method with willOpenWindow(URL url)
+      337 P3  JDIC Browser fails with error on Mustang b52
+      343 P3  Can't get the JAWT native window handler 
+      345 P3  Better window open suppor
+      352 P3  add a getenv and setenv methods      
+      354 P3  Add existing browser UT cases
+      355 P3  Fix packager's Mac OS not support build error
+      357 P3  UnsatisfiedLinkError due to libm.so.2 on Solaris 8 
+      359 P3  New - Relative  "fiel://" url suppors
+      362 P3  initShareNative before loading jdic lib      
+      365 P3  New Windows in my own GUI, not the native browsers      
+      367 P3  NullPointerException from Browser when closing the frame
+      369 P3  Return "" instedof null for mozilla engine getFileProtocolURLPrefix() 
+      377 P3  Removes WebBrowser.Status, WebBrowser.getStatus and IWebBrowser.getStatus
+
+    * Known issue list:   
+      Below are some of the most frequently mentioned known issues.
+      254 P3  WebBrowser doesn't pass cookies to popup - session lost
+      144 P3  New Browser APIs supporting DOM/javascript execution support
+      
+
 2005-09-30 Michael Shan <michael_shan@dev.java.net>
     
     * Build 20050930
