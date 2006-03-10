@@ -164,9 +164,10 @@ public class MozillaEngine implements IBrowserEngine {
 
 		if (WebBrowserUtil.IS_OS_WINDOWS) {
 			//for win only
-			//query registry's GRE path for Mozilla installed from a .exe 
+			//query registry's GRE path for Mozilla installed from a .exe
 			if (setXPComPath(WebBrowserUtil.getMozillaGreHome())) {
-				WebBrowserUtil.trace("Got xpcom from GREHome");
+				WebBrowserUtil.trace("Got xpcom from GREHome"
+						+ WebBrowserUtil.getMozillaGreHome());
 				return;
 			}
 		}
@@ -183,16 +184,22 @@ public class MozillaEngine implements IBrowserEngine {
 	 * Set the path of xpcom.dll/libxpcom.so.
 	 * 
 	 * @param containingPath
-	 * @return
-	 * @throws JdicInitException
+	 * @return @throws
+	 *         JdicInitException
 	 */
-	private boolean setXPComPath(String containingPath)
+	private boolean setXPComPath(String inputPath)
 			throws JdicInitException {
-		String xpcomFolder = null;
 
-		if (containingPath == null) {
+		String containingPath = inputPath;
+
+		if (containingPath == null) {			
 			return false;
 		}
+		if (containingPath.contains("\"")) {
+			//earse "" 
+			containingPath = inputPath.replace("\"", "");
+		}
+		String xpcomFolder = null;
 		//get path's folder
 		File browserFile = new File(containingPath);
 		try {
@@ -201,8 +208,10 @@ public class MozillaEngine implements IBrowserEngine {
 			} else {
 				xpcomFolder = browserFile.getCanonicalFile().getParent();
 			}
-		} catch (IOException ex) {
+		} catch (IOException ex) {			
 			WebBrowserUtil.trace(ex.toString());
+			WebBrowserUtil
+					.error("Path \"" + containingPath + "\" is invalide.");
 			throw new JdicInitException(ex.getMessage());
 		}
 
