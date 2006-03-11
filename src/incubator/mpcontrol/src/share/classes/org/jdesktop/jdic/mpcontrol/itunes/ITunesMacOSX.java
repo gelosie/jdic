@@ -168,6 +168,10 @@ public class ITunesMacOSX implements IMediaPlayer {
 		public String getDescription() {
 			return "iTunes for Mac OS X Control";
 		}
+		public String getName() {
+			return "itunes";
+		}
+		
 		public void destroy() {
 			go = false;
 		}

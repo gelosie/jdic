@@ -49,6 +49,11 @@ public interface IMediaPlayer {
 
     /**
      * 
+     * @return the name of the player
+     */
+    public String getName(); 
+    /**
+     * 
      * @return information about the supported program.
      */
     public String getDescription();

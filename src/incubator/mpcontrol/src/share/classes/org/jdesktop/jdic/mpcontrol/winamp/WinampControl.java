@@ -191,6 +191,10 @@ public class WinampControl implements IMediaPlayer {
         return nativeLibAvailable;
     }
 
+    public String getName() {
+		return "winamp";
+    }
+
     public String getDescription() {
         return "Winamp 2 and 5 control";
     }

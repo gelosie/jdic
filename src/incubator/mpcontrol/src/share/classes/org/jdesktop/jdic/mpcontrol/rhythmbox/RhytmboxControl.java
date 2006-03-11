@@ -164,6 +164,10 @@ public class RhytmboxControl extends SongChangeAdapter implements IMediaPlayer {
     public boolean isAvailableMediaPlayer() {
         return nativeLibAvailable;
     }
+    
+    public String getName() {
+    		return "rhythmbox";
+    }
 
     public String getDescription() {
         return "Rhythmbox controller (http://www.rhythmbox.org)";

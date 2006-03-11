@@ -62,6 +62,11 @@ public class BeepMediaPlayer implements IMediaPlayer {
         return nativeLibAvailable;
     }
     
+    public String getName() {
+		return "xmms";
+    }
+
+    
     public String getDescription() {
         return "xmms / beep-media player";
     }
