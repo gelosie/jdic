@@ -810,8 +810,10 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 *         <code>true</code> otherwise. By default, it returns <code>
 	 *         true</code>.
 	 */	
-	protected boolean willOpenWindow(URL url) {		
-		WebBrowserUtil.trace("willOpenWindow " + url.toString());
+	protected boolean willOpenWindow(URL url) {
+		if( url != null ){
+			WebBrowserUtil.trace("willOpenWindow " + url.toString());
+		}
 		return true;
 	}
 
