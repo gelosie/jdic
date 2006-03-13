@@ -188,19 +188,15 @@ public class MozillaEngine implements IBrowserEngine {
 	 *         JdicInitException
 	 */
 	private boolean setXPComPath(String inputPath)
-			throws JdicInitException {
-
-		String containingPath = inputPath;
-
-		if (containingPath == null) {			
+			throws JdicInitException {		
+		if (inputPath == null) {	
 			return false;
 		}
-		if (containingPath.contains("\"")) {
-			//earse "" 
-			containingPath = inputPath.replace("\"", "");
-		}
+		//erase "" in the path
+		String containingPath=inputPath.replaceAll("\"","");		
 		String xpcomFolder = null;
-		//get path's folder
+		
+		//get parent path
 		File browserFile = new File(containingPath);
 		try {
 			if (browserFile.isDirectory()) {
