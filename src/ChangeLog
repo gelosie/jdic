@@ -16,7 +16,7 @@
       354 P3  Add existing browser UT cases
       355 P3  Fix packager's Mac OS not support build error
       357 P3  UnsatisfiedLinkError due to libm.so.2 on Solaris 8 
-      359 P3  New - Relative  "fiel://" url suppors
+      359 P3  New - Relative  "file://" url suppors
       362 P3  initShareNative before loading jdic lib      
       365 P3  New Windows in my own GUI, not the native browsers      
       367 P3  NullPointerException from Browser when closing the frame
