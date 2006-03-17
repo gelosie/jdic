@@ -24,7 +24,7 @@
       377 P3  Removes WebBrowser.Status, WebBrowser.getStatus and IWebBrowser.getStatus
 
     * Known issue list:   
-      Below are some of the most frequently mentioned known issues.
+      Below are some of the most frequently mentioned known issues:
       254 P3  WebBrowser doesn't pass cookies to popup - session lost
       144 P3  New Browser APIs supporting DOM/javascript execution support
       
