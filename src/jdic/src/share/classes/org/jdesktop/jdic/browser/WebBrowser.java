@@ -386,6 +386,14 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 			eventThread.getMessenger().sendMessage(msg);
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_BEFORE_NEWWINDOW == eid) {
+			if (e.getData() != null) {
+				//not available for unix 
+				try {
+					url = new URL(e.getData());
+				} catch (MalformedURLException e1) {
+					e1.printStackTrace();
+				}
+			}
 			msg += willOpenWindow(url) ? "0" : "1";
 			eventThread.getMessenger().sendMessage(msg);
 			return;
