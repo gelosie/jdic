@@ -281,3 +281,24 @@ int LogMsg(const char* logmsg)
 
     return strlen(logmsg);
 }
+
+int LogIntMsg(int i)
+{
+    // Predefined JDIC log file.
+    const char* logFilePath = "JDIC.log";
+    FILE* logFile;
+
+    // Open the log file for appending messages.
+    if((logFile = fopen(logFilePath, "at")) == NULL) {
+        // Log file doesn't exist, create it. 
+        if ((logFile = fopen(logFilePath, "wt+")) == NULL) {
+            // Error creating log file.
+            return -1;
+        }
+    }
+
+    // Append the given log message to the log file.    
+    fprintf(logFile, "*** JDIC log: %d\n", i);
+    fclose(logFile);
+	return i;
+}

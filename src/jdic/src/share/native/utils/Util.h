@@ -140,7 +140,7 @@ int ParsePostFields(const char* postMessage,
 //   On success, the total number of characters logged is returned.
 //   On error, -1 is returned.
 int LogMsg(const char* logmsg);
-
+int LogIntMsg(int i);
 #endif // _util_h
 
 
