@@ -109,7 +109,7 @@ public class SimpleBrowser {
         webBrowser.addWebBrowserListener(
             new WebBrowserListener() {
             boolean isFirstPage = true;
-                        
+						public void initialCompleted(WebBrowserEvent event){;}            
             public void downloadStarted(WebBrowserEvent event) {;}
             public void downloadCompleted(WebBrowserEvent event) {;}
             public void downloadProgress(WebBrowserEvent event) {;}

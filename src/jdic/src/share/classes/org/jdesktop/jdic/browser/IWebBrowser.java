@@ -64,6 +64,13 @@ public interface IWebBrowser {
 	public void removeWebBrowserListener(WebBrowserListener listener);
 
 	/**
+	 * If the webbrowser works under synchronize model
+	 * 
+	 * @return
+	 */
+	public boolean isSynchronize();
+
+	/**
 	 * Returns the component to which the Browser paints. This method is needed
 	 * to add a Browser to
 	 * 
@@ -81,7 +88,7 @@ public interface IWebBrowser {
 
 	/**
 	 * Sets the document to be a blank page.
-	 * 
+	 *  
 	 */
 	public void setURL();
 

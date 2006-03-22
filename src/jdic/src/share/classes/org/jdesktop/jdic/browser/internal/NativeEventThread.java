@@ -306,13 +306,28 @@ public class NativeEventThread extends Thread {
 
 		if (WebBrowserEvent.WEBBROWSER_INIT_FAILED == eventData.type) {
 			setBrowsersInitFailReason(eventData.stringValue);
+			WebBrowserUtil.error(eventData.stringValue);
 			return;
 		}
 
 		if (eventData.instance < 0) {
 			return;
 		}
+		
+		//anonymous inner class can only access final local variable
+		final IWebBrowser browser = getWebBrowserFromInstance(eventData.instance);
+		if (null == browser) {
+			return;
+		}
 
+		if (WebBrowserEvent.WEBBROWSER_DOCUMENT_COMPLETED == eventData.type) {
+			if (browser.isSynchronize()) {
+				//if works under sync model, will not call the listener's downloadCompleted event
+				notifyWebBrowser(eventData.instance);
+				return;
+			}
+		}
+		
 		if (WebBrowserEvent.WEBBROWSER_RETURN_URL == eventData.type
 				|| WebBrowserEvent.WEBBROWSER_GETCONTENT == eventData.type
 				|| WebBrowserEvent.WEBBROWSER_EXECUTESCRIPT == eventData.type
@@ -322,16 +337,9 @@ public class NativeEventThread extends Thread {
 			return;
 		}
 
-		// anonymous inner class can only access final local variable
-		final IWebBrowser browser = getWebBrowserFromInstance(eventData.instance);
-		if (null == browser) {
-			return;
-		}
-
 		if (WebBrowserEvent.WEBBROWSER_INIT_WINDOW_SUCC == eventData.type) {
 			browser.setInitialized(true);
 			browser.setInitFailureMessage("");
-			return;
 		}
 
 		final WebBrowserEvent event = new WebBrowserEvent(browser,

@@ -182,7 +182,7 @@ public class Browser extends JPanel {
             public void downloadStarted(WebBrowserEvent event) {
                 updateStatusInfo("Loading started.");
             }
-
+						public void initialCompleted(WebBrowserEvent event){;}
             public void downloadCompleted(WebBrowserEvent event) {
                 jBackButton.setEnabled(webBrowser.isBackEnabled());
                 jForwardButton.setEnabled(webBrowser.isForwardEnabled());

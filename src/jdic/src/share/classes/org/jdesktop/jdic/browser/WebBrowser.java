@@ -66,7 +66,9 @@ import org.jdesktop.jdic.init.JdicManager;
  */
 public class WebBrowser extends Canvas implements IWebBrowser {
 	private static final String FILE_PROTOCOL = "file:///";
+
 	private static final String FILE = "file";
+
 	private MyFocusListener focusListener = new MyFocusListener();
 
 	// eventThread should be initialized after JdicManager.initShareNative()
@@ -85,6 +87,9 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	private boolean isBackEnabled = false;
 
 	private boolean isForwardEnabled = false;
+
+	/**default is async model*/
+	private boolean synchronize = false;
 
 	private String initFailureMessage = "WebBrowser is not initialized.";
 
@@ -227,11 +232,12 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		setFocusable(true);
 		addFocusListener(focusListener);
 	}
-	
+
 	/**
-	 * Could only get HWND when this method is called.This will fix the can't get awt HWND error.
+	 * Could only get HWND when this method is called.This will fix the can't
+	 * get awt HWND error.
 	 */
-	public void paint(Graphics g){
+	public void paint(Graphics g) {
 		super.paint(g);
 		if (!isInitialized) {
 			eventThread.fireNativeEvent(instanceNum,
@@ -248,8 +254,9 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		}
 		if (!autoDispose) {
 			this.setVisible(true);
-		}		
+		}
 	}
+
 	/**
 	 * Creates the peer for this WebBrowser component. The peer allows us to
 	 * modify the appearance of the WebBrowser component without changing its
@@ -367,7 +374,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		String msg = "@" + instanceNum + "," + eid + ",";
 		URL url = null;
 		if (WebBrowserEvent.WEBBROWSER_BEFORE_NAVIGATE == eid) {
-			
+
 			try {
 				url = new URL(e.getData());
 			} catch (MalformedURLException ex1) {
@@ -377,7 +384,8 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 							.getActiveEngine().getFileProtocolURLPrefix()
 							+ e.getData());
 				} catch (MalformedURLException ex2) {
-					//For javascript to set/getcontent,the url to be opened is bad,but we could igore that.So just a warning here.
+					//For javascript to set/getcontent,the url to be opened is
+					// bad,but we could igore that.So just a warning here.
 					WebBrowserUtil.trace(ex2.toString());
 				}
 			}
@@ -387,7 +395,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_BEFORE_NEWWINDOW == eid) {
 			if (e.getData() != null) {
-				//not available for unix 
+				//not available for unix
 				try {
 					url = new URL(e.getData());
 				} catch (MalformedURLException e1) {
@@ -436,6 +444,9 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		for (int i = 0; i < size; ++i) {
 			WebBrowserListener listener = (WebBrowserListener) tl.elementAt(i);
 			switch (eid) {
+			case WebBrowserEvent.WEBBROWSER_INIT_WINDOW_SUCC:
+				listener.initializationCompleted(e);
+				break;
 			case WebBrowserEvent.WEBBROWSER_DOWNLOAD_STARTED:
 				listener.downloadStarted(e);
 				break;
@@ -609,6 +620,74 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	}
 
 	/**
+	 * Synchronously navigates to a resource identified by a URL.
+	 * 
+	 * @param url
+	 *            the URL to navigate to.
+	 * @throws JdicInitException
+	 * @since 0.9.2
+	 */
+	public void syncSetURL(URL url) throws JdicInitException {
+		syncSetURL(url, null, null);
+	}
+
+	/**
+	 * Synchronously navigates to a resource identified by a URL, with the HTTP POST data to
+	 * send to the server.
+	 * 
+	 * @param url
+	 *            the URL to navigate to.
+	 * @param postData
+	 *            the post data to send with the HTTP POST transaction. For
+	 *            example, <code>"username=myid&password=mypasswd"
+	 *                  </code>
+	 */
+	public void syncSetURL(URL url, String postData) throws JdicInitException {
+		syncSetURL(url, postData, null);
+	}
+
+	/**
+	 * Synchronously navigates to a resource identified by a URL, with the HTTP POST data and
+	 * HTTP headers to send to the server.
+	 * 
+	 * @param url
+	 *            the URL to navigate to.
+	 * @param postData
+	 *            the post data to send with the HTTP POST transaction. For
+	 *            example, <code>"username=myid&password=mypasswd"
+	 *                  </code>
+	 * @param headers
+	 *            the HTTP headers to send with the HTTP POST transaction.
+	 * @since 0.9.2
+	 */
+	public void syncSetURL(URL url, String postData, String headers)
+			throws JdicInitException {
+		try {
+			synchronize = true;
+			if (!this.isInitialized) {
+				WebBrowserUtil.error("You can't call this method before "
+						+ "WebBrowser is initialized!");
+				throw new JdicInitException(
+						"You can't call this method before "
+								+ "WebBrowser is initialized!");
+			}
+			setURL(url, postData, headers);
+			synchronized (this) {
+				//wait documentcomplete to notify this
+				try {
+					wait();
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println(e.getMessage());
+				}
+			}
+		} finally {
+			//restore the original async model
+			synchronize = false;
+		}
+	}
+
+	/**
 	 * Navigates backward one item in the history list.
 	 */
 	public void back() {
@@ -642,10 +721,16 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * <p>
 	 * This is a convenience method to use <code>executeScript</code> to print
 	 * the currently loaded document: <code>
-	 * <pre>	
-	 * WebBrowser webBrowser = new WebBrowser();
-	 *        ......
-	 * webBrowser.executeScript(&quot;window.print();&quot;);	  
+	 * <pre>
+	 * 
+	 *  
+	 *   	
+	 *    WebBrowser webBrowser = new WebBrowser();
+	 *           ......
+	 *    webBrowser.executeScript(&quot;window.print();&quot;);	  
+	 *    
+	 *   
+	 *  
 	 * </pre>
 	 * </code>
 	 * 
@@ -813,13 +898,14 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * A subclass can override this method to block the creation of a new window
 	 * or allow it to proceed.
 	 * 
-	 * @param url string value of url to be opened 
+	 * @param url
+	 *            string value of url to be opened
 	 * @return <code>false</code> will block the creation of a new window;
 	 *         <code>true</code> otherwise. By default, it returns <code>
 	 *         true</code>.
-	 */	
+	 */
 	protected boolean willOpenWindow(URL url) {
-		if( url != null ){
+		if (url != null) {
 			WebBrowserUtil.trace("willOpenWindow " + url.toString());
 		}
 		return true;
@@ -901,5 +987,12 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 */
 	public String getInitFailureMessage() {
 		return initFailureMessage;
+	}
+
+	/**
+	 * @return Returns the synchronize.
+	 */
+	public boolean isSynchronize() {
+		return synchronize;
 	}
 }

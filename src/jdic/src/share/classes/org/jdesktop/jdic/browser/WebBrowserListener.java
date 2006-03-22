@@ -38,6 +38,13 @@ package org.jdesktop.jdic.browser;
  */
 public interface WebBrowserListener extends java.util.EventListener
 {
+	/**
+     * Invoked when the initialization is completed.
+     * 
+     * @param event the WebBrowserEvent fired.
+     */
+    void initializationCompleted(WebBrowserEvent event);
+	
     /**
      * Invoked when a download operation is beginning.
      *
