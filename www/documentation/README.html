@@ -91,9 +91,9 @@ with a particular file type, the system browser and the system mailer.<br>
 document viewer applications with filetypes.<br>
       <br>
       <code>org.jdesktop.jdic.browser</code>: Provides an AWT component
-to enable the embedding of the desktop's web browsing component into
-Java applications and applets. The APIs support URL navigation, a basic
-history mechanism and progress notification.&nbsp;</li>
+to enable the embedding of the desktop's web browsing component,which 
+only Mozilla and IE be supported at present, into Java applications and applets.
+ The APIs support URL navigation, a basic history mechanism and progress notification.&nbsp;</li>
   </ul>
   <blockquote>
     <p><code>org.jdesktop.jdic.tray</code>: APIs to to create tray icons on the
@@ -158,15 +158,15 @@ NT4 MSI Service Package</a>, <a
 <h2><b> <a name="Installation">Installation</a></b></h2>
 <blockquote> To run the <a
  href="https://jdic.dev.java.net/servlets/ProjectDocumentList">downloadable</a>
-or built JDIC binaries, following below installation instructions:
+or built JDIC binaries, following below installation instructions(only Mozilla and IE be supported at present):
   <p> <b>JDIC API</b>:</p>
   <ul>
     <li>Add <code>jdic.jar</code> to <code>CLASSPATH</code>. </li>
-    <li><b>Note: </b>with earlier releases, on Windows, Browser component copies
-      the bundled <code>MozEmbed.exe</code> file to the Mozilla binary path to
-      work. Since 0.8.8, that file is not copied. While using the Browser
-      component, BE SURE to remove the <code>MozEmbed.exe</code> file if it
-      locates at the Mozilla binary path.&nbsp;&nbsp;&nbsp; </li>
+    <li><b>Note: </b>With earlier releases, on 
+      Windows, Browser component copies the bundled <code>MozEmbed.exe</code> 
+      file to the Mozilla binary path to work. Since 0.8.8, that file is not copied. 
+      While using the Browser component, BE SURE to remove the <code>MozEmbed.exe</code> 
+      file if it locates at the Mozilla binary path.&nbsp;&nbsp;&nbsp; </li>
     <li>Below steps are ONLY necessary if the native library or executable files
       locate at a different location from jdic.jar. If a JDIC release (<code>jdic-&lt;version&gt;-bin-&lt;os&gt;.zip</code>)
       is unzipped, these files locate at the same location as <code>jdic.jar</code>
@@ -189,7 +189,7 @@ to use package <code><b>org.jdesktop.jdic.tray:</b></code>
         <li>Set the environment variable <code>JAVA_HOME</code>
 to the J2SDK/J2RE installation path.</li>
       </ul>
-    <li>for JDIC release 0.8.5, additional setting
+    <li>for JDIC release 0.8.5 or later, additional setting
 to use package <code><b>org.jdesktop.jdic.browser:</b></code>
       <ul>
         <li>On Windows, set the environment variable <code>JAVA_HOME</code>
@@ -282,6 +282,13 @@ The Microsoft Visual C++ 6.0 Professional Edition compiler is required.</li>
             to the environment variable <b><code>include</code></b>, if they are
             not added during installation.</li>
       <li>Get and build Mozilla 1.4 or later source code. Please refer
+to <a href="http://www.mozilla.org/">http://www.mozilla.org/</a>, and <a
+ href="http://www.mozilla.org/build/">http://www.mozilla.org/build/</a>
+for where to download and how to build it.&nbsp;Setup the environment
+variable <code> <b> MOZILLA_SRC_HOME</b></code> to the top directory
+of Mozilla source code. This step is required to build the native code for
+        package <code>org.jdesktop.jdic.browser.</code> </li>
+        <li>Get and build Mozilla 1.4 or later source code. Please refer
 to <a href="http://www.mozilla.org/">http://www.mozilla.org/</a>, and <a
  href="http://www.mozilla.org/build/">http://www.mozilla.org/build/</a>
 for where to download and how to build it.&nbsp;Setup the environment
