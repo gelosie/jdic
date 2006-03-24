@@ -41,19 +41,20 @@ void SocketMsgHandler(const char* pMsg)
     ::PostMessage(gMainWnd, WM_SOCKET_MSG, 0, (long)msg);
 }
 
+//used for setContent
 HRESULT LoadWebBrowserFromStream(BrowserWindow* pBrowserWnd, IStream* pStream)
 {
     HRESULT hr;
-    CComPtr<IDispatch> pHTMLDoc;
+    CComPtr<IDispatch> pHTMLDoc;//IHTMLDocument
     CComPtr<IPersistStreamInit> pPersistStreamInit;
 
-    hr = pBrowserWnd->m_pWB->get_Document(&pHTMLDoc);
+    hr = pBrowserWnd->m_pWB->get_Document(&pHTMLDoc);//access web browser obj
     if (SUCCEEDED(hr))
     {
         hr = pHTMLDoc->QueryInterface(IID_IPersistStreamInit, (void**)&pPersistStreamInit);
         if (SUCCEEDED(hr))
         {
-            hr = pPersistStreamInit->Load(pStream);
+            hr = pPersistStreamInit->Load(pStream);//
         }
     }
     return hr;
@@ -67,15 +68,15 @@ void setContent(BrowserWindow* pBrowserWnd, char* pContent)
     }
     CComPtr<IStream> pStream;
     size_t contentLen = strlen(pContent);
-    HGLOBAL hHTMLText;
+    HGLOBAL hHTMLText;//?
     hHTMLText = GlobalAlloc(GMEM_MOVEABLE, contentLen);
     if (hHTMLText)
     {
-        LPBYTE lpByte = (LPBYTE)GlobalLock(hHTMLText);
+        LPBYTE lpByte = (LPBYTE)GlobalLock(hHTMLText);//?
         memcpy(lpByte, (LPBYTE)pContent, contentLen * sizeof(char));
-        GlobalUnlock(hHTMLText);
+        GlobalUnlock(hHTMLText);//?
 
-        HRESULT hr = CreateStreamOnHGlobal(hHTMLText, TRUE, &pStream);
+        HRESULT hr = CreateStreamOnHGlobal(hHTMLText, TRUE, &pStream);//?
         if (SUCCEEDED(hr))
         {
             LoadWebBrowserFromStream(pBrowserWnd, pStream);
@@ -211,8 +212,9 @@ LPSTR executeScript(BrowserWindow* pBrowserWnd, char* scriptCode)
     return varWrapper.ToString();
 }
 
+
 void CommandProc(char* pInputChar)
-{
+{	
     BrowserWindow * pBrowserWnd;
     HRESULT hRes;
     int instanceNum;
@@ -242,19 +244,28 @@ void CommandProc(char* pInputChar)
     switch (eventID)
     {
     case JEVENT_INIT:
+		LogMsg("IeEmbed:CommandProc:JEVENT_INIT will be broken");
         break;
 
     case JEVENT_CREATEWINDOW:
-        {
+        {			
         // only create new browser window when the instance does not exist
         if (instanceNum < ABrowserWnd.GetSize() && 
             (BrowserWindow *) ABrowserWnd[instanceNum] != NULL)
-            break;
-
+		{
+			LogMsg("Instance isn't null, will not create it");
+			break;
+		}
+          
+		LogMsg("JEVENT_CREATEWINDOW will create a new web browser");
         RECT rect;
         if (i != 3) 
             break;
+
         HWND hWnd = (HWND) atoi(mMsgString);
+		LogMsg("AWT HWND is:");
+		LogIntMsg((int)hWnd);
+
         pBrowserWnd = new BrowserWindow();
         if (!pBrowserWnd) 
             break;
@@ -264,8 +275,11 @@ void CommandProc(char* pInputChar)
                 _T("about:blank"),
                 WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                 WS_EX_CLIENTEDGE);
+		LogMsg("Created Child HWND is :");
+		LogIntMsg((int)hWndClient);
 
-        hRes = pBrowserWnd->QueryControl(&(pBrowserWnd->m_pWB));
+        hRes = pBrowserWnd->QueryControl(&(pBrowserWnd->m_pWB));//without IID,a typed interface is enough
+		//query control of iwebbrowser from activex controls...
         if (pBrowserWnd->m_pWB == NULL) {
             WBTRACE("Failed to query pBrowserWnd->m_pWB!");
             break;
@@ -286,6 +300,7 @@ void CommandProc(char* pInputChar)
         break;
 
     case JEVENT_DESTROYWINDOW:
+		LogMsg("IeEmbed:CommandProc:JEVENT_DESTROYWINDOW");
         pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
         if(pBrowserWnd != NULL){
             hRes = pBrowserWnd->DispEventUnadvise(pBrowserWnd->m_pWB);
@@ -492,7 +507,8 @@ void CreateHiddenWnd()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-//
+// the main class, runtime .exec("IEembeded.exe -port .. ");
+
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance,
     HINSTANCE /*hPrevInstance*/, LPTSTR lpCmdLine, int /*nShowCmd*/)
 {

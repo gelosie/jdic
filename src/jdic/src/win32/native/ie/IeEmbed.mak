@@ -41,6 +41,7 @@ ALL : "$(OUTDIR)\IeEmbed.exe"
 
 
 CLEAN :
+	-@erase "$(INTDIR)\BrowserFrameWindow.obj"
 	-@erase "$(INTDIR)\BrowserWindow.obj"
 	-@erase "$(INTDIR)\IeEmbed.obj"
 	-@erase "$(INTDIR)\IeEmbed.pch"
@@ -54,6 +55,7 @@ CLEAN :
 	-@erase "$(OUTDIR)\IeEmbed.exe"
 	-@erase "$(OUTDIR)\IeEmbed.ilk"
 	-@erase "$(OUTDIR)\IeEmbed.pdb"
+
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -72,9 +74,10 @@ LINK32_OBJS= \
 	"$(INTDIR)\MsgServer.obj" \
 	"$(INTDIR)\StdAfx.obj" \
 	"$(INTDIR)\Util.obj" \
-	"$(INTDIR)\VariantWrapper.obj" \
-	"$(INTDIR)\IeEmbed.res"
-
+	"$(INTDIR)\VariantWrapper.obj" \	
+	"$(INTDIR)\IeEmbed.res" \
+	"$(INTDIR)\BrowserFrameWindow.obj"
+	
 "$(OUTDIR)\IeEmbed.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
@@ -92,6 +95,8 @@ ALL : "$(OUTDIR)\IeEmbed.exe" "$(OUTDIR)\IeEmbed.bsc"
 
 
 CLEAN :
+	-@erase "$(INTDIR)\BrowserFrameWindow.obj"
+	-@erase "$(INTDIR)\BrowserFrameWindow.sbr"
 	-@erase "$(INTDIR)\BrowserWindow.obj"
 	-@erase "$(INTDIR)\BrowserWindow.sbr"
 	-@erase "$(INTDIR)\IeEmbed.obj"
@@ -123,8 +128,9 @@ BSC32_SBRS= \
 	"$(INTDIR)\MsgServer.sbr" \
 	"$(INTDIR)\StdAfx.sbr" \
 	"$(INTDIR)\Util.sbr" \
-	"$(INTDIR)\VariantWrapper.sbr"
-
+	"$(INTDIR)\VariantWrapper.sbr" \
+	"$(INTDIR)\BrowserFrameWindow.sbr"
+	
 "$(OUTDIR)\IeEmbed.bsc" : "$(OUTDIR)" $(BSC32_SBRS)
     $(BSC32) @<<
   $(BSC32_FLAGS) $(BSC32_SBRS)
@@ -139,7 +145,8 @@ LINK32_OBJS= \
 	"$(INTDIR)\StdAfx.obj" \
 	"$(INTDIR)\Util.obj" \
 	"$(INTDIR)\VariantWrapper.obj" \
-	"$(INTDIR)\IeEmbed.res"
+	"$(INTDIR)\IeEmbed.res" \
+	"$(INTDIR)\BrowserFrameWindow.obj"
 
 "$(OUTDIR)\IeEmbed.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -190,6 +197,22 @@ MTL_PROJ=
 
 
 !IF "$(CFG)" == "IeEmbed - Win32 Debug" || "$(CFG)" == "IeEmbed - Win32 Release"
+SOURCE=.\BrowserFrameWindow.cpp
+
+!IF  "$(CFG)" == "IeEmbed - Win32 Debug"
+
+
+"$(INTDIR)\BrowserFrameWindow.obj" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\IeEmbed.pch"
+
+
+!ELSEIF  "$(CFG)" == "IeEmbed - Win32 Release"
+
+
+"$(INTDIR)\BrowserFrameWindow.obj"	"$(INTDIR)\BrowserFrameWindow.sbr" : $(SOURCE) "$(INTDIR)" "$(INTDIR)\IeEmbed.pch"
+
+
+!ENDIF 
+
 SOURCE=.\BrowserWindow.cpp
 
 !IF  "$(CFG)" == "IeEmbed - Win32 Debug"

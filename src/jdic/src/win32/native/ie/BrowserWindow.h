@@ -21,12 +21,14 @@
 #ifndef browserwindow_h
 #define browserwindow_h
 
-#include <Exdisp.h>
 #include <Atlwin.h> // for AtlWin
 #include <Exdisp.h>  //for IWebBrowser2
 #include <exdispid.h>
 #include <atlhost.h>
 #include "MsgServer.h"
+#include "Util.h"
+#include "BrowserFrameWindow.h"
+
 
 class BrowserWindow:
     public CAxWindow,
@@ -36,6 +38,7 @@ public:
     BrowserWindow();
     virtual ~BrowserWindow();
 
+	
     CComPtr<IWebBrowser2> m_pWB;
     CComPtr<IHTMLDocument2> m_pHD2;
     CComPtr<IHTMLDocument3> m_pHD3;
@@ -59,6 +62,7 @@ public:
                                    VARIANT *StatusCode,VARIANT_BOOL *Cancel);
 	void __stdcall OnTitleChange(BSTR Text);
 	void __stdcall OnStatusTextChange(BSTR Text);
+	void CreateChildBrowserWindow(IDispatch **ppDisp);
 
     BEGIN_SINK_MAP(BrowserWindow)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_COMMANDSTATECHANGE, OnCommandStateChange)

@@ -35,6 +35,26 @@ BrowserWindow::~BrowserWindow()
 {
 }
 
+void BrowserWindow::CreateChildBrowserWindow(IDispatch **ppDisp)
+{
+    HWND hWndClient = 0;
+
+    RECT rect;
+	LogMsg("CreateChildBrowserWindow: Default client rect will be used");
+	//SetRect(&rect, 0, 0, 400, 400);//bad here
+	GetClientRect(&rect);//use parent's size
+	
+    
+    CBrowserFrameWindow *pChild = new CBrowserFrameWindow;
+         
+    
+    pChild->Create(NULL, rect, _T("about:blank") );
+    pChild->ShowWindow(SW_SHOW);   
+     
+    pChild->m_pWB->put_RegisterAsBrowser(VARIANT_TRUE);
+    HRESULT hr = pChild->m_pWB->get_Application(ppDisp);
+}
+
 BOOL BrowserWindow::PreTranslateMessage(MSG* pMsg)
 {
     // Pass keyboard messages along to the child window that has the focus.
@@ -99,7 +119,7 @@ void __stdcall BrowserWindow::OnBeforeNavigate(IDispatch *pDisp,VARIANT *URL,
         *Cancel = VARIANT_FALSE;
     } 
 }
-
+//new added by michael
 void __stdcall BrowserWindow::OnNewWindow3(IDispatch **ppDisp,VARIANT_BOOL *Cancel,DWORD dwFlags,BSTR bstrUrlContext,
 		BSTR bstrUrl)
 {	
@@ -109,19 +129,25 @@ void __stdcall BrowserWindow::OnNewWindow3(IDispatch **ppDisp,VARIANT_BOOL *Canc
 	char buf[1024];
     int len = wcslen(bstrUrl);
 	if (len > 0) {
-		if (WideCharToMultiByte(CP_ACP, 0, bstrUrl, -1, buf, sizeof(buf) - 1, NULL, NULL) > 0)
+		if (WideCharToMultiByte(CP_ACP, 0, bstrUrl, -1, buf, sizeof(buf) - 1, NULL, NULL) > 0){
+			LogMsg("A new window will be opened with URL:");
+			LogMsg(buf);
 			SendSocketMessage(m_InstanceID, CEVENT_BEFORE_NEWWINDOW,buf);
+		}			
 	}    
 
     while (bCmdCanceled < 0 && waitCount++ < MAX_WAIT) {
         Sleep(1);
     } 
 
-    if (bCmdCanceled == 1) {
+    if (bCmdCanceled == 1 || waitCount >= MAX_WAIT) {
+		LogMsg("New window is suppressed.");
         *Cancel = VARIANT_TRUE;
     }
     else {
         *Cancel = VARIANT_FALSE;
+		LogMsg("New window is permitted to open.");
+		CreateChildBrowserWindow(ppDisp);
     }
 }
 
