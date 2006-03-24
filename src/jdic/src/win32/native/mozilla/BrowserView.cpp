@@ -777,6 +777,11 @@ void CBrowserView::OpenURLInNewWindow(const PRUnichar* pUrl)
 		if(bCmdCanceled == 1){
 			return ;
 		}
+
+		if(waitCount >= MAX_WAIT){
+			LogMsg("wait couts out,forbid OpenURLInNewWindow action");
+			return ;
+		}
 	}
 	else
 	{
