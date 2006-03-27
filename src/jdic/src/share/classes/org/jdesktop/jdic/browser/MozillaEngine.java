@@ -66,14 +66,29 @@ public class MozillaEngine implements IBrowserEngine {
 	/**
 	 * Path to the mozilla executable,which must contain the xpcom.dll file.
 	 */
-	private static String envXPComPath;
+	private String envXPComPath;
 
-	private static String browserBinary;
+	/** the executable bin name of according browser */
+	private String browserBinName;
 
+	/** current parent path which runs JDIC */
 	private String runningPath;
 
 	/** The full path containing xpcom.dll which is set by user */
 	private String xpcomPathSetByUser;
+
+	/**
+	 * Set according path items and grant executable permission to bin file.
+	 *  
+	 */
+	public void initialize() throws JdicInitException {
+		if (!initialized) {
+			preapareEnvVariables();
+			setToEnv();
+			grantXToBinFile(this.envXPComPath);
+			initialized = true;
+		}
+	}
 
 	/**
 	 * @return The standardized name of the embedded browser engine. May not be
@@ -130,18 +145,18 @@ public class MozillaEngine implements IBrowserEngine {
 	 */
 
 	//TODO:Bug,for installed gre,can't show <input>element.
-	protected void setEnvVariables() throws JdicInitException {
+	protected void preapareEnvVariables() throws JdicInitException {
 		//current running path
 		runningPath = JdicManager.getManager().getBinaryPath();
 
 		//if set by user
-		if (setXPComPath(xpcomPathSetByUser)) {
+		if (getXPComPath(xpcomPathSetByUser)) {
 			WebBrowserUtil.trace("Got xpcom from user set");
 			return;
 		}
 
 		//check env
-		if (setXPComPath(InitUtility.getEnv(MOZILLA_FIVE_HOME))) {
+		if (getXPComPath(InitUtility.getEnv(MOZILLA_FIVE_HOME))) {
 			WebBrowserUtil.trace("Got xpcom from MOZILLA_FIVE_HOME");
 			return;
 		}
@@ -157,7 +172,7 @@ public class MozillaEngine implements IBrowserEngine {
 		}
 
 		//query from win registry or path under unix
-		if (setXPComPath(defaultBrowserPath)) {
+		if (getXPComPath(defaultBrowserPath)) {
 			WebBrowserUtil.trace("Got xpcom from registry(win)/path(unix)");
 			return;
 		}
@@ -165,7 +180,7 @@ public class MozillaEngine implements IBrowserEngine {
 		if (WebBrowserUtil.IS_OS_WINDOWS) {
 			//for win only
 			//query registry's GRE path for Mozilla installed from a .exe
-			if (setXPComPath(WebBrowserUtil.getMozillaGreHome())) {
+			if (getXPComPath(WebBrowserUtil.getMozillaGreHome())) {
 				WebBrowserUtil.trace("Got xpcom from GREHome"
 						+ WebBrowserUtil.getMozillaGreHome());
 				return;
@@ -184,18 +199,17 @@ public class MozillaEngine implements IBrowserEngine {
 	 * Set the path of xpcom.dll/libxpcom.so.
 	 * 
 	 * @param containingPath
-	 * @return @throws
-	 *         JdicInitException
+	 * @return
+	 * @throws JdicInitException
 	 */
-	private boolean setXPComPath(String inputPath)
-			throws JdicInitException {		
-		if (inputPath == null) {	
+	private boolean getXPComPath(String inputPath) throws JdicInitException {
+		if (inputPath == null) {
 			return false;
 		}
 		//erase "" in the path
-		String containingPath=inputPath.replaceAll("\"","");		
+		String containingPath = inputPath.replaceAll("\"", "");
 		String xpcomFolder = null;
-		
+
 		//get parent path
 		File browserFile = new File(containingPath);
 		try {
@@ -204,7 +218,7 @@ public class MozillaEngine implements IBrowserEngine {
 			} else {
 				xpcomFolder = browserFile.getCanonicalFile().getParent();
 			}
-		} catch (IOException ex) {			
+		} catch (IOException ex) {
 			WebBrowserUtil.trace(ex.toString());
 			WebBrowserUtil
 					.error("Path \"" + containingPath + "\" is invalide.");
@@ -213,7 +227,6 @@ public class MozillaEngine implements IBrowserEngine {
 
 		if (isXPComPathValid(xpcomFolder)) {
 			envXPComPath = xpcomFolder;//set global
-			setEnvs();
 			return true;
 		}
 		return false;
@@ -243,14 +256,15 @@ public class MozillaEngine implements IBrowserEngine {
 	/**
 	 * @throws JdicInitException
 	 */
-	private void setBinaryLibName() throws JdicInitException {
+	private void grantXToBinFile(String mozillaPath) throws JdicInitException {
+
 		if (WebBrowserUtil.IS_OS_WINDOWS) {
-			browserBinary = BIN_WIN_MOZILLA;
+			browserBinName = BIN_WIN_MOZILLA;
 			return;
 		}
 		if (WebBrowserUtil.IS_OS_LINUX || WebBrowserUtil.IS_OS_SUNOS
 				|| WebBrowserUtil.IS_OS_FREEBSD) {
-			setUnixBinaryName(envXPComPath);
+			caculateUnixBinaryName(mozillaPath);
 			return;
 		}
 		// other os
@@ -263,73 +277,69 @@ public class MozillaEngine implements IBrowserEngine {
 	 * Caculate the browser binary name under unix
 	 * 
 	 * @param mozillaPath
+	 * @throws JdicInitException
 	 */
-	private void setUnixBinaryName(String mozillaPath) {
+	private void caculateUnixBinaryName(String mozillaPath)
+			throws JdicInitException {
 		String osname = WebBrowserUtil.OS_NAME;
+		String unixBinary = null;
 		String libwidgetpath = mozillaPath + File.separator + "components"
 				+ File.separator + "libwidget_gtk2.so";
 		File file = new File(libwidgetpath);
 		if (!file.exists()) {
 			if (WebBrowserUtil.IS_OS_LINUX) {
-				browserBinary = BIN_LINUX_GTK1;
+				unixBinary = BIN_LINUX_GTK1;
 			} else if (WebBrowserUtil.IS_OS_SUNOS) {
-				browserBinary = BIN_SOLARIS_GTK1;
+				unixBinary = BIN_SOLARIS_GTK1;
 			} else if (WebBrowserUtil.IS_OS_FREEBSD) {
-				browserBinary = BIN_FREEBSD_GTK1;
+				unixBinary = BIN_FREEBSD_GTK1;
 			}
 		} else {
 			if (WebBrowserUtil.IS_OS_LINUX) {
-				browserBinary = BIN_linux_GTK2;
+				unixBinary = BIN_linux_GTK2;
 			} else if (WebBrowserUtil.IS_OS_SUNOS) {
-				browserBinary = BIN_SOLARIS_GTK2;
+				unixBinary = BIN_SOLARIS_GTK2;
 			} else if (WebBrowserUtil.IS_OS_FREEBSD) {
-				browserBinary = BIN_FREEBSD_GTK2;
+				unixBinary = BIN_FREEBSD_GTK2;
 			}
+		}
+		if (unixBinary != null) {
+			browserBinName = unixBinary;//set the variable
+			grantXToBin(unixBinary);//grant executable to the lib
+		} else {
+			WebBrowserUtil
+					.trace("Failed to grant executable privilege to bin file for your OS. You'd better grant all JDIC bin files with executable privilege manually. ");
 		}
 	}
 
 	/**
 	 * Set variable to env.
 	 */
-	protected void setEnvs() throws JdicInitException {
+	private void setToEnv() throws JdicInitException {
 		InitUtility.preAppendEnv(libPathEnv, runningPath);
 		InitUtility.preAppendEnv(libPathEnv, envXPComPath);
 		InitUtility.setEnv(MOZILLA_FIVE_HOME, envXPComPath);
-		if (WebBrowserUtil.IS_OS_LINUX || WebBrowserUtil.IS_OS_SUNOS
-				|| WebBrowserUtil.IS_OS_FREEBSD) {
-			if (!grantXToBin())
-				return;
-		}
 	}
 
 	/**
-	 * For webstart, the browser binary will lose "x" permission after extracted
-	 * from .jar file.
+	 * Grant browser binary's "x" permission after extracted from .zip
+	 * file,which should be "r" at least. This's more reasonable to webstart bin
+	 * file,since user perhaps don't know where this bin is located in cache.
 	 * 
 	 * @return
 	 */
-	private boolean grantXToBin() throws JdicInitException {
+	private boolean grantXToBin(String unixBinary) throws JdicInitException {
 		try {
-			Runtime.getRuntime()
-					.exec(
-							"chmod a+x " + runningPath + File.separator
-									+ browserBinary);
+			WebBrowserUtil.trace("will grant a+x to " + runningPath
+					+ File.separator + unixBinary);
+			Runtime.getRuntime().exec(
+					"chmod a+x " + runningPath + File.separator + unixBinary);
+			WebBrowserUtil.trace("grant ok");
 			return true;
 		} catch (IOException ex) {
+			WebBrowserUtil.error(ex.getMessage());
+			ex.printStackTrace();
 			throw new JdicInitException(ex.getMessage());
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.jdesktop.jdic.browser.IWebBrowserEngine#initialize()
-	 */
-	public void initialize() throws JdicInitException {
-		if (!initialized) {
-			this.setEnvVariables();
-			this.setBinaryLibName();
-			initialized = true;
 		}
 	}
 
@@ -339,7 +349,7 @@ public class MozillaEngine implements IBrowserEngine {
 	 * @see org.jdesktop.jdic.browser.IWebBrowserEngine#getBrowserFullPath()
 	 */
 	public String getEmbeddedBinaryName() {
-		return browserBinary;
+		return browserBinName;
 	}
 
 	/*
