@@ -98,14 +98,14 @@ public class MozillaEngine implements IBrowserEngine {
 		return BROWSER_NAME;
 	}
 
-	/**
-	 * @return A string indicating the specific version of the browser or
-	 *         browser component which is being embedded, null or an empty
-	 *         string.
-	 */
-	public String getBrowserVersion() {
-		return "";
-	}
+//	/**
+//	 * @return A string indicating the specific version of the browser or
+//	 *         browser component which is being embedded, null or an empty
+//	 *         string.
+//	 */
+//	public String getBrowserVersion() {
+//		return "";
+//	}
 
 	/**
 	 * Checks whether the associated Engine is available on the current system.

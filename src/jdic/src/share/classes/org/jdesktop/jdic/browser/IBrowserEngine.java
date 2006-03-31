@@ -47,15 +47,16 @@ public interface IBrowserEngine {
 	 */
 	public String getBrowserName();
 
-	/**
-	 * Additional information about the specific type and version of embedded
-	 * browser component being used.
-	 * 
-	 * @return A string indicating the specific version of the browser or
-	 *         browser component which is being embedded, null or an empty
-	 *         string.
-	 */
-	public String getBrowserVersion();
+
+//	/**
+//	 * Additional information about the specific type and version of embedded
+//	 * browser component being used.
+//	 * 
+//	 * @return A string indicating the specific version of the browser or
+//	 *         browser component which is being embedded, null or an empty
+//	 *         string.
+//	 */
+//	public String getBrowserVersion();
 
 	/**
 	 * Checks whether the associated Engine is available on the current system.
