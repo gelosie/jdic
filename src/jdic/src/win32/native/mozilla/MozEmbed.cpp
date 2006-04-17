@@ -582,6 +582,8 @@ void MozEmbedApp::MessageReceived(const char * msg)
     mMsgString++;
     mMsgString = (char*)strchr(mMsgString, ',');
     mMsgString++;
+    LogMsg("eventMessage:");
+    LogMsg(eventMessage);  //need to visit eventMessage.
 
     switch (eventID) {
     case JEVENT_INIT:
