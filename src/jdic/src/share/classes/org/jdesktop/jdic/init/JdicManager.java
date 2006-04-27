@@ -21,8 +21,16 @@
 package org.jdesktop.jdic.init;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
+
+import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
+
+import com.sun.jnlp.JNLPClassLoader;
 
 /**
  * Initialization manager for JDIC to set the environment variables or
@@ -38,16 +46,17 @@ import java.net.URL;
  * If not in WebStart, the system will expect the native libraries to be located
  * in directory at the root of the classpath or .jar containing this class.
  * 
- * @author Michael Samblanet 
- *         Paul Huang 
- *         George Zhang
+ * @author Michael Samblanet
+ * @author Paul Huang
+ * @author George Zhang
+ * @author Michael Shan
  * @since July 29, 2004
  */
 public class JdicManager {
 	private boolean isShareNativeInitialized = false;
 
 	/** The path for the JDIC native files (jdic.dll/libjdic.so, etc) */
-	String binaryPath = null;
+	String nativeLibPath = null;
 
 	/** Singleton instance of this class */
 	private static JdicManager sSingleton = null;
@@ -86,40 +95,156 @@ public class JdicManager {
 
 		try {
 			// Find the root path of this class.
-			binaryPath = (new URL(JdicManager.class.getProtectionDomain()
-					.getCodeSource().getLocation(), ".")).openConnection()
-					.getPermission().getName();
-			binaryPath = (new File(binaryPath)).getCanonicalPath();
-			if (System.getProperty("javawebstart.version") != null) {
-				// We are running under WebStart.
-				// NOTE: for a WebStart application, the jar file including
-				// the native libraries/executables must use the name
-				// "jdic-native.jar".
-				String cacheDirName = "RN" + "jdic-native.jar" + "/";
-				binaryPath += File.separator + cacheDirName;
-			}
+			String jwsVersion = System.getProperty("javawebstart.version");
+			if (jwsVersion != null) {
+				//loaded by JWS
+				WebBrowserUtil.trace("Loaded by JavaWebStart,version is "
+						+ jwsVersion);
+				//native libs will be loaded by webstart automatically
+				caculateNativeLibPathBySunJWS();
+				return;
+			} else {
+				String currentClassRunningPath = (new URL(JdicManager.class
+						.getProtectionDomain().getCodeSource().getLocation(),
+						".")).openConnection().getPermission().getName();
 
-			// Add the binary path (including jdic.dll or libjdic.so) to
-			// "java.library.path", since we need to use the native methods in
-			// class InitUtility.
-			String newLibPath = binaryPath + File.pathSeparator
-					+ System.getProperty("java.library.path");
-			System.setProperty("java.library.path", newLibPath);
-			Field fieldSysPath = ClassLoader.class
-					.getDeclaredField("sys_paths");
-			fieldSysPath.setAccessible(true);
-			if (fieldSysPath != null) {
-				fieldSysPath.set(System.class.getClassLoader(), null);
+				nativeLibPath = caculateNativeLibPath(currentClassRunningPath);
+				// Add the binary path (including jdic.dll or libjdic.so) to
+				// "java.library.path", since we need to use the native methods
+				// in class InitUtility.
+				String newLibPath = nativeLibPath + File.pathSeparator
+						+ System.getProperty("java.library.path");
+				System.setProperty("java.library.path", newLibPath);
+				Field fieldSysPath = ClassLoader.class
+						.getDeclaredField("sys_paths");
+				fieldSysPath.setAccessible(true);
+				if (fieldSysPath != null) {
+					fieldSysPath.set(System.class.getClassLoader(), null);
+				}
 			}
-
 		} catch (Throwable e) {
 			throw new JdicInitException(e);
 		}
-
 		isShareNativeInitialized = true;
 	}
 
-	public String getBinaryPath() {
-		return binaryPath;
+	/**
+	 * To keep the using of crossplatform version of JDIC
+	 * 
+	 * @throws MalformedURLException
+	 * @throws JdicInitException
+	 *  
+	 */
+	private String caculateNativeLibPath(String runningPath)
+			throws MalformedURLException, JdicInitException {
+
+		String platformPath = runningPath + File.separator + getPlatform();
+		File jdicStubJarFile = new File(platformPath + File.separator
+				+ "jdic_stub.jar");
+		if (!jdicStubJarFile.exists()) {
+			//not cross platform version
+			return runningPath;
+		} else {
+			//cross platform version
+			String architecturePath = platformPath + File.separator
+					+ getArchitecture();
+			ClassLoader cl = getClass().getClassLoader();
+			if (!(cl instanceof URLClassLoader)) {
+				//not URLClassLoader,omit it,in case the stub jar has been
+				// set to claspath
+				String exceptionInfo = "We detect that you are not using java.net.URLClassLoader for cross platform versoin,you have to set jdic_stub.jar manually!";
+				WebBrowserUtil.error(exceptionInfo);
+				return architecturePath;//return the native lib path
+			}
+			//set stub jars to classpath
+			URLClassLoader urlCl = (URLClassLoader) cl;
+			try {
+				Method addURLMethod = URLClassLoader.class.getDeclaredMethod(
+						"addURL", new Class[] { URL.class });
+				addURLMethod.setAccessible(true);
+				addURLMethod.invoke(urlCl, new Object[] { jdicStubJarFile
+						.toURL() });
+				return architecturePath;//return the native lib path
+			} catch (Throwable t) {
+				t.printStackTrace();
+				throw new JdicInitException(
+						"Error, could not add URL to system classloader");
+			}
+		}
 	}
+
+	public String getBinaryPath() {
+		return nativeLibPath;
+	}
+
+	/**
+	 * Initialize native libs' running path if loaded by webstart.This method
+	 * only works for sun webstart implementaion,for other webstart
+	 * implementations, you have to rewrite this method.
+	 * 
+	 * @throws IOException
+	 * @throws JdicInitException
+	 */
+	private void caculateNativeLibPathBySunJWS() throws IOException,
+			JdicInitException {
+		ClassLoader cl = this.getClass().getClassLoader();
+		if (cl instanceof JNLPClassLoader) {
+			JNLPClassLoader jnlpCl = (JNLPClassLoader) cl;
+			String jdicLibPath = jnlpCl.findLibrary("jdic");
+			nativeLibPath = (new File(jdicLibPath)).getParentFile()
+					.getCanonicalPath();
+			WebBrowserUtil.trace("running path " + nativeLibPath);
+			isShareNativeInitialized = true;
+		} else {
+			//only run well for sun jre
+			throw new JdicInitException(
+
+					"Unexpected ClassLoader for webstart, only com.sun.jnlp.JNLPClassLoader is supported.");
+		}
+	}
+
+	/**
+	 * Return the canonical name of the platform. This value is derived from the
+	 * System property os.name.
+	 * 
+	 * @return The platform string.
+	 */
+	private static String getPlatform() {
+		// See list of os names at: http://lopica.sourceforge.net/os.html
+		// or at: http://www.tolstoy.com/samizdat/sysprops.html
+		String osname = System.getProperty("os.name");
+		if (osname.startsWith("Windows")) {
+			return "windows";
+		}
+
+		return canonical(osname);
+	}
+
+	/**
+	 * Return the name of the architecture. This value is determined by the
+	 * System property os.arch.
+	 * 
+	 * @return The architecture string.
+	 */
+	private static String getArchitecture() {
+		String arch = System.getProperty("os.arch");
+		if (arch.endsWith("86")) {
+			return "x86";
+		}
+		return canonical(arch);
+	}
+
+	/**
+	 * @param value
+	 *            The value to be canonicalized.
+	 * @return The value with all '/', '\' and ' ' replaced with '_', and all
+	 *         uppercase characters replaced with lower case equivalents.
+	 */
+	private static String canonical(String value) {
+		WebBrowserUtil.trace("value:" + value);
+		WebBrowserUtil.trace("canonical:"
+				+ value.toLowerCase().replaceAll("[\\\\/ ]", "_"));
+		return value.toLowerCase().replaceAll("[\\\\/ ]", "_");
+	}
+
 }
