@@ -24,7 +24,7 @@ Top-level target:
 -->
   
 
-  <!-- the top-level package names -->
+  <!-- the top-level package names -->    
   <property name="pkg.jdic.name"      value="org.jdesktop.jdic" />
   <property name="pkg.desktop.name"   value="${pkg.jdic.name}.desktop" /> 
   <property name="pkg.filetypes.name" value="${pkg.jdic.name}.filetypes" />
@@ -207,10 +207,10 @@ Top-level target:
   <!-- *** Build Win32 jar file *** -->  
   <target name="buildwin32jar" depends="init"
           description="build the classes and jar file." >
-    <!-- generate class files that will run on VMs in JDK 1.4 and later -->
+    <!-- generate class files that will run on VMs in JDK 1.4 and later -->    
     <javac debug="${toDebug}" srcdir="${share.classes.dir}:${win32.classes.dir}"
            destdir="${dist.dir}"
-           classpath="${dist.dir}" 
+           classpath="${dist.dir};${java.home}/lib/javaws.jar" 
            target="1.4"
            source="1.4"
     />
