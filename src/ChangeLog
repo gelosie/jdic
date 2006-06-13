@@ -1,3 +1,34 @@
+2006-06-13 Michael Shan <michael_shan@dev.java.net>
+    
+    * Build 20060613
+
+    * Fixed issue list:   
+      ID  Pri  Summary
+      ==  ===  =======      
+      254 P3  WebBrowser doesn't pass cookies to popup - session lost      
+      399 P2  WebBrowser doe not find java-native.jar using Mustang      
+      398 P2  JDIC WebStart Demo failes under JRE1.6.0
+      342 P3  JdicManager throws exception if not loaded with URLClassLoader
+      397 P3  Merge cross platform verion's JDICManager.java with single platform one
+      387 P3  executeScript freezes the application when passed more than about a 1K string
+      395 P3  Add webstart deployment  docs to faq page
+      392 P3  willOpenWindow(URL) not working yet.
+      391 P3  Comment out getBrowserVersion method      
+      388 P3  Calling executeScript with Japanese characters corrupts the data.
+      387 P3  executeScript freezes the application when passed more than about a 1K string
+      243 P3  IeEmbed.exe - Application Error using setContent()
+      375 P3  Support synchronization operations
+      383 P3  Add LogIntMsg method to Util
+      382 P3  Wrong link of Changlog file for build20060308
+      48  P3  Error using WebBrowser component in a SplitPane
+      379 P3  Erase "" in xpcom path got from win registry table
+      378 P3  Makefile build unix native mozilla error      
+      402 P3  JDIC build error
+    * Known issue list:   
+      Below are some of the most frequently mentioned known issues.
+      222 P3  Mac OS X support
+      144 P3  New Browser APIs supporting DOM/javascript execution support
+      
 2006-03-08 Michael Shan <michael_shan@dev.java.net>
     
     * Build 20060308
@@ -16,7 +47,7 @@
       354 P3  Add existing browser UT cases
       355 P3  Fix packager's Mac OS not support build error
       357 P3  UnsatisfiedLinkError due to libm.so.2 on Solaris 8 
-      359 P3  New - Relative  "file://" url suppors
+      359 P3  New - Relative  "fiel://" url suppors
       362 P3  initShareNative before loading jdic lib      
       365 P3  New Windows in my own GUI, not the native browsers      
       367 P3  NullPointerException from Browser when closing the frame
@@ -24,7 +55,7 @@
       377 P3  Removes WebBrowser.Status, WebBrowser.getStatus and IWebBrowser.getStatus
 
     * Known issue list:   
-      Below are some of the most frequently mentioned known issues:
+      Below are some of the most frequently mentioned known issues.
       254 P3  WebBrowser doesn't pass cookies to popup - session lost
       144 P3  New Browser APIs supporting DOM/javascript execution support
       
