@@ -210,7 +210,7 @@ Top-level target:
     <!-- generate class files that will run on VMs in JDK 1.4 and later -->    
     <javac debug="${toDebug}" srcdir="${share.classes.dir}:${win32.classes.dir}"
            destdir="${dist.dir}"
-           classpath="${dist.dir};${java.home}/lib/javaws.jar" 
+           classpath="${dist.dir}" 
            target="1.4"
            source="1.4"
     />
