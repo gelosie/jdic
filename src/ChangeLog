@@ -9,6 +9,7 @@
       399 P2  WebBrowser doe not find java-native.jar using Mustang      
       398 P2  JDIC WebStart Demo failes under JRE1.6.0
       342 P3  JdicManager throws exception if not loaded with URLClassLoader
+      403 P3  The browser demo can't  run under jdk1.4
       397 P3  Merge cross platform verion's JDICManager.java with single platform one
       387 P3  executeScript freezes the application when passed more than about a 1K string
       395 P3  Add webstart deployment  docs to faq page
@@ -24,6 +25,7 @@
       379 P3  Erase "" in xpcom path got from win registry table
       378 P3  Makefile build unix native mozilla error      
       402 P3  JDIC build error
+      
     * Known issue list:   
       Below are some of the most frequently mentioned known issues.
       222 P3  Mac OS X support
