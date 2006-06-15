@@ -103,14 +103,11 @@ public class JdicManager {
 				//native libs will be loaded by webstart automatically
 				nativeLibPath = caculateNativeLibPathBySunJWS();
 				return;
-			} else {
-				URL url1 = JdicManager.class
-						.getProtectionDomain().getCodeSource().getLocation();
-				String runningPath=new File(url1.getFile()).getCanonicalPath();
+			} else {				
 				String runningURL = (new URL(JdicManager.class
 						.getProtectionDomain().getCodeSource().getLocation(),
 						".")).openConnection().getPermission().getName();//running url of current class
-//				String runningPath = (new File(runningURL)).getCanonicalPath();//running path of current class
+				String runningPath = (new File(runningURL)).getCanonicalPath();//running path of current class
 				nativeLibPath = caculateNativeLibPath(runningPath);
 				// Add the binary path (including jdic.dll or libjdic.so) to
 				// "java.library.path", since we need to use the native methods
