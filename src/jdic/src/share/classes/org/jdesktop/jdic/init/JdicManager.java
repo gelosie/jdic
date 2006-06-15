@@ -101,14 +101,17 @@ public class JdicManager {
 				WebBrowserUtil.trace("Loaded by JavaWebStart,version is "
 						+ jwsVersion);
 				//native libs will be loaded by webstart automatically
-				caculateNativeLibPathBySunJWS();
+				nativeLibPath = caculateNativeLibPathBySunJWS();
 				return;
 			} else {
-				String currentClassRunningPath = (new URL(JdicManager.class
+				URL url1 = JdicManager.class
+						.getProtectionDomain().getCodeSource().getLocation();
+				String runningPath=new File(url1.getFile()).getCanonicalPath();
+				String runningURL = (new URL(JdicManager.class
 						.getProtectionDomain().getCodeSource().getLocation(),
-						".")).openConnection().getPermission().getName();
-
-				nativeLibPath = caculateNativeLibPath(currentClassRunningPath);
+						".")).openConnection().getPermission().getName();//running url of current class
+//				String runningPath = (new File(runningURL)).getCanonicalPath();//running path of current class
+				nativeLibPath = caculateNativeLibPath(runningPath);
 				// Add the binary path (including jdic.dll or libjdic.so) to
 				// "java.library.path", since we need to use the native methods
 				// in class InitUtility.
@@ -174,6 +177,7 @@ public class JdicManager {
 	}
 
 	public String getBinaryPath() {
+		System.out.print("native lib path "+nativeLibPath);
 		return nativeLibPath;
 	}
 
@@ -185,22 +189,23 @@ public class JdicManager {
 	 * @throws IOException
 	 * @throws JdicInitException
 	 */
-	private void caculateNativeLibPathBySunJWS() throws IOException,
+	private String caculateNativeLibPathBySunJWS() throws IOException,
 			JdicInitException {
+		String jdicLibFolder = null;
 		ClassLoader cl = this.getClass().getClassLoader();
 		if (cl instanceof JNLPClassLoader) {
 			JNLPClassLoader jnlpCl = (JNLPClassLoader) cl;
-			String jdicLibPath = jnlpCl.findLibrary("jdic");
-			nativeLibPath = (new File(jdicLibPath)).getParentFile()
-					.getCanonicalPath();
+			String jdicLibURL = jnlpCl.findLibrary("jdic");//get lib path by classloder
+			jdicLibFolder = (new File(jdicLibURL)).getParentFile().getCanonicalPath();
 			WebBrowserUtil.trace("running path " + nativeLibPath);
 			isShareNativeInitialized = true;
 		} else {
-			//only run well for sun jre
+			// only run well for sun jre
 			throw new JdicInitException(
 
 					"Unexpected ClassLoader for webstart, only com.sun.jnlp.JNLPClassLoader is supported.");
 		}
+		return jdicLibFolder;
 	}
 
 	/**
