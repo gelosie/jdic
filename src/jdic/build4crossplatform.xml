@@ -1,0 +1,539 @@
+<?xml version="1.0"?>
+<project name="JDIC API source code building script" default="showtargets" basedir=".">
+
+	<!--
+This is the master build scripts for JDIC cross platform version.
+
+Highlights:
+- rebuild share classes
+- unjar all dist/jdic.jar files(platform independent)
+- replace JdicManager and jar commmon files
+- jar platform dependent files
+- copy native libs
+- zip a new release
+
+Top-level target:
+    buildall:       This target will run all of below targets.            
+    clean:          Remove the generated distribution (including files and directories).
+    cleanjar:       Remove the generated jar files for current platform.
+    cleannative:    Remove the generated native binarys for current platform.
+
+-->
+
+	<!-- the top-level package names -->
+	<property name="pkg.jdic.name"      value="org.jdesktop.jdic" />
+	<property name="pkg.desktop.name"   value="${pkg.jdic.name}.desktop" />
+	<property name="pkg.filetypes.name" value="${pkg.jdic.name}.filetypes" />
+	<property name="pkg.browser.name"   value="${pkg.jdic.name}.browser" />
+	<property name="pkg.tray.name"      value="${pkg.jdic.name}.tray" />
+
+	<!-- the path of source directory -->
+	<property name="src.dir"           value="src" />
+	<property name="share.classes.dir" value="${src.dir}/share/classes" />
+	<property name="unix.classes.dir"  value="${src.dir}/unix/classes" />
+	<property name="win32.classes.dir" value="${src.dir}/win32/classes" />
+	<property name="mac.classes.dir"   value="${src.dir}/mac_os_x/classes" />
+	<property name="all.classes.dir"   value="${share.classes.dir}:${unix.classes.dir}:${win32.classes.dir}:${mac.classes.dir}" />
+
+	<!-- the path of file defmailer.properties defining the default mailer 
+       location on Linux/Solaris/FreeBSD -->
+	<property name="unix.classes.defmailer.dir"  
+            value="${src.dir}/unix/classes/org/jdesktop/jdic/desktop/internal/impl/" />
+
+	<property name="unix.native.dir"         value="${src.dir}/unix/native" />
+	<property name="unix.native.jni.dir"     value="${unix.native.dir}/jni" />
+	<property name="unix.native.mozilla.dir" value="${unix.native.dir}/mozilla" />
+
+	<property name="win32.native.dir"         value="${src.dir}/win32/native" />
+	<property name="win32.native.jni.dir"     value="${win32.native.dir}/jni" />
+	<property name="win32.native.ie.dir"      value="${win32.native.dir}/ie" />
+	<property name="win32.native.mozilla.dir" value="${win32.native.dir}/mozilla" />
+
+	<property name="mac.native.dir"         value="${src.dir}/mac_os_x/native" />
+	<property name="mac.native.jni.dir"     value="${mac.native.dir}/jni" />
+
+	<!-- the distribution version and release of this build -->
+	<!-- which is only used in javadoc target -->
+	<property name="version" value="0.9" />
+	<property name="release" value="1" />
+
+	<!-- the generated jar file name -->
+	<property name="jar.file" value="jdic.jar" />
+
+	<target name="showtargets" description="default target showing all available targets">
+		<echo>The top-level targets are:</echo>
+		<echo>buildall:       This target will run all of below targets.</echo>
+		<echo>buildjar:       Build JDIC java classes for current platform.</echo>
+		<echo>buildnative:    Build the native code for current platform.</echo>
+		<echo>builddemo:      Build the jdic demo.</echo>
+		<echo>buildjavadoc:   Build the javadoc for jdic.</echo>
+		<echo>buildtray:      Build the Tray Icon API (package org.jdesktop.jdic.tray) </echo>
+		<echo>                binary for the current platform.</echo>
+		<echo>clean:          Remove the generated distribution (including files and directories).</echo>
+		<echo>cleanjar:       Remove the generated jar files for current platform.</echo>
+		<echo>cleannative:    Remove the generated native binarys for current platform.</echo>
+		<echo/>
+		<echo>The generated distribution is put under *dist* directory.</echo>
+	</target>
+
+	<!-- 
+    -  Initial targets
+    -->
+	<target name="init" description="the init target">
+		<!-- Create the time stamp -->
+		<tstamp/>
+
+		<!-- Set distribution directory  -->
+		<property name="dist.dir" value="dist" />
+
+		<!-- Set platform-dependent distribution directory -->
+		<condition property="dist.native.dir" value="${dist.dir}/windows/x86">
+			<os family="windows" arch="x86" />
+		</condition>
+
+		<condition property="dist.native.dir" value="${dist.dir}/linux/x86">
+			<os name="linux" />
+		</condition>
+
+		<condition property="dist.native.dir" value="${dist.dir}/sunos/sparc">
+			<os name="sunos" arch="sparc"/>
+		</condition>
+
+		<condition property="dist.native.dir" value="${dist.dir}/sunos/x86">
+			<os name="sunos" arch="x86"/>
+		</condition>
+
+		<condition property="dist.native.dir" value="${dist.dir}/freebsd/x86">
+			<os name="freebsd" />
+		</condition>
+
+		<condition property="dist.native.dir" value="${dist.dir}/mac_os_x/ppc">
+			<os name="Mac OS X" />
+		</condition>
+
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist.native.dir}" />
+
+		<echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
+		<echo>+ JDIC API build version ${version} release ${release}</echo>
+		<echo>+ The distribution directory is: .${file.separator}${dist.dir}${file.separator}</echo>
+		<echo>++++++++++++++++++++++++++++++++++++++++++++++++++++</echo>
+	</target>
+
+	<!-- *** Top-level target *** -->
+	<!-- *** Clean the distribution directory *** -->
+	<target name="clean" depends="init"
+          description="clean up the build directory and files">
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${dist.dir}"/>
+		</delete>
+	</target>
+	<target name="cleanjar" depends="init">
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${dist.dir}/org"/>
+		</delete>
+	</target>
+	<target name="cleannative" depends="init">
+		<condition property="cleannative.target" value="cleanwinnative">
+			<os family="windows" />
+		</condition>
+		<condition property="cleannative.target" value="cleanunixnative">
+			<os name="linux"/>
+		</condition>
+		<condition property="cleannative.target" value="cleanunixnative">
+			<os name="sunos"/>
+		</condition>
+		<condition property="cleannative.target" value="cleanunixnative">
+			<os name="freebsd"/>
+		</condition>
+
+		<condition property="cleannative.target" value="cleanmac_os_xnative">
+			<os name="Mac OS X" />
+		</condition>
+		<antcall target="${cleannative.target}" />
+	</target>
+	<target name="cleanwinnative" depends="init" >
+		<exec dir="${win32.native.ie.dir}" executable="nmake" failonerror="yes">
+			<arg line="/f IeEmbed.mak CLEAN"/>
+		</exec>
+		<exec dir="${win32.native.mozilla.dir}" executable="nmake" failonerror="yes">
+			<arg line="/f MozEmbed.mak CLEAN"/>
+		</exec>
+	</target>
+	<target name="cleanunixnative" depends="init" >
+		<exec dir="${unix.native.jni.dir}" executable="make" failonerror="yes">
+			<arg line="clean"/>
+		</exec>
+		<exec dir="${unix.native.mozilla.dir}" executable="make" failonerror="yes">
+			<arg line="clean"/>
+		</exec>
+	</target>
+
+	<!-- *** Top-level target *** -->
+	<!-- *** Build a JDIC API distribution for the current platform *** -->
+	<target name="buildall"
+          description="build a distribution for the current platform.">
+		<antcall target="buildjar" />
+		<antcall target="buildnative" />
+		<antcall target="builddemo" />
+		<antcall target="buildjavadoc" />
+	</target>
+
+	<!-- 
+    - Build jar files
+    -->
+	<target name="buildjar" depends="init" >
+
+		<condition property="jar.target" value="buildwinjar">
+			<os family="windows" />
+		</condition>
+		<condition property="jar.target" value="buildunixjar">
+			<os name="linux"/>
+		</condition>
+		<condition property="jar.target" value="buildunixjar">
+			<os name="sunos"/>
+		</condition>
+		<condition property="jar.target" value="buildunixjar">
+			<os name="freebsd"/>
+		</condition>
+
+		<condition property="jar.target" value="buildmac_os_xjar">
+			<os name="Mac OS X" />
+		</condition>
+
+		<fileset id="share.classes" dir="${dist.dir}" includes="org/**/*.class">
+			<exclude name="org/**/Win*.class" />
+			<exclude name="org/**/Gnome*.class" />
+			<exclude name="org/**/Mac*.class" />
+			<exclude name="org/**/ServiceManagerStub.class" />
+			<exclude name="org/**/AppAssociationReaderFactory.class" />
+			<exclude name="org/**/AppAssociationWriterFactory.class" />
+		</fileset>
+
+		<antcall target="${jar.target}" />
+
+		<!-- generate shared jar file -->
+		<jar destfile="${dist.dir}/jdic.jar" update="false">
+			<fileset refid="share.classes"/>
+		</jar>
+		<move file="${dist.dir}/jdic_stub.jar" todir="${dist.native.dir}/.."/>
+		<!-- remove the generated "org" directory -->
+<!--
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${dist.dir}/org"/>
+		</delete>
+-->
+		<copy file="${unix.classes.defmailer.dir}/defmailer.properties" 
+          todir="${dist.dir}" />
+	</target>
+
+	<target name="buildwinjar" depends="init">
+		<fileset id="win.classes" dir="${dist.dir}" includes="org/**/Win*.class">
+			<include name="org/**/DisplayThread.class" />
+			<include name="org/**/ServiceManagerStub.class" />
+			<include name="org/**/AppAssociationReaderFactory.class" />
+			<include name="org/**/AppAssociationWriterFactory.class" />
+		</fileset>
+		<javac srcdir="${share.classes.dir}:${win32.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" 
+           target="1.4"
+           source="1.4"
+    />
+		<jar destfile="${dist.dir}/jdic_stub.jar" update="false">
+			<fileset refid="win.classes"/>
+		</jar>
+	</target>
+	<target name="buildunixjar" depends="init">
+		<fileset id="unix.classes" dir="${dist.dir}" includes="org/**/Gnome*.class" >
+			<include name="org/**/ServiceManagerStub.class" />
+			<include name="org/**/AppAssociationReaderFactory.class" />
+			<include name="org/**/AppAssociationWriterFactory.class" />
+		</fileset>
+		<javac srcdir="${share.classes.dir}:${unix.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" 
+           target="1.4"
+           source="1.4"
+    />
+		<jar destfile="${dist.dir}/jdic_stub.jar" update="false">
+			<fileset refid="unix.classes"/>
+            <fileset dir="${unix.classes.dir}" includes="org/**/*.png" />
+		</jar>
+	</target>
+	<target name="buildmacjar" depends="init">
+		<fileset id="mac.classes" dir="${dist.dir}" includes="org/**/Mac*.class">
+			<include name="org/**/ServiceManagerStub.class" />
+			<include name="org/**/AppAssociationReaderFactory.class" />
+			<include name="org/**/AppAssociationWriterFactory.class" />
+		</fileset>
+		<javac srcdir="${share.classes.dir}:${mac.classes.dir}"
+           destdir="${dist.dir}"
+           classpath="${dist.dir}" 
+           target="1.4"
+           source="1.4"
+    />
+		<jar destfile="${dist.dir}/jdic_stub.jar" update="false">
+			<fileset refid="mac.classes"/>
+		</jar>
+	</target>
+
+	<!-- *** javadoc *** -->
+	<!-- disable author and version tags output -->
+	<target name="buildjavadoc" depends="init"
+          description="generate javadoc into ${dist.dir}/javadoc" >
+		<javadoc packagenames="${pkg.desktop.name}, ${pkg.filetypes.name}, ${pkg.browser.name}, ${pkg.tray.name}"
+             sourcepath="${all.classes.dir}"
+             destdir="${dist.dir}/javadoc"            
+             author="false"
+             version="false"
+             use="true"
+             Windowtitle="JDIC API V${version} Release ${release}"
+             Header="JDIC API V${version} Release ${release}">
+			<docTitle>
+				<![CDATA[JDIC (JDesktop Integration Components) 
+               <br> API Specification, Version ${version} Release ${release}]]></docTitle>
+			<bottom>
+				<![CDATA[<font size="-1">For more information and documentation on JDIC, 
+               see <a href="https://jdic.dev.java.net">JDIC website</a>. <p>That documentation 
+               contains more detailed, developer-targeted descriptions, with conceptual 
+               overviews, working code examples, license terms and bug report information.
+               <p>Copyright (c) 2004 Sun Microsystems, Inc. All rights reserved. Use is 
+               subject to <a href=
+               "https://jdic.dev.java.net/source/browse/jdic/src/COPYING">license terms</a>. 
+               </font>]]></bottom>
+			</javadoc>
+		</target>
+
+		<!-- *** Top-level target *** -->
+		<!-- *** Build a JDIC API distribution for the current platform *** -->
+		<target name="buildnative"
+          description="build native code for current platform.">
+			<!-- Set the platform-dependent buildall target -->
+			<condition property="native.target" value="buildwin32native">
+				<os family="windows" />
+			</condition>
+
+			<condition property="native.target" value="buildlinuxnative">
+				<os name="linux"/>
+			</condition>
+
+			<condition property="native.target" value="buildsunosnative">
+				<os name="sunos"/>
+			</condition>
+
+			<condition property="native.target" value="buildfreebsdnative">
+				<os name="freebsd"/>
+			</condition>
+
+			<condition property="native.target" value="buildmac_os_xnative">
+				<os name="Mac OS X" />
+			</condition>
+
+			<antcall target="${native.target}" />
+		</target>
+
+		<!--
+    - Build Win32 Native Files
+    -->
+		<target name="buildwin32native" depends="buildwin32jni, buildwin32embed"
+          description="build java and native source code for Win32 platform" >
+		</target>
+
+		<!-- *** Build Win32 native JNI code *** -->
+		<target name="buildwin32jni" depends="init"
+          description="build native jni libraries." >
+			<!-- build jdic.dll -->
+			<exec dir="${win32.native.jni.dir}" executable="nmake" 
+      failonerror="yes" >
+				<arg line="/f jdic.mak CFG='jdic - Win32 Release'"/>
+			</exec>
+
+			<!-- build tray.dll containing the Tray Icon native code -->
+			<exec dir="${win32.native.jni.dir}" executable="nmake" 
+      failonerror="yes" >
+				<arg line="/f jdic.mak CFG='jdic - Win32 Tray'"/>
+			</exec>
+
+			<!-- copy generated .dll file -->
+			<copy file="${win32.native.jni.dir}/Release/jdic.dll" todir="${dist.native.dir}" />
+			<copy file="${win32.native.jni.dir}/Release/tray.dll" todir="${dist.native.dir}" />
+		</target>
+
+		<!-- *** Build Win32 native embeded browser code *** -->
+		<target name="buildwin32embed" depends="init">
+
+			<exec dir="${win32.native.ie.dir}" executable="nmake" failonerror="yes">
+				<arg line="/f IeEmbed.mak CFG='IeEmbed - Win32 Release'"/>
+			</exec>
+
+			<exec dir="${win32.native.mozilla.dir}" executable="nmake" failonerror="yes">
+				<arg line="/f MozEmbed.mak CFG='MozEmbed - Win32 Release'"/>
+			</exec>
+
+			<!-- copy the embeded IE and Mozilla executable -->
+			<copy file="${win32.native.ie.dir}/Release/IeEmbed.exe" todir="${dist.native.dir}" />
+			<copy file="${win32.native.mozilla.dir}/Release/MozEmbed.exe" todir="${dist.native.dir}" />
+		</target>
+
+		<!--
+    - Build Linux Native Files
+    -->
+		<target name="buildlinuxnative" depends="buildunixjni, buildunixembed"
+          description="build native source code for Linux platform" >
+		</target>
+
+		<!--
+    - Build SunOS Native Files
+    -->
+		<!-- This target is the same with buildlinux. -->
+		<target name="buildsunosnative" depends="buildlinuxnative"
+          description="build native source code for Solaris platform" >
+		</target>
+
+		<!--
+    - Build FreeBSD Native Files
+    -->
+		<!-- This target is the same with buildlinux. -->
+		<target name="buildfreebsdnative" depends="buildbsdjni, buildbsdembed"
+          description="build java and native source code for FreeBSD platform" >
+		</target>
+
+		<!-- *** Build BSD native JNI code *** -->
+		<target name="buildbsdjni" depends="init"
+          description="build native jni libraries." >
+			<exec dir="${unix.native.jni.dir}" executable="gmake" failonerror="yes" />
+
+			<!-- copy generated .so file -->
+			<copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.native.dir}" />
+			<copy file="${unix.native.jni.dir}/libtray.so" todir="${dist.native.dir}" />
+		</target>
+
+		<!-- *** Build BSD native embeded browser code *** -->
+		<target name="buildbsdembed" depends="init">
+			<!-- clean the previous build -->
+			<exec dir="${unix.native.mozilla.dir}" executable="gmake" failonerror="yes">
+				<arg line="clean"/>
+			</exec>
+
+			<exec dir="${unix.native.mozilla.dir}" executable="gmake" failonerror="yes" />
+
+			<!-- copy the embeded Mozilla executable -->
+			<antcall target="-copymozembed" />
+		</target>
+
+		<!--
+    - Shared Targets For Unix Distributions
+    -->
+		<!-- *** Build Unix native JNI code *** -->
+		<target name="buildunixjni" depends="init"
+          description="build native jni libraries." >
+			<exec dir="${unix.native.jni.dir}" executable="make" failonerror="yes" />
+
+			<!-- copy generated .so file -->
+			<copy file="${unix.native.jni.dir}/libjdic.so" todir="${dist.native.dir}" />
+			<copy file="${unix.native.jni.dir}/libtray.so" todir="${dist.native.dir}" />
+		</target>
+
+		<!-- *** Build Unix native embeded browser code *** -->
+		<target name="buildunixembed" depends="init">
+			<exec dir="${unix.native.mozilla.dir}" executable="make" failonerror="yes" />
+			<!-- copy the embeded Mozilla executable -->
+			<antcall target="-copymozembed" />
+		</target>
+
+		<!--
+    - Targets name beginning with a hyphen can be used to name targets
+    - that should not be called directly from the command line.
+    -->
+		<target name="-copymozembed" depends="init" >
+			<copy todir="${dist.native.dir}">
+				<fileset dir="${unix.native.mozilla.dir}" includes="*mozembed-*-gtk*"/>
+			</copy>
+			<chmod dir="${dist.native.dir}" perm="+x" includes="*mozembed-*-gtk*" />
+		</target>
+
+		<!--
+    - Build Mac OS Native Files
+    -->
+		<target name="buildmac_os_xnative" depends="buildmacjni"
+          description="build java and native source code for Mac OS X" >
+		</target>
+
+		<!-- *** Build Mac native JNI code *** -->
+		<target name="buildmacjni" depends="init"
+          description="build native jni libraries." >
+			<exec dir="${mac.native.jni.dir}" executable="make" failonerror="yes" />
+
+			<!-- copy generated .jnilib file -->
+			<copy file="${mac.native.jni.dir}/libjdic.jnilib" todir="${dist.native.dir}" />
+		</target>
+
+		<!-- *** Build demo applications into .class files *** -->
+		<target name="builddemo" depends="init"
+    description="build demo classes">
+			<!-- the path of demo directory -->
+			<property name="demo.dir"               value="demo" />
+			<property name="demo.browser.dir"       value="${demo.dir}/Browser" />
+			<property name="demo.filechooser.dir"   value="${demo.dir}/FileChooser" />
+			<property name="demo.fileexplorer.dir"  value="${demo.dir}/FileExplorer" />
+			<property name="demo.filetypes.dir"     value="${demo.dir}/FileTypes" />
+			<property name="demo.simplebrowser.dir" value="${demo.dir}/SimpleBrowser" />
+			<property name="demo.tray.dir"          value="${demo.dir}/Tray" />
+
+			<!-- remove the ".class" files to rebuild the demo apps -->
+			<!--
+      <delete failonerror="false">
+      <fileset dir="${demo.dir}" includes="**/*.class"/>
+    </delete>
+    -->
+			<!-- TO BE DONE: below tasks should be combined to one task -->
+			<javac srcdir="${demo.browser.dir}"
+           destdir="${demo.browser.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
+           source="1.4"
+    />
+			<javac srcdir="${demo.filechooser.dir}"
+           destdir="${demo.filechooser.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
+           source="1.4"
+    />
+			<javac srcdir="${demo.fileexplorer.dir}"
+           destdir="${demo.fileexplorer.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
+           source="1.4"
+    />
+			<javac srcdir="${demo.filetypes.dir}"
+           destdir="${demo.filetypes.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
+           source="1.4"
+    />
+			<javac srcdir="${demo.simplebrowser.dir}"
+           destdir="${demo.simplebrowser.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
+           source="1.4"
+    />
+			<javac srcdir="${demo.tray.dir}"
+           destdir="${demo.tray.dir}"
+           classpath="${dist.dir}/${jar.file}" 
+           target="1.4"
+           source="1.4"
+    />
+
+			<!-- Copy demo apps to a "demo" directory under the distribution directory -->
+			<mkdir dir="${dist.dir}/demo" />
+			<copy todir="${dist.dir}/demo">
+				<fileset dir="${demo.dir}" casesensitive="false" >
+					<include name="README"/>
+					<include name="**/*.java"/>
+					<include name="**/*.class"/>
+					<include name="**/images/**"/>
+				</fileset>
+			</copy>
+		</target>
+	</project>
