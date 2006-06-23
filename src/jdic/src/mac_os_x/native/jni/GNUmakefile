@@ -20,10 +20,10 @@
 
 PLATFORM = mac_os_x
 CXX = g++
-CXXFLAGS = -W -Wall -c -I/System/Library/Frameworks/JavaVM.framework/Headers
+CXXFLAGS = -W -Wall -c -I/System/Library/Frameworks/JavaVM.framework/Headers -I/System/Library/Frameworks/WebKit.framework/Headers
 MMFLAGS = -Wno-protocol -Wundeclared-selector
 LDFLAGS = -dynamiclib
-LDSUFFIXES = -framework JavaVM -framework Cocoa
+LDSUFFIXES = -framework JavaVM -framework Cocoa -framework WebKit
 SO_NAME = libjdic.jnilib
 
 .SUFFIXES: .o .mm
@@ -38,6 +38,8 @@ INCLUDES = -I$(JAVA_HOME)/include \
 
 MMSRCS += MacBrowserService.mm 
 MMSRCS += MacLaunchService.mm 
+MMSRCS += WebKitWebBrowser.mm
+MMSRCS += CC_DMWebKitView.mm
 #MMSRCS += MacMailerService.mm 
 
 CPPSRCS += ../../../share/native/utils/InitUtility.cpp
