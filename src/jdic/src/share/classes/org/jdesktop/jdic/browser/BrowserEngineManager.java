@@ -30,7 +30,7 @@ import org.jdesktop.jdic.init.JdicInitException;
  * Factory pattern used to maitain instances of <code>IBrowserEngine</code>.
  * 
  * @author Alexander Hars,Inventio GmbH Michael Shan
- * 
+ *  
  */
 public class BrowserEngineManager {
 
@@ -46,6 +46,8 @@ public class BrowserEngineManager {
 	public static String MOZILLA = "Mozilla";
 
 	public static String IE = "Internet Explorer";
+
+	public static String WEBKIT = "WebKit";
 
 	/** The set of BrowserConnectors */
 	private static Map engines = new HashMap();
@@ -70,6 +72,7 @@ public class BrowserEngineManager {
 	protected void initExitingEngines() {
 		registerBrowserEngine(IE, new InternetExplorerEngine());
 		registerBrowserEngine(MOZILLA, new MozillaEngine());
+		registerBrowserEngine(WEBKIT, new WebKitEngine());
 	}
 
 	/**
@@ -263,8 +266,8 @@ public class BrowserEngineManager {
 	}
 
 	/**
-	 * Get the active engine.Use the engine set by <code>setActiveEngine</code>else
-	 * use the system default engine.
+	 * Get the active engine.Use the engine set by <code>setActiveEngine</code>
+	 * else use the system default engine.
 	 * 
 	 * @return Returns the activeEngine.
 	 * @throws JdicInitException
