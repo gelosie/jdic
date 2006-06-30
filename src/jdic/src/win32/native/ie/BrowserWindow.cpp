@@ -234,6 +234,8 @@ void __stdcall BrowserWindow::OnStatusTextChange(BSTR Text)
     int len = wcslen(Text);
 	if (len > 0) {
 		if (WideCharToMultiByte(CP_ACP, 0, Text, -1, buf, sizeof(buf) - 1, NULL, NULL) > 0)
-			SendSocketMessage(m_InstanceID, CEVENT_STATUSTEXT_CHANGE, buf);
+		SendSocketMessage(m_InstanceID, CEVENT_STATUSTEXT_CHANGE, buf);
+	}else {
+		SendSocketMessage(m_InstanceID, CEVENT_STATUSTEXT_CHANGE, "");
 	}
 }
