@@ -153,7 +153,12 @@ NS_IMETHODIMP CBrowserImpl::SetStatus(PRUint32 aType, const PRUnichar* aStatus)
         return NS_ERROR_FAILURE;
 
     m_pBrowserFrame->UpdateStatusBarText(aStatus);
-
+    
+     char buf[1024];
+     PRInt32 id = m_pBrowserFrame->GetBrowserId();
+     sprintf(buf, "%s", NS_ConvertUCS2toUTF8(aStatus).get());
+     SendSocketMessage(id, CEVENT_STATUSTEXT_CHANGE, buf);
+        
     return NS_OK;
 }
 
