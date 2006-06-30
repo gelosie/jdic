@@ -167,6 +167,7 @@ void title_change_cb(GtkMozEmbed *embed, GtkBrowser *browser);
 
 void status_text_change_cb(GtkMozEmbed *embed, gpointer request,
                                 gint status, gpointer message, GtkBrowser *browser);
+void link_message_cb      (GtkMozEmbed *embed, GtkBrowser *browser);
 
 // socket message callbak functions
 void SocketMsgHandler(const char *pMsg);

@@ -77,6 +77,9 @@ install_mozembed_cb(GtkBrowser *browser)
         GTK_SIGNAL_FUNC(progress_change_cb), browser);
     gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "progress_all",
         GTK_SIGNAL_FUNC(progress_change_all_cb), browser);
+        // hookup to changes in over-link message
+    gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "link_message",
+		GTK_SIGNAL_FUNC(link_message_cb), browser);
     // hookup to see whenever a new window is requested
     gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "new_window",
         GTK_SIGNAL_FUNC(new_window_cb), browser);
@@ -96,6 +99,7 @@ install_mozembed_cb(GtkBrowser *browser)
     // and height args for a window.open in javascript
     gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "size_to",
         GTK_SIGNAL_FUNC(size_to_cb), browser);
+    
     // hookup to when the window is destroyed
     gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "destroy",
         GTK_SIGNAL_FUNC(destroy_cb), browser);
@@ -501,6 +505,14 @@ void status_text_change_cb(GtkMozEmbed *embed, gpointer request,
     ConvertUtf16ToUtf8(title, buf);
     SendSocketMessage(browser->id, CEVENT_STATUSTEXT_CHANGE, buf.get());
 }
+
+void link_message_cb      (GtkMozEmbed *embed, GtkBrowser *browser)
+{
+    char *message;
+    message = gtk_moz_embed_get_link_message(embed);
+    SendSocketMessage(browser->id, CEVENT_STATUSTEXT_CHANGE, message);
+}
+
 
 // utility functions
 
