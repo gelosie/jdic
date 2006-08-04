@@ -22,6 +22,8 @@
 #include "BrowserWindow.h"
 #include "Message.h"
 
+#define URL_BUFSIZE 2048
+
 BrowserWindow::BrowserWindow() 
 {
     initialized = FALSE;
@@ -61,9 +63,37 @@ BOOL BrowserWindow::PreTranslateMessage(MSG* pMsg)
     // When the browser has the focus, the message is passed to its containing
     // CAxWindow, which lets the control handle the message.
 
-    if ((pMsg->message < WM_KEYFIRST || pMsg->message > WM_KEYLAST) &&
-        (pMsg->message < WM_MOUSEFIRST || pMsg->message > WM_MOUSELAST))
-        return FALSE;
+//    if ((pMsg->message < WM_KEYFIRST || pMsg->message > WM_KEYLAST) &&
+//        (pMsg->message < WM_MOUSEFIRST || pMsg->message > WM_MOUSELAST))
+//        return FALSE;
+
+	if(pMsg->message == WM_SYSKEYDOWN){
+  			LogMsg("menu keydown with key code");
+    		char buffer[URL_BUFSIZE] = {'\0'};
+    		sprintf(buffer, "AltKeyDown=%ld KeyCode=%ld",true,pMsg->wParam);
+    		SendSocketMessage(m_InstanceID, CEVENT_KEY_DOWN, buffer);
+	 }else if(pMsg->message == WM_SYSKEYUP){
+  			LogMsg("menu keydown with key code");
+    		char buffer[URL_BUFSIZE] = {'\0'};
+    		sprintf(buffer, "AltKeyDown=%ld KeyCode=%ld",true,pMsg->wParam);
+    		SendSocketMessage(m_InstanceID, CEVENT_KEY_DOWN, buffer);
+	 }else if (pMsg->message == WM_KEYDOWN){
+  			LogMsg("keydown");
+    		char buffer[URL_BUFSIZE] = {'\0'};
+    		bool cntrDown = ::GetAsyncKeyState(VK_CONTROL) & 0x8000 ? true : false;
+    		bool altDown = ::GetAsyncKeyState(VK_MENU) & 0x8000 ? true : false;
+    		bool shiftDown = ::GetAsyncKeyState(VK_SHIFT) & 0x8000 ? true : false;
+    		sprintf(buffer, "CtrlKeyDown=%ld AltKeyDown=%ld ShiftDown=%ld KeyCode=%ld", cntrDown, altDown, shiftDown, pMsg->wParam);
+    		SendSocketMessage(m_InstanceID, CEVENT_KEY_DOWN, buffer);
+    }else if (pMsg->message == WM_KEYUP){
+  	  			LogMsg("keyup");
+    		  	char buffer[URL_BUFSIZE] = {'\0'};
+    		  	bool cntrDown = ::GetAsyncKeyState(VK_CONTROL) & 0x8000 ? true : false;
+    		  	bool altDown = ::GetAsyncKeyState(VK_MENU) & 0x8000 ? true : false;
+    		  	bool shiftDown = ::GetAsyncKeyState(VK_SHIFT) & 0x8000 ? true : false;
+				sprintf(buffer, "CtrlKeyDown=%ld AltKeyDown=%ld ShiftDown=%ld KeyCode=%ld", cntrDown, altDown, shiftDown, pMsg->wParam);
+			    SendSocketMessage(m_InstanceID, CEVENT_KEY_UP, buffer);
+    }
 
     if (IsChild(::GetFocus())) {
         // give control a chance to translate this message

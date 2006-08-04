@@ -103,6 +103,16 @@ public class WebBrowserEvent extends EventObject {
 	 * Event fired when the status bar text changes.
 	 */
 	public static final int WEBBROWSER_STATUSTEXT_CHANGE = 24 + WEBBROWSER_FIRST;
+	
+	/**
+	 * Event fired when the key put down.
+	 */
+	public static final int WEBBROWSER_KEYDOWN = 34 + WEBBROWSER_FIRST;
+
+	/**
+	 * Event fired when the key put up.
+	 */
+	public static final int WEBBROWSER_KEYUP = 35 + WEBBROWSER_FIRST;
 
 	/**
 	 * Event fired when the initialization of IWebBrowser fails.

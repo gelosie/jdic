@@ -27,11 +27,13 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessControlException;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.jdesktop.jdic.browser.internal.NativeEventData;
@@ -427,7 +429,44 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 				// notify the disposeThread in removeNotify().
 				this.notify();
 			}
-		}
+		} else if (WebBrowserEvent.WEBBROWSER_KEYDOWN == eid
+				|| WebBrowserEvent.WEBBROWSER_KEYUP == eid) {
+			String data = e.getData();
+			if (data != null) {
+				boolean isCtrlDown = false;
+				boolean isAltDown = false;
+				boolean isShiftDown = false;
+				int keyCode = 0;
+				int modifer =0;
+
+				StringTokenizer tokenizer = new StringTokenizer(data, " ");				
+				while (tokenizer.hasMoreTokens()) {
+					String token = tokenizer.nextToken();
+					if (token != null) {						
+						if (token.startsWith("CtrlKeyDown=")
+								&& isPressed("CtrlKeyDown=", token)) {
+							modifer = KeyEvent.CTRL_MASK;
+							continue;
+						}
+						if (token.startsWith("AltKeyDown=")
+								&& isPressed("AltKeyDown=", token)) {
+							modifer = KeyEvent.ALT_MASK;
+							continue;
+						}
+						if (token.startsWith("ShiftDown=")
+								&& isPressed("ShiftDown=", token)) {
+							modifer = KeyEvent.SHIFT_MASK;
+							continue;
+						}
+						if (token.startsWith("KeyCode=")) {
+							keyCode = Integer.parseInt(token.replaceFirst(
+									"KeyCode=", ""));							
+						}
+					}					
+				}//end while
+				fireMenuKeyEvent(modifer,keyCode);
+			}
+		}//end key event dealing 
 
 		// for the normal case, call the corresponding method in listeners.
 		int size;
@@ -472,6 +511,25 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		}
 	}
 
+	/**
+	 * Check wheater a key is pressed by the key event msg 
+	 * @param keyEventMsg
+	 * @param token
+	 * @return
+	 */	
+	private static boolean isPressed(String keyEventMsg, String token) {
+		return Integer.parseInt(token.replaceFirst(keyEventMsg, "")) == 1;
+	}
+	
+	private static void fireMenuKeyEvent (int modifer, int keyCode) {
+		WebBrowser webBrowser = new WebBrowser();
+		KeyEvent ke = null;
+		ke = new KeyEvent(webBrowser, KeyEvent.KEY_PRESSED, System
+				.currentTimeMillis(), modifer, keyCode,(char)0);//use 0 as the charcode here
+		Toolkit tk = Toolkit.getDefaultToolkit();
+		tk.getSystemEventQueue().postEvent(ke);
+	}
+	
 	/**
 	 * Adds a <code>WebBrowserEvent</code> listener to the listener list. If
 	 * listener is null, no exception is thrown and no action is performed.

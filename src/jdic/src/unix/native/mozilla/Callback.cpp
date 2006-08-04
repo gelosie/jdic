@@ -108,6 +108,86 @@ install_mozembed_cb(GtkBrowser *browser)
         GTK_SIGNAL_FUNC(title_change_cb), browser);
     gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "status_change",
         GTK_SIGNAL_FUNC(status_text_change_cb), browser);
+        // key event signals
+    gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "dom_key_down",
+		GTK_SIGNAL_FUNC(dom_key_down_cb), browser);
+    gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "dom_key_press",
+		GTK_SIGNAL_FUNC(dom_key_press_cb), browser);
+    gtk_signal_connect(GTK_OBJECT(browser->mozEmbed), "dom_key_up",
+		GTK_SIGNAL_FUNC(dom_key_up_cb), browser);
+}
+
+gint dom_key_down_cb (GtkMozEmbed *embed, nsIDOMKeyEvent *event,
+			   GtkBrowser *browser)
+{
+	LogMsg("keydown!");
+	if (event == NULL)
+	{
+		g_warning ("dom_key_down_cb: domevent NULL");
+		return FALSE;
+	}
+    nsCOMPtr <nsIDOMKeyEvent> keyEvent;
+    keyEvent = do_QueryInterface(event);
+    PRUint32 keyCode = 0;
+    PRBool shiftKey = false;
+    PRBool altKey = false;
+    PRBool ctrlKey = false;
+    keyEvent->GetKeyCode(&keyCode);
+    keyEvent->GetShiftKey(&shiftKey);
+    keyEvent->GetAltKey(&altKey);
+    keyEvent->GetCtrlKey(&ctrlKey);
+    
+    char buf[1024]={'\0'};
+    sprintf(buf, "CtrlKeyDown=%ld AltKeyDown=%ld ShiftDown=%ld KeyCode=%ld", ctrlKey, altKey, shiftKey, keyCode);
+    SendSocketMessage(browser->id, CEVENT_KEY_DOWN, buf);
+    
+  return NS_OK;
+}
+
+gint dom_key_press_cb (GtkMozEmbed *embed, nsIDOMKeyEvent *event,
+			   GtkBrowser *browser)
+{
+	if (event == NULL)
+	{
+		g_warning ("dom_key_press_cb: domevent NULL");
+		return FALSE;
+	}
+   nsCOMPtr <nsIDOMKeyEvent> keyEvent;
+   keyEvent = do_QueryInterface(event);
+   PRUint32 charCode = 0;
+   keyEvent->GetCharCode(&charCode);
+   g_print("dom_key_press_cb\n");
+   g_print("char charCode is %d\n", charCode);
+   
+   return NS_OK;
+}
+
+gint dom_key_up_cb (GtkMozEmbed *embed, nsIDOMKeyEvent *event,
+			   GtkBrowser *browser)
+{
+	LogMsg("keyup!");
+	if (event == NULL)
+	{
+		g_warning ("dom_key_up_cb: domevent NULL");
+		return FALSE;
+	}
+    nsCOMPtr <nsIDOMKeyEvent> keyEvent;
+    keyEvent = do_QueryInterface(event);
+    PRUint32 keyCode = 0;
+    PRBool shiftKey = false;
+    PRBool altKey = false;
+    PRBool ctrlKey = false;
+   
+    keyEvent->GetKeyCode(&keyCode);
+    keyEvent->GetShiftKey(&shiftKey);
+    keyEvent->GetAltKey(&altKey);
+    keyEvent->GetCtrlKey(&ctrlKey);
+           
+    char buf[1024]={'\0'};
+    sprintf(buf, "CtrlKeyDown=%ld AltKeyDown=%ld ShiftDown=%ld KeyCode=%ld", ctrlKey, altKey, shiftKey, keyCode);
+    SendSocketMessage(browser->id, CEVENT_KEY_UP, buf);
+    
+  return NS_OK;
 }
 
 void
