@@ -29,12 +29,19 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessControlException;
+import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.jdesktop.jdic.browser.internal.NativeEventData;
 import org.jdesktop.jdic.browser.internal.NativeEventThread;
@@ -71,6 +78,14 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 
 	private static final String FILE = "file";
 
+	private static final String JAR = "jar";
+	
+	private static final String HTTP = "http";
+	
+	private static final String HTTPS = "https";
+	
+	private static final String FTP = "ftp";
+	
 	private MyFocusListener focusListener = new MyFocusListener();
 
 	// eventThread should be initialized after JdicManager.initShareNative()
@@ -656,6 +671,16 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 				e.printStackTrace();
 			}
 		}
+		if (!isNativeSafe(url)){
+			if (url.getProtocol().equals(JAR)) {
+			try {
+				urlString = toFileUrl(url).toString();
+			} catch (IOException e) {
+				WebBrowserUtil.error(e.getMessage());
+				e.printStackTrace();
+			}
+			}
+		}
 
 		// Both POST data and headers are null, just navigate to the URL.
 		if ((postData == null) && (headers == null)) {
@@ -676,6 +701,86 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		}
 	}
 
+	/**
+	 * @param location
+	 */
+	private static boolean isNativeSafe(URL location)  {
+		String protocol = location.getProtocol().intern();
+		//	 TODO ask JDIC to include an getSupportedProtocols() method in JDIC
+		//	 Browser API
+		return (protocol.equals(HTTP) || protocol.equals(HTTPS) || protocol.equals(FILE)|| protocol.equals(FTP));
+	}
+
+	
+	/**
+	 * Takes a URL that points to a resource within a JAR, unzips it onto the
+	 * filesystem, and returns a file: url to it
+	 * 
+	 * @param location
+	 *            points to a resource within a JAR
+	 * @return file: URL to the specified jar: URL resource
+	 * @throws IOException
+	 * @throws IOException
+	 */
+	public static URL toFileUrl(URL location) throws IOException {
+		File copiedFile =null;
+		JarURLConnection juc = (JarURLConnection) location.openConnection();
+		String toAccessEntryFullName = juc.getEntryName();
+		String runningTmpPath=System.getProperty("java.io.tmpdir");
+		WebBrowserUtil.trace("using system tmp path "+runningTmpPath);
+		File sysTempDir = new File(runningTmpPath);		
+		File tempJarDir = new File(sysTempDir.getCanonicalFile().getAbsolutePath()+File.separator+"jartemp");
+		
+		if(!WebBrowserUtil.IS_OS_WINDOWS){
+			//to avoid no write privilege
+			Runtime.getRuntime().exec(
+					"chmod a+wr " + sysTempDir);
+			}
+		
+		if (!tempJarDir.exists()) {
+			WebBrowserUtil.trace(tempJarDir.getAbsolutePath()+ " doesn't exist.");
+			tempJarDir.mkdirs();
+			WebBrowserUtil.trace(tempJarDir.getAbsolutePath()+" is created.");
+		}
+		
+		JarFile jarFile = juc.getJarFile();
+		for (Enumeration en = jarFile.entries(); en.hasMoreElements();) {
+			ZipEntry entry = (ZipEntry) en.nextElement();
+			if (entry.isDirectory())
+				continue;
+			String entryPath = entry.getName();
+
+			if (entryPath.equals(toAccessEntryFullName))
+			{
+				copiedFile = new File(tempJarDir, entryPath);
+				copiedFile.getParentFile().mkdirs();
+				InputStream is = jarFile.getInputStream(entry);
+				OutputStream os = new FileOutputStream(copiedFile);
+
+				//copy is to os
+				int perNum = 1024;
+				byte[] contents = new byte[perNum];
+				int readcount = 0;
+				while (true) {
+					readcount = is.read(contents, 0, perNum);
+					if (readcount < 0) {
+						break;
+					}
+					if (readcount < perNum) {
+						byte[] realContent = new byte[readcount];
+						System.arraycopy(contents, 0, realContent, 0,readcount);
+						os.write(realContent);
+						continue;
+					}
+					os.write(contents);
+				}
+			}
+		}		
+		WebBrowserUtil.trace("realFile.getAbsolutePath="+copiedFile.getAbsolutePath());
+		WebBrowserUtil.trace("realFile.toURL="+copiedFile.toURL());
+		return copiedFile.toURL();
+	}
+	
 	/**
 	 * Synchronously navigates to a resource identified by a URL.
 	 * 
