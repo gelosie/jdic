@@ -429,8 +429,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 				// notify the disposeThread in removeNotify().
 				this.notify();
 			}
-		} else if (WebBrowserEvent.WEBBROWSER_KEYDOWN == eid
-				|| WebBrowserEvent.WEBBROWSER_KEYUP == eid) {
+		} else if (WebBrowserEvent.WEBBROWSER_KEYDOWN == eid) {
 			String data = e.getData();
 			if (data != null) {
 				boolean isCtrlDown = false;

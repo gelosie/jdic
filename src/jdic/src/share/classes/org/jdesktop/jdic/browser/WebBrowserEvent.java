@@ -109,10 +109,10 @@ public class WebBrowserEvent extends EventObject {
 	 */
 	public static final int WEBBROWSER_KEYDOWN = 34 + WEBBROWSER_FIRST;
 
-	/**
-	 * Event fired when the key put up.
-	 */
-	public static final int WEBBROWSER_KEYUP = 35 + WEBBROWSER_FIRST;
+//	/**
+//	 * Event fired when the key put up.
+//	 */
+//	public static final int WEBBROWSER_KEYUP = 35 + WEBBROWSER_FIRST;
 
 	/**
 	 * Event fired when the initialization of IWebBrowser fails.
