@@ -164,8 +164,8 @@ void update_nav_buttons      (GtkBrowser *browser);
 
 gint dom_mouse_click_cb   (GtkMozEmbed *embed, nsIDOMMouseEvent *event, GtkBrowser *browser);
 gint dom_key_down_cb      (GtkMozEmbed *embed, nsIDOMKeyEvent *event,GtkBrowser *browser);
-gint dom_key_press_cb     (GtkMozEmbed *embed, nsIDOMKeyEvent *event,GtkBrowser *browser);
-gint dom_key_up_cb        (GtkMozEmbed *embed, nsIDOMKeyEvent *event,GtkBrowser *browser);
+//gint dom_key_press_cb     (GtkMozEmbed *embed, nsIDOMKeyEvent *event,GtkBrowser *browser);
+//gint dom_key_up_cb        (GtkMozEmbed *embed, nsIDOMKeyEvent *event,GtkBrowser *browser);
 
 void title_change_cb(GtkMozEmbed *embed, GtkBrowser *browser);
 
