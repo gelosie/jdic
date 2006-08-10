@@ -55,6 +55,8 @@
 #define CEVENT_COMMAND_STATE_CHANGE 3022
 #define CEVENT_TITLE_CHANGE         3023
 #define CEVENT_STATUSTEXT_CHANGE    3024
+#define CEVENT_KEY_DOWN             3034
+//#define CEVENT_KEY_UP               3035
 
 #define CEVENT_INIT_FAILED          3041
 #define CEVENT_INIT_WINDOW_SUCC     3042
