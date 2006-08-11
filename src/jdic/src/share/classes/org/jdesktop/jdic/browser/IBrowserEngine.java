@@ -123,5 +123,9 @@ public interface IBrowserEngine {
 	 *
 	 */
 	public boolean isInitialized();
-
+	/**
+	 * 
+	 * @return a WebBrowser instance
+	 */
+	public IWebBrowser getWebBrowser();
 }

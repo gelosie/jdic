@@ -386,4 +386,10 @@ public class MozillaEngine implements IBrowserEngine {
 	public boolean isInitialized() {
 		return initialized;
 	}
+	/**
+	 * web browser is returned
+	 */
+	public IWebBrowser getWebBrowser() {
+		return new WebBrowser();
+	}
 }

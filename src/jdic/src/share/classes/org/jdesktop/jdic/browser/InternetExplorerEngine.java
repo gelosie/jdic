@@ -224,4 +224,11 @@ public class InternetExplorerEngine implements IBrowserEngine {
 	public boolean isInitialized() {
 		return initialized;
 	}
+	
+	/**
+	 * WebBrowser is used
+	 */
+	public IWebBrowser getWebBrowser() {
+		return new WebBrowser();
+	}
 }
