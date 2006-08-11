@@ -649,7 +649,8 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 *            example, <code>"username=myid&password=mypasswd"
 	 *                  </code>
 	 * @param headers
-	 *            the HTTP headers to send with the HTTP POST transaction.
+	 *            the HTTP headers to send with the HTTP POST transaction.For
+	 *            ex,<code>"content-type:text/html\r\ncontent-length:10"</code>
 	 * @since 0.9.2
 	 */
 	public void setURL(URL url, String postData, String headers) {

@@ -110,6 +110,22 @@ public interface IWebBrowser {
 	 */
 	public void setURL(URL url, String postData);
 
+    /**
+	 * HTTP headers to send to the server.
+	 * 
+	 * @param url
+	 *            the URL to navigate to.
+	 * @param postData
+	 *            the post data to send with the HTTP POST transaction. For
+	 *            example, <code>"username=myid&password=mypasswd"
+	 *                  </code>
+	 * @param headers
+	 *            the HTTP headers to send with the HTTP POST transaction.For
+	 *            ex,<code>"content-type:text/html\r\ncontent-length:10"</code>
+	 * @since 0.9.2
+	 */
+	public void setURL(URL url, String postData, String headers);
+
 	/**
 	 * Returns the HTML content of a document, opened in a browser.
 	 * 
