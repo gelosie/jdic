@@ -187,7 +187,7 @@ class WebKitEngine implements IBrowserEngine {
 	 * return webkit browser under mac
 	 */
 	public IWebBrowser getWebBrowser() {
-		// this is mac os specified browser,which is not accesible under win/unix
+		// this is mac os specified browser,which is not accessible under win/unix
 		String webkitbrowser = "org.jdesktop.jdic.browser.WebKitWebBrowser";
 		try {
 			return (IWebBrowser) Class.forName(webkitbrowser).newInstance();
