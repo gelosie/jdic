@@ -24,7 +24,7 @@
  
 #include "CC_DMWebKitView.h"
 #include "org_jdesktop_jdic_browser_WebKitWebBrowser.h"
-
+#include "WebBrowserUtil.h"
 JavaVM *JVM = NULL;
 
 
@@ -75,4 +75,39 @@ JNIEXPORT jint JNICALL Java_org_jdesktop_jdic_browser_WebKitWebBrowser_createNSV
     NS_ENDHANDLER;
 
     return (jint) webKitView;
+}
+
+
+/*
+ * Class:     org_jdesktop_jdic_browser_internal_WebBrowserUtil
+ * Method:    nativeGetBrowserPath
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL 
+Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetBrowserPath
+  (JNIEnv *env, jclass) {
+    const char*  browserPath = "/System/Library/Frameworks/WebKit.framework/WebKit";
+    return env->NewStringUTF(browserPath);
+}
+
+/*
+ * Class:     org_jdesktop_jdic_browser_internal_WebBrowserUtil
+ * Method:    nativeGetMozillaGreHome
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL 
+Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeGetMozillaGreHome
+  (JNIEnv *env, jclass) {
+    return 0;
+}
+
+/*
+ * Class:     org_jdesktop_jdic_browser_internal_WebBrowserUtil
+ * Method:    nativeSetEnv
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL 
+Java_org_jdesktop_jdic_browser_internal_WebBrowserUtil_nativeSetEnv
+  (JNIEnv *env, jclass) {
+  
 }
