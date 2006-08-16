@@ -758,28 +758,19 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 				InputStream is = jarFile.getInputStream(entry);
 				OutputStream os = new FileOutputStream(copiedFile);
 
-				//copy is to os
-				int perNum = 1024;
+				// copy is to os
+				int perNum = 1024;// cp 1024 bytes each time
 				byte[] contents = new byte[perNum];
-				int readcount = 0;
-				while (true) {
-					readcount = is.read(contents, 0, perNum);
-					if (readcount < 0) {
-						break;
-					}
-					if (readcount < perNum) {
-						byte[] realContent = new byte[readcount];
-						System.arraycopy(contents, 0, realContent, 0,readcount);
-						os.write(realContent);
-						continue;
-					}
-					os.write(contents);
+				int readLengh = 0;
+				while ((readLengh = is.read(contents, 0, perNum)) > 0) {
+					os.write(contents, 0, readLengh);
 				}
 			}
-		}		
-		WebBrowserUtil.trace("realFile.getAbsolutePath="+copiedFile.getAbsolutePath());
-		WebBrowserUtil.trace("realFile.toURL="+copiedFile.toURL());
-		return copiedFile.toURL();
+		}
+		WebBrowserUtil.trace("realFile.getAbsolutePath="
+				+ copiedFile.getAbsolutePath());
+		WebBrowserUtil.trace("realFile.toURL=" + copiedFile.toURI().toURL());
+		return copiedFile.toURI().toURL();
 	}
 	
 	/**
