@@ -133,7 +133,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_mpcontrol_winamp_WinampControl_add
    COPYDATASTRUCT data;
    data.dwData = 100;
    data.lpData = buf;
-   data.cbData = (*env)->GetStringLength(env, str);
+   data.cbData = ((*env)->GetStringLength(env, str))+1;
    
    SendMessage((HWND)hwnd_winamp, 0x4A,0,(long) &data);
    
