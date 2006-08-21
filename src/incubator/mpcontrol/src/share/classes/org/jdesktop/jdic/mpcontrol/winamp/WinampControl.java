@@ -22,8 +22,10 @@ package org.jdesktop.jdic.mpcontrol.winamp;
 
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.logging.Logger;
 
 import org.jdesktop.jdic.mpcontrol.IMediaPlayer;
@@ -207,9 +209,16 @@ public class WinampControl implements IMediaPlayer {
         	if (path.startsWith("/")) 
         		path = path.substring(1);
         	
-        	log.info("path:"+path);
-
-        	addMedia(path);
+        	try {
+				path = URLDecoder.decode(path, "utf-8");
+	        	path = path.replace('/', '\\');
+	        	log.info("path:"+path);
+	
+	        	addMedia(path);
+        	} catch (UnsupportedEncodingException e) {
+        		e.printStackTrace();
+        		throw new RuntimeException("Something serious happened:"+e.getMessage(),e);
+        	}
         	
         } else {
             log.warning(
