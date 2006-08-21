@@ -60,7 +60,9 @@ public class StartPlaying {
                 } catch (MalformedURLException e) {
 	
                     System.out.println("malformed url:" + args[i]);
-                    player.setMediaLocation(new File(args[i]).toURI().toURL());
+                    URL url = new File(args[i]).toURI().toURL();
+                    System.out.println("file url:"+url);
+                    player.setMediaLocation(url);
                     ISongInfo song = player.getCurrentSong();
 
                     System.out.println(
