@@ -20,9 +20,9 @@
 
 PLATFORM = mac_os_x
 CXX = g++
-CXXFLAGS = -W -Wall -c -I/System/Library/Frameworks/JavaVM.framework/Headers -I/System/Library/Frameworks/WebKit.framework/Headers
+CXXFLAGS = -W -Wall -c -I/System/Library/Frameworks/JavaVM.framework/Headers -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc
 MMFLAGS = -Wno-protocol -Wundeclared-selector
-LDFLAGS = -dynamiclib
+LDFLAGS = -dynamiclib -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc
 LDSUFFIXES = -framework JavaVM -framework Cocoa -framework WebKit
 SO_NAME = libjdic.jnilib
 
