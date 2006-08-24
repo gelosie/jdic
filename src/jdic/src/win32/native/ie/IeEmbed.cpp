@@ -219,20 +219,26 @@ void CommandProc(char* pInputChar)
     HRESULT hRes;
     int instanceNum;
     int eventID;
-    char eventMessage[1024];
+    char *eventMessage;
+    int eventMessageBufLenth=strlen(pInputChar);
+    if((eventMessage=new char[eventMessageBufLenth+1])==NULL){
+    	LogMsg("Haven't enough memory!");
+    	return;
+    }
+    memset(eventMessage,'\0',eventMessageBufLenth+1);
 
     // Decompose the socket message string.
     // NOTE: the "," character is used as the message field delimiter to 
     //       compose/decompose socket message strings. Which should be 
     //       identical between the Java side and native side.
     int i = sscanf(pInputChar, "%d,%d,%s", &instanceNum, &eventID, 
-        &eventMessage);
+        eventMessage);
     if (i < 2) 
     {
         delete pInputChar;
         return;
     }
-
+	delete [] eventMessage;
     // In case that the last message string argument contains spaces, sscanf 
     // returns before the first space. Below line returns the complete message
     // string.
@@ -337,13 +343,12 @@ void CommandProc(char* pInputChar)
     case JEVENT_NAVIGATE_POST: 
         {
             // Parse the post fields including url, post data and headers.
-            char urlBuf[1024], postDataBuf[1024], headersBuf[1024];
-            memset(urlBuf, '\0', 1024);
-            memset(postDataBuf, '\0', 1024);
-            memset(headersBuf, '\0', 1024);
+            char * urlBuf;
+			char * postDataBuf;
+			char * headersBuf;
 
             ParsePostFields(mMsgString, instanceNum, eventID, 
-                            urlBuf, postDataBuf, headersBuf);
+                            &urlBuf, &postDataBuf, &headersBuf);
 
             pBrowserWnd = (BrowserWindow *) ABrowserWnd[instanceNum];
             ATLASSERT(pBrowserWnd != NULL);
@@ -399,6 +404,9 @@ void CommandProc(char* pInputChar)
             }
             VariantClear(&vHeaders);
             VariantClear(&vPostData);
+            delete [] urlBuf;
+            delete [] postDataBuf;
+            delete [] headersBuf;
             break;
         }
     case JEVENT_GOBACK:

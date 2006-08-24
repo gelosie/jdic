@@ -123,7 +123,7 @@ char* TuneJavaScript(const char* javaScript);
 //   On error, -1 is returned.
 int ParsePostFields(const char* postMessage, 
                     const int instanceNum, const int eventID, 
-                    char* urlBuf, char* postDataBuf, char* headersBuf);
+                    char** urlBuf, char** postDataBuf, char** headersBuf);
 
 // helper function for logging the given message to the predefined,
 // log file "JDIC.log" under the *current/working* directory. Usage:

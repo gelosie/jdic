@@ -225,7 +225,7 @@ char* TuneJavaScript(const char* javaScript)
 // which must be identical between the Java side and native side.
 int ParsePostFields(const char* postMessage, 
                     const int instanceNum, const int eventID, 
-                    char* urlBuf, char* postDataBuf, char* headersBuf)
+                    char** urlBuf, char** postDataBuf, char** headersBuf)
 {
     // Construct the message string field delimiter with the instance 
     // number and the event ID.
@@ -238,16 +238,30 @@ int ParsePostFields(const char* postMessage,
     fieldPtr = (char*)postMessage;
     char *delimiterPtr;
     delimiterPtr = strstr(fieldPtr, fieldDelimiter);
-    strncpy(urlBuf, fieldPtr, delimiterPtr - fieldPtr); 
-
+    int urlBufLen=delimiterPtr - fieldPtr;
+    if(urlBufLen>0){
+    	*urlBuf=new char[urlBufLen+1];
+    	memset(*urlBuf,'\0',urlBufLen+1);
+    	strncpy(*urlBuf, fieldPtr,urlBufLen);
+    }
+    
     // Get post data field.
     fieldPtr = delimiterPtr + strlen(fieldDelimiter);
     delimiterPtr = strstr(fieldPtr, fieldDelimiter);
-    strncpy(postDataBuf, fieldPtr, delimiterPtr - fieldPtr);
-
+    int postBufLen=delimiterPtr - fieldPtr;
+    if(postBufLen>0){
+    	*postDataBuf=new char[postBufLen+1];
+    	memset(*postDataBuf,'\0',postBufLen+1);
+    	strncpy(*postDataBuf, fieldPtr, postBufLen);
+    }
+    
     // Get headers field.
-    strcpy(headersBuf, delimiterPtr + strlen(fieldDelimiter));
-
+    int headerBufLen = strlen(postMessage)-urlBufLen-postBufLen-strlen(fieldDelimiter);
+	if(headerBufLen>0){
+		*headersBuf=new char[headerBufLen+1];
+		memset(*headersBuf,'\0',headerBufLen+1);
+        strcpy(*headersBuf, delimiterPtr + strlen(fieldDelimiter));
+	}
     return 0;
 }
 

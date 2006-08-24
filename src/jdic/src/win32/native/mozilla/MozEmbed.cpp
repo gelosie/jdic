@@ -567,14 +567,20 @@ void MozEmbedApp::MessageReceived(const char * msg)
 {
     int instanceNum;
     int eventID;
-    char eventMessage[1024];
+    char *eventMessage;
+    int eventMessageBufLenth=strlen(msg);
+    if((eventMessage=new char[eventMessageBufLenth+1])==NULL){
+    	LogMsg("Haven't enough memory!");
+    	return;
+    }
+    memset(eventMessage,'\0',eventMessageBufLenth+1);
 
     if (mInitFailed)
         return;
 
     int i = sscanf(msg, "%d,%d,%s", &instanceNum, &eventID, eventMessage);
     ASSERT(i >= 2);
-
+	
     // In case that the last message string argument contains spaces, sscanf 
     // returns before the first space. Below line returns the complete message
     // string.
@@ -584,7 +590,7 @@ void MozEmbedApp::MessageReceived(const char * msg)
     mMsgString++;
     LogMsg("eventMessage:");
     LogMsg(eventMessage);  //need to visit eventMessage.
-
+	delete [] eventMessage;
     switch (eventID) {
     case JEVENT_INIT:
         if (!InitMozilla()) {
@@ -639,15 +645,13 @@ void MozEmbedApp::MessageReceived(const char * msg)
         break;
     case JEVENT_NAVIGATE_POST:
         ASSERT(i == 3);
-
-        // Parse the post fields including url, post data and headers.
-        char urlBuf[1024], postDataBuf[1024], headersBuf[1024];
-        memset(urlBuf, '\0', 1024);
-        memset(postDataBuf, '\0', 1024);
-        memset(headersBuf, '\0', 1024);
+		// Parse the post fields including url, post data and headers.
+        char *urlBuf; 
+		char *postDataBuf;
+		char *headersBuf; 
 
         ParsePostFields(mMsgString, instanceNum, eventID, 
-                        urlBuf, postDataBuf, headersBuf);
+                        &urlBuf, &postDataBuf, &headersBuf);
 
         char tmpHeadersBuf[2048];
         memset(tmpHeadersBuf, '\0', 2048);
@@ -661,7 +665,9 @@ void MozEmbedApp::MessageReceived(const char * msg)
         
         ((CBrowserFrame *)m_FrameWndArray[instanceNum])
             ->m_wndBrowserView.OpenURL(urlBuf, postDataParam, tmpHeadersBuf);
-
+        delete [] urlBuf;
+        delete [] postDataBuf;
+        delete [] headersBuf;
         break;
     case JEVENT_GOBACK:
         ((CBrowserFrame *)m_FrameWndArray[instanceNum])->m_wndBrowserView.PostMessage(WM_COMMAND, ID_NAV_BACK);

@@ -420,13 +420,19 @@ void
 HandleSocketMessage(gpointer data, gpointer user_data)
 {
     int instance, type;
-    char mMsgBuf[1024];
     char *msg = (char *)data;
+  	char *mMsgBuf;
+    int eventMessageBufLenth=strlen(msg);
+    if((mMsgBuf=new char[eventMessageBufLenth+1])==NULL){
+    	LogMsg("Haven't enough memory!");
+    	return;
+    }
+    memset(mMsgBuf,'\0',eventMessageBufLenth+1);
 
     int i = sscanf(msg, "%d,%d,%s", &instance, &type, mMsgBuf);
 
     NS_ASSERTION(i >= 2, "Wrong message format\n");
-
+	delete [] mMsgBuf;
     // In case that the last message string argument contains spaces, sscanf 
     // returns before the first space. Below line returns the complete message
     // string.
@@ -504,13 +510,12 @@ HandleSocketMessage(gpointer data, gpointer user_data)
         NS_ASSERTION(i == 3, "Wrong message format\n");
 
         // Parse the post fields including url, post data and headers.
-        char urlBuf[1024], postDataBuf[1024], headersBuf[1024];
-        memset(urlBuf, '\0', 1024);
-        memset(postDataBuf, '\0', 1024);
-        memset(headersBuf, '\0', 1024);
+        char *urlBuf; 
+		char *postDataBuf;
+		char *headersBuf; 
 
         ParsePostFields(mMsgString, instance, type, 
-                        urlBuf, postDataBuf, headersBuf);
+                        &urlBuf, &postDataBuf, &headersBuf);
 
         char tmpHeadersBuf[2048];
         memset(tmpHeadersBuf, '\0', 2048);
@@ -524,6 +529,9 @@ HandleSocketMessage(gpointer data, gpointer user_data)
 
         pBrowser = (GtkBrowser *)gBrowserArray[instance];
         OpenURL(pBrowser, urlBuf, postDataParam, tmpHeadersBuf);
+        delete [] urlBuf;
+        delete [] postDataBuf;
+        delete [] headersBuf;
         break;
     case JEVENT_GOBACK:
         pBrowser = (GtkBrowser *)gBrowserArray[instance];
