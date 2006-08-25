@@ -163,7 +163,7 @@ applications) first-class citizens of current desktop platforms without sacrific
 platform independence. The JDIC project home page is: <a href="https://jdic.dev.java.net">https://jdic.dev.java.net</a>.<BR>             
 <SPAN          
       style="FONT-WEIGHT: bold"><BR>Q. 
-      </SPAN>  <a name="When was JDIC made public?"> When was JDIC made public?</a><SPAN     
+</SPAN>  <a name="When was JDIC made public?"> When was JDIC made public?</a><SPAN     
       style="FONT-WEIGHT: bold"><br> 
       </SPAN> <b> A.</b> The JDIC project was first open sourced during JavaOne    
 2004 (June 28 - July 1). The code is                     
@@ -460,52 +460,54 @@ How to deploy a JDIC Application using Java Web Start?</a><br>
    <p><span style="font-weight: bold">Q. 
       </span><a name="How to choose IE or Mozilla browser?"> 
       How to choose IE or Mozilla browser?</a><br>
-      <span style="font-weight: bold">A. </span>Before loading a page that uses WebBrowser instance, set the active brower engine through BrowserEngineManager.Sample as below:<br>
-      <code>
-      <font color="#000080"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">ChooseBrowserSample</font><font color="#000000">{</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;static&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">main</font><font color="#000000">(</font><font color="#000000">String</font><font color="#000000">[]&nbsp;</font><font color="#000000">args</font><font color="#000000">){</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JFrame&nbsp;frame&nbsp;=&nbsp;</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">JFrame</font><font color="#000000">("JDIC API Demo - ChooseBrowserSample")</font><font color="#000000">;</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JPanel&nbsp;panel&nbsp;=&nbsp;</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">JPanel</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">panel.setLayout(</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">BorderLayout</font><font color="#000000">())</font><font color="#000000">;</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">panel.setPreferredSize(</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">Dimension(700,500)</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-			
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">BrowserEngineManager&nbsp;bem=&nbsp;BrowserEngineManager.instance();</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">bem.setActiveEngine(BrowserEngineManager.MOZILLA);</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">IBrowserEngine&nbsp;be=bem.getActiveEngine();</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#008000">//the path that constains xpcom.dll</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">be.setEnginePath("d:\\mozilla\\bin\\mozilla.exe");</font><br/>
-					
-					<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#008000">//For IE, setActiveEngine is enough</font><br/>
-					<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#008000">//bem.setActiveEngine(BrowserEngineManager.IE);</font><br/>
-						
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">final&nbsp;WebBrowser&nbsp;webBrowser&nbsp;=&nbsp;</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">WebBrowser</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>try</b>{</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">webBrowser.setURL(</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">URL</font><font color="#000000">(</font><font color="#008000"><b>&#34;http://www.google.com&#34;</b></font><font color="#000000">))</font><font color="#000000">;</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080">}&nbsp;<b>catch</b></font><font color="#000000">&nbsp;(MalformedURLException e)&nbsp;{</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">e.printStackTrace();</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-			
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">webBrowser.addWebBrowserListener(</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">WebBrowserListener</font><font color="#000000">()</font><font color="#000000">{</font><br/>
-			
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">downloadStarted(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">downloadCompleted(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">downloadProgress(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">downloadError(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">documentCompleted(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">titleChange(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">statusTextChange(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">});</font><br/>
-			
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">panel.add</font><font color="#000000">(webBrowser,</font><font color="#000000">&nbsp;BorderLayout.CENTER</font><font color="#000000">)</font><font color="#000000">;</font><br/>
- 			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">frame.getContentPane</font><font color="#000000">()</font><font color="#000000">.add</font><font color="#000000">(</font><font color="#000000">panel,BorderLayout.CENTER</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">frame.pack</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">frame.setVisible</font><font color="#000000">(</font><font color="#000080"><b>true</b></font><font color="#000000">)</font><font color="#000000">;</font><br/>
-
-			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>	
-			<font color="#000000">}</font>
-			</code>
-      &nbsp;</p> 
+      <span style="font-weight: bold">A. </span> You have to ways to choose a web browser, set by program or  changing registry  value for win. 
+   <br>
+   1.Change win registry value.Open win &quot;regedit&quot;,  go to &quot;HKEY_CLASSES_ROOT\HTTP\shell\open\command&quot; and set  &quot;default&quot; to the full path of you wanted browser. 
+   <br>
+   2.Set by program. Before loading a page that uses WebBrowser instance, set the active brower engine through BrowserEngineManager.Sample as below:<br>
+     <code>
+     <font color="#000080"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">ChooseBrowserSample</font><font color="#000000">{</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;static&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">main</font><font color="#000000">(</font><font color="#000000">String</font><font color="#000000">[]&nbsp;</font><font color="#000000">args</font><font color="#000000">){</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JFrame&nbsp;frame&nbsp;=&nbsp;</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">JFrame</font><font color="#000000">("JDIC API Demo - ChooseBrowserSample")</font><font color="#000000">;</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">JPanel&nbsp;panel&nbsp;=&nbsp;</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">JPanel</font><font color="#000000">()</font><font color="#000000">;</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">panel.setLayout(</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">BorderLayout</font><font color="#000000">())</font><font color="#000000">;</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">panel.setPreferredSize(</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">Dimension(700,500)</font><font color="#000000">)</font><font color="#000000">;</font><br/>
+       
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">BrowserEngineManager&nbsp;bem=&nbsp;BrowserEngineManager.instance();</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">bem.setActiveEngine(BrowserEngineManager.MOZILLA);</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">IBrowserEngine&nbsp;be=bem.getActiveEngine();</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#008000">//the path that constains xpcom.dll</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">be.setEnginePath("d:\\mozilla\\bin\\mozilla.exe");</font><br/>
+       
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#008000">//For IE, setActiveEngine is enough</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#008000">//bem.setActiveEngine(BrowserEngineManager.IE);</font><br/>
+       
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">final&nbsp;WebBrowser&nbsp;webBrowser&nbsp;=&nbsp;</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">WebBrowser</font><font color="#000000">()</font><font color="#000000">;</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>try</b>{</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">webBrowser.setURL(</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">URL</font><font color="#000000">(</font><font color="#008000"><b>&#34;http://www.google.com&#34;</b></font><font color="#000000">))</font><font color="#000000">;</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080">}&nbsp;<b>catch</b></font><font color="#000000">&nbsp;(MalformedURLException e)&nbsp;{</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">e.printStackTrace();</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
+       
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">webBrowser.addWebBrowserListener(</font><font color="#000080"><b>new&nbsp;</b></font><font color="#000000">WebBrowserListener</font><font color="#000000">()</font><font color="#000000">{</font><br/>
+       
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">downloadStarted(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">downloadCompleted(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">downloadProgress(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">downloadError(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">documentCompleted(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">titleChange(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000080"><b>public&nbsp;</b></font><font color="#000080"><b>void&nbsp;</b></font><font color="#000000">statusTextChange(WebBrowserEvent event)</font><font color="#000000">{;}</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">});</font><br/>
+       
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">panel.add</font><font color="#000000">(webBrowser,</font><font color="#000000">&nbsp;BorderLayout.CENTER</font><font color="#000000">)</font><font color="#000000">;</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">frame.getContentPane</font><font color="#000000">()</font><font color="#000000">.add</font><font color="#000000">(</font><font color="#000000">panel,BorderLayout.CENTER</font><font color="#000000">)</font><font color="#000000">;</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">frame.pack</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font><br/>
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">frame.setVisible</font><font color="#000000">(</font><font color="#000080"><b>true</b></font><font color="#000000">)</font><font color="#000000">;</font><br/>
+       
+       <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>	
+       <font color="#000000">}</font>			</code> &nbsp;</p>
    <p><span style="font-weight: bold">Q. 
       </span><a name="How to get source of the HTML document by browser?"> How to get source of the HTML document
       by browser?</a><br>
@@ -548,7 +550,7 @@ How to deploy a JDIC Application using Java Web Start?</a><br>
 
 			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>	
 			<font color="#000000">}</font>
-			</code>
+	 </code>
       &nbsp;</p>  
       
 <p><span style="font-weight: bold">Q. 
@@ -599,7 +601,7 @@ How to deploy a JDIC Application using Java Web Start?</a><br>
 
 			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>	
 			<font color="#000000">}</font>
-			</code>
+  </code>
       &nbsp;</p>              
       <p><span style="font-weight: bold">Q. </span><a name="How to execute JavaScript code?"> How to execute JavaScript code?</a><br>              
             <span style="font-weight: bold">A. </span>Call the WebBrowser.executeScript() method,after initializing the webBrowser,to 
@@ -644,7 +646,7 @@ How to deploy a JDIC Application using Java Web Start?</a><br>
 
 			<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>	
 			<font color="#000000">}</font>
-			</code>
+		</code>
       &nbsp;</p> 
        
-      </body></html>
+</body></html>
