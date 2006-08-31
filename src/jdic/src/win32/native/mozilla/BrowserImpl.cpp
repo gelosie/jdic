@@ -113,6 +113,9 @@ NS_IMPL_RELEASE(CBrowserImpl)
 
 NS_INTERFACE_MAP_BEGIN(CBrowserImpl)
    NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIWebBrowserChrome)
+   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIDOMKeyListener)
+   NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsIDOMEventListener, nsIDOMKeyListener)
+   NS_INTERFACE_MAP_ENTRY(nsIDOMKeyListener)
    NS_INTERFACE_MAP_ENTRY(nsIInterfaceRequestor)
    NS_INTERFACE_MAP_ENTRY(nsIWebBrowserChrome)
    NS_INTERFACE_MAP_ENTRY(nsIWebBrowserChromeFocus)
@@ -124,6 +127,168 @@ NS_INTERFACE_MAP_BEGIN(CBrowserImpl)
    NS_INTERFACE_MAP_ENTRY(nsITooltipListener)
    NS_INTERFACE_MAP_ENTRY(nsISupportsWeakReference)
 NS_INTERFACE_MAP_END
+
+nsresult CBrowserImpl::InitKeyListener(nsIDOMEventReceiver *aEventReceiver)
+{
+	nsresult rv;
+	nsIDOMEventListener *eventListener = NS_STATIC_CAST(nsIDOMEventListener *, NS_STATIC_CAST(nsIDOMKeyListener *, this));
+	rv = aEventReceiver->AddEventListenerByIID(eventListener, NS_GET_IID(nsIDOMKeyListener));
+	if (NS_FAILED(rv)) NS_WARNING("Failed to add key listener\n");
+	return rv;
+}
+
+nsresult CBrowserImpl::GetPrivateDOMWindow (nsPIDOMWindow** outPIDOMWindow)
+{
+	nsCOMPtr<nsIDOMWindow> domWindow;
+	mWebBrowser->GetContentDOMWindow(getter_AddRefs(domWindow));
+	NS_ENSURE_TRUE(domWindow, NS_ERROR_FAILURE);
+
+	nsCOMPtr<nsPIDOMWindow> domWindowPrivate = do_QueryInterface(domWindow);
+	NS_ENSURE_TRUE(domWindowPrivate, NS_ERROR_FAILURE);
+
+	*outPIDOMWindow = domWindowPrivate.get();
+
+	NS_IF_ADDREF(*outPIDOMWindow);
+
+	return NS_OK;
+}
+
+nsresult CBrowserImpl::GetEventReceiver (nsIDOMEventReceiver** outEventRcvr)
+{
+	nsPIDOMWindow* domWindowPrivate;
+	GetPrivateDOMWindow (&domWindowPrivate);
+	
+	nsCOMPtr<nsIDOMWindowInternal> rootWindow;
+	domWindowPrivate->GetPrivateRoot(getter_AddRefs(rootWindow));
+	NS_ENSURE_TRUE(rootWindow, NS_ERROR_FAILURE);
+	
+	nsCOMPtr<nsIChromeEventHandler> chromeHandler;
+	nsCOMPtr<nsPIDOMWindow> piWin(do_QueryInterface(rootWindow));
+	NS_ENSURE_TRUE(piWin, NS_ERROR_FAILURE);
+	
+	piWin->GetChromeEventHandler(getter_AddRefs(chromeHandler));
+	NS_ENSURE_TRUE(chromeHandler, NS_ERROR_FAILURE);
+
+	nsCOMPtr<nsIDOMEventReceiver> rcvr = do_QueryInterface(chromeHandler);
+	*outEventRcvr = rcvr.get();
+
+	NS_IF_ADDREF(*outEventRcvr);
+
+	return NS_OK;
+}
+
+// Register key listener 
+nsresult CBrowserImpl::RegristerKeyEvent()
+{
+	nsIDOMEventReceiver* mEventReceiver;
+    // Init the event receiver
+	// We need to do this after Create() to have an initialized DOM
+	this->GetEventReceiver(&mEventReceiver);
+	
+	// Add DOM events listener to the browser window
+	this->InitKeyListener(mEventReceiver);
+	return NS_OK;
+}
+
+// All of the event listeners below return NS_OK to indicate that the
+// event should not be consumed in the default case.
+/******************************************************************************/
+// nsIDOMEventListener
+/******************************************************************************/
+NS_IMETHODIMP CBrowserImpl::HandleEvent(nsIDOMEvent* aDOMEvent)
+{
+	return NS_OK;
+}
+
+/******************************************************************************/
+// nsIDOMKeyListener
+/******************************************************************************/
+NS_IMETHODIMP CBrowserImpl::KeyDown(nsIDOMEvent* aDOMEvent)
+{
+	nsCOMPtr <nsIDOMKeyEvent> keyEvent;
+	keyEvent = do_QueryInterface(aDOMEvent);
+
+	  if (keyEvent == NULL)
+	{
+		LogMsg ("KeyDown: domevent NULL");
+		return NS_OK;
+	}
+	
+	// Fire a key down event
+    PRUint32 keyCode = 0;
+    PRBool shiftKey = false;
+    PRBool altKey = false;
+    PRBool ctrlKey = false;
+    keyEvent->GetKeyCode(&keyCode);
+    
+    keyEvent->GetShiftKey(&shiftKey);
+    keyEvent->GetAltKey(&altKey);
+    keyEvent->GetCtrlKey(&ctrlKey);
+     
+  char buf[1024]={'\0'};
+  PRInt32 id = m_pBrowserFrame->GetBrowserId();
+  sprintf(buf, "CtrlKeyDown=%ld AltKeyDown=%ld ShiftDown=%ld KeyCode=%ld", ctrlKey, altKey, shiftKey, keyCode);
+  SendSocketMessage(id, CEVENT_KEY_DOWN, buf);
+  return NS_OK;
+}
+
+NS_IMETHODIMP CBrowserImpl::KeyUp(nsIDOMEvent* aDOMEvent)
+{
+	if (aDOMEvent == NULL)
+	{
+		return NS_ERROR_FAILURE;
+	}
+    
+  nsCOMPtr <nsIDOMKeyEvent> keyEvent;
+  keyEvent = do_QueryInterface(aDOMEvent);
+  if (keyEvent == NULL)
+	{
+		return NS_OK;
+	}
+
+	// Fire a key up event
+	PRUint32 keyCode = 0;
+    PRBool shiftKey = false;
+    PRBool altKey = false;
+    PRBool ctrlKey = false;
+    keyEvent->GetKeyCode(&keyCode);
+    
+    keyEvent->GetShiftKey(&shiftKey);
+    keyEvent->GetAltKey(&altKey);
+    keyEvent->GetCtrlKey(&ctrlKey);
+    
+  char buf[1024]={'\0'};
+  PRInt32 id = m_pBrowserFrame->GetBrowserId();
+   return NS_OK;
+}
+
+NS_IMETHODIMP CBrowserImpl::KeyPress(nsIDOMEvent* aDOMEvent)
+{
+	if (aDOMEvent == NULL)
+	{
+		return NS_ERROR_FAILURE;
+	}
+    
+  nsCOMPtr <nsIDOMKeyEvent> keyEvent;
+  keyEvent = do_QueryInterface(aDOMEvent);
+  if (keyEvent == NULL)
+	{
+		return NS_OK;
+	}
+	
+	// Fire a key press event
+	PRUint32 keyCode = 0;
+    PRBool shiftKey = false;
+    PRBool altKey = false;
+    PRBool ctrlKey = false;
+    keyEvent->GetKeyCode(&keyCode);
+    
+    keyEvent->GetShiftKey(&shiftKey);
+    keyEvent->GetAltKey(&altKey);
+    keyEvent->GetCtrlKey(&ctrlKey);
+    
+  return NS_OK;
+}
 
 //*****************************************************************************
 // CBrowserImpl::nsIInterfaceRequestor

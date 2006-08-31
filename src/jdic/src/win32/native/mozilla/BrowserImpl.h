@@ -43,6 +43,15 @@
 #include "nsIWebBrowserChromeFocus.h"
 #include "nsIURIContentListener.h"
 #include "nsICommandParams.h"
+#include "nsPIDOMWindow.h"
+#include "nsIContent.h"
+#include "nsIChromeEventHandler.h"
+#include "nsIDOMWindow.h"
+#include "nsIDOMWindowInternal.h"
+#include "nsIDOMEventReceiver.h"
+#include "nsIDOMKeyListener.h"
+#include "nsIDOMKeyEvent.h"
+#include "nsIDOMEventReceiver.h"
 
 class CBrowserImpl : public nsIInterfaceRequestor,
                      public nsIWebBrowserChrome,
@@ -52,6 +61,7 @@ class CBrowserImpl : public nsIInterfaceRequestor,
                      public nsIURIContentListener,
                      public nsIContextMenuListener2,
                      public nsITooltipListener,
+                     public nsIDOMKeyListener,
                      public nsSupportsWeakReference
 {
 public:
@@ -59,7 +69,18 @@ public:
     ~CBrowserImpl();
     NS_METHOD Init(CBrowserFrame* pBrowserFrameGlue,
                    nsIWebBrowser* aWebBrowser);
-
+                   
+	nsresult InitKeyListener(nsIDOMEventReceiver *aEventReceiver);
+    nsresult GetPrivateDOMWindow (nsPIDOMWindow** outPIDOMWindow);
+	nsresult GetEventReceiver (nsIDOMEventReceiver** outEventRcvr);
+	nsresult RegristerKeyEvent();
+	// nsIDOMEventListener
+	NS_DECL_NSIDOMEVENTLISTENER
+	// nsIDOMKeyListener
+	NS_IMETHOD KeyDown(nsIDOMEvent* aDOMEvent);
+	NS_IMETHOD KeyUp(nsIDOMEvent* aDOMEvent);
+	NS_IMETHOD KeyPress(nsIDOMEvent* aDOMEvent);
+	
     NS_DECL_ISUPPORTS
     NS_DECL_NSIINTERFACEREQUESTOR
     NS_DECL_NSIWEBBROWSERCHROME

@@ -240,6 +240,7 @@ HRESULT CBrowserView::CreateBrowser()
     rv = mBaseWindow->InitWindow(nsNativeWidget(m_hWnd), nsnull,
         0, 0, rcLocation.right - rcLocation.left, rcLocation.bottom - rcLocation.top);
     rv = mBaseWindow->Create();
+    mpBrowserImpl->RegristerKeyEvent();
 
     // Register the BrowserImpl object to receive progress messages
     // These callbacks will be used to update the status/progress bars
