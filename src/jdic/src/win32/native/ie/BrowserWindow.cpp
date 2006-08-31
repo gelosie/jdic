@@ -210,6 +210,12 @@ void __stdcall BrowserWindow::OnDownloadBegin()
     SendSocketMessage(m_InstanceID, CEVENT_DOWNLOAD_STARTED);
 }
 
+//added  by michael for issue371
+void __stdcall BrowserWindow::OnDownloadComplete()
+{
+    SendSocketMessage(m_InstanceID, CEVENT_DOWNLOAD_COMPLETED);
+}
+
 void __stdcall BrowserWindow::OnNavigateComplete(IDispatch* pDisp, VARIANT* URL)
 {
     // If glpDisp is NULL, this is the top level OnNavigateComplete event,
