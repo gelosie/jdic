@@ -283,6 +283,9 @@ forums and mailing lists available.
 
 Revision History
 ----------------
+Development version (CVS)
+    * Added support for HGROUP and VGROUP in settings dialog.
+
 Version 0.2 - June 22, 2005
     * Added JOGL (OpenGL) Screensaver Startup Kit and corresponding APIs
       This allows developers to write OpenGL 3D screensavers in Java!
