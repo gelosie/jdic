@@ -20,6 +20,8 @@ package org.jdesktop.jdic.screensaver;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +32,9 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -37,6 +42,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -132,7 +138,7 @@ class SettingsDialog extends javax.swing.JDialog {
         setTitle("Screensaver Settings");
         pnlButtons.setLayout(new java.awt.GridBagLayout());
 
-        pnlButtons.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(0, 5, 5, 5)));
+        pnlButtons.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 5, 5));
         btnCancel.setMnemonic('c');
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
@@ -162,13 +168,13 @@ class SettingsDialog extends javax.swing.JDialog {
 
         pnlCenter.setLayout(new java.awt.GridLayout(1, 2, 5, 0));
 
-        pnlCenter.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(5, 5, 5, 5)));
+        pnlCenter.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         pnlLeft.setLayout(new java.awt.BorderLayout());
 
-        pnlLeft.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EtchedBorder(), "Settings"));
-        spSettings.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(0, 5, 5, 5)));
+        pnlLeft.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Settings"));
+        spSettings.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 5, 5));
         spSettings.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pnlSettings.setLayout(new java.awt.GridBagLayout());
+        pnlSettings.setLayout(new javax.swing.BoxLayout(pnlSettings, javax.swing.BoxLayout.Y_AXIS));
 
         spSettings.setViewportView(pnlSettings);
 
@@ -178,8 +184,8 @@ class SettingsDialog extends javax.swing.JDialog {
 
         pnlRight.setLayout(new java.awt.BorderLayout());
 
-        pnlRight.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EtchedBorder(), "Documentation"));
-        spDocumentation.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(0, 5, 5, 5)));
+        pnlRight.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Documentation"));
+        spDocumentation.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 5, 5));
         spDocumentation.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         taDocumentation.setEditable(false);
         taDocumentation.setLineWrap(true);
@@ -194,8 +200,7 @@ class SettingsDialog extends javax.swing.JDialog {
         getContentPane().add(pnlCenter, java.awt.BorderLayout.CENTER);
 
         pack();
-    }
-    // </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         dispose();
@@ -238,6 +243,7 @@ class SettingsDialog extends javax.swing.JDialog {
     private JFileChooser chooser = null;
     private String screensaverName;
     private ScreensaverSettings settings;
+    private JPanel currentPanel;
     
     /**
      * Reads through the config file and adds controls accordingly.
@@ -265,6 +271,25 @@ class SettingsDialog extends javax.swing.JDialog {
         ((TitledBorder)pnlRight.getBorder()).setTitle(name);
         
         // Process each child element:
+        pnlSettings.setLayout(new GridBagLayout());
+        GridBagConstraints gbc1 = new GridBagConstraints();
+        gbc1.fill = GridBagConstraints.HORIZONTAL;
+        gbc1.gridwidth = GridBagConstraints.REMAINDER;
+        gbc1.weightx = 1.0;
+        gbc1.weighty = 1.0;
+        gbc1.anchor = GridBagConstraints.NORTH;
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(1, 1));
+        pnlSettings.add(panel, gbc1);
+        this.currentPanel = panel;
+        processVGroup(root);
+    }
+    
+    /**
+     * Process all child elements of the given root element.
+     */
+    private void processChildElements(Element root) {
         NodeList children = root.getChildNodes();
         for(int i = 0; i < children.getLength(); i++ ) {
             Node n = children.item(i);
@@ -272,6 +297,7 @@ class SettingsDialog extends javax.swing.JDialog {
             if(n instanceof Element) {
                 Element e = (Element)n;
                 String tag = e.getTagName();
+                boolean addSeparator = false;
                 if(tag.equals("_description")) {
                     processDescriptionElement(e);
                 }
@@ -280,29 +306,91 @@ class SettingsDialog extends javax.swing.JDialog {
                 }
                 else if(tag.equals("boolean")) {
                     processBooleanElement(e);
+                    addSeparator = true;
                 }
                 else if(tag.equals("number")) {
                     processNumberElement(e);
+                    addSeparator = true;
                 }
                 else if(tag.equals("select")) {
                     processSelectElement(e);
+                    addSeparator = true;
                 }
                 else if(tag.equals("string")) {
                     processStringElement(e);
+                    addSeparator = true;
                 }
                 else if(tag.equals("file")) {
                     processFileElement(e);
+                    addSeparator = true;
+                }
+                else if(tag.equals("hgroup")) {
+                    processHGroup(e);
+                }
+                else if(tag.equals("vgroup")) {
+                    processVGroup(e);
+                }
+                
+                // If true, add a separator between elements
+                if(addSeparator) {
+                    currentPanel.add(Box.createRigidArea(
+                        new Dimension(5, 5)));
                 }
             }
         }
-        
-        // Anchor settings to top left
-        JLabel lbl = new JLabel("");
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        pnlSettings.add(lbl,gbc);
+    }
+    
+    /**
+     * From xscreensaver/hacks/config/README:
+     *
+     *  <hgroup>
+     *    [ ... <boolean>s ... ]
+     *    [ ... <number>s ... ]
+     *    [ ... <select>s ... ]
+     *    [ ... <string>s ... ]
+     *    [ ... <file>s ... ]
+     *    [ ... <vgroup>s ... ]
+     *  </hgroup>
+     *
+     *  A horizontal group of widgets/groups.  No more than 4 widgets 
+     *  or groups should be used in a row.
+     */
+    private void processHGroup(Element e) {
+        JPanel previousPanel = this.currentPanel;
+        this.currentPanel = new JPanel();
+        this.currentPanel.setLayout(new BoxLayout(this.currentPanel,
+            BoxLayout.X_AXIS));
+        processChildElements(e);
+        previousPanel.add(this.currentPanel);
+        this.currentPanel = previousPanel;
+    }
+    
+    /**
+     * From xscreensaver/hacks/config/README:
+     *
+     *  <vgroup>
+     *    [ ... <boolean>s ... ]
+     *    [ ... <number>s ... ]
+     *    [ ... <select>s ... ]
+     *    [ ... <string>s ... ]
+     *    [ ... <file>s ... ]
+     *    [ ... <vgroup>s ... ]
+     *  </vgroup>
+     *
+     *  A vertical group of widgets/groups.  No more than 10 widgets 
+     *  or groups should be used in a column.
+     *  
+     *  Since the default alignment of widgets is a column, the 
+     *  <vgroup> element is only of use inside an <hgroup> element.
+     */
+    private void processVGroup(Element e) {
+        JPanel previousPanel = this.currentPanel;
+        this.currentPanel = new JPanel();
+        this.currentPanel.setLayout(new BoxLayout(this.currentPanel,
+            BoxLayout.Y_AXIS));
+        processChildElements(e);
+        previousPanel.add(this.currentPanel);
+        this.currentPanel = previousPanel;
     }
 
     /**
@@ -405,11 +493,10 @@ class SettingsDialog extends javax.swing.JDialog {
         final String argSet = e.getAttribute("arg-set");
         final String argUnset = e.getAttribute("arg-unset");
         final JCheckBox checkbox = new JCheckBox(label);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 0, 5, 0);
-        pnlSettings.add(checkbox, gbc);
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout());
+        panel.add(checkbox);
+        currentPanel.add(panel);
         
         // Check current setting
         if(argSet == null) {
@@ -526,16 +613,18 @@ class SettingsDialog extends javax.swing.JDialog {
                 (Number)new Integer(Integer.parseInt(def));
             
             GridBagConstraints gbc = new GridBagConstraints();
-
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridBagLayout());
+            
             // Label on top:
             if(label != null) {
                 JLabel lbl = new JLabel(label);
                 gbc.gridwidth = 1;
                 gbc.anchor = GridBagConstraints.CENTER;
-                pnlSettings.add(new JLabel(""), gbc);
-                pnlSettings.add(lbl, gbc);
+                panel.add(new JLabel(""), gbc);
+                panel.add(lbl, gbc);
                 gbc.gridwidth = GridBagConstraints.REMAINDER;
-                pnlSettings.add(new JLabel(""), gbc);
+                panel.add(new JLabel(""), gbc);
             }
             
             // Label on left:
@@ -544,7 +633,7 @@ class SettingsDialog extends javax.swing.JDialog {
             if(lowLabel != null) {
                 JLabel lbl = new JLabel(lowLabel);
                 gbc.anchor = GridBagConstraints.EAST;
-                pnlSettings.add(lbl, gbc);
+                panel.add(lbl, gbc);
             }
             
             // Slider
@@ -605,7 +694,7 @@ class SettingsDialog extends javax.swing.JDialog {
             else {
                 gbc.gridwidth = 1;
             }
-            pnlSettings.add(slider, gbc);
+            panel.add(slider, gbc);
             gbc.fill = GridBagConstraints.NONE;
             gbc.weightx = 0.0;
             
@@ -614,12 +703,15 @@ class SettingsDialog extends javax.swing.JDialog {
                 JLabel lbl = new JLabel(highLabel);
                 gbc.anchor = GridBagConstraints.WEST;
                 gbc.gridwidth = GridBagConstraints.REMAINDER;
-                pnlSettings.add(lbl, gbc);
+                panel.add(lbl, gbc);
             }
             
             commandline.add(replacePercent(arg, current));
             final int commandlineIndex = commandline.size() - 1;
             
+            // Add panel with slider, etc. to box layout
+            currentPanel.add(panel);
+
             // Listener for control:
             slider.addChangeListener(
                 new ChangeListener() {
@@ -697,13 +789,15 @@ class SettingsDialog extends javax.swing.JDialog {
             
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.insets = new Insets(0, 2, 5, 2);
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridBagLayout());
             
             // Label on left:
             if(label != null) {
                 JLabel lbl = new JLabel(label);
                 gbc.gridwidth = 1;
                 gbc.anchor = GridBagConstraints.EAST;
-                pnlSettings.add(lbl, gbc);
+                panel.add(lbl, gbc);
             }
             
             // Spinner control:
@@ -712,6 +806,7 @@ class SettingsDialog extends javax.swing.JDialog {
             
             gbc.gridwidth = GridBagConstraints.REMAINDER;
             gbc.anchor = GridBagConstraints.WEST;
+            gbc.weightx = 1.0;
             final JSpinner spinner = new JSpinner();
             SpinnerNumberModel spinnerModel;
             if(useFloat) {
@@ -747,7 +842,10 @@ class SettingsDialog extends javax.swing.JDialog {
                     intHigh, 1);
             }
             spinner.setModel(spinnerModel);
-            pnlSettings.add(spinner, gbc);
+            panel.add(spinner, gbc);
+            
+            // Add spin button control with label to box layout
+            currentPanel.add(panel);
             
             commandline.add(replacePercent(arg, current));
             final int commandlineIndex = commandline.size() - 1;
@@ -824,11 +922,7 @@ class SettingsDialog extends javax.swing.JDialog {
             // argument from the commandline.
             model.setSelectedItem(defaultSelection);
         }
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 0, 5, 0);
-        pnlSettings.add(combo, gbc);
+        currentPanel.add(combo);
         
         commandline.add(currentSelection);
         final int commandlineIndex = commandline.size() - 1;
@@ -859,17 +953,23 @@ class SettingsDialog extends javax.swing.JDialog {
         String label = e.getAttribute("_label");
         final String arg = e.getAttribute("arg");
         String currentValue = currentValueOfArg(arg);
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(0, 2, 5, 2);
         if(label != null) {
             JLabel lbl = new JLabel(label);
             gbc.anchor = GridBagConstraints.EAST;
-            pnlSettings.add(lbl, gbc);
+            panel.add(lbl, gbc);
         }
         final JTextField tf = new JTextField(15);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        pnlSettings.add(tf, gbc);
+        panel.add(tf, gbc);
+        
+        // Add text and label to box layout:
+        currentPanel.add(panel);
         
         if(currentValue != null) {
             tf.setText(currentValue);
@@ -935,16 +1035,22 @@ class SettingsDialog extends javax.swing.JDialog {
         final String arg = e.getAttribute("arg");
         String currentValue = currentValueOfArg(arg);
         GridBagConstraints gbc = new GridBagConstraints();
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
         gbc.insets = new Insets(0, 2, 5, 2);
         if(label != null) {
             JLabel lbl = new JLabel(label);
             gbc.anchor = GridBagConstraints.EAST;
-            pnlSettings.add(lbl, gbc);
+            panel.add(lbl, gbc);
         }
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         final JButton browse = new JButton("Browse...");
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        pnlSettings.add(browse, gbc);
+        panel.add(browse, gbc);
+        
+        // Add chooser to box layout:
+        currentPanel.add(panel);
         
         if(currentValue != null) {
             browse.setText(shortenString(currentValue, 15));
