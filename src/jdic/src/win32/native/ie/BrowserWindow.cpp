@@ -267,6 +267,15 @@ void __stdcall BrowserWindow::OnTitleChange(BSTR Text)
 	}
 }
 
+void __stdcall BrowserWindow::OnWindowClosing(VARIANT_BOOL IsChildWindow,  VARIANT_BOOL *&Cancel)
+{
+     LogMsg("window.close");
+     char buf[1024] ;
+     memset(buf,'\0',1024);
+      		sprintf(buf, "%s", "windowClose");
+    		SendSocketMessage(m_InstanceID, CEVENT_WINDOW_CLOSE, buf);
+}
+
 void __stdcall BrowserWindow::OnStatusTextChange(BSTR Text)
 {
     char buf[1024];

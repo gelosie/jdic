@@ -368,7 +368,10 @@ NS_IMETHODIMP CBrowserImpl::DestroyBrowserWindow()
         return NS_ERROR_FAILURE;
 
     m_pBrowserFrame->DestroyBrowserFrame();
-
+	char buf[1024];
+    PRInt32 id = m_pBrowserFrame->GetBrowserId();
+    sprintf(buf, "%s", "windowClose");
+    SendSocketMessage(id, CEVENT_WINDOW_CLOSE, buf);
     return NS_OK;
 }
 

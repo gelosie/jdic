@@ -128,7 +128,8 @@ public class SimpleBrowser {
                 */
             }
             public void titleChange(WebBrowserEvent event) {;}  
-            public void statusTextChange(WebBrowserEvent event) {;}        
+            public void statusTextChange(WebBrowserEvent event) {;}
+            public void windowClose(WebBrowserEvent event) {;}        
         });
 
         try {

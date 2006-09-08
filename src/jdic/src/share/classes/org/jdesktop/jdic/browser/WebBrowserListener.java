@@ -94,4 +94,10 @@ public interface WebBrowserListener extends java.util.EventListener
      * @param event the WebBrowserEvent fired.
      */
     void statusTextChange(WebBrowserEvent event);
+    
+    /**
+     * Invoked in response to JavaScript window.close()
+     * @param event
+     */
+    void windowClose(WebBrowserEvent event);
 }

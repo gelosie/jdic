@@ -521,6 +521,9 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 			case WebBrowserEvent.WEBBROWSER_STATUSTEXT_CHANGE:
 				listener.statusTextChange(e);
 				break;
+			case WebBrowserEvent.WEBBROWSER_CLOSE:
+				listener.windowClose(e);
+				break;
 			}
 		}
 	}

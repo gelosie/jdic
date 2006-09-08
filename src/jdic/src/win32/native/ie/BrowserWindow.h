@@ -63,6 +63,7 @@ public:
                                    VARIANT *StatusCode,VARIANT_BOOL *Cancel);
 	void __stdcall OnTitleChange(BSTR Text);
 	void __stdcall OnStatusTextChange(BSTR Text);
+	void __stdcall OnWindowClosing(VARIANT_BOOL IsChildWindow,  VARIANT_BOOL *&Cancel);
 	void CreateChildBrowserWindow(IDispatch **ppDisp);
 
     BEGIN_SINK_MAP(BrowserWindow)
@@ -76,6 +77,7 @@ public:
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_PROGRESSCHANGE, OnNavigateProgress)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_TITLECHANGE, OnTitleChange)
         SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_STATUSTEXTCHANGE, OnStatusTextChange)
+        SINK_ENTRY_EX(1, DIID_DWebBrowserEvents2, DISPID_WINDOWCLOSING, OnWindowClosing)
     END_SINK_MAP()
 
 protected:

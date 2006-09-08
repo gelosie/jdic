@@ -113,6 +113,11 @@ public class WebBrowserEvent extends EventObject {
 //	 * Event fired when the key put up.
 //	 */
 //	public static final int WEBBROWSER_KEYUP = 35 + WEBBROWSER_FIRST;
+	
+	/**
+	 * Event fired in response to JavaScript window.close().
+	 */
+	public static final int WEBBROWSER_CLOSE= 37 + WEBBROWSER_FIRST;
 
 	/**
 	 * Event fired when the initialization of IWebBrowser fails.

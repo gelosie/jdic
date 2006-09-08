@@ -214,7 +214,8 @@ public class Browser extends JPanel {
 
             public void statusTextChange(WebBrowserEvent event) {
                 // updateStatusInfo("Status text changed.");
-            }  
+            } 
+            public void windowClose(WebBrowserEvent event) {;} 
         });
 
         jBrowserPanel.setLayout(new BorderLayout());

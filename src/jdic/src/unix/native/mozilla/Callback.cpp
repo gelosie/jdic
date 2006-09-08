@@ -523,6 +523,10 @@ void
 destroy_brsr_cb(GtkMozEmbed *embed, GtkBrowser *browser)
 {
     WBTRACE("destroy_brsr_cb\n");
+    char buf[1024] ;
+    memset(buf,'\0',1024);
+    sprintf(buf, "%s", "windowClose");
+    SendSocketMessage(browser->id, CEVENT_WINDOW_CLOSE, buf);
     gtk_widget_destroy(browser->topLevelWindow);
 }
 
