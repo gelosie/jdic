@@ -55,6 +55,7 @@ public:
 	void __stdcall OnNewWindow3(IDispatch **ppDisp,VARIANT_BOOL *Cancel,DWORD dwFlags,BSTR bstrUrlContext,
 		BSTR bstrUrl);
     void __stdcall OnDownloadBegin();
+    void __stdcall OnDownloadComplete();//for issue371
     void __stdcall OnNavigateComplete(IDispatch* pDisp, VARIANT* URL);
     void __stdcall OnDocumentComplete(IDispatch* pDisp, VARIANT* URL);
     void __stdcall OnNavigateProgress(long Progress,long ProgressMax);
