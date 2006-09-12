@@ -321,6 +321,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * @see #isAutoDispose()
 	 */
 	public void dispose() {
+		if(isInitialized()){
 		urlBeforeDispose = this.getURL();
 		synchronized (this) {
 			eventThread.fireNativeEvent(instanceNum,
@@ -334,6 +335,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 			} catch (InterruptedException e) {
 			}
 		}
+	  }
 		WebBrowser.super.removeNotify();
 		setInitialized(false);
 	}
