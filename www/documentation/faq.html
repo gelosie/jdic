@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>JDIC FAQ</title></head>
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>JDIC FAQ</title>
+</head>
 <body bgcolor="#FFFFFF">
 <!-- etracker PARAMETER 2.0.1 -->
 <script type="text/javascript">
@@ -119,6 +120,7 @@ release 0.9</a></p>
       <li><a href="#Why the tray icon demo runs">Why the tray icon demo runs 
         without any error on my Linux/Solaris platform, but there is no tray 
         icon created?</a></li>
+      <li><a href="#javalangUnsatisfiedLinkError"> java.lang.UnsatisfiedLinkError: no jdic in java.library.path</a></li>
     </ul>
   </li>
   <li><a href="#Troubleshooting Building the JDIC Source">Troubleshooting Building   
@@ -420,10 +422,13 @@ Browser demo doesn't work, why?</a><br>
 <p><span style="font-weight: bold">Q.</span> <a name="Why the tray icon demo runs">Why  
 the tray icon demo runs without any error on my Linux/Solaris platform, but 
 there is no tray icon created?</a><br>
-<span style="font-weight: bold">A. </span>The Notification Area is probably disabled. You can enable it by right-clicking the GNOME panel and selecting Add to Panel -> Utility -> Notification Area.</p>  
- 
-
-      <h3>6.<a name="Troubleshooting Building the JDIC Source">Troubleshooting  
+<span style="font-weight: bold">A. </span>The Notification Area is probably disabled. You can enable it by right-clicking the GNOME panel and selecting Add to Panel -> Utility -> Notification Area.</p>
+<p><strong>Q.</strong>  <a name="javalangUnsatisfiedLinkError"></a>java.lang.UnsatisfiedLinkError: no jdic in java.library.path<br>
+  <strong>A.</strong> It's caused by that JNI can't find the native lib of JDIC,ways to fix this issue:<br> 
+- For apps run in IDE, use -Djava.library.pah parameter to specify the location of libjdic.so/jdic.dll<br>
+  - For win, put the folder contains jdic.dll into the path<br>
+  - For solaris/unix/linux, put folder contains libjdic.so  into the LD_LIBRARY_PATH
+<h3>6.<a name="Troubleshooting Building the JDIC Source">Troubleshooting  
       Building the JDIC Source</a></h3>
 <p><span style="font-weight: bold">Q. </span><a name="Why there is an error message &quot;Makefile:42: /config/autoconf.mk: No such file or directory.&quot; on Unix, and &quot;[exec] .../msgserver.cpp(23) : fatal error C1083: Cannot open include file: 'prlog.h': No such file or directory&quot; on Windows?">Why 
 there is an error message  
