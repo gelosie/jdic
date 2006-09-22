@@ -101,7 +101,7 @@ IDR_MAINFRAME MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&New Browser Window\tCtrl+N", ID_NEW_BROWSER
+        MENUITEM "&New Browser Window", ID_NEW_BROWSER
         MENUITEM SEPARATOR
         MENUITEM "&Open File...\tCtrl+O",       ID_FILE_OPEN
         MENUITEM "&Save Page As...\tCtrl+S",    ID_FILE_SAVE_AS
@@ -223,7 +223,7 @@ IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE
 BEGIN
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     "F",            ID_EDIT_FIND,           VIRTKEY, CONTROL, NOINVERT
-    "N",            ID_NEW_BROWSER,         VIRTKEY, CONTROL, NOINVERT
+//    "N",            ID_NEW_BROWSER,         VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT

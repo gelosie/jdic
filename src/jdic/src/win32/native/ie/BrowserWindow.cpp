@@ -87,6 +87,11 @@ BOOL BrowserWindow::PreTranslateMessage(MSG* pMsg)
     		bool shiftDown = ::GetAsyncKeyState(VK_SHIFT) & 0x8000 ? true : false;
     		sprintf(buffer, "CtrlKeyDown=%ld AltKeyDown=%ld ShiftDown=%ld KeyCode=%ld", cntrDown, altDown, shiftDown, pMsg->wParam);
     		SendSocketMessage(m_InstanceID, CEVENT_KEY_DOWN, buffer);
+    		
+    		if(cntrDown&&(pMsg->wParam==78)){
+    			LogMsg("disable accelerator Ctrl+N");
+    			return FALSE;
+    		}
     }
 //    else if (pMsg->message == WM_KEYUP){
 //  	  			LogMsg("keyup");
