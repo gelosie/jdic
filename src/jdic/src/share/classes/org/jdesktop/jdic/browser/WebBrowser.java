@@ -102,7 +102,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	private boolean isInitialized = false;
 	
 	// if the JS window.close() invoked
-	private boolean isJSWinClose=false;
+	private boolean isJSClose=false;
 
 	private boolean isBackEnabled = false;
 
@@ -320,11 +320,13 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * <code>isAutoDispose()</code> return false, this method should be called
 	 * by developer when this instance is no longer needed.
 	 * 
+	 * Attention,this method must be called if using js to close a page.
+	 * 
 	 * @see #removeNotify()
 	 * @see #isAutoDispose()
 	 */
 	public void dispose() {
-		if(isInitialized()&&!isJSWinClose&&WebBrowserUtil.IS_OS_LINUX){
+		if (isInitialized() && !(isJSClose && (WebBrowserUtil.IS_OS_LINUX||WebBrowserUtil.IS_OS_SUNOS))) {
 		urlBeforeDispose = this.getURL();
 		synchronized (this) {
 			eventThread.fireNativeEvent(instanceNum,
@@ -339,6 +341,9 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 			}
 		}
 	  }
+		if (isJSClose) {
+			isJSClose = false;
+		}
 		WebBrowser.super.removeNotify();
 		setInitialized(false);
 	}
@@ -359,6 +364,17 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		return autoDispose;
 	}
 
+	/**
+	 * The method usually mustn't to maintain ,unless if impletement windowClose,
+	 * while doesn't invoke dispose to close it under linux or sunSo, 
+	 * need to set isJSClose false.
+	 * 
+	 * @param isJSClose
+	 */
+	public void setJSclose(boolean isJSClose){
+		this.isJSClose=isJSClose;
+	}
+	
 	/**
 	 * Moves and resizes this component. The new location of the top-left corner
 	 * is specified by <code>x</code> and <code>y</code>, and the new size
@@ -527,7 +543,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 				listener.statusTextChange(e);
 				break;
 			case WebBrowserEvent.WEBBROWSER_CLOSE:
-				isJSWinClose=true;
+				isJSClose=true;
 				listener.windowClose(e);
 				break;
 			}
