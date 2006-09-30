@@ -479,6 +479,10 @@ public class WebKitWebBrowser extends CocoaComponent implements IWebBrowser {
 		else
 			sendMsg(loadURL, "about:blank");
 	}
+	
+	public void setURL(URL url, String postData, String headers){		
+		throw new Exception("Method is not supported");
+	}
 
 	public void back() {
 		sendMsg(goBack);
