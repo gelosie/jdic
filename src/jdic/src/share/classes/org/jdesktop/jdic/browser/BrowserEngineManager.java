@@ -234,9 +234,9 @@ public class BrowserEngineManager {
 	 * Set an active engine throgh enginename.TODO:if mozilla isn't the system
 	 * default under win, can't set it as the active engine.
 	 * 
-	 * @return true if the activeEngine is set successfully
+	 * @return the instance of activeEngine
 	 */
-	public boolean setActiveEngine(String engineName) {
+	public IBrowserEngine setActiveEngine(String engineName) {
 		if (activeEngine != null) {
 			if (activeEngine.isInitialized()) {
 				WebBrowserUtil.error("Engine " + activeEngine.getBrowserName()
@@ -246,23 +246,23 @@ public class BrowserEngineManager {
 
 		if (!engines.containsKey(engineName)) {
 			WebBrowserUtil.error("Can't find engine " + engineName);
-			return false;
+			return null;
 		}
 
 		IBrowserEngine engine = (IBrowserEngine) engines.get(engineName);
 		if (engine == activeEngine) {
-			return true;
+			return activeEngine;
 		}
 
 		if (!engine.isEngineAvailable()) {
 			WebBrowserUtil.trace("Engine " + engineName + " isn't available.");
-			return false;
+			return null;
 		}
 
 		activeEngine = engine;
 		WebBrowserUtil.trace("Engine " + engineName
 				+ " is set as activeEngine.");
-		return true;
+		return activeEngine;
 	}
 
 	/**
