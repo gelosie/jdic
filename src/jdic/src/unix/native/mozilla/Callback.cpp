@@ -286,7 +286,7 @@ destroy_cb(GtkWidget *widget, GtkBrowser *browser)
     }
     if (browser->tempMessage)
         g_free(browser->tempMessage);
-    if (gTestMode && count == 0)
+    if (count == 0)
         gtk_main_quit();
 }
 

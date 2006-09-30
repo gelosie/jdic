@@ -94,7 +94,8 @@ new_gtk_browser(guint32 chromeMask)
     GtkBrowser *browser = 0;
 
     browser = g_new0(GtkBrowser, 1);
-
+	
+	browser->id = -1;
     browser->menuBarOn = FALSE;
     browser->toolBarOn = FALSE;
     browser->locationBarOn = FALSE;

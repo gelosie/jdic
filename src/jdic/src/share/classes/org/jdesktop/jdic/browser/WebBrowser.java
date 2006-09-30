@@ -100,6 +100,9 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 
 	// if the WebBrowser successfully initialized
 	private boolean isInitialized = false;
+	
+	// if the JS window.close() invoked
+	private boolean isJSWinClose=false;
 
 	private boolean isBackEnabled = false;
 
@@ -321,7 +324,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * @see #isAutoDispose()
 	 */
 	public void dispose() {
-		if(isInitialized()){
+		if(isInitialized()&&!isJSWinClose&&WebBrowserUtil.IS_OS_LINUX){
 		urlBeforeDispose = this.getURL();
 		synchronized (this) {
 			eventThread.fireNativeEvent(instanceNum,
@@ -524,6 +527,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 				listener.statusTextChange(e);
 				break;
 			case WebBrowserEvent.WEBBROWSER_CLOSE:
+				isJSWinClose=true;
 				listener.windowClose(e);
 				break;
 			}
