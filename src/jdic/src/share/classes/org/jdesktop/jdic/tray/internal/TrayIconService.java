@@ -39,6 +39,7 @@ public interface TrayIconService {
     public void setPopupMenu(JPopupMenu menu);
     public void setIcon(Icon i);
     public void setCaption(String s);
+    public void setToolTip(String s);
     public void setIconAutoSize(boolean b);
     public void addActionListener(ActionListener al);
     public void removeActionListener(ActionListener al);

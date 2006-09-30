@@ -337,7 +337,11 @@ public class WinTrayIconService implements TrayIconService{
             updateIcon(null);
         }
     }
-
+    
+    public void setToolTip(String tip){
+        setCaption(tip);
+    }
+    
     public void setIconAutoSize(boolean b) {
         // Not necessary for Win32 impl.
     }

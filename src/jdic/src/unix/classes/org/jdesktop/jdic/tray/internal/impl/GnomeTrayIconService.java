@@ -224,7 +224,11 @@ public class GnomeTrayIconService extends GnomeTrayAppletService
             tooltip.setCaption(s);
         }
     }
-
+    
+    public void setToolTip(String tip) {
+		setCaption(tip);
+	}
+    
     public void setIconAutoSize(boolean b) {
         autoSize = b;
         if (autoSize && (icon != null)) {
