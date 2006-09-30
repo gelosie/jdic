@@ -85,7 +85,7 @@ public class MozillaEngine implements IBrowserEngine {
 		if (!initialized) {
 			preapareEnvVariables();
 			setToEnv();
-			grantXToBinFile(this.envXPComPath);
+			dealMozillaBinFile(this.envXPComPath);
 			initialized = true;
 		}
 	}
@@ -254,9 +254,10 @@ public class MozillaEngine implements IBrowserEngine {
 	}
 
 	/**
-	 * @throws JdicInitException
+	 * get the bin file name and grant according exec privilege to unix/linix one.
+         * @throws JdicInitException
 	 */
-	private void grantXToBinFile(String mozillaPath) throws JdicInitException {
+	private void dealMozillaBinFile(String mozillaPath) throws JdicInitException {
 
 		if (WebBrowserUtil.IS_OS_WINDOWS) {
 			browserBinName = BIN_WIN_MOZILLA;
@@ -264,7 +265,7 @@ public class MozillaEngine implements IBrowserEngine {
 		}
 		if (WebBrowserUtil.IS_OS_LINUX || WebBrowserUtil.IS_OS_SUNOS
 				|| WebBrowserUtil.IS_OS_FREEBSD) {
-			caculateUnixBinaryName(mozillaPath);
+			dealUnixBinary(mozillaPath);
 			return;
 		}
 		// other os
@@ -279,7 +280,7 @@ public class MozillaEngine implements IBrowserEngine {
 	 * @param mozillaPath
 	 * @throws JdicInitException
 	 */
-	private void caculateUnixBinaryName(String mozillaPath)
+	private void dealUnixBinary(String mozillaPath)
 			throws JdicInitException {
 		String osname = WebBrowserUtil.OS_NAME;
 		String unixBinary = null;
@@ -332,14 +333,27 @@ public class MozillaEngine implements IBrowserEngine {
 		try {
 			WebBrowserUtil.trace("will grant a+x to " + runningPath
 					+ File.separator + unixBinary);
-			Runtime.getRuntime().exec(
+			Process p = Runtime.getRuntime().exec(
 					"chmod a+x " + runningPath + File.separator + unixBinary);
-			WebBrowserUtil.trace("grant ok");
-			return true;
+			int presult = p.waitFor();// wait unti grant finished
+			if (presult == 0) {
+				WebBrowserUtil.trace("grant executable privilege to "
+						+ unixBinary + " ok.");
+				return true;
+			} else {
+				byte[] errContent = new byte[p.getErrorStream().available()];
+				p.getErrorStream().read(errContent);
+				WebBrowserUtil.trace("grant executable privilege to "
+						+ unixBinary + " failed with reason:" + errContent);
+				return false;
+			}
 		} catch (IOException ex) {
 			WebBrowserUtil.error(ex.getMessage());
 			ex.printStackTrace();
 			throw new JdicInitException(ex.getMessage());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			throw new JdicInitException(e.getMessage());
 		}
 	}
 
