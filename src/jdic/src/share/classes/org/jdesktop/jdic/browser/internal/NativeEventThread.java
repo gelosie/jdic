@@ -150,7 +150,7 @@ public class NativeEventThread extends Thread {
 		// main event loop
 		while (true) {
 			try {
-				Thread.sleep(1);
+				Thread.sleep(10);
 			} catch (Exception e) {
 			}
 
