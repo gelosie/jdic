@@ -292,6 +292,7 @@ void CommandProc(char* pInputChar)
         }
 
         hRes = pBrowserWnd->DispEventAdvise(pBrowserWnd->m_pWB);
+        pBrowserWnd->m_pWB->put_Silent(true);
 
         pBrowserWnd->SetReady(instanceNum);
         SendSocketMessage(instanceNum, CEVENT_INIT_WINDOW_SUCC);
