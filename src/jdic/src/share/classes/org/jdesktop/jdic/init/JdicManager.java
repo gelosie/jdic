@@ -21,12 +21,18 @@
 package org.jdesktop.jdic.init;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 
@@ -87,6 +93,7 @@ public class JdicManager {
 	 *                Generic initialization exception
 	 */
 	public void initShareNative() throws JdicInitException {
+		WebBrowserUtil.trace("init share native..... ");
 		// If the shared native file setting was already initialized,
 		// just return.
 		if (isShareNativeInitialized) {
@@ -103,12 +110,16 @@ public class JdicManager {
 				//native libs will be loaded by webstart automatically
 				nativeLibPath = caculateNativeLibPathBySunJWS();
 				return;
-			} else {				
+			} else {
+				WebBrowserUtil.trace("not loaded by jws ");				
 				String runningURL = (new URL(JdicManager.class
 						.getProtectionDomain().getCodeSource().getLocation(),
-						".")).openConnection().getPermission().getName();//running url of current class
-				String runningPath = (new File(runningURL)).getCanonicalPath();//running path of current class
-				nativeLibPath = caculateNativeLibPath(runningPath);
+						".")).openConnection().getPermission().getName();
+				WebBrowserUtil.trace("current runnning path " + runningURL);
+				String runningPath = (new File(runningURL)).getCanonicalPath();
+				runningPath = dealExtensionMode(runningPath);
+				WebBrowserUtil.trace("runnning path after dealing " + runningURL);
+				nativeLibPath = dealCrossPlatformVersion(runningPath);
 				// Add the binary path (including jdic.dll or libjdic.so) to
 				// "java.library.path", since we need to use the native methods
 				// in class InitUtility.
@@ -129,13 +140,90 @@ public class JdicManager {
 	}
 
 	/**
-	 * To keep the using of crossplatform version of JDIC
+	 * If jdic is installed by extention mode,folder structure like below:
+	 * - for os specific version:
+	 * 	jdic.jar
+	 * 	jdic_native.jar
+	 *  
+	 * - for cross platform version:
+	 *  jdic.jar
+	 *  jdic_crossplatform.jar
+	 *    which includes all native stuffs and jdic_stub.jar   
+	 * @param jdicPath
+	 * @return
+	 */
+	private String dealExtensionMode(String jdicPath) {
+		WebBrowserUtil.trace("check if loaded in extension mode");
+		String jdic_native_jar = jdicPath + "/" + "jdic_native.jar";
+		String jdic_cross_platform_jar = jdicPath + "/"
+				+ "jdic_crossplatform.jar";
+		if (extractJarFile(jdic_cross_platform_jar, jdicPath+"/jdic_crossplatform")) {
+			WebBrowserUtil.trace("loaded in extension mode with cross platform format");
+			return jdicPath + "/jdic_crossplatform";
+		}
+		if (extractJarFile(jdic_native_jar, jdicPath+"/jdic_native")) {
+			WebBrowserUtil.trace("loaded in extension mode with os specific format");
+			return jdicPath + "/jdic_native";
+		}
+		return jdicPath;
+	}
+	
+	/**
+	 * Check if jar file exists, if does,extract it. 
+	 * @param jarPath
+	 * @param jdicJarPath
+	 * @return if extract succeeds 
+	 */
+	private boolean extractJarFile(String jarPath, String jdicJarPath) {
+		WebBrowserUtil.trace(" jar path to verify" + jarPath);
+
+		if (new File(jarPath).exists()) {
+			try {
+				JarFile jarfile = new JarFile(jarPath);
+				Enumeration jarEntries = jarfile.entries();
+				while (jarEntries.hasMoreElements()) {
+					JarEntry jarEntry = (JarEntry) jarEntries.nextElement();
+					if (jarEntry.isDirectory()) {
+						continue;
+					}
+					String jarFileName = jarEntry.getName();
+					WebBrowserUtil.trace(" dealing with " + jarFileName);
+					// jdicPath as the parent path
+					File copyFile = new File(jdicJarPath, jarFileName);
+					if (copyFile.exists()) {
+						continue;
+					}
+					if (!copyFile.getParentFile().exists()) {
+						copyFile.getParentFile().mkdirs();
+					}
+					InputStream is = jarfile.getInputStream(jarEntry);
+					OutputStream os = new FileOutputStream(copyFile);
+					WebBrowserUtil.copyIsToOs(is, os);
+				}
+			} catch (Exception e) {
+				WebBrowserUtil.error(e.getMessage());
+				e.printStackTrace();
+			}
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * For crossplatform version,native libs locate under platform/arch/; set jdic_stub.jar
+	 * to the classpath for urlclassloader.Folder structure like:
+	 *  jdic.jar
+	 *  platform/arch/
+	 *    includes native stuffs and jdic_stub.jar
+	 * 
+	 * For no-crossplatform version,native libs locate under the same folder of jdic.jar.Folder structure like:
+	 * jdic.jar
+	 * ....
 	 * 
 	 * @throws MalformedURLException
 	 * @throws JdicInitException
 	 *  
 	 */
-	private String caculateNativeLibPath(String runningPath)
+	private String dealCrossPlatformVersion(String runningPath)
 			throws MalformedURLException, JdicInitException {
 
 		String platformPath = runningPath + File.separator + getPlatform();

@@ -19,6 +19,9 @@
  */
 package org.jdesktop.jdic.browser.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -138,7 +141,7 @@ public class WebBrowserUtil {
 
 	/* debug helper */
 	public static void trace(String msg) {
-		if (isDebugOn)
+//		if (isDebugOn)
 			System.out.println("*** Jtrace: " + msg);
 	}
 
@@ -168,5 +171,33 @@ public class WebBrowserUtil {
 	public static void nativeSetEnvironment() {
 		loadLibrary();
 		nativeSetEnv();
+	}
+	
+	/**
+	 * copy is to os 
+	 * @param is
+	 * @param os
+	 */
+	public static void copyIsToOs(InputStream is, OutputStream os) {
+		int perNum = 1024;// copy 1024 bytes each time
+		byte[] contents = new byte[perNum];
+		int readLengh = 0;
+		try {
+			while ((readLengh = is.read(contents, 0, perNum)) > 0) {
+				os.write(contents, 0, readLengh);
+			}
+		} catch (IOException e) {
+			error(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				os.flush();
+				os.close();
+				is.close();
+			} catch (IOException e) {
+				error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
 	}
 }

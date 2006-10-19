@@ -468,9 +468,6 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		} else if (WebBrowserEvent.WEBBROWSER_KEYDOWN == eid) {
 			String data = e.getData();
 			if (data != null) {
-				boolean isCtrlDown = false;
-				boolean isAltDown = false;
-				boolean isShiftDown = false;
 				int keyCode = 0;
 				int modifer =0;
 
@@ -782,14 +779,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 				copiedFile.getParentFile().mkdirs();
 				InputStream is = jarFile.getInputStream(entry);
 				OutputStream os = new FileOutputStream(copiedFile);
-
-				// copy is to os
-				int perNum = 1024;// cp 1024 bytes each time
-				byte[] contents = new byte[perNum];
-				int readLengh = 0;
-				while ((readLengh = is.read(contents, 0, perNum)) > 0) {
-					os.write(contents, 0, readLengh);
-				}
+				WebBrowserUtil.copyIsToOs(is,os);
 			}
 		}
 		WebBrowserUtil.trace("realFile.getAbsolutePath="
