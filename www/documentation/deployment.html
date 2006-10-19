@@ -89,7 +89,7 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
 <b><h3>Abstract:</h3>
 </b>
 JDIC uses Java extensions to work with Java Applet. After jdic stuffs  are downloaded into  local machine jre's ext folder,it will search  specific jars(jdic_native.jar or jdic_crossplatform.jar) then extract  them and set needed stuffs correctly to environment.Thus, it can run  well as in a local machine. Java extensions is the key tech we use here, to know more about it,  please refer  http://java.sun.com/j2se/1.5.0/docs/guide/plugin/developer_guide/extensions.
-<br>
+Issue <a href="https://jdic.dev.java.net/issues/show_bug.cgi?id=428">https://jdic.dev.java.net/issues/show_bug.cgi?id=428</a> has been opened and you can get more background there. <br>
 <b><h3>Main steps:</h3>
 </b>
 <b>1 Develop your applet app</b><br>
@@ -173,8 +173,8 @@ Jar and sign jdic_native.jar<br>
  <span class="STYLE10">&nbsp; jar cmf MANIFEST.MF jdic_crossplatform.jar sunos windows linux demo javadoc COPYING README.html defmailer.properties<br>
 &nbsp; jarsigner -keystore jdic.keystore jdic_crossplatform.jar jdic</span><br>
 <br>
-<b>4.Deploy test.jar with jdic.jar and jdic_native.jar(or jdic_crossplatform.jar)</b><br>
-<b>5.If everything is ok, a window will show to ask  your permission  to install extensions, confirm it and jdic stuffs will be  installed.</b><br>
+<b>4 Deploy test.jar with jdic.jar and jdic_native.jar(or jdic_crossplatform.jar)</b><br>
+<b>5 If everything is ok, a window will show to ask  your permission  to install extensions, confirm it and jdic stuffs will be  installed.</b><br>
 <b><h3>Reference resources:</h3></b>
 Issue <a href="https://jdic.dev.java.net/issues/show_bug.cgi?id=428">https://jdic.dev.java.net/issues/show_bug.cgi?id=428</a> gives all stuffs of this sample.<br>
 How to sign a jar file: <a href="http://java.sun.com/j2se/1.5.0/docs/guide/plugin/developer_guide/rsa_signing.html">http://java.sun.com/j2se/1.5.0/docs/guide/plugin/developer_guide/rsa_signing.html</a><br>
