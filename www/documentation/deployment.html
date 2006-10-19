@@ -88,8 +88,11 @@ et_target=&amp;et_lpage=&amp;et_trig="/></a>
 </table>
 <b><h3>Abstract:</h3>
 </b>
-JDIC uses Java extensions to work with Java Applet. After jdic stuffs  are downloaded into  local machine jre's ext folder,it will search  specific jars(jdic_native.jar or jdic_crossplatform.jar) then extract  them and set needed stuffs correctly to environment.Thus, it can run  well as in a local machine. Java extensions is the key tech we use here, to know more about it,  please refer  <a href="http://java.sun.com/j2se/1.5.0/docs/guide/plugin/developer_guide/extensions">http://java.sun.com/j2se/1.5.0/docs/guide/plugin/developer_guide/extensions</a>.
-Issue <a href="https://jdic.dev.java.net/issues/show_bug.cgi?id=428">https://jdic.dev.java.net/issues/show_bug.cgi?id=428</a> has been opened and you can get more background there. <br>
+Here we mainly talk about running applets in remote mode(through &quot;http&quot;),for applets run in local machines,just make sure your applet can find jdic.jar will be ok.
+<br>
+JDIC uses Java extensions to work with Java Applet,which will download jdic stuffs,after JDIC is downloaded to local machine jre's ext folder,it will search  specific jars(jdic_native.jar or jdic_crossplatform.jar) then extract them and set needed stuffs correctly to environment.Thus, it can run  well as in a local machine. Java extensions is the key tech we use here, to know more about it,  please refer <a href="http://java.sun.com/j2se/1.5.0/docs/guide/plugin/developer_guide/extensions">http://java.sun.com/j2se/1.5.0/docs/guide/plugin/developer_guide/extensions</a>.
+  Bug <a href="https://jdic.dev.java.net/issues/show_bug.cgi?id=428">https://jdic.dev.java.net/issues/show_bug.cgi?id=428</a> has been opened and you can get more background of this issue there. <br>
+</p>
 <b><h3>Main steps:</h3>
 </b>
 <b>1 Develop your applet app</b><br>
