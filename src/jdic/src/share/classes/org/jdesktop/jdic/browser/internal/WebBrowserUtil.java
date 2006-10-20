@@ -141,7 +141,7 @@ public class WebBrowserUtil {
 
 	/* debug helper */
 	public static void trace(String msg) {
-//		if (isDebugOn)
+		if (isDebugOn)
 			System.out.println("*** Jtrace: " + msg);
 	}
 
