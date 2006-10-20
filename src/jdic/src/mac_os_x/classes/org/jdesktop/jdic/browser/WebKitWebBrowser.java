@@ -481,7 +481,7 @@ public class WebKitWebBrowser extends CocoaComponent implements IWebBrowser {
 	}
 	
 	public void setURL(URL url, String postData, String headers){		
-		throw new Exception("Method is not supported");
+		throw new UnsupportedOperationException("Method is not supported");
 	}
 
 	public void back() {
