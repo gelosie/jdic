@@ -114,7 +114,7 @@ Here is a sample applet:<br>
 }</span><br>
 <br>
 Create manifest file for your app<br>
-Manifest file for applet uses <span class="STYLE5">jdic_native.jar</span>(for windows)
+Manifest file for applet uses <span class="STYLE5">jdic_native.jar</span>(for windows,<a href="#jdic_native">refer below for its creation </a>)
 <br>
 &nbsp;&nbsp; &nbsp;Extension-List: <span class="STYLE9">jdic</span> <span class="STYLE4">jdic_native</span><br>
 &nbsp;&nbsp; &nbsp;jdic-Extension-Name: org.jdic<br>
@@ -129,7 +129,7 @@ Manifest file for applet uses <span class="STYLE5">jdic_native.jar</span>(for wi
 &nbsp;&nbsp; <span class="STYLE4">&nbsp;jdic_native-Implementation-URL: http://localhost:8080/JDICApplet/jdic_native.jar&nbsp;</span>&nbsp; &nbsp;<br>
 <br>
 Manifest for applet uses jdic_crossplatform.jar
-<br>
+(<a href="#jdic_crossplatform">refer below for its creation </a>)<br>
 &nbsp;&nbsp; &nbsp;Extension-List: <span class="STYLE9">jdic</span> <span class="STYLE4">jdic_crossplatform</span><br>
 &nbsp;&nbsp; &nbsp;jdic-Extension-Name: org.jdic<br>
 &nbsp;&nbsp;&nbsp; jdic-Specification-Version: 20060631<br>
@@ -160,7 +160,7 @@ Unpack jdic.jar(download from this web site) and re-jar and sign it<br>
 &nbsp; jarsigner -keystore jdic.keystore jdic.jar jdic</span><br>
 <strong>Attention:You must sign jars in the extension list, else Java Applet will not download them.</strong><br>
 <br>
-<b>3 Sign jdic_native.jar</b><br>
+<b>3 Sign jdic_native.jar</b>(<a href="#jdic_native">created by</a>)<br>
 Create manifest for jdic_native.jar<br>
 <span class="STYLE10">&nbsp;&nbsp; &nbsp;Extension-Name: org.jdic_native<br>
 &nbsp;&nbsp; &nbsp;Specification-Vendor: Sun Microsystems, Inc<br>
@@ -169,11 +169,11 @@ Create manifest for jdic_native.jar<br>
 &nbsp;&nbsp; &nbsp;Implementation-Vendor: Sun Microsystems, Inc<br>
 &nbsp;&nbsp; &nbsp;Implementation-Version: 20060631</span><br>
 Jar and sign jdic_native.jar<br>
-<span class="STYLE10">&nbsp; jar cmf MANIFEST.MF jdic_native.jar *.dll *.exe<br>
+<span class="STYLE10">&nbsp; <a name="jdic_native"></a>jar cmf MANIFEST.MF jdic_native.jar *.dll *.exe<br>
 &nbsp; jarsigner -keystore jdic.keystore jdic_native.jar jdic</span><br>
 &nbsp; <br>
  For jdic_crossplatform.jar,act as below:<br>
- <span class="STYLE10">&nbsp; jar cmf MANIFEST.MF jdic_crossplatform.jar sunos windows linux demo javadoc COPYING README.html defmailer.properties<br>
+ <span class="STYLE10">&nbsp; <a name="jdic_crossplatform"></a>jar cmf MANIFEST.MF jdic_crossplatform.jar sunos windows linux demo javadoc COPYING README.html defmailer.properties<br>
 &nbsp; jarsigner -keystore jdic.keystore jdic_crossplatform.jar jdic</span><br>
 <br>
 <b>4 Deploy test.jar with jdic.jar and jdic_native.jar(or jdic_crossplatform.jar)</b><br>
