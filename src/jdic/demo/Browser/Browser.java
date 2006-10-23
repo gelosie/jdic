@@ -170,7 +170,10 @@ public class Browser extends JPanel {
         statusBar.lblDesc.setText("JDIC API Demo - Browser");
 
         try {
-            webBrowser = new WebBrowser(new URL("http://java.net"));
+            BrowserEngineManager bem = BrowserEngineManager.instance();
+            webBrowser = bem.getActiveEngine().getWebBrowser();
+            webBrowser.setURL(new URL("http://java.net"));
+
             // Print out debug messages in the command line.
             //webBrowser.setDebug(true);
         } catch (MalformedURLException e) {
@@ -219,7 +222,7 @@ public class Browser extends JPanel {
         });
 
         jBrowserPanel.setLayout(new BorderLayout());
-        jBrowserPanel.add(webBrowser, BorderLayout.CENTER);
+        jBrowserPanel.add(webBrowser.asComponent(), BorderLayout.CENTER);				
 
         this.add(jAddrToolBarPanel, BorderLayout.NORTH);
         this.add(statusBar, BorderLayout.SOUTH);
