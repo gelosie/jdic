@@ -62,7 +62,7 @@ public class Browser extends JPanel {
     MyStatusBar statusBar = new MyStatusBar();
     JPanel jBrowserPanel = new JPanel();
 
-    WebBrowser webBrowser;
+    IWebBrowser webBrowser;
 
     public Browser() {
         try {
