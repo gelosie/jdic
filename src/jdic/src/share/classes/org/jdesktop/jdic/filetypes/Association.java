@@ -22,6 +22,7 @@ package org.jdesktop.jdic.filetypes;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.jdesktop.jdic.filetypes.internal.AppUtility;
@@ -329,28 +330,21 @@ public class Association {
      */
     public List getActionList() {
         // Make defensive copy
-        if (actionList == null) {
-            return null;
-        } else {
-            List retList = new ArrayList();
-            
-            Iterator iter = actionList.iterator();
-            while (iter.hasNext()) {
-                retList.add(iter.next());
-            }
-            
-            return retList;
-        }            
-    }
+        if (actionList == null || actionList.isEmpty()) {
+			return Collections.emptyList();
+		} else {
+			return new ArrayList(actionList);
+		}
+	}
 
     /**
-     * Returns the action, whose verb field is the same with the
-     * specified verb.
-     *
-     * @param verb the specified verb.
-     * @return the action with the specified verb; <code>null</code> if no 
-     *         approprate action is found.
-     */
+	 * Returns the action, whose verb field is the same with the specified verb.
+	 * 
+	 * @param verb
+	 *            the specified verb.
+	 * @return the action with the specified verb; <code>null</code> if no
+	 *         approprate action is found.
+	 */
     public Action getActionByVerb(String verb) {
         Iterator iter;
     
