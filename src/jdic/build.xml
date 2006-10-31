@@ -41,7 +41,7 @@ Top-level target:
   <property name="unix.classes.dir"  value="${src.dir}/unix/classes" />
   <property name="win32.classes.dir" value="${src.dir}/win32/classes" />
   <property name="mac.classes.dir"   value="${src.dir}/mac_os_x/classes" />
-
+  
   <!-- the path of file defmailer.properties defining the default mailer 
        location on Linux/Solaris/FreeBSD -->
   <property name="unix.classes.defmailer.dir"  
@@ -393,10 +393,21 @@ Top-level target:
 
   <!-- *** Build Mac native JNI code *** -->
   <target name="buildmacjni" depends="init"
-          description="build native jni libraries." >
-    <exec dir="${mac.native.jni.dir}" executable="make" failonerror="yes" />
+          description="build native jni libraries." >    
+      <exec dir="${mac.native.jni.dir}" executable="make" failonerror="yes" /> 
 
-    <!-- copy generated .jnilib file -->
+      <!-- build libtray.jnilib containing the Tray Icon native code -->
+      <property name="outputprop" value=""/>
+      <exec dir="${mac.native.jni.dir}/tray/"
+            executable="${basedir}/${mac.native.jni.dir}/tray/buildTrayLib.sh"
+            failonerror="no"
+            outputproperty="outputprop" >
+      </exec>
+      <!-- the following is not working. How to display the output of the exec call above?? -->
+      <echo message="${outputprop}" level="debug"/>
+
+      <!-- copy generated .jnilib files -->
+    <copy file="${mac.native.jni.dir}/libjdic.jnilib"  todir="${dist.dir}" />       
     <copy file="${mac.native.jni.dir}/libjdic.jnilib" todir="${dist.dir}" />
   </target>
 
@@ -524,6 +535,7 @@ Top-level target:
   <property name="share.classes.tray.dir" value="${share.classes.dir}/${pkg.tray.dir}" />
   <property name="win32.classes.tray.dir" value="${win32.classes.dir}/${pkg.tray.dir}" />  
   <property name="unix.classes.tray.dir"  value="${unix.classes.dir}/${pkg.tray.dir}" />  
+  <property name="mac.classes.tray.dir"   value="${mac.classes.dir}/${pkg.tray.dir}"/>
 
   <!-- *** Top-level target *** -->
   <!-- *** Build a Tray Icon API binary for the current platform *** -->
@@ -542,6 +554,10 @@ Top-level target:
     <condition property="platform.target" value="buildsolaris_tray">
       <os name="sunos"/>      
     </condition>  
+    
+    <condition property="platform.target" value="buildmac_tray">
+      <os name="Mac OS X"/>
+     </condition>
 
     <antcall target="${platform.target}" />
   </target>
@@ -636,4 +652,49 @@ Top-level target:
     <copy file="${unix.native.jni.dir}/libtray.so" todir="${dist.dir}" />
   </target>
 
+    <!--
+    - MAC OS X DISTRIBUTION
+    -->
+    <target name="buildmac_tray" depends="buildmacjar_tray, buildmacjni_tray"
+            description="build java and native source code for Mac OS X platform">
+    </target>
+
+    <!-- *** Build Mac OS X jar file *** -->
+    <target name="buildmacjar_tray" depends="init"
+            description="build the classes and jar file.">
+
+      <echo message="dist dir = ${dist.dir}"/>
+      <echo message="srcdir=${share.classes.dir}:${mac.classes.tray.dir}"/>
+
+      <javac debug="${toDebug}" srcdir="${share.classes.tray.dir}:${mac.classes.tray.dir}"
+               destdir="${dist.dir}"
+               classpath="${dist.dir}"
+               target="1.4"
+               source="1.4"
+      />
+
+      <jar destfile="${dist.dir}/${jar.file}" update="false">
+        <fileset dir="${dist.dir}" includes="org/**/*.class"/>
+      </jar>
+
+      <!-- remove the generated "org" directory -->
+      <delete includeEmptyDirs="true" failonerror="false">
+        <fileset dir="${dist.dir}/org"/>
+      </delete>
+    </target>
+
+    <!-- *** Build Mac OS X native JNI code *** -->
+    <target name="buildmacjni_tray" depends="init"
+            description="build native jni libraries.">
+      <!-- build libtray.jnilib containing the Tray Icon native code -->
+      <property name="outputprop" value=""/>
+      <exec dir="${mac.native.jni.dir}/tray/"
+              executable="${basedir}/${mac.native.jni.dir}/tray/buildTrayLib.sh"
+              failonerror="no"
+              outputproperty="outputprop">
+      </exec>
+
+      <!-- copy generated libtray.jnilib file -->
+      <copy file="${mac.native.jni.dir}/libtray.jnilib" todir="${dist.dir}"/>
+    </target>
 </project>

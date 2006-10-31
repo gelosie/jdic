@@ -147,7 +147,7 @@ Top-level target:
 			<os name="freebsd"/>
 		</condition>
 
-		<condition property="cleannative.target" value="cleanmac_os_xnative">
+		<condition property="cleannative.target" value="cleanmacnative">
 			<os name="Mac OS X" />
 		</condition>
 		<antcall target="${cleannative.target}" />
@@ -168,6 +168,10 @@ Top-level target:
 			<arg line="clean"/>
 		</exec>
 	</target>
+	
+	<target name="cleanmacnative" depends="init">
+     <!-- todo implement -->
+  </target>
 
 	<!-- *** Top-level target *** -->
 	<!-- *** Build a JDIC API distribution for the current platform *** -->
@@ -197,7 +201,7 @@ Top-level target:
 			<os name="freebsd"/>
 		</condition>
 
-		<condition property="jar.target" value="buildmac_os_xjar">
+		<condition property="jar.target" value="buildmacjar">
 			<os name="Mac OS X" />
 		</condition>
 
@@ -465,6 +469,15 @@ Top-level target:
           description="build native jni libraries." >
 			<exec dir="${mac.native.jni.dir}" executable="make" failonerror="yes" />
 
+			<!-- build libtray.jnilib containing the Tray Icon native code -->
+     <property name="outputprop" value=""/>
+     <exec dir="${mac.native.jni.dir}/tray/"
+           executable="${basedir}/${mac.native.jni.dir}/tray/buildTrayLib.sh"
+           failonerror="no"
+           outputproperty="outputprop">
+     </exec>
+     <!-- the following is not working. How to display the output of the exec call above?? -->
+     <echo message="${outputprop}" level="info"/>
 			<!-- copy generated .jnilib file -->
 			<copy file="${mac.native.jni.dir}/libjdic.jnilib" todir="${dist.native.dir}" />
 		</target>
@@ -493,37 +506,37 @@ Top-level target:
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
-    />
+      />
 			<javac srcdir="${demo.filechooser.dir}"
            destdir="${demo.filechooser.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
-    />
+      />
 			<javac srcdir="${demo.fileexplorer.dir}"
            destdir="${demo.fileexplorer.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
-    />
+      />
 			<javac srcdir="${demo.filetypes.dir}"
            destdir="${demo.filetypes.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
-    />
+      />
 			<javac srcdir="${demo.simplebrowser.dir}"
            destdir="${demo.simplebrowser.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
-    />
+      />
 			<javac srcdir="${demo.tray.dir}"
            destdir="${demo.tray.dir}"
            classpath="${dist.dir}/${jar.file}" 
            target="1.4"
            source="1.4"
-    />
+      />
 
 			<!-- Copy demo apps to a "demo" directory under the distribution directory -->
 			<mkdir dir="${dist.dir}/demo" />
