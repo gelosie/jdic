@@ -38,12 +38,28 @@ public interface TrayIconService {
     public void addNotify();
     public void setPopupMenu(JPopupMenu menu);
     public void setIcon(Icon i);
-    public void setCaption(String s);
-    public void setToolTip(String s);
+    /**
+     * Set caption of the icon.
+     * This is only meaningful for Mac os. For windows, it equals with setToolTip.
+     * @param caption caption to set
+     */
+    public void setCaption(String caption);
+    /**
+     * Sets the tool tip of the icon.
+     * For windows,it can have a maximum of 64 characters including the terminating NULL.
+     * @param toolTip toolTip to set
+     */
+    public void setToolTip(String toolTip);
     public void setIconAutoSize(boolean b);
     public void addActionListener(ActionListener al);
     public void removeActionListener(ActionListener al);
     public Point getLocationOnScreen();
+    /**
+     * This method isn't supported by Mac os,UnsupportedOperationException will be thrown for it.
+     * @param caption caption of the msg
+     * @param text content of the msg
+     * @param type type of the msg
+     */
     public void showBalloonMessage(String caption, String text, int type);
     public void addBalloonActionListener(ActionListener al);
     public void removeBalloonActionListener(ActionListener al);
