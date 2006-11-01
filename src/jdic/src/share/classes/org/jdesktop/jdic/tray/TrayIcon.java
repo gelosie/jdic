@@ -69,14 +69,14 @@ public class TrayIcon {
      * TrayIcon constructor - creates a TrayIcon with the specified Icon
      * the specified caption and Popup menu.
      * @param icon Icon
-     * @param caption caption to use
+     * @param tooltip tooltip to use
      * @param popup popupMenu to use
      */
-    public TrayIcon(Icon icon, String caption, JPopupMenu popup) {
+    public TrayIcon(Icon icon, String tooltip, JPopupMenu popup) {
         tis = (TrayIconService) 
             ServiceManager.getService(ServiceManager.TRAY_ICON_SERVICE);
         setIcon(icon);
-        setCaption(caption);
+        setToolTip(tooltip);
         setPopupMenu(popup); 
     }
 
@@ -110,7 +110,9 @@ public class TrayIcon {
      * @param tooltip
      */
     public void setToolTip(String tooltip) {
-        setCaption(tooltip);
+    	if(tis !=null){
+    		tis.setToolTip(tooltip);
+    	}        
     }
 
     /**
