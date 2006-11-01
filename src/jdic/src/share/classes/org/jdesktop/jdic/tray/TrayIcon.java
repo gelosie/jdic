@@ -106,7 +106,7 @@ public class TrayIcon {
 
     /**
      * Sets the ToolTip string for this TrayIcon.
-     * 
+     * For windows,it can have a maximum of 64 characters including the terminating NULL.
      * @param tooltip
      */
     public void setToolTip(String tooltip) {
