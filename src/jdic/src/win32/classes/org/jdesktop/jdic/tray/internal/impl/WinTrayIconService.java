@@ -46,7 +46,7 @@ public class WinTrayIconService implements TrayIconService{
     private JPopupMenu menu;
     private Icon icon;
     private boolean autoSize;
-    private byte[] caption = "JDIC TrayIcon".getBytes();
+    private byte[] toolTip = "JDIC TrayIcon".getBytes();
 
     private long hicon;
     private Image oldIconImage;
@@ -292,10 +292,10 @@ public class WinTrayIconService implements TrayIconService{
             }
             hicon = createNativeIcon(tmpImage, WINDOWS_TASKBAR_ICON_WIDTH, WINDOWS_TASKBAR_ICON_HEIGHT, 0, 0);
             if (created) {
-                updateNativeIcon(hicon, iconID, caption);
+                updateNativeIcon(hicon, iconID, toolTip);
             }
             else {
-                createIcon(hicon, iconID, caption);
+                createIcon(hicon, iconID, toolTip);
             }
         }
     }
@@ -330,17 +330,17 @@ public class WinTrayIconService implements TrayIconService{
     }
 
     public void setCaption(String s) {
-        caption = (s == null ? "" : s ).getBytes();
-        if (created) {
-            observer.setUpdate(false);
-            observer = new AnimationObserver();
-            updateIcon(null);
-        }
+    	setToolTip(s);
     }
     
-    public void setToolTip(String tip){
-        setCaption(tip);
-    }
+    public void setToolTip(String tip) {
+		toolTip = (tip == null ? "" : tip).getBytes();
+		if (created) {
+			observer.setUpdate(false);
+			observer = new AnimationObserver();
+			updateIcon(null);
+		}
+	}
     
     public void setIconAutoSize(boolean b) {
         // Not necessary for Win32 impl.
