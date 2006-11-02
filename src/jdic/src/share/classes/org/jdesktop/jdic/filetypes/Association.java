@@ -331,7 +331,8 @@ public class Association {
     public List getActionList() {
         // Make defensive copy
         if (actionList == null || actionList.isEmpty()) {
-			return Collections.emptyList();
+			return Collections.EMPTY_LIST;
+			
 		} else {
 			return new ArrayList(actionList);
 		}
