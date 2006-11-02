@@ -29,7 +29,8 @@ import org.jdesktop.jdic.init.JdicInitException;
 /**
  * Factory pattern used to maitain instances of <code>IBrowserEngine</code>.
  * 
- * @author Alexander Hars,Inventio GmbH Michael Shan
+ * @author Alexander Hars,Inventio GmbH
+ * @author Michael Shan
  *  
  */
 public class BrowserEngineManager {
