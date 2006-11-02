@@ -1,3 +1,55 @@
+2006-11-02 Michael Shan <michael_shan@dev.java.net>
+    
+    * Build 20061102
+
+    * Fixed issue list:   
+      ID  Pri  Summary
+      ==  ===  =======      
+      222  p3  Mac OS X support (Browser component)
+      407  p3  BrowserManger should be introduced to manager browsers
+      230  p3  Mac OS X support (Tray API)      
+      315  p3  Mac OS X Universal Binaries
+      421  p3  no native WebBrowserUtil on Mac OS X
+      447  p3  TrayIcon constructor implementation needs to be changed
+      440  p3  New - Thread.sleep in NativeEventThread causes system clock speed-up
+      428  p3  JDIC can't work as JavaApplet over remote mode
+      384  p3  JDIC crashes under jdk1.6.0
+      70   p3  Browser window does not expand to take up all available space
+      371  p3  Refresh() doesn't generate downloadCompleted()
+      420  p3  POST parameters string with length > 1000 in setURL hangs JDIC
+      274  p3  Support jar: urls             
+      415  p3  KeyboardEvents are consumed by the WebBrowser
+      425  p3  Provide the key combination Ctrl+N to user
+      283  p3  Browser focus problem
+      435  p3  Native code don't have execute privilege error
+      450  p3  Unregister Association doesn't works when the registration is made from another application, not from JDIC
+      451  p3  Association.getActionList() return NULL is not suitable
+      444  p3  WebKitWebBrowser.java doesn't compile      
+      441  p3  suppressing script messages            
+      439  p3  JDIC fails in Ant even with jvmarg for java.library.path
+      422  p3  IWebBrowser missed setURL(url,postData,httpHeader) method
+      437  p3  TrayIcon setCaption and setToolTip call the same method; should be different
+      427  p3  WebBrowser.dispose() fail to close the instance  closed JS window.close      
+      432  p3  Would like Adapter class for WebBrowserListener
+      426  p3  Provide interface which could  be called after window.close()
+      430  p3  Missing definition for CEVENT_WINDOW_CLOSE
+      429  p3  Problems disposing WebBrowser      
+      289  p3  Distribution 0.9.1 built with wrong GTK version
+      393  p3  Installed Mozilla with exe file doesn't show input boxes                           
+      417  p3  JDIC packager disappeared
+      172  p3  Scrollbars not appearing in Mozilla 1.7.5, JDIC 0.8.7
+      411  p3  Cleanup IWebBrowser interface
+      372  p3  statusTextChange() bug when cursor rolls over anchor
+      335  p3  mozilla running on windows does not honor javascript commands
+      132  p3  WebBrowser do not repaint itself in JInternalFrame
+      63   p3  IeEmbed.exe Assert
+      32   p3  bug under java 1.4.1
+      4    p3  [browser-moz] Can not launch mozilla as the embed browser in Browser demo            
+      
+    * Known issue list:   
+      Below are some of the most frequently mentioned known issues.
+      144 P3  New Browser APIs supporting DOM/javascript execution support
+      
 2006-06-13 Michael Shan <michael_shan@dev.java.net>
     
     * Build 20060613
