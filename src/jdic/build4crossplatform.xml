@@ -480,6 +480,7 @@ Top-level target:
      <echo message="${outputprop}" level="info"/>
 			<!-- copy generated .jnilib file -->
 			<copy file="${mac.native.jni.dir}/libjdic.jnilib" todir="${dist.native.dir}" />
+			<copy file="${mac.native.jni.dir}/libtray.jnilib" todir="${dist.native.dir}" />
 		</target>
 
 		<!-- *** Build demo applications into .class files *** -->

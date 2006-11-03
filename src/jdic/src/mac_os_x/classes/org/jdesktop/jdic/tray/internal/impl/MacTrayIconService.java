@@ -205,7 +205,7 @@ public class MacTrayIconService implements TrayIconService
 
             if (iconImage == null)
             {
-                iconImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            	iconImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
                 g = (Graphics2D) ((BufferedImage) iconImage).getGraphics();
                 g.setComposite(AlphaComposite.Src);
                 icon.paintIcon(observer, g, 0, 0);
@@ -216,7 +216,7 @@ public class MacTrayIconService implements TrayIconService
             // Temp image is used for scaling.
 
             BufferedImage tmpImage = new BufferedImage(MAC_STATUSBAR_ICON_WIDTH, MAC_STATUSBAR_ICON_HEIGHT,
-                                                       BufferedImage.TYPE_3BYTE_BGR);
+                                                       BufferedImage.TYPE_4BYTE_ABGR);
             g = (Graphics2D) tmpImage.getGraphics();
 
             try
@@ -236,19 +236,25 @@ public class MacTrayIconService implements TrayIconService
             WritableRaster wr = tmpImage.getRaster();
             DataBuffer db = wr.getDataBuffer();
 
-            byte[] pixels = ((DataBufferByte) db).getData(); //this is stored as BGR, so we need to swap the B & G bytes
-            for (int i = 0, n = pixels.length; i < n; i += 3)
+            byte[] pixels = ((DataBufferByte) db).getData(); //this is stored as ABGR, but we want RGBA so we need to reverse the byte order
+            for (int i = 0, n = pixels.length; i < n; i += 4)
             {
-                byte swap = pixels[i];
-                pixels[i] = pixels[i + 2];
-                pixels[i + 2] = swap;
-            }
+				byte alpha = pixels[i];
+				byte blue = pixels[i + 1];
+				byte green = pixels[i + 2];
+				byte red = pixels[i + 3];
+
+				pixels[i] = red;
+				pixels[i + 1] = green;
+				pixels[i + 2] = blue;
+				pixels[i + 3] = alpha;
+			}
 
             int imageWidth = wr.getWidth();
             int imageHeight = wr.getHeight();
             int samplesPerPixel = wr.getNumBands();
             int bitsPerSample = 8;
-            boolean hasAlpha = false;
+            boolean hasAlpha = true;
             boolean isPlanar = false;
             String colorSpaceName = "NSCalibratedRGBColorSpace"; //if doesn't work try NSDeviceRGBColorSpace or NSCalibratedRGBColorSpace
             int bytesPerRow = imageWidth * samplesPerPixel;

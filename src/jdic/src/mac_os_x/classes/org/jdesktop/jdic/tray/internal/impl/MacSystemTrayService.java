@@ -20,8 +20,8 @@
 
 
 /**
- *  The <code>WinSystemTrayService</code> interface is the <code>SystemTray
- *  </code> implementation.
+ *  The <code>MacSystemTrayService</code> is the Mac OS implementation of the <code>SystemTrayService
+ *  </code> interface.
  *  @author Rob Ross <robross@earthlink.net>
  *
  */
