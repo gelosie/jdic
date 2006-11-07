@@ -194,11 +194,7 @@ JNIEXPORT void JNICALL Java_org_jdesktop_jdic_tray_internal_impl_MacTrayIconServ
 
         if ([bmi isValid])
         {
-            //NSLog(@"image is valid and can be rendered.");
-
-		   // [bmrep setOpaque:YES];
-
-            [theItem setImage:bmi];
+        [theItem performSelectorOnMainThread:@selector(setImage:) withObject:bmi waitUntilDone:NO];  
         }
         else
         {

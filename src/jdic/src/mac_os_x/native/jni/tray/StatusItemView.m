@@ -160,7 +160,7 @@ JNIEnv *JNU_GetEnv()
 	{
 		[imageView setFrame:_imageRect];
 	}
-	[imageView performSelectorOnMainThread:@selector(setNeedsDisplay:) withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
+    [imageView setNeedsDisplay:YES];
 	[self resize];
 }
 

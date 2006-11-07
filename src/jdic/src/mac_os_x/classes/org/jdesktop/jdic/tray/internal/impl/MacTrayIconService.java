@@ -28,6 +28,7 @@ package org.jdesktop.jdic.tray.internal.impl;
  */
 
 import java.awt.AlphaComposite;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Graphics2D;
@@ -210,7 +211,7 @@ public class MacTrayIconService implements TrayIconService
 					icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 			g = (Graphics2D) ((BufferedImage) iconImage).getGraphics();
 			g.setComposite(AlphaComposite.Src);
-			icon.paintIcon(null, g, 0, 0);
+			icon.paintIcon(observer, g, 0, 0);
 			
             WritableRaster wr = iconImage.getRaster();
             DataBuffer db = wr.getDataBuffer();
@@ -253,7 +254,6 @@ public class MacTrayIconService implements TrayIconService
         // here is the data I need to supply to create an NSBitmapImageRep in
 		// the native Mac code:
         /*
-		 * 
 		 * bmrep = [bmrep initWithBitmapDataPlanes:&image->buffer_ptr
 		 * pixelsWide:(GLint) image->buffer_size.width pixelsHigh:(GLint)
 		 * image->buffer_size.height bitsPerSample:8 samplesPerPixel:4
@@ -263,8 +263,6 @@ public class MacTrayIconService implements TrayIconService
 		 * assume we can start from a BufferedImage named bi, into which our
 		 * Icon has been drawn. planes - the data buffer pixelsWide - width of
 		 * data in pixels pixelsHigh - height of data in pixels
-		 * 
-		 * 
 		 */
         Graphics2D g;
         Image iconImage = null;
@@ -420,7 +418,7 @@ public class MacTrayIconService implements TrayIconService
 			observer.setUpdate(false);
 			observer = null;
 		}
-
+		observer = new AnimationObserver();
 		if (icon instanceof ImageIcon) {
 			observer = new AnimationObserver();
 			((ImageIcon) icon).setImageObserver(observer);
@@ -601,7 +599,7 @@ public class MacTrayIconService implements TrayIconService
         }
     }
 
-    private class AnimationObserver implements ImageObserver {
+    private class AnimationObserver extends Component implements ImageObserver {
 		boolean update = true;
 
 		public void setUpdate(boolean b) {
