@@ -89,8 +89,8 @@ public class MsgClient {
 	// be handled and removed from the set.
 	private static Set msgPieces = new HashSet();
 
-	public MsgClient() {
-		WebBrowserUtil.trace("Msg Client new once!");
+	public MsgClient() {		
+		WebBrowserUtil.trace("Msg Client started");
 		// For IE on Windows, use the system default charset. With JDK 5.0,
 		// there is a method Charset.defaultCharset().
 		// Note: for Mozilla on Windows/*nix, use "UTF-8", as there is no
@@ -120,7 +120,8 @@ public class MsgClient {
 			serverAddr = new InetSocketAddress("localhost", port);
 			WebBrowserUtil.trace("Found a free socket port: " + port);
 		} catch (Exception e) {
-		}
+			WebBrowserUtil.error(e.getMessage());
+		}		
 	}
 
 	int getPort() {

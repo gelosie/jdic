@@ -87,6 +87,7 @@ public class MozillaEngine implements IBrowserEngine {
 			setToEnv();
 			dealMozillaBinFile(this.envXPComPath);
 			initialized = true;
+			WebBrowserUtil.trace("Mozilla Engine intialized");
 		}
 	}
 
@@ -335,7 +336,7 @@ public class MozillaEngine implements IBrowserEngine {
 					+ File.separator + unixBinary);
 			Process p = Runtime.getRuntime().exec(
 					"chmod a+x " + runningPath + File.separator + unixBinary);
-			int presult = p.waitFor();// wait unti grant finished
+			int presult = p.waitFor();// wait unti grant process finishes
 			if (presult == 0) {
 				WebBrowserUtil.trace("grant executable privilege to "
 						+ unixBinary + " ok.");

@@ -51,8 +51,6 @@ public class InternetExplorerEngine implements IBrowserEngine {
 
 	private static final String libPathEnv = WebBrowserUtil.LIB_PATH_ENV;
 
-	private String nspr4dllPath = null;
-
 	private String browserFullPath = "";
 
 	/**
@@ -113,29 +111,6 @@ public class InternetExplorerEngine implements IBrowserEngine {
 	}
 
 	/**
-	 * Used to set the path of nspr4.dll path,seems needn't it anymore.
-	 * 
-	 * @deprecated this should be removed
-	 * @param nspr4Path
-	 * @return
-	 */
-	// TODO:path should be lib1:lib2:
-	private boolean setNspr4dllPath(String nspr4Path) {
-		// check it first
-		String filePath = nspr4Path + NSPR4_DLL;
-		File file = new File(filePath);
-		if (file != null && file.exists()) {
-			nspr4dllPath = nspr4Path;
-			WebBrowserUtil.trace(NSPR4_DLL + " is set under " + nspr4Path);
-			return true;
-		} else {
-			WebBrowserUtil.error(NSPR4_DLL + " doesn't exist under "
-					+ nspr4Path);
-			return false;
-		}
-	}
-
-	/**
 	 * 
 	 * Pre-append the "ielib" directory to PATH, which includes the
 	 * bundled,IeEmbed.exe dependent library nspr4.dll.
@@ -144,29 +119,20 @@ public class InternetExplorerEngine implements IBrowserEngine {
 	 * setLibPath method 2. set it directlly in the path
 	 */
 	protected void setEnv() {
-		if (nspr4dllPath == null) {
-			String nsprPath = JdicManager.getManager().getBinaryPath()
-					+ File.separator + IELIB;
-			InitUtility.preAppendEnv(libPathEnv, nsprPath);
-			WebBrowserUtil.trace(NSPR4_DLL + " under " + nsprPath
-					+ " is set to PATH");
+		String nspr4Path = JdicManager.getManager().getBinaryPath()
+				+ File.separator + IELIB;
+		File file = new File(nspr4Path + NSPR4_DLL);
+		if (file != null && file.exists()) {
+			WebBrowserUtil.trace(NSPR4_DLL + " is set under " + nspr4Path);
+			InitUtility.preAppendEnv(libPathEnv, nspr4Path);
 		} else {
-			InitUtility.preAppendEnv(libPathEnv, nspr4dllPath);
-			WebBrowserUtil.trace(NSPR4_DLL + " under " + nspr4dllPath
-					+ " is set to PATH");
+			WebBrowserUtil.error(NSPR4_DLL + " doesn't exist under "
+					+ nspr4Path);
 		}
 	}
 
 	public String getBrowserBinary() {
 		return browserBinary;
-	}
-
-	/**
-	 * @deprecated
-	 * @return Returns the nspr4dllPath.
-	 */
-	protected String getNspr4dllPath() {
-		return nspr4dllPath;
 	}
 
 	/*
@@ -179,7 +145,7 @@ public class InternetExplorerEngine implements IBrowserEngine {
 			this.prepareVariables();
 			this.setEnv();
 			initialized = true;
-			WebBrowserUtil.trace("Engine initialize once!");
+			WebBrowserUtil.trace("IE Engine intialized");
 		}
 	}
 

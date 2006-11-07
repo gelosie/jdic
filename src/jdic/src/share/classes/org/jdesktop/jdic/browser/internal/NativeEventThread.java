@@ -57,8 +57,6 @@ public class NativeEventThread extends Thread {
 
 	private Process nativeBrowser;
 
-	private boolean eventRetBool;
-
 	private String eventRetString;
 
 	private MsgClient messenger = null;
@@ -67,7 +65,6 @@ public class NativeEventThread extends Thread {
 
 	public NativeEventThread() {
 		super("EventThread");
-		WebBrowserUtil.trace("Envent Thread new once!");
 	}
 
 	public void attachWebBrowser(IWebBrowser webBrowser) {
@@ -79,7 +76,7 @@ public class NativeEventThread extends Thread {
 	}
 
 	public void run() {
-		WebBrowserUtil.trace("Envent Thread run once!");
+		WebBrowserUtil.trace("Envent thread started");
 		// We can only decide which engine to use here! Shouldn't access
 		// engine's info before this method!
 		try {

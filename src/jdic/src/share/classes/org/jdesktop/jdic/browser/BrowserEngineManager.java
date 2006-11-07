@@ -91,8 +91,8 @@ public class BrowserEngineManager {
 		if (managerInstance == null) {
 			String cname = System
 					.getProperty(ORG_JDESKTOP_JDIC_BROWSER_BROWSERMANAGER);
-			WebBrowserUtil.trace("Specified browserManager " + cname);
 			if (cname != null) {
+				WebBrowserUtil.trace("Specified browserManager " + cname);
 				try {
 					managerInstance = (BrowserEngineManager) Class.forName(
 							cname).newInstance();
