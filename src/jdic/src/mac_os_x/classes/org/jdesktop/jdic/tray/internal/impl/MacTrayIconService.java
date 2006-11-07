@@ -28,7 +28,6 @@ package org.jdesktop.jdic.tray.internal.impl;
  */
 
 import java.awt.AlphaComposite;
-import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Graphics2D;
@@ -42,6 +41,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
+import java.awt.image.ImageObserver;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
@@ -52,6 +52,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -61,16 +62,20 @@ import javax.swing.event.PopupMenuListener;
 import org.jdesktop.jdic.tray.internal.TrayIconService;
 
 /**
- * Note : Do not override equals()!. The MacSystemTrayService keeps track of installed TrayIcon instances
- * by placing their MacTrayIconService delegates in a Set and relies on comparisons by object identity.
- * Overriding equals here may cause unpredictable results when trying to add or remove tray icons.
+ * The <code>MacTrayIconService</code> is the delegate class for native Mac
+ * <code>TrayIcon</code> implementation. 
+ * Note : Do not override equals()! The MacSystemTrayService keeps track of 
+ * installed TrayIcon instances by placing their MacTrayIconService delegates 
+ * in a Set and relies on comparisons by object identity. Overriding equals here 
+ * may cause unpredictable results when trying to add or remove tray icons.
+ * @author Rob Ross <robross@earthlink.net>
  */
+
 public class MacTrayIconService implements TrayIconService
 {
 
     private JPopupMenu menu;
     private Icon icon;
-    private Image oldIconImage;
     private boolean autoSize;
     private String caption; //on the mac, this is the title(label) of the Status Item(Tray Icon)
     private String toolTipText;
@@ -87,8 +92,6 @@ public class MacTrayIconService implements TrayIconService
     private boolean showingPopoup;
 
     AnimationObserver observer;
-
-
 
     static class PopupParent extends JDialog
     {
@@ -188,52 +191,28 @@ public class MacTrayIconService implements TrayIconService
         {
             //initialize all needed native resources
             nsStatusItemWrapperPointer = createStatusItem();
-            updateIcon(null);
+     
             setTitleNative(nsStatusItemWrapperPointer, caption);
             setToolTipNative(nsStatusItemWrapperPointer, toolTipText);
 
             nativePeerExists = true;
+            updateIcon();
         }
     }
 
 
-    void updateIcon(Image iconImage)
+    void updateIcon()
     {
         if (icon != null)
         {
             Graphics2D g;
-
-            if (iconImage == null)
-            {
-            	iconImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-                g = (Graphics2D) ((BufferedImage) iconImage).getGraphics();
-                g.setComposite(AlphaComposite.Src);
-                icon.paintIcon(observer, g, 0, 0);
-
-                oldIconImage = iconImage;
-            }
-
-            // Temp image is used for scaling.
-
-            BufferedImage tmpImage = new BufferedImage(MAC_STATUSBAR_ICON_WIDTH, MAC_STATUSBAR_ICON_HEIGHT,
-                                                       BufferedImage.TYPE_4BYTE_ABGR);
-            g = (Graphics2D) tmpImage.getGraphics();
-
-            try
-            {
-                g.setComposite(AlphaComposite.Src);
-                g.drawImage(iconImage, 0, 0, MAC_STATUSBAR_ICON_WIDTH, MAC_STATUSBAR_ICON_HEIGHT, observer);
-            }
-            finally
-            {
-                g.dispose();
-            }
-            tmpImage.flush();
-
-
-            //BufferedImage tmpImage = (BufferedImage) oldIconImage; //for casting
-
-            WritableRaster wr = tmpImage.getRaster();
+			BufferedImage iconImage = new BufferedImage(icon.getIconWidth(),
+					icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+			g = (Graphics2D) ((BufferedImage) iconImage).getGraphics();
+			g.setComposite(AlphaComposite.Src);
+			icon.paintIcon(null, g, 0, 0);
+			
+            WritableRaster wr = iconImage.getRaster();
             DataBuffer db = wr.getDataBuffer();
 
             byte[] pixels = ((DataBufferByte) db).getData(); //this is stored as ABGR, but we want RGBA so we need to reverse the byte order
@@ -259,65 +238,34 @@ public class MacTrayIconService implements TrayIconService
             String colorSpaceName = "NSCalibratedRGBColorSpace"; //if doesn't work try NSDeviceRGBColorSpace or NSCalibratedRGBColorSpace
             int bytesPerRow = imageWidth * samplesPerPixel;
             int bitsPerPixel = samplesPerPixel * bitsPerSample;
-
-            setImageNative(nsStatusItemWrapperPointer, pixels, imageWidth, imageHeight,
-                            bitsPerSample, samplesPerPixel, hasAlpha, isPlanar,
-                            colorSpaceName, bytesPerRow, bitsPerPixel);
-
-            /*
-            //print out the byte buffer for testing
-            int rowCount = 0;
-            int columnCount = 0;
-            for (int i = 0, n = pixels.length; i < n; i++)
-            {
-                if (columnCount % (imageWidth *3) == 0)
-                {
-
-                    //new row
-                    rowCount++;
-                    columnCount = 0;
-                    System.out.println("");
-                    String pad = rowCount > 9 ? " " : "  ";
-                    System.out.print("" + rowCount + pad);
-                }
-                columnCount++;
-                String s = "00"+Integer.toHexString(pixels[i]);
-                //keep last two characters
-
-                s = s.substring(s.length()-2);
-                System.out.print(" "+s);
-            }
-            */
-
+			if (nativePeerExists) {
+				setImageNative(nsStatusItemWrapperPointer, pixels, imageWidth,
+						imageHeight, bitsPerSample, samplesPerPixel, hasAlpha,
+						isPlanar, colorSpaceName, bytesPerRow, bitsPerPixel);
+			}
         }
-
     }
 
 
     private void temp()
     {
 
-        //here is the data I need to supply to create an NSBitmapImageRep in the native Mac code:
+        // here is the data I need to supply to create an NSBitmapImageRep in
+		// the native Mac code:
         /*
-
-	bmrep = [bmrep initWithBitmapDataPlanes:&image->buffer_ptr
-			pixelsWide:(GLint) image->buffer_size.width
-			pixelsHigh:(GLint) image->buffer_size.height
-			bitsPerSample:8
-			samplesPerPixel:4
-			hasAlpha:YES
-			isPlanar:NO
-			colorSpaceName:NSCalibratedRGBColorSpace
-			bytesPerRow:image->buffer_size.width*4
-			bitsPerPixel:32];
-
-assume we can start from a BufferedImage named bi, into which our Icon has been drawn.
-        planes - the data buffer
-        pixelsWide - width of data in pixels
-        pixelsHigh - height of data in pixels
-
-
-        */
+		 * 
+		 * bmrep = [bmrep initWithBitmapDataPlanes:&image->buffer_ptr
+		 * pixelsWide:(GLint) image->buffer_size.width pixelsHigh:(GLint)
+		 * image->buffer_size.height bitsPerSample:8 samplesPerPixel:4
+		 * hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace
+		 * bytesPerRow:image->buffer_size.width*4 bitsPerPixel:32];
+		 * 
+		 * assume we can start from a BufferedImage named bi, into which our
+		 * Icon has been drawn. planes - the data buffer pixelsWide - width of
+		 * data in pixels pixelsHigh - height of data in pixels
+		 * 
+		 * 
+		 */
         Graphics2D g;
         Image iconImage = null;
         if (icon != null)
@@ -328,7 +276,6 @@ assume we can start from a BufferedImage named bi, into which our Icon has been 
                 g = (Graphics2D) ((BufferedImage) iconImage).getGraphics();
                 g.setComposite(AlphaComposite.Src);
                 icon.paintIcon(null, g, 0, 0);
-                oldIconImage = iconImage;
                 BufferedImage bi = (BufferedImage) iconImage; //for casting
                 System.out.println("type of BufferedImage is " + iconImage.getClass().getName());
                 System.out.println("width of image is " + bi.getWidth());
@@ -467,22 +414,26 @@ assume we can start from a BufferedImage named bi, into which our Icon has been 
     }
 
 
-    public void setIcon(final Icon i)
-    {
-        icon = i;
-        if (nativePeerExists)
-        {
-            observer.setUpdate(false);
-            observer = new AnimationObserver();
-            updateIcon(null);
-        }
-    }
+    public void setIcon(final Icon i) {
+		icon = i;
+		if (observer != null) {
+			observer.setUpdate(false);
+			observer = null;
+		}
+
+		if (icon instanceof ImageIcon) {
+			observer = new AnimationObserver();
+			((ImageIcon) icon).setImageObserver(observer);
+		}
+		updateIcon();
+	}
 
     /**
-     * Set the label of the tray icon (title of the Status Item)
-     *
-     * @param labelText text to display as the Tray Icon's label
-     */
+	 * Set the label of the tray icon (title of the Status Item)
+	 * 
+	 * @param labelText
+	 *            text to display as the Tray Icon's label
+	 */
     public void setCaption(String labelText)
     {
         caption = labelText;
@@ -556,16 +507,17 @@ assume we can start from a BufferedImage named bi, into which our Icon has been 
 
     }
 
-    private synchronized void removeImpl()
-    {
-        if (nativePeerExists)
-        {
-            //remove native status item from native status bar
-            removeStatusItem(nsStatusItemWrapperPointer);
-            nsStatusItemWrapperPointer = 0;
-            nativePeerExists = false;
-        }
-    }
+    private synchronized void removeImpl() {
+		if (observer != null) {
+			observer.setUpdate(false);
+		}
+		if (nativePeerExists) {
+			// remove native status item from native status bar
+			removeStatusItem(nsStatusItemWrapperPointer);
+			nsStatusItemWrapperPointer = 0;
+			nativePeerExists = false;
+		}
+	}
 
 
     public void addBalloonActionListener(ActionListener al)
@@ -649,47 +601,25 @@ assume we can start from a BufferedImage named bi, into which our Icon has been 
         }
     }
 
-    private class AnimationObserver extends Component
-    {
-        boolean update = true;
+    private class AnimationObserver implements ImageObserver {
+		boolean update = true;
 
-        public void setUpdate(boolean b)
-        {
-            update = b;
-        }
+		public void setUpdate(boolean b) {
+			update = b;
+		}
 
-
-        public boolean imageUpdate(Image img,
-                                   int infoflags,
-                                   int x,
-                                   int y,
-                                   int width,
-                                   int height)
-        {
-            boolean flag = super.imageUpdate(img, infoflags,x,y,width,height);
-
-            if (update && nativePeerExists)
-            {
-                updateIcon(img);
-            }
-            return update;
-        }
-    }
-
-    //called by daemon thread to handle updating animated icons
-    public void updateNotify()
-    {
-        Runnable r = new Runnable(){
-            public void run()
-            {
-                updateIcon(null);
-            }
-        };
-        SwingUtilities.invokeLater(r);
-    }
+		public boolean imageUpdate(Image img, int infoflags, int x, int y,
+				int width, int height) {
+			if (update
+					&& (((infoflags & ALLBITS) != 0) || ((infoflags & FRAMEBITS) != 0))) {
+				updateIcon();
+			}
+			return update;
+		}
+	}
 
 
-    //test method
+    // test method
     private void showThreads()
     {
         Thread[] threads = new Thread[Thread.activeCount()];

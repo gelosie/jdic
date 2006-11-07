@@ -19,12 +19,6 @@
  */
 
 
-/**
- *  The <code>MacSystemTrayService</code> is the Mac OS implementation of the <code>SystemTrayService
- *  </code> interface.
- *  @author Rob Ross <robross@earthlink.net>
- *
- */
 package org.jdesktop.jdic.tray.internal.impl;
 
 import java.util.HashSet;
@@ -37,9 +31,13 @@ import org.jdesktop.jdic.tray.internal.TrayIconService;
 
 
 /**
- * There is only one Status Bar on the Mac, and this Java class represents that native peer,
- * so this is a singleton. Use the factory method getInstance to get the single instance of this
- * class.
+ * The <code>MacSystemTrayService</code> is the Mac OS implementation of the
+ * <code>SystemTrayService</code> interface. There is only one Status Bar on
+ * the Mac, and this Java class represents that native peer, so this is a
+ * singleton. Use the factory method getInstance to get the single instance of
+ * this class.
+ * 
+ * @author Rob Ross <robross@earthlink.net>
  */
 public class MacSystemTrayService implements SystemTrayService {
 
@@ -75,48 +73,7 @@ public class MacSystemTrayService implements SystemTrayService {
     }
 
     public void addNotify() {}
-
-    private class AnimationThread extends Thread
-    {
-        private boolean stop = false;
-
-        public AnimationThread()
-        {
-            super("TrayIconAnimationThread");
-            setDaemon(true);
-            setPriority(Thread.NORM_PRIORITY - 1);
-        }
-
-        public void run()
-        {
-            while (! stop)
-            {
-                //notify all the TrayIcons in the tray so they can redraw themselves if needed
-                synchronized (MacSystemTrayService.this)
-                {
-                    Iterator itar = trayIcons.iterator();
-
-                    while (itar.hasNext())
-                    {
-                        MacTrayIconService trayIcon = (MacTrayIconService) itar.next();
-                        trayIcon.updateNotify();
-                    }
-                }
-
-                try
-                {
-                    Thread.sleep(100);
-                }
-                catch (InterruptedException e)
-                {
-                    //don't care
-                }
-
-            };
-        }
-    }
-
-    private AnimationThread animationThread;
+  
 
     public synchronized void addTrayIcon(TrayIcon ti, TrayIconService tis, int trayIndex)
     {
@@ -125,13 +82,6 @@ public class MacSystemTrayService implements SystemTrayService {
             trayIcons.add(tis);
             MacTrayIconService trayIcon = (MacTrayIconService) tis;
             trayIcon.addNotify();
-        }
-
-        //lazily create the animation thread
-        if (animationThread == null)
-        {
-            animationThread = new AnimationThread();
-            animationThread.start();
         }
     }
 
@@ -161,10 +111,6 @@ public class MacSystemTrayService implements SystemTrayService {
             }
             trayIcons.clear();
         }
-        if (animationThread != null)
-        {
-            animationThread.stop = true;
-        }
     }
 
     protected void finalize() throws Throwable
@@ -172,8 +118,6 @@ public class MacSystemTrayService implements SystemTrayService {
         dispose();
         super.finalize();
     }
-
-
 
     static
     {
