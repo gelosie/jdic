@@ -185,7 +185,7 @@ Top-level target:
 
 	<!-- 
     - Build jar files
-    -->
+    -->	
 	<target name="buildjar" depends="init" >
 
 		<condition property="jar.target" value="buildwinjar">
@@ -212,6 +212,7 @@ Top-level target:
 			<exclude name="org/**/ServiceManagerStub.class" />
 			<exclude name="org/**/AppAssociationReaderFactory.class" />
 			<exclude name="org/**/AppAssociationWriterFactory.class" />
+			<exclude name="org/**/WebKitWebBrowser.class" />
 		</fileset>
 
 		<antcall target="${jar.target}" />
@@ -221,12 +222,12 @@ Top-level target:
 			<fileset refid="share.classes"/>
 		</jar>
 		<move file="${dist.dir}/jdic_stub.jar" todir="${dist.native.dir}/.."/>
+		
 		<!-- remove the generated "org" directory -->
-<!--
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="${dist.dir}/org"/>
 		</delete>
--->
+
 		<copy file="${unix.classes.defmailer.dir}/defmailer.properties" 
           todir="${dist.dir}" />
 	</target>
@@ -265,18 +266,22 @@ Top-level target:
             <fileset dir="${unix.classes.dir}" includes="org/**/*.png" />
 		</jar>
 	</target>
-	<target name="buildmacjar" depends="init">
+	
+	<target name="buildmacjar" depends="init">	
 		<fileset id="mac.classes" dir="${dist.dir}" includes="org/**/Mac*.class">
 			<include name="org/**/ServiceManagerStub.class" />
-			<include name="org/**/AppAssociationReaderFactory.class" />
+			<include name="org/**/AppAssociationReaderFactory.class" />			
 			<include name="org/**/AppAssociationWriterFactory.class" />
+			<include name="org/**/WebKitWebBrowser.class" />
 		</fileset>
+		
 		<javac srcdir="${share.classes.dir}:${mac.classes.dir}"
            destdir="${dist.dir}"
            classpath="${dist.dir}" 
            target="1.4"
            source="1.4"
     />
+    
 		<jar destfile="${dist.dir}/jdic_stub.jar" update="false">
 			<fileset refid="mac.classes"/>
 		</jar>
