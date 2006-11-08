@@ -99,7 +99,6 @@ public class JdicManager {
 		if (isShareNativeInitialized) {
 			return;
 		}
-
 		try {
 			// Find the root path of this class.
 			String jwsVersion = System.getProperty("javawebstart.version");
@@ -117,8 +116,10 @@ public class JdicManager {
 						".")).openConnection().getPermission().getName();
 				WebBrowserUtil.trace("current runnning path " + runningURL);
 				String runningPath = (new File(runningURL)).getCanonicalPath();
+				// check if jdic is installed by applet installer
 				runningPath = dealExtensionMode(runningPath);
 				WebBrowserUtil.trace("runnning path after dealing " + runningURL);
+				// check l if for cross platoform version
 				nativeLibPath = dealCrossPlatformVersion(runningPath);
 				// Add the binary path (including jdic.dll or libjdic.so) to
 				// "java.library.path", since we need to use the native methods
@@ -303,10 +304,12 @@ public class JdicManager {
 		// See list of os names at: http://lopica.sourceforge.net/os.html
 		// or at: http://www.tolstoy.com/samizdat/sysprops.html
 		String osname = System.getProperty("os.name");
-		if (osname.startsWith("Windows")) {
+		if (WebBrowserUtil.IS_OS_WINDOWS) {
 			return "windows";
 		}
-
+		if (WebBrowserUtil.IS_OS_MAC) {
+			return "mac";
+		}
 		return canonical(osname);
 	}
 
@@ -318,6 +321,12 @@ public class JdicManager {
 	 */
 	private static String getArchitecture() {
 		String arch = System.getProperty("os.arch");
+		if (WebBrowserUtil.IS_OS_MAC) {
+			if (arch.endsWith("86")) {
+				// for mac, use universal binaries of ppc
+				return "ppc";
+			}
+		}
 		if (arch.endsWith("86")) {
 			return "x86";
 		}
