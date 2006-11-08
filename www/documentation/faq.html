@@ -654,7 +654,7 @@ Unix?</a><span style="font-weight: bold"><br>
 			<font color="#000000">}</font>		</code>
 &nbsp;</p>
       <p><span style="font-weight: bold">Q. </span><a name="universal_web_browser"></a>How to write universal WebBrowser?<br>
-      <span style="font-weight: bold">A. </span>As the introducing of WebKitBrowser to support mac, there are two web brower classes now, WebBrowser(for win &amp; linux) and WebKitBrowser(for mac),both of all implement IWebBrowser interface. To write universal code for all platforms without caring about which web browser to use, JDIC's IBrowserEngine provides a new method  getWebBrowser(), with which, you can write following code to get an universal browser easily:</p>
+      <span style="font-weight: bold">A. </span>As the introducing of WebKitBrowser to support mac, there are two web browser classes now, WebBrowser(for win &amp; linux) and WebKitBrowser(for mac),both of all implement IWebBrowser interface. To write universal code for all platforms without caring about which web browser class to use, JDIC's IBrowserEngine provides a new method  getWebBrowser(), with which, you can write following code to get an universal browser easily:</p>
       
       <p><code>&nbsp;&nbsp;&nbsp;&nbsp;BrowserEngineManager bem = BrowserEngineManager.instance();<br>
     <span class="STYLE1">&nbsp;&nbsp;&nbsp;&nbsp;//specific engine if you want and the engine you specified will return<br>
