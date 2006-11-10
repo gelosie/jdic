@@ -62,7 +62,7 @@ public class JdicManager {
 	private boolean isShareNativeInitialized = false;
 
 	/** The path for the JDIC native files (jdic.dll/libjdic.so, etc) */
-	String nativeLibPath = null;
+	String jdicNativeLibPath = null;
 
 	/** Singleton instance of this class */
 	private static JdicManager sSingleton = null;
@@ -107,31 +107,39 @@ public class JdicManager {
 				WebBrowserUtil.trace("Loaded by JavaWebStart,version is "
 						+ jwsVersion);
 				//native libs will be loaded by webstart automatically
-				nativeLibPath = caculateNativeLibPathBySunJWS();
+				jdicNativeLibPath = caculateNativeLibPathBySunJWS();
 				return;
 			} else {
-				WebBrowserUtil.trace("not loaded by jws ");				
 				String runningURL = (new URL(JdicManager.class
 						.getProtectionDomain().getCodeSource().getLocation(),
 						".")).openConnection().getPermission().getName();
 				WebBrowserUtil.trace("current runnning path " + runningURL);
 				String runningPath = (new File(runningURL)).getCanonicalPath();
-				// check if jdic is installed by applet installer
-				runningPath = dealExtensionMode(runningPath);
-				WebBrowserUtil.trace("runnning path after dealing " + runningURL);
-				// check l if for cross platoform version
-				nativeLibPath = dealCrossPlatformVersion(runningPath);
+				// check if jdic is installed by applet installer,if it's,return according file path
+				runningPath = dealExtensionMode(runningPath);//different file structure,bad name of runningPath
+				// check if it's cross platoform version, if it's,deal with jdic_stub.jar
+				jdicNativeLibPath = dealCrossPlatformVersion(runningPath);
+				
 				// Add the binary path (including jdic.dll or libjdic.so) to
 				// "java.library.path", since we need to use the native methods
-				// in class InitUtility.
-				String newLibPath = nativeLibPath + File.pathSeparator
+				// in class InitUtility.				
+				String JAVA_LIBRARY_PATH = jdicNativeLibPath + File.pathSeparator
 						+ System.getProperty("java.library.path");
-				System.setProperty("java.library.path", newLibPath);
-				Field fieldSysPath = ClassLoader.class
-						.getDeclaredField("sys_paths");
-				fieldSysPath.setAccessible(true);
-				if (fieldSysPath != null) {
-					fieldSysPath.set(System.class.getClassLoader(), null);
+				System.setProperty("java.library.path", JAVA_LIBRARY_PATH);//deal with native resources
+				
+				//disable the sys_paths,which has higher priority than java.library.pah if not null 
+				try {
+					Field fieldSysPath = ClassLoader.class
+							.getDeclaredField("sys_paths");
+					fieldSysPath.setAccessible(true);
+					if (fieldSysPath != null) {
+						fieldSysPath.set(System.class.getClassLoader(), null);
+					}
+				} catch (NoSuchFieldException nfe) {
+					// ignore this exception for some classloaders
+					WebBrowserUtil
+							.trace("Current classloader doesn't have sys_paths field.\n"
+									+ nfe.getMessage());
 				}
 			}
 		} catch (Throwable e) {
@@ -150,23 +158,24 @@ public class JdicManager {
 	 *  jdic.jar
 	 *  jdic_crossplatform.jar
 	 *    which includes all native stuffs and jdic_stub.jar   
-	 * @param jdicPath
-	 * @return
+	 * @param jdicJarPath path of jdic.jar
+	 * @return native stuff path or 
 	 */
-	private String dealExtensionMode(String jdicPath) {
+	private String dealExtensionMode(String jdicJarPath) {
 		WebBrowserUtil.trace("check if loaded in extension mode");
-		String jdic_native_jar = jdicPath + "/" + "jdic_native.jar";
-		String jdic_cross_platform_jar = jdicPath + "/"
+		String jdic_native_jar = jdicJarPath + "/" + "jdic_native.jar";
+		String jdic_cross_platform_jar = jdicJarPath + "/"
 				+ "jdic_crossplatform.jar";
-		if (extractJarFile(jdic_cross_platform_jar, jdicPath+"/jdic_crossplatform")) {
+		if (extractJarFile(jdic_cross_platform_jar, jdicJarPath+"/jdic_crossplatform")) {
 			WebBrowserUtil.trace("loaded in extension mode with cross platform format");
-			return jdicPath + "/jdic_crossplatform";
+			return jdicJarPath + "/jdic_crossplatform";
 		}
-		if (extractJarFile(jdic_native_jar, jdicPath+"/jdic_native")) {
+		if (extractJarFile(jdic_native_jar, jdicJarPath+"/jdic_native")) {
 			WebBrowserUtil.trace("loaded in extension mode with os specific format");
-			return jdicPath + "/jdic_native";
+			return jdicJarPath + "/jdic_native";
 		}
-		return jdicPath;
+		WebBrowserUtil.trace("Not loaded in extension mode");
+		return jdicJarPath;
 	}
 	
 	/**
@@ -224,24 +233,25 @@ public class JdicManager {
 	 * @throws JdicInitException
 	 *  
 	 */
-	private String dealCrossPlatformVersion(String runningPath)
+	private String dealCrossPlatformVersion(String jdicJarPath)
 			throws MalformedURLException, JdicInitException {
 
-		String platformPath = runningPath + File.separator + getPlatform();
+		String platformPath = jdicJarPath + File.separator + getPlatform();
 		File jdicStubJarFile = new File(platformPath + File.separator
 				+ "jdic_stub.jar");
 		if (!jdicStubJarFile.exists()) {
 			//not cross platform version
-			return runningPath;
+			return jdicJarPath;
 		} else {
 			//cross platform version
+			//add jdic_stub.jar into classpath
 			String architecturePath = platformPath + File.separator
 					+ getArchitecture();
 			ClassLoader cl = getClass().getClassLoader();
 			if (!(cl instanceof URLClassLoader)) {
 				//not URLClassLoader,omit it,in case the stub jar has been
 				// set to claspath
-				String exceptionInfo = "We detect that you are not using java.net.URLClassLoader for cross platform versoin,you have to set jdic_stub.jar manually!";
+				String exceptionInfo = "We detect that you are not using java.net.URLClassLoader for cross platform versoin,you have to set jdic_stub.jar manually if JDIC can't work!";
 				WebBrowserUtil.error(exceptionInfo);
 				return architecturePath;//return the native lib path
 			}
@@ -263,8 +273,7 @@ public class JdicManager {
 	}
 
 	public String getBinaryPath() {
-		System.out.print("native lib path "+nativeLibPath);
-		return nativeLibPath;
+		return jdicNativeLibPath;
 	}
 
 	/**
@@ -283,7 +292,7 @@ public class JdicManager {
 			JNLPClassLoader jnlpCl = (JNLPClassLoader) cl;
 			String jdicLibURL = jnlpCl.findLibrary("jdic");//get lib path by classloder
 			jdicLibFolder = (new File(jdicLibURL)).getParentFile().getCanonicalPath();
-			WebBrowserUtil.trace("running path " + nativeLibPath);
+			WebBrowserUtil.trace("running path " + jdicNativeLibPath);
 			isShareNativeInitialized = true;
 		} else {
 			// only run well for sun jre
