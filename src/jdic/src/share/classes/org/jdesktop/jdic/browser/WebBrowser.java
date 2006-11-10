@@ -886,6 +886,13 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	}
 
 	/**
+	 * shutdown native embeded browser.
+	 */
+	public void shutdown() {
+		eventThread.fireNativeEvent(instanceNum, NativeEventData.EVENT_SHUTDOWN);
+	}
+	
+	/**
 	 * Prints the currently loaded document.
 	 * <p>
 	 * This is a convenience method to use <code>executeScript</code> to print

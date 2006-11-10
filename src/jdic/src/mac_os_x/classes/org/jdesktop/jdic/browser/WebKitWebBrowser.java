@@ -503,6 +503,13 @@ public class WebKitWebBrowser extends CocoaComponent implements IWebBrowser {
 		return engine;
 	}
 
+	/**
+	 * WebKitBrowser works in one thread mode,needsn't care this method
+	 */
+	public void shutdown() {
+	}
+	
+	
 	public Component asComponent() {
 		return (Component) this;
 	}

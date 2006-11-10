@@ -23,6 +23,8 @@ package org.jdesktop.jdic.browser;
 import java.awt.Component;
 import java.net.URL;
 
+import org.jdesktop.jdic.browser.internal.NativeEventData;
+
 /**
  * A <code>IWebBrowser</code> component represents a blank rectangular area of
  * the screen onto which the application can display webpages or from which the
@@ -171,6 +173,13 @@ public interface IWebBrowser {
 	 */
 	public void stop();
 
+	/**
+	 * shutdown native embeded browser.
+	 * For WebKitBrowser,which works in one thread mode,needsn't care this method.So
+	 * call this method under Mac os will take no effects.
+	 */
+	public void shutdown();
+	
 	/**
 	 * The BrowserEngine that was responsible for creating the browser instance.
 	 * Use the BrowserEngine to get information about the Embedded Browser
