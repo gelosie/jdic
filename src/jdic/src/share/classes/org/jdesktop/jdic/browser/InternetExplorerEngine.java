@@ -120,7 +120,7 @@ public class InternetExplorerEngine implements IBrowserEngine {
 	 */
 	protected void setEnv() {
 		String nspr4Path = JdicManager.getManager().getBinaryPath()
-				+ File.separator + IELIB;
+				+ File.separator + IELIB + File.separator;
 		File file = new File(nspr4Path + NSPR4_DLL);
 		if (file != null && file.exists()) {
 			WebBrowserUtil.trace(NSPR4_DLL + " is set under " + nspr4Path);
