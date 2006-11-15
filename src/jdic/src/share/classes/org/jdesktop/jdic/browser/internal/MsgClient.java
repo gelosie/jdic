@@ -21,6 +21,7 @@
 package org.jdesktop.jdic.browser.internal;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -109,14 +110,8 @@ public class MsgClient {
 
 		try {
 			//initialize a Selector
-			selector = Selector.open();
-
-			ServerSocketChannel sc = ServerSocketChannel.open();
-			//find a free port
-			sc.socket().bind(new InetSocketAddress("localhost", 0));
-			port = sc.socket().getLocalPort();
-			sc.close();
-			sc = null;
+			selector = Selector.open();			
+			port= findAFreePort();
 			serverAddr = new InetSocketAddress("localhost", port);
 			WebBrowserUtil.trace("Found a free socket port: " + port);
 		} catch (Exception e) {
@@ -124,7 +119,7 @@ public class MsgClient {
 		}		
 	}
 
-	int getPort() {
+	public int getPort() {
 		return port;
 	}
 
@@ -142,7 +137,7 @@ public class MsgClient {
 				channel.register(selector, SelectionKey.OP_CONNECT);
 
 				while (!channel.isConnected()) {
-					if (selector.select(1) > 0) {
+					if (selector.select() > 0) {//select until some channel is ready
 						Set readyKeys = selector.selectedKeys();
 						Iterator i = readyKeys.iterator();
 						while (i.hasNext()) {
@@ -159,8 +154,9 @@ public class MsgClient {
 						}
 					}
 				}
-				break;
+				break; //connected
 			} catch (Exception e) {
+				//prepare for retry
 				WebBrowserUtil.trace(e.toString());
 				channel.close();
 				channel = null;
@@ -169,7 +165,6 @@ public class MsgClient {
 				} catch (Exception ex) {
 				}
 			}
-
 		}
 
 		if (retry == MAX_RETRY) {
@@ -177,7 +172,7 @@ public class MsgClient {
 		}
 
 		WebBrowserUtil.trace("connected");
-		channel.register(selector, SelectionKey.OP_READ);
+		channel.keyFor(selector).interestOps(SelectionKey.OP_READ|SelectionKey.OP_WRITE);		
 	}
 
 	// Append a sockate message string to the send buffer.
@@ -185,12 +180,10 @@ public class MsgClient {
 	//       compose/decompose socket message strings. Which should be identical
 	//       between the Java side and native side.
 	public void sendMessage(String msg) {
-		sendBuffer += msg + MSG_DELIMITER;
-		channel.keyFor(selector).interestOps(
-				SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+		sendBuffer += msg + MSG_DELIMITER;		
 	}
 
-	String getMessage() {
+	public String getMessage() {
 		int pos = recvBuffer.indexOf(MSG_DELIMITER);
 		if (pos < 0)
 			return null;
@@ -248,7 +241,6 @@ public class MsgClient {
 								+ eventData.stringValue);
 						WebBrowserUtil.trace("Got a complete long message: "
 								+ element.stringValue + eventData.stringValue);
-
 						return (msg);
 					}
 				}
@@ -258,8 +250,14 @@ public class MsgClient {
 		}
 	}
 
-	void portListening() throws IOException, InterruptedException {
-		if (selector != null && selector.select(1) > 0) {
+	/**
+	 * Port listening to read or send msg
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public void portListening() throws IOException, InterruptedException {
+		if (selector != null && selector.select(1) > 0) {//can't block here
 			Set readyKeys = selector.selectedKeys();
 			Iterator i = readyKeys.iterator();
 			while (i.hasNext()) {
@@ -267,27 +265,69 @@ public class MsgClient {
 				i.remove();
 				SocketChannel keyChannel = (SocketChannel) key.channel();
 				if (key.isReadable()) {
-					buffer.clear();
-					charBuffer.clear();
-					keyChannel.read(buffer);
-					buffer.flip();
-					decoder.decode(buffer, charBuffer, false);
-					charBuffer.flip();
-					recvBuffer += charBuffer;
-					WebBrowserUtil
-							.trace("Read data from socket: " + recvBuffer);
+					readFromChannel(keyChannel);
 				} else if (key.isWritable()) {
-					if (sendBuffer.length() > 0) {
-						WebBrowserUtil.trace("Send data to socket: "
-								+ sendBuffer);
-						ByteBuffer buf = ByteBuffer.wrap(sendBuffer
-								.getBytes(charsetName));
-						keyChannel.write(buf);
-						sendBuffer = "";
-						key.interestOps(SelectionKey.OP_READ);
-					}
+					writeToChannel(keyChannel);
 				}
 			}
 		}
+	}
+	
+	/**
+	 * read channel content to buffer
+	 * 
+	 * @param channel
+	 * @throws IOException
+	 */
+	private void readFromChannel(SocketChannel channel) throws IOException {
+		ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFERSIZE);
+		CharBuffer charBuffer = CharBuffer.allocate(BUFFERSIZE);
+		while (channel.read(buffer) > 0) {
+			buffer.flip();
+			while (buffer.remaining() > 0) {
+				// loop until buffer is drained
+				decoder.decode(buffer, charBuffer, false);
+				charBuffer.flip();
+				recvBuffer += charBuffer;
+				charBuffer.clear();
+			}
+			buffer.clear();
+		}
+		WebBrowserUtil.trace("Read data from socket: " + recvBuffer);
+	}
+	
+	/**
+	 * write content of buffer to channel
+	 * 
+	 * @param keyChannel
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 */
+	private void writeToChannel(SocketChannel keyChannel)
+			throws IOException {
+		if (sendBuffer.length() > 0) {
+			WebBrowserUtil.trace("Send data to socket: " + sendBuffer);
+			ByteBuffer buf = ByteBuffer.wrap(sendBuffer.getBytes(charsetName));
+			while (buf.remaining() > 0) {
+				//write until the buffer is drained
+				keyChannel.write(buf);
+			}
+			sendBuffer = "";
+		}
+	}
+
+	
+	/**
+	 * find a free port
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	private int findAFreePort() throws IOException {
+		ServerSocketChannel tmpServerSocket = ServerSocketChannel.open();
+		tmpServerSocket.socket().bind(new InetSocketAddress("localhost", 0));
+		int resultPort = tmpServerSocket.socket().getLocalPort();
+		tmpServerSocket.close();
+		return resultPort;
 	}
 }
