@@ -62,6 +62,8 @@ public class NativeEventThread extends Thread {
 	private MsgClient messenger = null;
 
 	private IBrowserEngine engine = null;
+	
+	private boolean stopThreads = false;
 
 	public NativeEventThread() {
 		super("EventThread");
@@ -127,6 +129,9 @@ public class NativeEventThread extends Thread {
 					+ "Error message: " + e.getCause().getMessage());
 			return;
 		}
+        NativeProcessMonitor npm = new NativeProcessMonitor();
+        npm.setDaemon(true);
+        npm.start();
 
 		// create socket client and connect to socket server
 		try {
@@ -145,17 +150,10 @@ public class NativeEventThread extends Thread {
 		}
 
 		// main event loop
-		while (true) {
+		while (!stopThreads) {
 			try {
 				Thread.sleep(10);
 			} catch (Exception e) {
-			}
-
-			try {
-				int exitValue = nativeBrowser.exitValue();
-				WebBrowserUtil.trace("Native embedded browser died.");
-				return;
-			} catch (IllegalThreadStateException e) {
 			}
 
 			try {
@@ -173,8 +171,9 @@ public class NativeEventThread extends Thread {
 				WebBrowserUtil.trace("Exception occured when portListening: "
 						+ e.getMessage());
 				return;
-			}
+			}			
 		}
+		WebBrowserUtil.trace("Main thread exit.");
 	}
 
 	private IWebBrowser getWebBrowserFromInstance(int instance) {
@@ -376,7 +375,10 @@ public class NativeEventThread extends Thread {
 	public void setBrowsersInitFailReason(String msg) {
 		((IWebBrowser) webBrowsers.elementAt(0)).setInitFailureMessage(msg);
 	}
-
+	/**
+	 * Dump output of native process
+	 * 
+	 */
 	class StreamGobbler extends Thread {
 		InputStream is;
 
@@ -389,15 +391,37 @@ public class NativeEventThread extends Thread {
 				InputStreamReader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr);
 				String line = null;
-				while ((line = br.readLine()) != null) {
-					System.out.println("+++ Ctrace: " + line);
+				while ((line = br.readLine()) != null && !stopThreads) {
+					WebBrowserUtil.trace("+++ Ctrace: " + line);
 				}
+				if (stopThreads) {
+					WebBrowserUtil.trace("StreamGobbler exited.");
+					return;// exit the thread
+				}
+				WebBrowserUtil.trace("StreamGobbler exited.");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
+	/**
+	 * Monitor the death of native process
+	 * 
+	 */
+	private class NativeProcessMonitor extends Thread {
+		public void run() {
+			try {
+				nativeBrowser.waitFor();
+				stopThreads = true;
+				WebBrowserUtil.trace("Native process died.");
+				return;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+    
 	/**
 	 * @return Returns the eventRetString.
 	 */
