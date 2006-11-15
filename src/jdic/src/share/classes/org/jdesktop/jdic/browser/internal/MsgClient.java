@@ -284,16 +284,13 @@ public class MsgClient {
 		CharBuffer charBuffer = CharBuffer.allocate(BUFFERSIZE);
 		while (channel.read(buffer) > 0) {
 			buffer.flip();
-			while (buffer.remaining() > 0) {
-				// loop until buffer is drained
-				decoder.decode(buffer, charBuffer, false);
-				charBuffer.flip();
-				recvBuffer += charBuffer;
-				charBuffer.clear();
-			}
+			decoder.decode(buffer, charBuffer, false);//should can deal all at once
+			charBuffer.flip();
+			recvBuffer += charBuffer;			
+			charBuffer.clear();
 			buffer.clear();
+			WebBrowserUtil.trace("Read data from socket: " + recvBuffer);
 		}
-		WebBrowserUtil.trace("Read data from socket: " + recvBuffer);
 	}
 	
 	/**
@@ -303,13 +300,15 @@ public class MsgClient {
 	 * @throws UnsupportedEncodingException
 	 * @throws IOException
 	 */
-	private void writeToChannel(SocketChannel keyChannel)
-			throws IOException {
+	private void writeToChannel(SocketChannel keyChannel) throws IOException {
 		if (sendBuffer.length() > 0) {
 			WebBrowserUtil.trace("Send data to socket: " + sendBuffer);
 			ByteBuffer buf = ByteBuffer.wrap(sendBuffer.getBytes(charsetName));
-			while (buf.remaining() > 0) {
-				//write until the buffer is drained
+			keyChannel.write(buf);
+			while (buf.hasRemaining()) {
+				WebBrowserUtil
+						.trace("==there're still contens in write buffer==");
+				// write until the buffer is drained
 				keyChannel.write(buf);
 			}
 			sendBuffer = "";
