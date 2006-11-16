@@ -177,7 +177,7 @@ void link_message_cb      (GtkMozEmbed *embed, GtkBrowser *browser);
 void SocketMsgHandler(const char *pMsg);
 void HandleSocketMessage(gpointer data, gpointer user_data);
 
-#ifdef MOZ_WIDGET_GTK
+#ifdef MOZ_GTK12
 gboolean gs_prepare_cb  (gpointer  source_data,
                          GTimeVal *current_time,
                          gint     *timeout,
@@ -199,6 +199,6 @@ gboolean gs_check_cb (GSource    *source);
 gboolean gs_dispatch_cb (GSource    *source,
                          GSourceFunc callback,
                          gpointer  user_data);
-#endif /* MOZ_WIDGET_GTK */
+#endif /* MOZ_GTK12 */
 
 #endif

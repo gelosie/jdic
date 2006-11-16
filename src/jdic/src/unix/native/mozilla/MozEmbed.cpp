@@ -72,14 +72,14 @@ PRLock *gMsgLock;
 WBArray gBrowserArray;
 
 // the new event source for socket message
-#ifdef MOZ_WIDGET_GTK
+#ifdef MOZ_GTK12
 static GSourceFuncs event_funcs = {
     gs_prepare_cb,
     gs_check_cb,
     gs_dispatch_cb,
 };
 #endif
-#ifdef MOZ_WIDGET_GTK2
+#ifdef MOZ_GTK2X
 static GSourceFuncs event_funcs = {
     gs_prepare_cb,
     gs_check_cb,
@@ -166,18 +166,18 @@ new_gtk_browser(guint32 chromeMask)
         0);    // padding
 
     // new horiz toolbar with buttons + icons
-#ifdef MOZ_WIDGET_GTK
+#ifdef MOZ_GTK12
     browser->toolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL,
         GTK_TOOLBAR_BOTH);
-#endif /* MOZ_WIDGET_GTK */
+#endif /* MOZ_GTK12 */
 
-#ifdef MOZ_WIDGET_GTK2
+#ifdef MOZ_GTK2X
     browser->toolbar = gtk_toolbar_new();
     gtk_toolbar_set_orientation(GTK_TOOLBAR(browser->toolbar),
         GTK_ORIENTATION_HORIZONTAL);
     gtk_toolbar_set_style(GTK_TOOLBAR(browser->toolbar),
         GTK_TOOLBAR_BOTH);
-#endif /* MOZ_WIDGET_GTK2 */
+#endif /* MOZ_GTK2X */
 
     // add it to the hbox
     gtk_box_pack_start(GTK_BOX(browser->toolbarHBox), browser->toolbar,
@@ -719,10 +719,10 @@ mozembed_main(int argc, char **argv)
         }
 
         // add event source to process socket messages
-#ifdef MOZ_WIDGET_GTK
+#ifdef MOZ_GTK12
         g_source_add (GDK_PRIORITY_EVENTS, TRUE, &event_funcs, NULL, NULL, NULL);
 #endif
-#ifdef MOZ_WIDGET_GTK2
+#ifdef MOZ_GTK2X
         GSource *newsource = g_source_new(&event_funcs, sizeof(GSource));
         g_source_attach(newsource, NULL);
 #endif
@@ -769,13 +769,13 @@ SocketMsgHandler(const char *pMsg)
 }
 
 gboolean 
-#ifdef MOZ_WIDGET_GTK
+#ifdef MOZ_GTK12
 gs_prepare_cb(gpointer source_data,
               GTimeVal *current_time,
               gint     *timeout,
               gpointer  user_data)
 #endif
-#ifdef MOZ_WIDGET_GTK2
+#ifdef MOZ_GTK2X
 gs_prepare_cb(GSource  *source,
               gint     *timeout)
 #endif
@@ -790,12 +790,12 @@ gs_prepare_cb(GSource  *source,
 }
 
 gboolean 
-#ifdef MOZ_WIDGET_GTK
+#ifdef MOZ_GTK12
 gs_check_cb(gpointer source_data,
             GTimeVal *current_time,
             gpointer  user_data)
 #endif
-#ifdef MOZ_WIDGET_GTK2
+#ifdef MOZ_GTK2X
 gs_check_cb(GSource *source)
 #endif
 {
@@ -803,12 +803,12 @@ gs_check_cb(GSource *source)
 }
 
 gboolean 
-#ifdef MOZ_WIDGET_GTK
+#ifdef MOZ_GTK12
 gs_dispatch_cb(gpointer source_data,
                GTimeVal *current_time,
                gpointer  user_data)
 #endif
-#ifdef MOZ_WIDGET_GTK2
+#ifdef MOZ_GTK2X
 gs_dispatch_cb(GSource    *source,
                GSourceFunc callback,
                gpointer  user_data)

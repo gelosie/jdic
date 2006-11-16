@@ -263,10 +263,10 @@ delete_cb(GtkWidget *widget, GdkEventAny *event, GtkBrowser *browser)
 void set_focus_cb(GtkWindow *window, GtkWidget *focus, GtkBrowser *browser)
 {
   WBTRACE("focus_event_cb\n");
-  #ifdef MOZ_WIDGET_GTK
+  #ifdef MOZ_GTK12
     if (focus && !window->window_has_focus)
   #endif
-  #ifdef MOZ_WIDGET_GTK2
+  #ifdef MOZ_GTK2X
     if (focus && !window->has_focus)
   #endif
     SendSocketMessage(browser->id, CEVENT_FOCUS_REQUEST);
@@ -346,11 +346,11 @@ load_finished_cb(GtkMozEmbed *embed, GtkBrowser *browser)
 
     // hacking, force to set focus to mozarea(gtk1.2)/gtkplug(gtk2) so that the keyboard event
     // can be propagated into our event handler.
-#ifdef MOZ_WIDGET_GTK
+#ifdef MOZ_GTK12
     GtkWidget *mozarea = GTK_BIN(browser->mozEmbed)->child;
     GTK_WIDGET_SET_FLAGS(mozarea, GTK_HAS_FOCUS);
 #endif
-#ifdef MOZ_WIDGET_GTK2
+#ifdef MOZ_GTK2X
     GtkPlug *plug = GTK_PLUG(browser->topLevelWindow);
     GdkNativeWindow plugId = gtk_plug_get_id(plug);
     GdkWindow *recipient = GDK_WINDOW(GTK_WIDGET(plug)->window);

@@ -120,13 +120,13 @@ endif
 endif
 
 ifdef MOZ_ENABLE_GTK
-CPPFLAGS += -DMOZ_WIDGET_GTK
+CPPFLAGS += -DMOZ_GTK12
 LIBS += -lgtksuperwin
 LIBS_PROG += -lgtksuperwin
 endif
 
 ifdef MOZ_ENABLE_GTK2
-CPPFLAGS += -DMOZ_WIDGET_GTK2
+CPPFLAGS += -DMOZ_GTK2X
 # XXX need to get these from pkg-config perhaps?
 LIBS += $(XLDFLAGS) $(XLIBS)
 endif
