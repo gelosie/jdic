@@ -21,6 +21,7 @@
 package org.jdesktop.jdic.browser.internal;
 
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -65,9 +66,30 @@ public class NativeEventThread extends Thread {
 	
 	private boolean stopThreads = false;
 
-	public NativeEventThread() {
-		super("EventThread");
+	private static NativeEventThread nativeEventThread = null;
+	
+	/**
+	 * get singlton instance 
+	 * @return
+	 */
+	public static NativeEventThread getInstance(){
+		if(nativeEventThread == null){	
+			nativeEventThread = new NativeEventThread();
+			nativeEventThread.start();//only do when init						
+		}		
+		return nativeEventThread;
 	}
+	
+	/**
+	 * Do some initializations
+	 * 
+	 */
+	private NativeEventThread() {
+		super("EventThread");
+		Toolkit.getDefaultToolkit(); //force loading of libjawt.so/jawt.dll
+		WebBrowserUtil.loadLibrary();
+		fireNativeEvent(-1, NativeEventData.EVENT_INIT);
+	}	
 
 	public void attachWebBrowser(IWebBrowser webBrowser) {
 		int instanceNum = webBrowser.getInstanceNum();
@@ -75,9 +97,9 @@ public class NativeEventThread extends Thread {
 			webBrowsers.setSize(instanceNum + 1);
 		}
 		webBrowsers.set(instanceNum, webBrowser);
-	}
+	}	
 
-	public void run() {
+	public void run() {	
 		WebBrowserUtil.trace("Envent thread started");
 		// We can only decide which engine to use here! Shouldn't access
 		// engine's info before this method!
@@ -100,9 +122,10 @@ public class NativeEventThread extends Thread {
 			}
 			String jvmVendor = System.getProperty("java.vm.vendor");
 			if (engine.getEmbeddedBinaryName().endsWith("IeEmbed.exe")
-					&& jvmVendor.startsWith("Sun"))
-				// ie and sun jvm
+					&& jvmVendor.startsWith("Sun")) {
+				//enable java plugin
 				WebBrowserUtil.nativeSetEnvironment();
+			}
 
 			// start native browser
 			String filepath = JdicManager.getManager().getBinaryPath()
@@ -111,7 +134,6 @@ public class NativeEventThread extends Thread {
 					: engine.getEmbeddedBinaryName();
 			WebBrowserUtil.trace("Executing " + cmd + " -port="
 					+ messenger.getPort());
-
 			AccessController.doPrivileged(new PrivilegedExceptionAction() {
 				public Object run() throws IOException {
 					nativeBrowser = Runtime.getRuntime()
@@ -125,7 +147,7 @@ public class NativeEventThread extends Thread {
 			});
 		} catch (PrivilegedActionException e) {
 			setBrowsersInitFailReason("Can't find the native embedded browser.");
-			System.out.println("Can't execute the native embedded browser. "
+			WebBrowserUtil.trace("Can't execute the native embedded browser. "
 					+ "Error message: " + e.getCause().getMessage());
 			return;
 		}
@@ -142,7 +164,7 @@ public class NativeEventThread extends Thread {
 				}
 			});
 		} catch (PrivilegedActionException e) {
-			System.out.println("Can't connect to the native embedded "
+			WebBrowserUtil.trace("Can't connect to the native embedded "
 					+ "browser. Error message: " + e.getCause().getMessage());
 			setBrowsersInitFailReason("Can't connect to the native embedded "
 					+ "browser.");
@@ -413,9 +435,9 @@ public class NativeEventThread extends Thread {
 		public void run() {
 			try {
 				nativeBrowser.waitFor();
-				stopThreads = true;
+				stopThreads = true;				
+				nativeEventThread = null;//set current thread to null
 				WebBrowserUtil.trace("Native process died.");
-				return;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

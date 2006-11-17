@@ -81,7 +81,6 @@ public class WebBrowserUtil {
 	/** Loads the jdic library (unless it has already been loaded) */
 	public static void loadLibrary() {
 		if (!nativeLibLoaded) {
-			
 			try {
 				JdicManager.getManager().initShareNative();
 			} catch (JdicInitException e) {
