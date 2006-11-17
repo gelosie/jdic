@@ -215,7 +215,12 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * @see #isAutoDispose()
 	 */
 	public WebBrowser(URL url, boolean autoDispose) {
-		eventThread = NativeEventThread.getInstance();
+		try {
+			eventThread = NativeEventThread.getInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}		
 		this.autoDispose = autoDispose;
 		
 		synchronized (WebBrowser.class) {

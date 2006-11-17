@@ -63,33 +63,64 @@ public class NativeEventThread extends Thread {
 	private MsgClient messenger = null;
 
 	private IBrowserEngine engine = null;
-	
+
 	private boolean stopThreads = false;
 
 	private static NativeEventThread nativeEventThread = null;
-	
+
 	/**
-	 * get singlton instance 
+	 * get singlton instance
+	 * 
 	 * @return
+	 * @throws Exception
 	 */
-	public static NativeEventThread getInstance(){
-		if(nativeEventThread == null){	
+	public static NativeEventThread getInstance() throws Exception {
+		if (nativeEventThread == null) {
 			nativeEventThread = new NativeEventThread();
-			nativeEventThread.start();//only do when init						
-		}		
+			nativeEventThread.start();// start dealing msgs
+		}
 		return nativeEventThread;
 	}
-	
+
 	/**
 	 * Do some initializations
 	 * 
+	 * @throws JdicInitException
+	 * @throws PrivilegedActionException
+	 * 
 	 */
-	private NativeEventThread() {
+	private NativeEventThread() throws Exception {
 		super("EventThread");
-		Toolkit.getDefaultToolkit(); //force loading of libjawt.so/jawt.dll
+		Toolkit.getDefaultToolkit(); // force loading of libjawt.so/jawt.dll
 		WebBrowserUtil.loadLibrary();
-		fireNativeEvent(-1, NativeEventData.EVENT_INIT);
-	}	
+		init();
+	}
+
+	/**
+	 * send msg to native and get msg from native
+	 */
+	public void run() {
+		WebBrowserUtil.trace("Envent thread started");
+
+		while (!stopThreads) {
+			try {
+				Thread.sleep(10);
+			} catch (Exception e) {
+				e.printStackTrace();// seems some error here
+			}
+			try {
+				processEventsFromJava();// if have msgs to be sent
+				messenger.portListening();// send/get msgs
+				processMessageFromNative(messenger.getMessage());// deal got
+				// msgs
+			} catch (Exception e) {
+				WebBrowserUtil.trace("Exception occured when portListening: "
+						+ e.getMessage());
+				return;
+			}
+		}
+		WebBrowserUtil.trace("Main thread exit.");
+	}
 
 	public void attachWebBrowser(IWebBrowser webBrowser) {
 		int instanceNum = webBrowser.getInstanceNum();
@@ -97,35 +128,74 @@ public class NativeEventThread extends Thread {
 			webBrowsers.setSize(instanceNum + 1);
 		}
 		webBrowsers.set(instanceNum, webBrowser);
-	}	
+	}
 
-	public void run() {	
-		WebBrowserUtil.trace("Envent thread started");
-		// We can only decide which engine to use here! Shouldn't access
-		// engine's info before this method!
+	public static NativeEventData parseMessageString(String msg) {
+		if (null == msg || 0 == msg.length()) {
+			return null;
+		}
+
+		int eventType = -1;
+		String stringValue = null;
+
+		int pos1 = msg.indexOf(",", 0);
+		int instance = Integer.parseInt(msg.substring(0, pos1));
+		int pos2 = msg.indexOf(",", pos1 + 1);
+		if (pos2 < 0) {
+			eventType = Integer.parseInt(msg.substring(pos1 + 1));
+		} else {
+			eventType = Integer.parseInt(msg.substring(pos1 + 1, pos2));
+			if (pos2 + 1 < msg.length())
+				stringValue = msg.substring(pos2 + 1);
+		}
+
+		return new NativeEventData(instance, eventType, stringValue);
+	}
+
+	/*
+	 * Process an event received from the native browser
+	 */
+
+	public String getEventRetString() {
+		return eventRetString;
+	}
+
+	/**
+	 * @return Returns the messenger.
+	 */
+	public MsgClient getMessenger() {
+		return messenger;
+	}
+
+	public synchronized void fireNativeEvent(int instance, int type) {
+		nativeEvents.addElement(new NativeEventData(instance, type));
+	}
+
+	public synchronized void fireNativeEvent(int instance, int type,
+			Rectangle rectValue) {
+		nativeEvents.addElement(new NativeEventData(instance, type, rectValue));
+	}
+
+	public synchronized void fireNativeEvent(int instance, int type,
+			String stringValue) {
+		nativeEvents
+				.addElement(new NativeEventData(instance, type, stringValue));
+	}
+
+	public void setBrowsersInitFailReason(String msg) {
+		((IWebBrowser) webBrowsers.elementAt(0)).setInitFailureMessage(msg);
+	}
+
+	/**
+	 * Init msg client,browser engine and start native web browser
+	 * 
+	 */
+	private void init() throws PrivilegedActionException, JdicInitException {
 		try {
 			messenger = new MsgClient();
-			engine = BrowserEngineManager.instance().getActiveEngine();
-			try {
-				engine.initialize();
-			} catch (JdicInitException e) {
-				e.printStackTrace();
-				return;
-			}
 
-			if (engine.getEmbeddedBinaryName() == null) {
-				setBrowsersInitFailReason("The embedded browser binary is "
-						+ "not set.");
-				WebBrowserUtil.error("The embedded browser binary is not set, "
-						+ "system exit.");
-				return;
-			}
-			String jvmVendor = System.getProperty("java.vm.vendor");
-			if (engine.getEmbeddedBinaryName().endsWith("IeEmbed.exe")
-					&& jvmVendor.startsWith("Sun")) {
-				//enable java plugin
-				WebBrowserUtil.nativeSetEnvironment();
-			}
+			engine = BrowserEngineManager.instance().getActiveEngine();
+			engine.initialize();
 
 			// start native browser
 			String filepath = JdicManager.getManager().getBinaryPath()
@@ -147,13 +217,14 @@ public class NativeEventThread extends Thread {
 			});
 		} catch (PrivilegedActionException e) {
 			setBrowsersInitFailReason("Can't find the native embedded browser.");
-			WebBrowserUtil.trace("Can't execute the native embedded browser. "
+			WebBrowserUtil.error("Can't execute the native embedded browser. "
 					+ "Error message: " + e.getCause().getMessage());
-			return;
+			throw e;
+		} catch (JdicInitException inie) {
+			WebBrowserUtil.error(inie.getMessage());
+			inie.printStackTrace();
+			throw inie;
 		}
-        NativeProcessMonitor npm = new NativeProcessMonitor();
-        npm.setDaemon(true);
-        npm.start();
 
 		// create socket client and connect to socket server
 		try {
@@ -164,38 +235,20 @@ public class NativeEventThread extends Thread {
 				}
 			});
 		} catch (PrivilegedActionException e) {
-			WebBrowserUtil.trace("Can't connect to the native embedded "
+			WebBrowserUtil.error("Can't connect to the native embedded "
 					+ "browser. Error message: " + e.getCause().getMessage());
 			setBrowsersInitFailReason("Can't connect to the native embedded "
 					+ "browser.");
-			return;
+			throw e;
 		}
 
-		// main event loop
-		while (!stopThreads) {
-			try {
-				Thread.sleep(10);
-			} catch (Exception e) {
-			}
+		// start native process monitor
+		NativeProcessMonitor npm = new NativeProcessMonitor();
+		npm.setDaemon(true);
+		npm.start();
 
-			try {
-				processEventsFromJava();
-			} catch (Exception e) {
-				WebBrowserUtil.trace("Exception occured when processEvent: "
-						+ e.getMessage());
-				return;
-			}
-
-			try {
-				messenger.portListening();
-				processMessageFromNative(messenger.getMessage());
-			} catch (Exception e) {
-				WebBrowserUtil.trace("Exception occured when portListening: "
-						+ e.getMessage());
-				return;
-			}			
-		}
-		WebBrowserUtil.trace("Main thread exit.");
+		// call native browser to init
+		fireNativeEvent(-1, NativeEventData.EVENT_INIT);
 	}
 
 	private IWebBrowser getWebBrowserFromInstance(int instance) {
@@ -236,7 +289,8 @@ public class NativeEventThread extends Thread {
 		}
 
 		if (!browser.isInitialized()
-				&& (nativeEvent.type != NativeEventData.EVENT_INIT && nativeEvent.type != NativeEventData.EVENT_CREATEWINDOW)) {
+				&& (nativeEvent.type != NativeEventData.EVENT_INIT
+						&& nativeEvent.type != NativeEventData.EVENT_CREATEWINDOW && nativeEvent.type != NativeEventData.EVENT_SHUTDOWN)) {
 			return false;
 		}
 
@@ -288,31 +342,6 @@ public class NativeEventThread extends Thread {
 		return true;
 	}
 
-	public static NativeEventData parseMessageString(String msg) {
-		if (null == msg || 0 == msg.length()) {
-			return null;
-		}
-
-		int eventType = -1;
-		String stringValue = null;
-
-		int pos1 = msg.indexOf(",", 0);
-		int instance = Integer.parseInt(msg.substring(0, pos1));
-		int pos2 = msg.indexOf(",", pos1 + 1);
-		if (pos2 < 0) {
-			eventType = Integer.parseInt(msg.substring(pos1 + 1));
-		} else {
-			eventType = Integer.parseInt(msg.substring(pos1 + 1, pos2));
-			if (pos2 + 1 < msg.length())
-				stringValue = msg.substring(pos2 + 1);
-		}
-
-		return new NativeEventData(instance, eventType, stringValue);
-	}
-
-	/*
-	 * Process an event received from the native browser
-	 */
 	private void processMessageFromNative(String msg) {
 		NativeEventData eventData = parseMessageString(msg);
 		if (eventData == null)
@@ -331,8 +360,8 @@ public class NativeEventThread extends Thread {
 		if (eventData.instance < 0) {
 			return;
 		}
-		
-		//anonymous inner class can only access final local variable
+
+		// anonymous inner class can only access final local variable
 		final IWebBrowser browser = getWebBrowserFromInstance(eventData.instance);
 		if (null == browser) {
 			return;
@@ -340,12 +369,13 @@ public class NativeEventThread extends Thread {
 
 		if (WebBrowserEvent.WEBBROWSER_DOCUMENT_COMPLETED == eventData.type) {
 			if (browser.isSynchronize()) {
-				//if works under sync model, will not call the listener's downloadCompleted event
+				// if works under sync model, will not call the listener's
+				// downloadCompleted event
 				notifyWebBrowser(eventData.instance);
 				return;
 			}
 		}
-		
+
 		if (WebBrowserEvent.WEBBROWSER_RETURN_URL == eventData.type
 				|| WebBrowserEvent.WEBBROWSER_GETCONTENT == eventData.type
 				|| WebBrowserEvent.WEBBROWSER_EXECUTESCRIPT == eventData.type
@@ -379,24 +409,6 @@ public class NativeEventThread extends Thread {
 		}
 	}
 
-	public synchronized void fireNativeEvent(int instance, int type) {
-		nativeEvents.addElement(new NativeEventData(instance, type));
-	}
-
-	public synchronized void fireNativeEvent(int instance, int type,
-			Rectangle rectValue) {
-		nativeEvents.addElement(new NativeEventData(instance, type, rectValue));
-	}
-
-	public synchronized void fireNativeEvent(int instance, int type,
-			String stringValue) {
-		nativeEvents
-				.addElement(new NativeEventData(instance, type, stringValue));
-	}
-
-	public void setBrowsersInitFailReason(String msg) {
-		((IWebBrowser) webBrowsers.elementAt(0)).setInitFailureMessage(msg);
-	}
 	/**
 	 * Dump output of native process
 	 * 
@@ -428,33 +440,19 @@ public class NativeEventThread extends Thread {
 	}
 
 	/**
-	 * Monitor the death of native process
+	 * Monitor the death of native web browser process
 	 * 
 	 */
-	private class NativeProcessMonitor extends Thread {
+	class NativeProcessMonitor extends Thread {
 		public void run() {
 			try {
 				nativeBrowser.waitFor();
-				stopThreads = true;				
-				nativeEventThread = null;//set current thread to null
-				WebBrowserUtil.trace("Native process died.");
+				stopThreads = true;
+				nativeEventThread = null;// set current thread to null
+				WebBrowserUtil.trace("Native web browser died.");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-    
-	/**
-	 * @return Returns the eventRetString.
-	 */
-	public String getEventRetString() {
-		return eventRetString;
-	}
-
-	/**
-	 * @return Returns the messenger.
-	 */
-	public MsgClient getMessenger() {
-		return messenger;
-	}
-} // end of class NativeEventThread
+}
