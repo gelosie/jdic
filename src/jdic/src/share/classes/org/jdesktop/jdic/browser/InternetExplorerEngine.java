@@ -129,6 +129,12 @@ public class InternetExplorerEngine implements IBrowserEngine {
 			WebBrowserUtil.error(NSPR4_DLL + " doesn't exist under "
 					+ nspr4Path);
 		}
+		
+		// enable java plugin for ie
+		String jvmVendor = System.getProperty("java.vm.vendor");
+		if (jvmVendor.startsWith("Sun")) {		
+			WebBrowserUtil.nativeSetEnvironment();
+		}
 	}
 
 	public String getBrowserBinary() {

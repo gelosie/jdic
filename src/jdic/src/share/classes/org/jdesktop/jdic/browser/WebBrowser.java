@@ -90,13 +90,13 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 
 	// eventThread should be initialized after JdicManager.initShareNative()
 	// in static block.
-	private static NativeEventThread eventThread;
+	private NativeEventThread eventThread;
 
 	private Vector webBrowserListeners = new Vector();
 
 	private int instanceNum;
 
-	private static int lastInstanceNum = 0;
+	private static int lastInstanceNum = 0;//to avoid duplicate
 
 	// if the WebBrowser successfully initialized
 	private boolean isInitialized = false;
@@ -129,22 +129,6 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * @see #removeNotify()
 	 */
 	private URL urlBeforeDispose = null;
-
-	static {
-		// Add the initialization code from package org.jdesktop.jdic.init.
-		// To set the environment variables or initialize the set up for
-		// native libraries and executable files.
-		try {
-			Toolkit.getDefaultToolkit(); // Load libjawt.so/jawt.dll
-			JdicManager jm = JdicManager.getManager();
-			jm.initShareNative();
-			WebBrowserUtil.loadLibrary();
-			eventThread = new NativeEventThread();
-		} catch (JdicInitException e) {
-			WebBrowserUtil.error(e.getCause().getMessage());
-			e.printStackTrace();
-		}
-	}
 
 	public void setInitialized(boolean b) {
 		isInitialized = b;
@@ -231,19 +215,15 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * @see #isAutoDispose()
 	 */
 	public WebBrowser(URL url, boolean autoDispose) {
+		eventThread = NativeEventThread.getInstance();
 		this.autoDispose = autoDispose;
-
+		
 		synchronized (WebBrowser.class) {
 			instanceNum = lastInstanceNum;
 			lastInstanceNum++;
 		}
-		eventThread.attachWebBrowser(this);
-
-		if (0 == instanceNum) {
-			eventThread.start();
-			eventThread
-					.fireNativeEvent(instanceNum, NativeEventData.EVENT_INIT);
-		}
+		
+		eventThread.attachWebBrowser(this);	
 
 		if (null != url) {
 			setURL(url);
