@@ -271,6 +271,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 */
 	public void addNotify() {
 		super.addNotify();
+		this.setVisible(true);
 	}
 
 	/**
@@ -1155,5 +1156,12 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 */
 	public boolean isSynchronize() {
 		return synchronize;
+	}
+
+	/**
+	 * @param autoDispose The autoDispose to set.
+	 */
+	public void setAutoDispose(boolean autoDispose) {
+		this.autoDispose = autoDispose;
 	}
 }

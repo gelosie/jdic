@@ -508,7 +508,7 @@ public class WebKitWebBrowser extends CocoaComponent implements IWebBrowser {
 	 */
 	public void shutdown() {
 	}
-	
+
 	
 	public Component asComponent() {
 		return (Component) this;
@@ -579,4 +579,10 @@ public class WebKitWebBrowser extends CocoaComponent implements IWebBrowser {
             }          
         }
     }
+    
+	/**
+	 * auto dispose property is empty for web kit
+	 */
+	public void setAutoDispose(boolean autoDispose) {
+	}
 }

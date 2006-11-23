@@ -229,4 +229,11 @@ public interface IWebBrowser {
 	 * @param b
 	 */
 	public void setInitialized(boolean b);
+	
+	/**
+	 * set the auto dispose attribute of web browser
+	 * 
+	 * @param autoDispose
+	 */
+	public void setAutoDispose(boolean autoDispose);
 }
