@@ -90,8 +90,7 @@ public class NativeEventThread extends Thread {
 	 * 
 	 */
 	private NativeEventThread() throws Exception {
-		super("EventThread");
-		Toolkit.getDefaultToolkit(); // force loading of libjawt.so/jawt.dll
+		super("EventThread");		
 		WebBrowserUtil.loadLibrary();
 		init();
 	}

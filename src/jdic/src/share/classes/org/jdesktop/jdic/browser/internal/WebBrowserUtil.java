@@ -19,6 +19,7 @@
  */
 package org.jdesktop.jdic.browser.internal;
 
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -82,6 +83,8 @@ public class WebBrowserUtil {
 	public static void loadLibrary() {
 		if (!nativeLibLoaded) {
 			try {
+				//force loading of libjawt.so/jawt.dll
+				Toolkit.getDefaultToolkit(); 
 				JdicManager.getManager().initShareNative();
 			} catch (JdicInitException e) {
 				e.printStackTrace();
