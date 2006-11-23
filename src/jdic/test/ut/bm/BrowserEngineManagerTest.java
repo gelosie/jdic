@@ -109,6 +109,7 @@ public class BrowserEngineManagerTest extends TestCase {
 						.setActiveEngine(BrowserEngineManager.IE),
 						engineManager.getActiveEngine());
 			} else {
+				//Mozilla is used
 				try {
 					engineManager.getActiveEngine().initialize();
 				} catch (JdicInitException e) {
@@ -116,7 +117,7 @@ public class BrowserEngineManagerTest extends TestCase {
 					fail(e.getMessage());
 				}
 				assertEquals(engineManager
-						.setActiveEngine(BrowserEngineManager.IE),
+						.setActiveEngine(BrowserEngineManager.MOZILLA),
 						engineManager.getActiveEngine());
 			}
 		} catch (Throwable t) {
