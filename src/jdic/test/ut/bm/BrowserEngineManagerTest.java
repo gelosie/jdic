@@ -16,23 +16,23 @@ import org.jdesktop.jdic.init.JdicInitException;
 
 /**
  * @author dongdong.yang
- *  
+ * 
  */
 public class BrowserEngineManagerTest extends TestCase {
-	
-	//Register an exiting engine
+
+	// Register an exiting engine
 	public void testRegisterBrowserEngine() {
 		BrowserEngineManager engineManager = BrowserEngineManager.instance();
 		IBrowserEngine browserEngine = engineManager.getActiveEngine();
-		if (browserEngine.getBrowserName().equals("Internet Explorer")) {
-			String engineName = "Mozilla";
+		if (browserEngine.getBrowserName().equals(BrowserEngineManager.IE)) {
+			String engineName = BrowserEngineManager.MOZILLA;
 			IBrowserEngine engine = new MozillaEngine();
 			WebBrowser.setDebug(true);
 			engineManager.registerBrowserEngine(engineName, engine);
 			WebBrowserUtil
 					.trace("testRegisterBrowserEngine,Internet Explorer is the default BrowserEngine.");
 		} else {
-			String engineName = "Internet Explorer";
+			String engineName = BrowserEngineManager.IE;
 			IBrowserEngine engine = new InternetExplorerEngine();
 			WebBrowser.setDebug(true);
 			engineManager.registerBrowserEngine(engineName, engine);
@@ -41,11 +41,11 @@ public class BrowserEngineManagerTest extends TestCase {
 		}
 	}
 
-	//Remove an exiting engine
+	// Remove an exiting engine
 	public void testRemoveExitingBrowserEngine() {
 		BrowserEngineManager engineManager = BrowserEngineManager.instance();
 		IBrowserEngine browserEngine = engineManager.getActiveEngine();
-		if (browserEngine.getBrowserName().equals("Internet Explorer")) {
+		if (browserEngine.getBrowserName().equals(BrowserEngineManager.IE)) {
 			assertTrue(engineManager
 					.removeBrowserEngine(BrowserEngineManager.MOZILLA));
 			WebBrowserUtil
@@ -58,11 +58,11 @@ public class BrowserEngineManagerTest extends TestCase {
 		}
 	}
 
-	//Remove an active engine
+	// Remove an active engine
 	public void testRemoveActiveBrowserEngine() {
 		BrowserEngineManager engineManager = BrowserEngineManager.instance();
 		IBrowserEngine browserEngine = engineManager.getActiveEngine();
-		if (browserEngine.getBrowserName().equals("Internet Explorer")) {
+		if (browserEngine.getBrowserName().equals(BrowserEngineManager.IE)) {
 			assertFalse(engineManager
 					.removeBrowserEngine(BrowserEngineManager.IE));
 			WebBrowserUtil
@@ -76,25 +76,28 @@ public class BrowserEngineManagerTest extends TestCase {
 
 	}
 
-	//Set an active engine after engine is initialized
+	// Set an active engine after engine is initialized
 	public void testSetActiveEngine() {
 		BrowserEngineManager engineManager = BrowserEngineManager.instance();
 		IBrowserEngine browserEngine = engineManager.getActiveEngine();
-		if (browserEngine.getBrowserName().equals("Internet Explorer")) {
+		if (browserEngine.getBrowserName().equals(BrowserEngineManager.IE)) {
 			try {
 				engineManager.getActiveEngine().initialize();
 			} catch (JdicInitException e) {
 				e.printStackTrace();
 			}
-			assertTrue(engineManager.setActiveEngine(BrowserEngineManager.IE));
+			assertEquals(
+					engineManager.setActiveEngine(BrowserEngineManager.IE),
+					engineManager.getActiveEngine());
 		} else {
 			try {
 				engineManager.getActiveEngine().initialize();
 			} catch (JdicInitException e) {
 				e.printStackTrace();
 			}
-			assertTrue(engineManager
-					.setActiveEngine(BrowserEngineManager.MOZILLA));
+			assertEquals(
+					engineManager.setActiveEngine(BrowserEngineManager.IE),
+					engineManager.getActiveEngine());
 		}
 	}
 
