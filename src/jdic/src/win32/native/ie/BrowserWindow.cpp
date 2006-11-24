@@ -171,14 +171,14 @@ void __stdcall BrowserWindow::OnNewWindow3(IDispatch **ppDisp,VARIANT_BOOL *Canc
 			LogMsg("A new window will be opened with URL:");
 			LogMsg(buf);
 			SendSocketMessage(m_InstanceID, CEVENT_BEFORE_NEWWINDOW,buf);
-		}			
-	}    
+		}
+	}
 
-    while (bCmdCanceled < 0 && waitCount++ < MAX_WAIT) {
+    while (bCmdCanceled < 0 && waitCount++ < MAX_WAIT*2) {
         Sleep(1);
     } 
 
-    if (bCmdCanceled == 1 || waitCount >= MAX_WAIT) {
+    if (bCmdCanceled == 1 || waitCount >= MAX_WAIT*2) {
 		LogMsg("New window is suppressed.");
         *Cancel = VARIANT_TRUE;
     }
