@@ -56,7 +56,7 @@ public class NativeEventThread extends Thread {
 	// Event queue for events sent from Java to the native browser.
 	private Vector nativeEvents = new Vector();
 
-	private Process nativeBrowser;
+	private Process nativeBrowserProcess;
 
 	private String eventRetString;
 
@@ -90,7 +90,7 @@ public class NativeEventThread extends Thread {
 	 * 
 	 */
 	private NativeEventThread() throws Exception {
-		super("EventThread");		
+		super("EventThread");
 		WebBrowserUtil.loadLibrary();
 		init();
 	}
@@ -98,7 +98,7 @@ public class NativeEventThread extends Thread {
 	/**
 	 * send msg to native and get msg from native
 	 */
-	public void run() {
+public void run() {
 		WebBrowserUtil.trace("Envent thread started");
 
 		while (!stopThreads) {
@@ -120,7 +120,6 @@ public class NativeEventThread extends Thread {
 		}
 		WebBrowserUtil.trace("Main thread exit.");
 	}
-
 	public void attachWebBrowser(IWebBrowser webBrowser) {
 		int instanceNum = webBrowser.getInstanceNum();
 		if (instanceNum >= webBrowsers.size()) {
@@ -205,12 +204,12 @@ public class NativeEventThread extends Thread {
 					+ messenger.getPort());
 			AccessController.doPrivileged(new PrivilegedExceptionAction() {
 				public Object run() throws IOException {
-					nativeBrowser = Runtime.getRuntime()
+					nativeBrowserProcess = Runtime.getRuntime()
 							.exec(
 									new String[] { cmd,
 											"-port=" + messenger.getPort() });
-					new StreamGobbler(nativeBrowser.getErrorStream()).start();
-					new StreamGobbler(nativeBrowser.getInputStream()).start();
+					new StreamGobbler(nativeBrowserProcess.getErrorStream()).start();
+					new StreamGobbler(nativeBrowserProcess.getInputStream()).start();
 					return null;
 				}
 			});
@@ -445,12 +444,14 @@ public class NativeEventThread extends Thread {
 	class NativeProcessMonitor extends Thread {
 		public void run() {
 			try {
-				nativeBrowser.waitFor();
-				stopThreads = true;
-				nativeEventThread = null;// set current thread to null
-				WebBrowserUtil.trace("Native web browser died.");
+				nativeBrowserProcess.waitFor();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				nativeBrowserProcess.destroy();// kill it anyway
+			} finally {
+				stopThreads = true;
+				nativeEventThread = null;//set current thread to null
+				WebBrowserUtil.trace("Native web browser died.");
 			}
 		}
 	}
