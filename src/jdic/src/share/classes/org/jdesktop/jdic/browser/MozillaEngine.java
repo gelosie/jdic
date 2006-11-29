@@ -272,7 +272,7 @@ public class MozillaEngine implements IBrowserEngine {
 		// other os
 		WebBrowserUtil.trace("Not suppored OS now!");
 		isEngineAvailable = false;
-		throw new JdicInitException("Un supported OS!");
+		throw new JdicInitException("Unsupported OS!");
 	}
 
 	/**
