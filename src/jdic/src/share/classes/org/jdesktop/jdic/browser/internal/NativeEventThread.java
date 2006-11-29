@@ -281,17 +281,20 @@ public void run() {
 	}
 
 	private boolean processEventFromJava(NativeEventData nativeEvent) {
-		IWebBrowser browser = getWebBrowserFromInstance(nativeEvent.instance);
-		if (null == browser) {
-			return true;
-		}
+		IWebBrowser browser =null;
+		// for init action, needn't browser
+		if (NativeEventData.EVENT_INIT != nativeEvent.type) {
+			browser = getWebBrowserFromInstance(nativeEvent.instance);
+			if (null == browser) {
+				return true;
+			}
 
-		if (!browser.isInitialized()
-				&& (nativeEvent.type != NativeEventData.EVENT_INIT
-						&& nativeEvent.type != NativeEventData.EVENT_CREATEWINDOW && nativeEvent.type != NativeEventData.EVENT_SHUTDOWN)) {
-			return false;
+			if (!browser.isInitialized()
+					&& (nativeEvent.type != NativeEventData.EVENT_INIT
+							&& nativeEvent.type != NativeEventData.EVENT_CREATEWINDOW && nativeEvent.type != NativeEventData.EVENT_SHUTDOWN)) {
+				return false;
+			}
 		}
-
 		WebBrowserUtil.trace("Process event to native browser: "
 				+ nativeEvent.instance + ", " + nativeEvent.type + ", ");
 
