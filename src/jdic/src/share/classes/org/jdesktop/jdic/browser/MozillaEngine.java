@@ -318,6 +318,10 @@ public class MozillaEngine implements IBrowserEngine {
 	 * Set variable to env.
 	 */
 	private void setToEnv() throws JdicInitException {
+		String javaLibraryPath = System.getProperty("java.library.path", null);
+		if (javaLibraryPath != null) {
+			InitUtility.preAppendEnv(libPathEnv, javaLibraryPath);
+		}
 		InitUtility.preAppendEnv(libPathEnv, runningPath);
 		InitUtility.preAppendEnv(libPathEnv, envXPComPath);
 		InitUtility.setEnv(MOZILLA_FIVE_HOME, envXPComPath);
