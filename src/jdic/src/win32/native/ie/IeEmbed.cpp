@@ -233,12 +233,13 @@ void CommandProc(char* pInputChar)
     //       identical between the Java side and native side.
     int i = sscanf(pInputChar, "%d,%d,%s", &instanceNum, &eventID, 
         eventMessage);
+    delete [] eventMessage;
     if (i < 2) 
     {
         delete pInputChar;
         return;
     }
-	delete [] eventMessage;
+	
     // In case that the last message string argument contains spaces, sscanf 
     // returns before the first space. Below line returns the complete message
     // string.
@@ -582,7 +583,8 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance,
         else
         {
             int size = ABrowserWnd.GetSize();
-            for (int i = 0; i < size; i++) {
+            int i = 0;
+            for (; i < size; i++) {
                 BrowserWindow *pBrowserWnd = (BrowserWindow *)ABrowserWnd[i];
                 if (pBrowserWnd && pBrowserWnd->PreTranslateMessage(&msg)) {
                     break;

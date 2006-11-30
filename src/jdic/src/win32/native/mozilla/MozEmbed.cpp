@@ -575,8 +575,10 @@ void MozEmbedApp::MessageReceived(const char * msg)
     }
     memset(eventMessage,'\0',eventMessageBufLenth+1);
 
-    if (mInitFailed)
+    if (mInitFailed){
+    	delete [] eventMessage;
         return;
+    }
 
     int i = sscanf(msg, "%d,%d,%s", &instanceNum, &eventID, eventMessage);
     ASSERT(i >= 2);
