@@ -231,6 +231,8 @@ public class WinRegistryWrapper {
                 String[] subSubKeys = WinRegGetSubKeys(hKey, subKey,
                         MAX_KEY_LENGTH);
 
+                if (subSubKeys == null)
+					return result;
                 for (int keyIndex = 0; keyIndex < subSubKeys.length; keyIndex++) {
                     subSubKey = subKey + "\\" + subSubKeys[keyIndex];
                     if (subSubKey != null) {
