@@ -395,38 +395,13 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		// Special trigger messages beginning with a '@' character, to give
 		// the native browser a yes or no to continue an operation(navigating
 		// an URL or openning a new window).
-		String msg = "@" + instanceNum + "," + eid + ",";
-		URL url = null;
+		String msg = "@" + instanceNum + "," + eid + ",";		
 		if (WebBrowserEvent.WEBBROWSER_BEFORE_NAVIGATE == eid) {
-
-			try {
-				url = new URL(e.getData());
-			} catch (MalformedURLException ex1) {
-				try {
-					// IE omits the file:/ protocol for local files, append it.
-					url = new URL(BrowserEngineManager.instance()
-							.getActiveEngine().getFileProtocolURLPrefix()
-							+ e.getData());
-				} catch (MalformedURLException ex2) {
-					//For javascript to set/getcontent,the url to be opened is
-					// bad,but we could igore that.So just a warning here.
-					WebBrowserUtil.trace(ex2.toString());
-				}
-			}
-
-			msg += willOpenURL(url) ? "0" : "1";
+			msg += willOpenLink(e.getData()) ? "0" : "1";			
 			eventThread.getMessenger().sendMessage(msg);
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_BEFORE_NEWWINDOW == eid) {
-			if (e.getData() != null) {
-				//not available for unix
-				try {
-					url = new URL(e.getData());
-				} catch (MalformedURLException e1) {
-					e1.printStackTrace();
-				}
-			}
-			msg += willOpenWindow(url) ? "0" : "1";
+			msg += willOpenWindow(e.getData()) ? "0" : "1";
 			eventThread.getMessenger().sendMessage(msg);
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_COMMAND_STATE_CHANGE == eid) {
@@ -1027,6 +1002,49 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	}
 
 	/**
+	 * will open a link 
+	 * @param link
+	 * @return
+	 */
+	protected boolean willOpenLink(String link) {
+		URL url = createURL(link);
+		return willOpenURL(url);
+	}
+
+	/**
+	 * will open a link in a new window 
+	 * @param link
+	 * @return
+	 */
+	protected boolean willOpenWindow(String link) {
+			return willOpenWindow(createURL(link));
+	}
+	/**
+	 * crate a url by a string
+	 * 
+	 * @param urlString
+	 * @return
+	 */
+	private URL createURL(String urlString) {
+		if (urlString == null) {
+			return null;
+		}
+		try {
+			return new URL(urlString);
+		} catch (MalformedURLException ex1) {
+			try {
+				return new URL(BrowserEngineManager.instance()
+						.getActiveEngine().getFileProtocolURLPrefix()
+						+ urlString);
+			} catch (MalformedURLException e) {
+				// For javascript to set/getcontent,the url to be opened is
+				// bad,but we could igore that.So just a warning here.
+				WebBrowserUtil.trace(e.toString());
+			}
+		}
+		return null;
+	}
+	/**
 	 * Called before a navigation occurs.
 	 * <p>
 	 * A subclass can override this method to block the navigation or allow it
@@ -1037,6 +1055,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * @return <code>false</code> will block the navigation from starting;
 	 *         <code>true</code> otherwise. By default, it returns <code>
 	 *         true</code>.
+	 * @deprecated use willOpenLink(String) instead
 	 */
 	protected boolean willOpenURL(URL url) {
 		if (null == url)
@@ -1065,6 +1084,7 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * @return <code>false</code> will block the creation of a new window;
 	 *         <code>true</code> otherwise. By default, it returns <code>
 	 *         true</code>.
+	 * @deprecated use willOpenWindow(String) instead         
 	 */
 	protected boolean willOpenWindow(URL url) {
 		if (url != null) {
