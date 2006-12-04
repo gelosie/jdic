@@ -36,8 +36,6 @@ import java.util.jar.JarFile;
 
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 
-import com.sun.jnlp.JNLPClassLoader;
-
 /**
  * Initialization manager for JDIC to set the environment variables or
  * initialize the set up for native libraries and executable files.
@@ -288,20 +286,32 @@ public class JdicManager {
 			JdicInitException {
 		String jdicLibFolder = null;
 		ClassLoader cl = this.getClass().getClassLoader();
-		if (cl instanceof JNLPClassLoader) {
-			JNLPClassLoader jnlpCl = (JNLPClassLoader) cl;
-			String jdicLibURL = jnlpCl.findLibrary("jdic");//get lib path by classloder
-			jdicLibFolder = (new File(jdicLibURL)).getParentFile().getCanonicalPath();
-			WebBrowserUtil.trace("running path " + jdicNativeLibPath);
-			isShareNativeInitialized = true;
-		} else {
-			// only run well for sun jre
-			throw new JdicInitException(
-
-					"Unexpected ClassLoader for webstart, only com.sun.jnlp.JNLPClassLoader is supported.");
+		WebBrowserUtil.trace("current class loader " + cl.getClass().getName());
+		try {
+			Class jnlpClassLoaderClass = Class
+					.forName("com.sun.jnlp.JNLPClassLoader");
+			if (cl.getClass().isAssignableFrom(jnlpClassLoaderClass)) {
+				Method findLibMethod = jnlpClassLoaderClass.getDeclaredMethod(
+						"findLibrary", new Class[] { String.class });
+				String jdicLibURL = (String) findLibMethod.invoke(cl,
+						new Object[] { "jdic" });
+				jdicLibFolder = (new File(jdicLibURL)).getParentFile()
+						.getCanonicalPath();
+				WebBrowserUtil.trace("running path " + jdicNativeLibPath);
+				isShareNativeInitialized = true;
+			} else {
+				throw new JdicInitException(
+						"Unexpected ClassLoader for webstart, only Sun's com.sun.jnlp.JNLPClassLoader is supported,while current classloader is "
+								+ cl.getClass().getName());
+			}
+		} catch (Exception e) {
+			WebBrowserUtil.error(e.getMessage());
+			e.printStackTrace();
+			throw new JdicInitException(e.getMessage());
 		}
 		return jdicLibFolder;
-	}
+	} 
+	
 
 	/**
 	 * Return the canonical name of the platform. This value is derived from the
