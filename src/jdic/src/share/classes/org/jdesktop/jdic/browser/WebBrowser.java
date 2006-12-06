@@ -47,7 +47,6 @@ import org.jdesktop.jdic.browser.internal.NativeEventData;
 import org.jdesktop.jdic.browser.internal.NativeEventThread;
 import org.jdesktop.jdic.browser.internal.WebBrowserUtil;
 import org.jdesktop.jdic.init.JdicInitException;
-import org.jdesktop.jdic.init.JdicManager;
 
 /**
  * A <code>WebBrowser</code> component represents a blank rectangular area of
@@ -1002,66 +1001,23 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	}
 
 	/**
-	 * will open a link 
-	 * @param link
-	 * @return
-	 */
-	protected boolean willOpenLink(String link) {
-		URL url = createURL(link);
-		return willOpenURL(url);
-	}
-
-	/**
-	 * will open a link in a new window 
-	 * @param link
-	 * @return
-	 */
-	protected boolean willOpenWindow(String link) {
-			return willOpenWindow(createURL(link));
-	}
-	/**
-	 * crate a url by a string
-	 * 
-	 * @param urlString
-	 * @return
-	 */
-	private URL createURL(String urlString) {
-		if (urlString == null) {
-			return null;
-		}
-		try {
-			return new URL(urlString);
-		} catch (MalformedURLException ex1) {
-			try {
-				return new URL(BrowserEngineManager.instance()
-						.getActiveEngine().getFileProtocolURLPrefix()
-						+ urlString);
-			} catch (MalformedURLException e) {
-				// For javascript to set/getcontent,the url to be opened is
-				// bad,but we could igore that.So just a warning here.
-				WebBrowserUtil.trace(e.toString());
-			}
-		}
-		return null;
-	}
-	/**
 	 * Called before a navigation occurs.
 	 * <p>
 	 * A subclass can override this method to block the navigation or allow it
 	 * to proceed.
 	 * 
-	 * @param url
-	 *            the URL to navigate to.
+	 * @param link
+	 *            the link to navigate to.
 	 * @return <code>false</code> will block the navigation from starting;
 	 *         <code>true</code> otherwise. By default, it returns <code>
 	 *         true</code>.
-	 * @deprecated use willOpenLink(String) instead
 	 */
-	protected boolean willOpenURL(URL url) {
+	protected boolean willOpenLink(String link) {
+		WebBrowserUtil.trace("will open link " + link);
+		URL url = createURL(link);
 		if (null == url)
 			return true;
-
-		WebBrowserUtil.trace("URL = " + url.toString());
+		
 		SecurityManager security = System.getSecurityManager();
 		if (security != null) {
 			try {
@@ -1079,18 +1035,41 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 * A subclass can override this method to block the creation of a new window
 	 * or allow it to proceed.
 	 * 
-	 * @param url
+	 * @param link
 	 *            string value of url to be opened
 	 * @return <code>false</code> will block the creation of a new window;
 	 *         <code>true</code> otherwise. By default, it returns <code>
 	 *         true</code>.
-	 * @deprecated use willOpenWindow(String) instead         
 	 */
-	protected boolean willOpenWindow(URL url) {
-		if (url != null) {
-			WebBrowserUtil.trace("willOpenWindow " + url.toString());
-		}
+	protected boolean willOpenWindow(String link) {
+		WebBrowserUtil.trace("will open link " + link + " in new window");
 		return true;
+	}
+	
+	/**
+	 * crate a url by a string
+	 * 
+	 * @param urlString
+	 * @return
+	 */
+	protected URL createURL(String urlString) {
+		if (urlString == null) {
+			return null;
+		}
+		try {
+			return new URL(urlString);
+		} catch (MalformedURLException ex1) {
+			try {
+				return new URL(BrowserEngineManager.instance()
+						.getActiveEngine().getFileProtocolURLPrefix()
+						+ urlString);
+			} catch (MalformedURLException e) {
+				// For javascript to set/getcontent,the url to be opened is
+				// bad,but we could igore that.So just a warning here.
+				WebBrowserUtil.trace(e.toString());				
+			}
+		}
+		return null;
 	}
 
 	public int getInstanceNum() {
