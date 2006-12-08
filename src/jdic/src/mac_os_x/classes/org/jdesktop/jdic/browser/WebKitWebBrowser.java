@@ -97,6 +97,12 @@ public class WebKitWebBrowser extends CocoaComponent implements IWebBrowser {
 	// if the WebBrowser successfully initialized
 	private boolean isInitialized = false;
 
+	/**
+	 * Holds the link interception handler that is queried if links should be
+	 * opened. Class invariant: field must not be null.
+	 */
+	private ILinkInterceptionHandler linkHandler = new DefaultLinkInterceptionHandler();
+	
 	static {
 	   WebBrowserUtil.loadLibrary();
 	}
@@ -104,7 +110,7 @@ public class WebKitWebBrowser extends CocoaComponent implements IWebBrowser {
 	public WebKitWebBrowser() {
 		super();
 		BrowserEngineManager.instance().setActiveEngine(
-				BrowserEngineManager.WEBKIT);//set it as the default engine
+				BrowserEngineManager.WEBKIT);// set it as the default engine		
 	}
 
 	public int getNewWebViewCreatingPolicy() {
@@ -579,7 +585,34 @@ public class WebKitWebBrowser extends CocoaComponent implements IWebBrowser {
             }          
         }
     }
-    
+
+	/**
+	 * Sets the link interception handler for this web browser.
+	 * 
+	 * @throws NullPointerException
+	 *             if <code>handler</code> is null
+	 */
+	public void setLinkInterceptionHandler(ILinkInterceptionHandler handler) {
+		if (handler == null) {
+			throw new NullPointerException("handler must not be null");
+		}
+		this.linkHandler = handler;
+	}
+
+	/**
+	 * Called from the native side to ask for permission to open clicked links
+	 * 
+	 * @param link
+	 * @param newWindow
+	 * @return
+	 */
+	private boolean shouldOpenLink(final String link, final boolean newWindow) {
+		return linkHandler.shouldOpenLink(new OpenLinkEvent(
+				WebKitWebBrowser.this,
+				newWindow ? OpenLinkEvent.NEW_WINDOW_EVENT
+						: OpenLinkEvent.SAME_WINDOW_EVENT, link));
+	}
+	 
 	/**
 	 * auto dispose property is empty for web kit
 	 */

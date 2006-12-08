@@ -34,9 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.JarURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.AccessControlException;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -129,6 +127,12 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	 */
 	private URL urlBeforeDispose = null;
 
+	/**
+	 * Holds the link interception handler that is queried if links should be
+	 * opened. Class invariant: field must not be null.
+	 */
+	private ILinkInterceptionHandler linkHandler = new DefaultLinkInterceptionHandler();
+	
 	public void setInitialized(boolean b) {
 		isInitialized = b;
 	}
@@ -396,11 +400,11 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		// an URL or openning a new window).
 		String msg = "@" + instanceNum + "," + eid + ",";		
 		if (WebBrowserEvent.WEBBROWSER_BEFORE_NAVIGATE == eid) {
-			msg += willOpenLink(e.getData()) ? "0" : "1";			
+			msg += linkHandler.shouldOpenLink(new OpenLinkEvent(this, OpenLinkEvent.SAME_WINDOW_EVENT, e.getData())) ? "0" : "1";			
 			eventThread.getMessenger().sendMessage(msg);
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_BEFORE_NEWWINDOW == eid) {
-			msg += willOpenWindow(e.getData()) ? "0" : "1";
+			msg += linkHandler.shouldOpenLink(new OpenLinkEvent(this, OpenLinkEvent.NEW_WINDOW_EVENT, e.getData())) ? "0" : "1";
 			eventThread.getMessenger().sendMessage(msg);
 			return;
 		} else if (WebBrowserEvent.WEBBROWSER_COMMAND_STATE_CHANGE == eid) {
@@ -1000,78 +1004,6 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 		return isForwardEnabled;
 	}
 
-	/**
-	 * Called before a navigation occurs.
-	 * <p>
-	 * A subclass can override this method to block the navigation or allow it
-	 * to proceed.
-	 * 
-	 * @param link
-	 *            the link to navigate to.
-	 * @return <code>false</code> will block the navigation from starting;
-	 *         <code>true</code> otherwise. By default, it returns <code>
-	 *         true</code>.
-	 */
-	protected boolean willOpenLink(String link) {
-		WebBrowserUtil.trace("will open link " + link);
-		URL url = createURL(link);
-		if (null == url)
-			return true;
-		
-		SecurityManager security = System.getSecurityManager();
-		if (security != null) {
-			try {
-				security.checkConnect(url.getHost(), url.getPort());
-			} catch (AccessControlException e) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Called when a new window is to be created for loading a resource.
-	 * <p>
-	 * A subclass can override this method to block the creation of a new window
-	 * or allow it to proceed.
-	 * 
-	 * @param link
-	 *            string value of url to be opened
-	 * @return <code>false</code> will block the creation of a new window;
-	 *         <code>true</code> otherwise. By default, it returns <code>
-	 *         true</code>.
-	 */
-	protected boolean willOpenWindow(String link) {
-		WebBrowserUtil.trace("will open link " + link + " in new window");
-		return true;
-	}
-	
-	/**
-	 * crate a url by a string
-	 * 
-	 * @param urlString
-	 * @return
-	 */
-	protected URL createURL(String urlString) {
-		if (urlString == null) {
-			return null;
-		}
-		try {
-			return new URL(urlString);
-		} catch (MalformedURLException ex1) {
-			try {
-				return new URL(BrowserEngineManager.instance()
-						.getActiveEngine().getFileProtocolURLPrefix()
-						+ urlString);
-			} catch (MalformedURLException e) {
-				// For javascript to set/getcontent,the url to be opened is
-				// bad,but we could igore that.So just a warning here.
-				WebBrowserUtil.trace(e.toString());				
-			}
-		}
-		return null;
-	}
-
 	public int getInstanceNum() {
 		return instanceNum;
 	}
@@ -1158,7 +1090,21 @@ public class WebBrowser extends Canvas implements IWebBrowser {
 	}
 
 	/**
-	 * @param autoDispose The autoDispose to set.
+	 * Sets the link interception handler for this web browser.
+	 * 
+	 * @throws NullPointerException
+	 *             if <code>handler</code> is null
+	 */
+	public void setLinkInterceptionHandler(ILinkInterceptionHandler handler) {
+		if (handler == null) {
+			throw new NullPointerException("handler must not be null");
+		}
+		this.linkHandler = handler;
+	}
+	
+	/**
+	 * @param autoDispose
+	 *            The autoDispose to set.
 	 */
 	public void setAutoDispose(boolean autoDispose) {
 		this.autoDispose = autoDispose;

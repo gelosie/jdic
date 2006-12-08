@@ -231,9 +231,15 @@ public interface IWebBrowser {
 	public void setInitialized(boolean b);
 	
 	/**
-	 * set the auto dispose attribute of web browser
+	 * Set the auto dispose attribute of web browser
 	 * 
 	 * @param autoDispose
 	 */
 	public void setAutoDispose(boolean autoDispose);
+	
+	/**
+	 * Set the a linkInterceptionHandler
+	 * @param handler
+	 */
+	public void setLinkInterceptionHandler(ILinkInterceptionHandler handler);
 }

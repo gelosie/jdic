@@ -515,41 +515,84 @@ Boolean debug = NO;
 }
 
 //policy delegate
-- (void)webView:(WebView *)sender decidePolicyForNewWindowAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request newFrameName:(NSString *)frameName decisionListener:(id<WebPolicyDecisionListener>)listener {
-    //NSLog(@"\n-----\nwebView:%@ decidePolicyForNewWindowAction:request:%@ newFrameName:%@   actionInformation : %@\n-----\n", sender, request, frameName,actionInformation);	
-    CreatingViewPolicy viewPolicy = [self getCreatingNewWebViewInWindowPolicy];
-    if(viewPolicy == WebViewPolicyNone){
-        [listener ignore];
-        return;
-    }
-    if(viewPolicy != WebViewPolicyInNewWindow){
-        [listener use];
-        return;
-    }
-    [sender webView:sender createWebViewWithRequest:request];
+- (void)webView:(WebView *)sender decidePolicyForNewWindowAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request newFrameName:(NSString *)frameName decisionListener:(id<WebPolicyDecisionListener>)listener 
+{
+	NSString *path = [[request URL] absoluteString];
+	NSLog(path);
+	
+	jboolean shouldOpenLink = true;
+	
+	if(javaOwner == NULL || [self JVM] == NULL) 
+		return;
+	
+	bool wasAttached = false;
+	JNIEnv *env = GetJEnv([self JVM], wasAttached);
+	
+	if(env == NULL) 
+		return;
+		
+	jclass clazz = env->GetObjectClass(javaOwner);
+	if(clazz != NULL) {
+	    jmethodID mID = env->GetMethodID(clazz, "shouldOpenLink", "(Ljava/lang/String;Z)Z"); 
+	    if(mID != NULL) {
+	        jstring jstr1 = env->NewStringUTF([path UTF8String]);
+	        shouldOpenLink = env->CallBooleanMethod(javaOwner, mID, jstr1, JNI_TRUE);
+			env->DeleteLocalRef(jstr1);
+	    }
+	}
+	
+	if(wasAttached) 
+		[self JVM]->DetachCurrentThread();
+	
+	if (shouldOpenLink) {
+     CreatingViewPolicy viewPolicy = [self getCreatingNewWebViewInWindowPolicy];
+     if(viewPolicy == WebViewPolicyNone){
+         [listener ignore];
+         return;
+     }
+     if(viewPolicy != WebViewPolicyInNewWindow){
+         [listener use];
+         return;
+     }
+     [sender webView:sender createWebViewWithRequest:request];
+	} else {
+		[listener ignore];
+	}
 }
-
 
  - (void)webView:(WebView *)sender decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
 {
-    if (debug)
-        NSLog(@"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!-----\nwebView:%@ decidePolicyForNavigationAction:request:%@ actionInformation %@\n-----\n", sender, request,actionInformation);	
-    NSString *upath = [[request mainDocumentURL] path];
-    if (upath != nil) {
-        if ([[upath lowercaseString] hasSuffix : [NSString stringWithCString : ".jnlp"]]) {
-            if (debug)
-                NSLog(@"RESOURCE IGNORED\n");	
-            [listener ignore];
-            return;
-        }else if([[upath lowercaseString] hasSuffix : [NSString stringWithCString : ".sit"]]){
-            if (debug)
-                NSLog(@"RESOURCE SHOULD BE DOWNLOADED\n");	
-            [listener download];
-            return;
-        }
-    }
-    [listener use];
+   if (debug)
+      NSLog(@"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!-----\nwebView:%@ decidePolicyForNavigationAction:request:%@ actionInformation %@\n-----\n", sender, request,actionInformation);	
+	NSString *path = [[request URL] absoluteString];
+	NSLog(path);	
+	jboolean shouldOpenLink = true;	
+	if(javaOwner == NULL || [self JVM] == NULL) 
+            return;	
+	bool wasAttached = false;
+	JNIEnv *env = GetJEnv([self JVM], wasAttached);	
+	if(env == NULL) 
+             return;		
+	jclass clazz = env->GetObjectClass(javaOwner);
+	if(clazz != NULL) {
+	    jmethodID mID = env->GetMethodID(clazz, "shouldOpenLink", "(Ljava/lang/String;Z)Z"); 
+	    if(mID != NULL) {
+	        jstring jstr1 = env->NewStringUTF([path UTF8String]);
+	        shouldOpenLink = env->CallBooleanMethod(javaOwner, mID, jstr1, JNI_FALSE);
+			env->DeleteLocalRef(jstr1);
+         }
+     }
+	
+	if(wasAttached)
+		[self JVM]->DetachCurrentThread();
+	
+	if (shouldOpenLink) {
+     [listener use];
+	} else {
+		[listener ignore];
+	}
 }
+ 
 
 
 // WebUIDelegate Methods
