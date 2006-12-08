@@ -126,7 +126,7 @@ public class InternetExplorerEngine implements IBrowserEngine {
 			WebBrowserUtil.trace(NSPR4_DLL + " is set under " + nspr4Path);
 			InitUtility.preAppendEnv(libPathEnv, nspr4Path);
 		} else {
-			WebBrowserUtil.error(NSPR4_DLL + " doesn't exist under "
+			WebBrowserUtil.trace(NSPR4_DLL + " doesn't exist under "
 					+ nspr4Path);
 		}
 		
