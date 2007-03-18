@@ -106,7 +106,11 @@
        target: dist              
        ================================= -->      
   <target name="dist" depends="all,javadoc,demo" description="Create a full distribution">
-	<zip destfile="jdic-mpcontrol-${version}.zip" basedir="dist" />
+  	<mkdir dir="${dist.dir}/lib"/>
+  	<copy todir="${dist.dir}/lib">
+  		<fileset dir="lib"/>
+  	</copy>
+	<zip destfile="jdic-mpcontrol-${version}.zip" basedir="${dist.dir}" />
 	<zip destfile="jdic-mpcontrol-src-${version}.zip" >
 	  <zipfileset prefix="src" dir="src">
 	    <include name="**/*.java"/>
@@ -147,6 +151,11 @@
        ================================= -->      
   <target name="jar" depends="_init" description="Compile and jar the java source">
     <javac srcdir="${src.classes.dir}" destdir="${target.dir}/classes">  
+    	<classpath>
+    		<fileset dir="lib">
+    			<include name="*.jar"/>
+    		</fileset>
+    	</classpath>
     </javac>
     
     <jar destfile="${dist.dir}/${jar.name}">
@@ -204,9 +213,9 @@
     <javah destdir="${native.dir.linux}/bmp" classpath="${dist.dir}/${jar.name}">
       <class name="${pkg.mpcontrol.name}.bmp.BeepMediaPlayer"/>
     </javah>
-    <javah destdir="${native.dir.linux}/rhythmbox" classpath="${dist.dir}/${jar.name}">
+<!--    <javah destdir="${native.dir.linux}/rhythmbox" classpath="${dist.dir}/${jar.name}">
       <class name="${pkg.mpcontrol.name}.rhythmbox.RhytmboxControl"/>
-    </javah>
+    </javah>-->
     <javah destdir="${native.dir.win32}/winamp" classpath="${dist.dir}/${jar.name}">
       <class name="${pkg.mpcontrol.name}.winamp.WinampControl"/>
       <class name="${pkg.mpcontrol.name}.winamp.Util"/>
@@ -237,13 +246,14 @@
          ================================= -->
     
   <target name="_buildlinux">
-    <exec dir="${native.dir.linux}/bmp" executable="make" />
+<!--    <exec dir="${native.dir.linux}/bmp" executable="make" />
         
     <copy file="${native.dir.linux}/bmp/libjdic-bmp.so" todir="${dist.dir}" />
         
     <exec dir="${native.dir.linux}/rhythmbox" executable="make" />
         
     <copy file="${native.dir.linux}/rhythmbox/libjdic-rhythmbox.so" todir="${dist.dir}" />
+    -->
         
   </target>
   <target name="_buildsolaris"></target>
