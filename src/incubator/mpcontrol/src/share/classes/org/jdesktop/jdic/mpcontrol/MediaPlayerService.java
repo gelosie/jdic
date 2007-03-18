@@ -75,6 +75,7 @@ public class MediaPlayerService {
                         log.info(
                                 "media player '" + obj.getDescription()
                                 + "' not supported on this platform");
+                        obj.destroy();
 						
                     }
 					

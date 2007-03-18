@@ -69,8 +69,10 @@ public class SongInfo implements ISongInfo, IExtendedSongInfo {
      * @param play_count
      * @param last_played
      */
-    public SongInfo(String title, String artist, String genre, String album, String path, int track_number,
-            int duration, int bitrate, int filesize, int rating, int play_count, int last_played) {
+    public SongInfo(String title, String artist, String genre,
+    		String album, String path, int track_number,
+            int duration, int bitrate, int filesize, 
+            int rating, int play_count, int last_played) {
         this.title = title;
         this.artist = artist;
         this.genre = genre;
