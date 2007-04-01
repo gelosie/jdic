@@ -247,7 +247,15 @@ public class RhytmboxDbusControl implements IMediaPlayer {
 	public void setMediaLocation(URL location) {
 
 		init();
-		shell.loadURI(location.toString(), true);
+		if ("file".equals(location.getProtocol())) {
+			StringBuffer result = new StringBuffer(256);
+			result.append("file://");
+			result.append(location.getPath());
+			shell.loadURI(result.toString(), true);
+			return;
+		} else {
+			shell.loadURI(location.toString(), true);
+		}
 
 	}
 
@@ -270,7 +278,7 @@ public class RhytmboxDbusControl implements IMediaPlayer {
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return ProcessUtil.execute("rhythmbox");
 		}
 	}
 
