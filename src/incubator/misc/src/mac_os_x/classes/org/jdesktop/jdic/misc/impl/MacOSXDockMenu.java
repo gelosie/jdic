@@ -64,6 +64,10 @@ public class MacOSXDockMenu extends DockMenu {
 		app.setDelegate(delegate);
 	}
     
+	public boolean isDockMenuSupported() {
+            return true;
+	}
+        
     private Delegate2 delegate;
 
 	/**
