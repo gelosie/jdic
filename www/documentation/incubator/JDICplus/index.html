@@ -1,0 +1,206 @@
+<html>
+<head>
+<title>SaverBeans Screensaver SDK Readme</title>
+<meta http-equiv="CONTENT-TYPE" content="text/html; charset=iso-8859-1">
+<meta content="Microsoft FrontPage 4.0" name="GENERATOR">
+<meta content=" " name="AUTHOR">
+<meta content="20000519;14440300" name="CREATED">
+<meta content=" " name="CHANGEDBY">
+<meta content="20000901;17584900" name="CHANGED">
+</head>
+<BODY> <!-- etracker PARAMETER 2.0.1 -->
+<script type="text/javascript">
+var et_easy = 0;
+var et_ssl = 1;
+var et_pagename = "SaverBeans%20Screensaver%20SDK%20Readme";
+var et_areas = "";
+var et_ilevel = 0;
+</script> <!-- etracker PARAMETER END --> <!-- etracker CODE 2.0.6 -->
+<script type="text/javascript">
+var et_server="http://www.etracker.de";
+var et_sslserver="https://www.etracker.de";
+var et_referer=et_server+"/soverview.php?c=1&amp;et=";
+var et_sw,et_sc="na";var et_pl,tmp,cex="";if(navigator.appName==
+'Netscape'||navigator.appName=='Opera'){for(i=0;i<navigator.plugins.length;++i)
+et_pl+=navigator.plugins[i].name+';';et_pl=escape(et_pl);}function et_pQ(param)
+{var ll,fl;var qS,pV,rS;qS=document.location.search;pV="";if(qS.length>1){qS=qS.
+substr(1);fl=qS.indexOf(param);if(fl!=-1){fl+=param.length+1;ll=qS.indexOf('&',
+fl);if(ll==-1) ll=qS.length;pV=qS.substring(fl,ll);rS=new RegExp(" ","g");pV=
+pV.replace(rS,"+");f1=pV.indexOf('=',0);pV=pV.substring(f1+1);}} return pV;}
+function et_eC(param){var et_a='',et_t='',et_p='';var et_ref=escape(document.
+referrer);if(typeof(top.document)=="object")et_ref=escape(top.document.referrer);
+if(et_ref!="")et_ref="&amp;ref="+et_ref;et_sw="&amp;swidth="+et_sw;et_sc=
+"&amp;scolor="+et_sc;if(et_easy)et_easy="&amp;et_easy=1";else et_easy="";if(
+et_pl!="")et_pl="&amp;p="+et_pl;if(et_areas!="")et_a="&amp;et_areas="+
+escape(et_areas);if(typeof(et_target)=="undefined"||typeof(et_target)==
+"unknown"){et_target="";et_tval="0";et_tonr="0";et_tsale=0;}if(typeof(
+et_lpage)=="undefined"||typeof(et_lpage)=="unknown")et_lpage="";else
+et_lpage="&amp;et_lpage="+et_lpage;if(typeof(et_trig)=="undefined"||typeof(
+et_trig)=="unknown")et_trig="";if(et_trig!="")cex="&amp;et_trig="+
+et_trig;if((tc=et_pQ("et_cid"))&&(tl=et_pQ("et_lid")))cex=cex+"&amp;et_cid="+
+tc+"&amp;et_lid="+tl;if(tmp=et_pQ("et_target")||et_target!=""){tv=et_pQ
+("et_tval");to=et_pQ("et_tonr");ts=et_pQ("et_tsale");et_t="&amp;et_target="+
+escape(tmp.length?tmp:et_target)+","+(tv?tv:et_tval)+","+(to?to:et_tonr)+
+","+(ts?ts:et_tsale);}if(et_pagename!="")et_p="&amp;et_pagename="+escape(
+et_pagename);tc=new Date();document.write("<a target='_blank' href='"+et_referer+
+param+"'><img border='0' alt='' src='"+(et_ssl==1?et_sslserver:et_server)+
+"/cnt.php?java=y&amp;tc="+tc.getTime()+"&amp;et="+param+"&amp;et_ilevel="+
+et_ilevel+et_easy+et_p+et_a+cex+et_t+et_lpage+et_sw+et_sc+et_ref+et_pl+"'/>"+
+"<\/a>");}</script>
+<script type="text/javascript1.2">et_sw=screen.width;et_sc=
+navigator.appName!='Netscape'?screen.colorDepth:screen.pixelDepth;</script>
+<script type="text/javascript">et_eC('ir339g');</script> <!-- etracker CODE NOSCRIPT --><noscript><a href="http://www.etracker.de/soverview.php?c=1&amp;et=ir339g" target="_blank"><IMG alt="" src="https://www.etracker.de/cnt.php?et=ir339g&amp;java=n&amp;et_easy=0&amp;et_pagename=SaverBeans%20Screensaver%20SDK%20Readme&amp;et_areas=&amp;et_ilevel=&amp;et_target=&amp;et_lpage=&amp;et_trig="
+                    border="0"></a>
+</noscript><!-- etracker CODE END -->
+<h2 align="center">README<br>
+JDICplus project (WIN32 only)</h2>
+<h3><b>Contents</b></h3>
+<ul>
+<li>
+<A href="#Introduction">Introduction</A>
+<li>
+<A href="#Demo">Samples and Demo applications</A>
+<li>
+<A href="#Download">Download</A>
+<li>
+<A href="#System Requirements">System Requirements</A>
+<li>
+<A href="#Build the Source">Build the Source</A>
+<li>
+<A href="#License">License</A>
+<li>
+<A href="#Web Pages">Web Pages</A>
+<li>
+<A href="#Screenshots">Screenshots</A>
+</li>
+</ul>
+<h3><a name="Introduction">Introduction</a></h3>
+<blockquote>
+<p>Currently the <b>JDICplus</b> is a Java&nbsp;WIN32-extension development kit, enabling 
+developers to use extended Microsoft Windows API functionality.&nbsp;Mainly the project 
+implements the&nbsp;semi-lightweight wrapper component &nbsp;around Microsoft <STRONG>I</STRONG>nternet
+<STRONG>E</STRONG>xplorer (IE).&nbsp;</p>
+<P>The ideas that were used in embedded IE are very easy:
+</P>
+<OL>
+<LI>
+Replace standard paint event handler to synthetic that does nothing, but notifies java about 
+invalidated area (in WIN32 the subclassing is a good choice).
+<LI>
+Implement java repainting procedure for invalidated area based on native browser render. (for 
+IE it is ViewObject-&gt;Draw)
+<LI>
+Implement all DOM/events processing/binding in JavaScript code that is executing in browser 
+engine. That makes functionality of application independent from instance of embedded browser 
+(like SQL hides the differences of relational DB engines).
+<LI>
+Make callbacks from JavaScript to Java synchronous and easy. The easiest way to do it - change some 
+cross browser string-type property that is not affect the render and has property-change API 
+callback notifier. Window status property (window.status) is a perfect candidate. String type of 
+property makes it easy to transfer as many typified parameters as you like based on XML.
+</LI>
+</OL>
+<P>Practically, to implement the full functional communication with Google map you needs to 
+load prepared HTML, get single point callback from browser and method to execute Javascript 
+subroutines.
+</P>
+</blockquote>
+<h3><a name="Demo">Samples and Demo applications</a></h3>
+<blockquote>
+<p>For the best view, please turn off IE "Smooth Scrolling" feature as it is described <a href="http://www.microsoft.com/windowsxp/using/accessibility/smoothscrolling.mspx">
+here</a>.
+<ul>
+<li>
+<A style="COLOR: red" href="ws/SimpleBrowser.jnlp">HTML Java Browser - DRAFT RELEASE</A>
+Pay attention to drop-down lightweight menus!
+<li>
+<A href="ws/MapExplorer.jnlp">Googe Map integration</A>
+<li>
+<A href="ws/FlashPlayer.jnlp">Flash Player Games &amp; Amimation</A>
+Have got a problem after the latest Flash player update.
+<li>
+<A href="ws/HTMLEditor.jnlp">HTML Editor</A><br>
+If you have a problem with HTML Editor - just resize it.
+</li>
+</ul>
+<P></P>
+</blockquote>
+<h3><a name="Download">Download</a></h3>
+<blockquote>
+<p>
+<UL>
+<li>
+<A href="https://jdic.dev.java.net/servlets/ProjectDocumentList?folderID=1330&amp;expandFolder=1330&amp;folderID=0">
+Download</A> - download the latest release of the JDICplus SDK and documentation.</li></UL>
+<P></P>
+</blockquote>
+<h3><a name="System Requirements">System Requirements</a></h3>
+<blockquote>
+<p><b>JDICplus&nbsp;SDK</b>:</p>
+<UL>
+<li>
+Supported platforms
+<ul>
+<li>
+WinME/NT/2000/XP/2003
+</li>
+</ul>
+<LI>
+System Requirements
+<UL>
+<LI>
+Windows:
+<ul>
+<li>
+J2SE v1.6.0 or greater (get it at <a href="http://java.com/">http://java.com/</a>)
+<LI>
+Internet Explorer 1.5 or greater
+</LI>
+</ul>
+</LI>
+</UL>
+</LI>
+</UL>
+Note: Performance of&nbsp;applications with JDICplus&nbsp;components can vary greatly 
+depending on the underlying hardware and software configuration. Factors include CPU speed, 
+available memory, video card and available video card memory, accelleration support and 
+video drivers, resolution, color bit depth, and other factors. </blockquote>
+<h3><a name="Build the Source">Build the Source</a></h3>
+<blockquote>
+<p>The CVS module for the SDK source code in the CVS repository is <code>src/jdic/src/incubator/JDICplus</code>. 
+You can find instructions for checking out the source code <A href="https://jdic.dev.java.net/source/browse/jdic/">
+here</A>.</p>
+<p>To build from source, your system must meet the following requirements:</p>
+<ul>
+<li>
+JDK 6.0 or greater, available from <a href="http://java.sun.com/">http://java.sun.com/</a>.
+<li>
+Ant 1.5.1 or greater, available from <a href="http://ant.apache.org/">http://ant.apache.org/</a>.
+</li>
+</ul>
+<p>Then follow the below steps to build it:</p>
+<ul>
+<li>
+Under&nbsp;construction...&nbsp;
+</li>
+</ul>
+<p>Note:&nbsp; <EM>To rebuild the Win32 native layer, you must have a licensed copy of Microsoft 
+Visual Studio .NET 2003. The binary is checked into the CVS repository so unless you change any 
+files in the</EM> src/windows<EM>&nbsp;directory, you will not need this.</EM></p>
+</blockquote>
+<h3><b><a name="License">License</a></b></h3>
+<blockquote>
+<p><A href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">Lesser General Public License 
+(LGPL)</A>
+</p>
+</blockquote>
+<h3><a name="Web Pages">Web Pages</a></h3>
+<blockquote>
+<p><A href="https://jdic.dev.java.net/servlets/ProjectIssues">Bug Reports and Feedback</A>: 
+report bugs or send feedback.<br>
+</p>
+</blockquote>
+<h3><a name="Screenshots">Screenshots</a></h3>
+<BLOCKQUOTE>&nbsp;</BLOCKQUOTE>
+</BODY>
+</html>

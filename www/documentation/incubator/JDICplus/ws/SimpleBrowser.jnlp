@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JNLP File for JDIC+ Browser Demo Application -->
+<jnlp
+  spec="1.6+"
+  codebase="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
+  href="SimpleBrowser.jnlp">
+  <information>
+    <title>JDICPlus Flash Demo Application</title>
+    <vendor>Sun Microsystems, Inc.</vendor>
+    <homepage href="helps/browserHelp.html"/>
+    <description>JDIC Browser Application</description>
+    <description kind="short">Browser is an example program for web-started JDICPlus.</description>
+    <icon href="images/browserSmall.gif"/>
+    <icon kind="splash" href="images/browserSplash.gif"/>
+    <offline-allowed/>
+  </information>
+  <security>
+    <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.6+"/>
+    <jar href="SimpleBrowser.jar" main="true"/>
+    <jar href="lib/JDICplus.jar" />
+    <jar href="lib/xercesImpl.jar" />
+    <jar href="lib/xml-apis.jar" />
+    <jar href="lib/beansbinding-1.1.jar" />
+  </resources>
+
+  <resources os="Windows">
+  </resources>
+  <resources os="Windows" arch="x86">
+    <nativelib href="lib/windows/x86/JDICplus_native.jar" />
+  </resources>
+
+  <resources os="Linux">
+  </resources>
+  <resources os="Linux" arch="i386">
+  </resources>
+
+  <resources os="SunOS">
+  </resources>
+  <resources os="SunOS" arch="i386">
+  </resources>
+  <resources os="SunOS" arch="sparc">
+  </resources>
+
+  <application-desc main-class="simplebrowser.BrowserFrame"/>
+</jnlp>
