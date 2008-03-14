@@ -2,7 +2,7 @@
 <!-- JNLP File for JDIC Browser Demo Application -->
 <jnlp
   spec="1.6+"
-  codebase="http://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
+  codebase="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
   href="FlashPlayer.jnlp">
   <information>
     <title>JDICPlus Flash Demo Application</title>

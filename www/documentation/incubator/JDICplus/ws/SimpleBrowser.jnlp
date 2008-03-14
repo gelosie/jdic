@@ -3,7 +3,7 @@
 <jnlp
   spec="1.6+"
   codebase="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
-  href="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws/SimpleBrowser.jnlp">
+  href="SimpleBrowser.jnlp">
   <information>
     <title>JDICPlus Flash Demo Application</title>
     <vendor>Sun Microsystems, Inc.</vendor>

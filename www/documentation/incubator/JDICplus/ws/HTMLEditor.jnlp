@@ -2,7 +2,7 @@
 <!-- JNLP File for JDIC HTML Edit Demo Application -->
 <jnlp
   spec="1.6+"
-  codebase="http://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
+  codebase="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
   href="HTMLEditor.jnlp">
   <information>
     <title>JDICPlus HTML Edit Demo Application</title>
