@@ -1,0 +1,108 @@
+<html>
+<head>
+    <!-- Map loader -->
+    <script src="http://dev.virtualearth.net/mapcontrol/v4/mapcontrol.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    //<![CDATA[
+    var map;
+    var dmap;
+    var center;
+    var zoom;
+
+
+function _onsize(){
+    	map.Resize(
+		document.body.clientWidth,
+                document.body.clientHeight
+	);
+}
+
+function _resize(x1, y1, x2, y2){
+}
+
+function do_nothing(){
+	alert("asas");
+	map.EndContinuousPan();
+	return false;
+}
+
+function _onload(){
+    {
+   	dmap = document.getElementById("dmap");
+        map = new VEMap("dmap");
+        map.LoadMap();
+        map.SetCenter(
+	    new VELatLong(37.4328, -122.077),
+	    5
+	);
+	_onsize();
+	//map.AttachEvent("onmousedown", do_nothing);
+	//map.onmousedown = do_nothing;
+    }
+}
+
+
+// converts a VE point str to an obj
+
+function getCoord( point ) {
+	var p = new Object();
+	point = point.toString();
+	//parseFloat
+	p.lat = point.split(",")[0];
+	p.lon = point.split(",")[1];
+	return p;
+}
+
+//  convert lat/long in degrees to radians
+function latLonToRadians( point ) {
+	return point * Math.PI / 180.0;
+}
+
+function _path(x1, y1, x2, y2){
+	var p1 = getCoord(map.PixelToLatLong(x1, y1));
+	var p2 = getCoord(map.PixelToLatLong(x2, y2));
+
+	p1.lat = latLonToRadians(p1.lat);
+	p1.lon = latLonToRadians(p1.lon);
+
+	p2.lat = latLonToRadians(p2.lat);
+	p2.lon = latLonToRadians(p2.lon);
+
+	var R = 6371.0; // earth's mean radius in km
+	var dSinLat05  = Math.sin( (p2.lat - p1.lat)/2 );
+	var dSinLong05 = Math.sin( (p2.lon - p1.lon)/2 );
+	var a = dSinLat05 * dSinLat05 +
+		Math.cos(p1.lat) * Math.cos(p2.lat) * dSinLong05 * dSinLong05;
+	var c = (0==a || 1==a)
+		? 0
+		: 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0-a));
+	return R * c * 1000.0; //in meters
+}
+
+function _getGBounds(){
+	var p1 = getCoord(map.PixelToLatLong(0, 0));
+	var p2 = getCoord(map.PixelToLatLong(
+		document.body.clientWidth,
+                document.body.clientHeight
+	));
+	var w = p2.lat - p1.lat;
+	var h = p2.lon - p1.lon;
+	return p1.lat + "," + p1.lon + "," + w + "," + h;
+}
+
+    //]]>
+    </script>
+</head>
+<body style="margin: 0px 0px 0px 0px; ">
+<div id="dmap" style="border: 1px solid #979797; background-color: #e5e3df; width:100px; height:100px; margin: 0px 0px 0px 0px;">
+  <div style="padding: 1em; color: gray">Loading...</div>
+    <script type="text/javascript">
+    //<![CDATA[
+      document.body.scroll = "no";
+      document.body.onload = _onload;
+      window.onresize = _onsize;
+    //]]>
+    </script>
+</div>
+</body>
+</html>

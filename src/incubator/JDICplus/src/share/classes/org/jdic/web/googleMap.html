@@ -1,0 +1,189 @@
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">-->
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <!-- Map loader -->
+   <!--     <script src="http://maps.google.com/maps?file=api&amp;v=2" type="text/javascript"></script> -->
+    <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=ABQIAAAATzYHx1-XL36zRB3eYwjxART2yXp_ZAY8_ufC3CFXhHIE1NvwkxS5rxqZkoEkahKFutilQayue0IKPQ"
+      type="text/javascript"></script>
+    <script type="text/javascript">
+    //<![CDATA[
+
+    var WINDOW_HTML = '<div style="width: 210px; padding-right: 10px"><a href="./signup.html">Sign up<\/a> for a Google Maps API key, or <a href="./documentation/">read more about the API<\/a>.<\/div>';
+    var map;
+    var dmap;
+    var center;
+    var zoom;
+
+function _onsize(){
+	dmap.style.width = document.body.clientWidth;
+	dmap.style.height = document.body.clientHeight;
+    	map.checkResize();
+}
+
+function _resize(gp1, gp2){
+    var bnd = new GLatLngBounds(
+        map.fromContainerPixelToLatLng(
+            new GPoint(
+               Math.min(gp1.x, gp2.x),
+               Math.min(gp1.y, gp2.y))
+        ),
+        map.fromContainerPixelToLatLng(
+            new GPoint(
+               Math.max(gp1.x, gp2.x),
+               Math.max(gp1.y, gp2.y))
+        )
+    );
+    map.setCenter(
+        bnd.getCenter(),
+        map.getBoundsZoomLevel(bnd)
+    );
+}
+
+function _path(gp1, gp2){
+	return map.fromContainerPixelToLatLng(
+		gp1
+	).distanceFrom(
+        	map.fromContainerPixelToLatLng(
+			gp2
+		)
+	);
+}
+
+
+var FREE_MOVE = 0; //free mouse move
+var SHOW_ZOOM_RECT = 1; //drow rect from ancor
+var HIDE_ZOOM_RECT = 2; //drow rect from ancor
+
+var map_state = FREE_MOVE;
+var ancor;
+
+function map_onmousemove(){
+    var pos = new GPoint(event.x, event.y);
+    var LatLng = map.fromContainerPixelToLatLng( pos );
+    var stCommand = "java";
+
+    window.status = event.type + "----" + event.button;
+    if(FREE_MOVE==map_state &&  2==event.button){
+       map_state = SHOW_ZOOM_RECT;
+       ancor = pos;
+       return;
+    }
+    if(  ( SHOW_ZOOM_RECT==map_state && 0==(2 & event.button) )
+      || ( SHOW_ZOOM_RECT==map_state && 2==event.button && "mouseup"==event.type)
+    ){
+       if(null!=ancor){
+           _resize(ancor, pos);
+           ancor = null;
+       }
+       window.status = stCommand + "," + HIDE_ZOOM_RECT;
+       map_state = FREE_MOVE;
+       return;
+    }
+    stCommand = stCommand
+        + "," + map_state  //1
+        + "," + pos.x      //2
+        + "," + pos.y      //3
+        + "," + LatLng.lat() //4
+        + "," + LatLng.lng(); //5
+    if(SHOW_ZOOM_RECT==map_state && null!=ancor){
+        stCommand = stCommand
+            + "," + ancor.x  //6
+            + "," + ancor.y  //7
+            + "," + _path(ancor, pos); //8
+    };
+    window.status = stCommand;
+    event.cancelBubble = false;
+}
+
+function _onload(){
+    if (GBrowserIsCompatible()) {
+   	dmap = document.getElementById("map");
+	map = new GMap2(dmap);
+
+        map.addControl( new GLargeMapControl() );
+    	map.addControl( new GMapTypeControl() );
+        //map.addControl( new GTrafficOverlay() );
+        map.setCenter(
+		new GLatLng(60.0000, 0.0000),
+		4
+	);
+
+        dmap.onmousemove = map_onmousemove;
+        dmap.onmouseup = map_onmousemove;
+        dmap.onmousedown = map_onmousemove;
+
+        _onsize();
+    }
+}
+
+function _getArea(x, y, w, h){
+        var lt = new GPoint(x, y);
+        var lb = new GPoint(x, y+h);
+        var p1 = map.fromContainerPixelToLatLng(new GPoint(x, y) );
+        var p2 = map.fromContainerPixelToLatLng(new GPoint(x+w, y) );
+        var p3 = map.fromContainerPixelToLatLng(new GPoint(x+w, y+h) );
+        var p4 = map.fromContainerPixelToLatLng(new GPoint(x, y+h) );
+        return p1.lat() + "," + p1.lng()
+                + "," + p2.lat() + "," + p2.lng()
+                + "," + p3.lat() + "," + p3.lng()
+                + "," + p4.lat() + "," + p4.lng()
+                + "," + (_path(lt, lb)/h);
+
+}
+
+function _fromLatLngToPoint(){
+   var numargs = arguments.length;
+   var ret = "";
+   var shift = map.fromLatLngToDivPixel(
+           map.fromContainerPixelToLatLng(new GPoint(0, 0))
+   );
+   for(var i=0 ; i < numargs; i+=2 ){
+      var p = map.fromLatLngToDivPixel( new GLatLng(arguments[i], arguments[i+1]) );
+      if(0!=ret.length){
+          ret +=",";
+      }
+      ret += (p.x - shift.x) + "," + (p.y - shift.y);
+   }
+   return ret;
+}
+
+function _fromPointToLatLng(){
+   var numargs = arguments.length;
+   var ret = "";
+   for(var i=0 ; i < numargs; i+=2 ){
+      var ll = map.fromContainerPixelToLatLng(new GPoint(arguments[i], arguments[i+1]) );
+      if(0!=ret.length){
+          ret +=",";
+      }
+      ret += ll.lat() + "," + ll.lng();
+   }
+   return ret;
+}
+
+function _getGBounds(){
+	var p1 = map.fromContainerPixelToLatLng(new GPoint(0, 0) );
+	var p2 = map.fromContainerPixelToLatLng(new GPoint(document.body.clientWidth, document.body.clientHeight) );
+	var lngSpan = p2.lng() - p1.lng();
+	var latSpan = p2.lat() - p1.lat();
+	return p1.lat() + "," + p1.lng() + "," + latSpan + "," + lngSpan;
+}
+
+    //]]>
+    </script>
+</head>
+<body style="margin: 0px 0px 0px 0px; " onunload="GUnload()">
+<div id="map" style="border: 1px solid #979797; background-color: #e5e3df; width:100px; height:100px; margin: 0px 0px 0px 0px;">
+  <div style="padding: 1em; color: gray">Loading...</div>
+    <script type="text/javascript">
+    //<![CDATA[
+      document.body.scroll = "no";
+      document.body.onload = _onload;
+      window.onresize = _onsize;
+    //]]>
+    </script>
+</div>
+</body>
+</html>
