@@ -163,6 +163,9 @@ public class ArcTest {
 
         public void test2() throws Exception
         {
+            String stJavaHome = System.getProperty("java.home");
+            if(stJavaHome.isEmpty())
+                throw new IOException("Java Home was not found!");
             for(int k=0; k<1; ++k){
                  for(int i=0; i<10; ++i){
                      /*
@@ -177,7 +180,10 @@ public class ArcTest {
                      */
                      JarInputStream in = new JarInputStream(
                          new FileInputStream(
-                             new File(stBase + "rt.jar")
+                             new File(stJavaHome 
+                                + File.separator + "lib" 
+                                + File.separator + "rt.jar"
+                             )
                          )
                      );
 
