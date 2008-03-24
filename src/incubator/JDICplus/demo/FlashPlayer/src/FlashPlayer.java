@@ -84,10 +84,18 @@ public class FlashPlayer extends JFrame
         c.weighty = 1.0;
 
         final BrComponent player = new BrComponent();
-        player.setBounds(0, 0, 500, 363);
-        player.setPreferredSize(new Dimension(500, 363));
-        final String stGame = "http://flashportal.ru/monstertruckcurfew.swfi";
-        player.setHTML( getFlashHTMLSource(stGame), stGame );
+        player.setBounds(0, 0, 425, 365);
+        player.setPreferredSize(new Dimension(425, 365));
+        final String stGame = "http://www.flasharcadegamessite.com/resources/tevlon3d.swf";
+        final String stMovie = 
+            "<html><body border=\"no\" scroll=\"no\" style=\"margin: 0px 0px 0px 0px;\">"+
+            "<object style=\"margin: 0px 0px 0px 0px; width:100%; height:100%\"" +
+            "        value=\"http://www.youtube.com/v/mlTKOsBOVMw&hl=en\">" + 
+            "<param name=\"wmode\" value=\"transparent\"> " +
+            "<embed style=\"margin: 0px 0px 0px 0px; width:100%; height:100%\" src=\"http://www.youtube.com/v/mlTKOsBOVMw&hl=en\" type=\"application/x-shockwave-flash\" wmode=\"transparent\"></embed>" +
+            "</object>" +
+            "</body></html>";
+        player.setHTML( (InputStream) new StringBufferInputStream(stMovie), "" );
                                                                                     
         c.gridwidth = GridBagConstraints.REMAINDER; //end row REMAINDER
         gridbag.setConstraints(player, c);
@@ -125,15 +133,7 @@ public class FlashPlayer extends JFrame
                     public void actionPerformed(ActionEvent evt) {
                         player.setHTML(
                             (InputStream) new StringBufferInputStream(
-                                "<html><body border=\"no\" scroll=\"no\" style=\"margin: 0px 0px 0px 0px;\">"+
-                                "<object style=\"margin: 0px 0px 0px 0px; width:100%; height:100%\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" " +
-                                    "type=\"application/x-shockwave-flash\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0\"> " +
-                                "  <param name=\"data\" value=\"http://fishki.net/flvplayer.swf?file=http://fishki.net/picsw/082007/21/video/perviye_shagi.flv&autostart=false\"> " +
-                                "  <param name=\"movie\" value=\"http://fishki.net/flvplayer.swf?file=http://fishki.net/picsw/082007/21/video/perviye_shagi.flv&autostart=false\"> " +
-                                "  <param name=\"wmode\" value=\"transparent\"> " +
-                                "</object>" +
-                                "</body></html>"
-                            ), "");
+                            stMovie), "");
                         help.setText("Enjoy!");
                     }
                 }
