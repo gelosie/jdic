@@ -5,11 +5,11 @@
   codebase="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
   href="HTMLEditor.jnlp">
   <information>
-    <title>JDICPlus HTML Edit Demo Application</title>
+    <title>JDICplus HTML Edit Demo Application</title>
     <vendor>Sun Microsystems, Inc.</vendor>
     <homepage href="helps/browserHelp.html"/>
     <description>JDIC HTML Edit Demo Application</description>
-    <description kind="short">HTML Edit Demo is an example program for web-started JDICPlus.</description>
+    <description kind="short">HTML Edit is an example program for web-started JDICplus.</description>
     <icon href="images/browserSmall.gif"/>
     <icon kind="splash" href="images/browserSplash.gif"/>
     <offline-allowed/>

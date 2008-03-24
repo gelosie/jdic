@@ -5,11 +5,11 @@
   codebase="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
   href="SimpleBrowser.jnlp">
   <information>
-    <title>JDICPlus Flash Demo Application</title>
+    <title>JDICPlus Browser Demo Application</title>
     <vendor>Sun Microsystems, Inc.</vendor>
     <homepage href="helps/help.html"/>
-    <description>JDIC Browser Application</description>
-    <description kind="short">Browser is an example program for web-started JDICPlus.</description>
+    <description>JDICplus Browser Application</description>
+    <description kind="short">Browser is an example program for web-started JDICplus.</description>
     <icon href="images/browserSmall.gif"/>
     <icon kind="splash" href="images/browserSplash.gif"/>
     <offline-allowed/>

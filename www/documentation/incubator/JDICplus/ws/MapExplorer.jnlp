@@ -5,11 +5,11 @@
   codebase="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
   href="MapExplorer.jnlp">
   <information>
-    <title>JDICPlus Map Browser Demo Application</title>
+    <title>JDICPlus Map Explorer Demo Application</title>
     <vendor>Sun Microsystems, Inc.</vendor>
     <homepage href="helps/browserHelp.html"/>
-    <description>JDIC Map Browser Demo Application</description>
-    <description kind="short">Map Browser Demo is an example program for web-started JDICPlus.</description>
+    <description>JDICplus Map Explorer Demo Application</description>
+    <description kind="short">Map Explorer is an example program for web-started JDICplus.</description>
     <icon href="images/browserSmall.gif"/>
     <icon kind="splash" href="images/browserSplash.gif"/>
     <offline-allowed/>
