@@ -59,7 +59,7 @@ JDICplus project (WIN32 only)</h2>
 <li>
 <A href="#Introduction">Introduction</A>
 <li>
-<A href="#Demo">Samples and Demo applications</A>
+<A href="#Demo">Demo applications and Screenshots</A>
 <li>
 <A href="#Download">Download</A>
 <li>
@@ -70,67 +70,105 @@ JDICplus project (WIN32 only)</h2>
 <A href="#License">License</A>
 <li>
 <A href="#Web Pages">Web Pages</A>
-<li>
-<A href="#Screenshots">Screenshots</A>
 </li>
 </ul>
 <h3><a name="Introduction">Introduction</a></h3>
 <blockquote>
-<p>Currently the <b>JDICplus</b> is a Java&nbsp;WIN32-extension development kit, enabling 
-developers to use extended Microsoft Windows API functionality.&nbsp;Mainly the project 
+<p>Currently the <b>JDICplus</b> is a Java&nbsp;WIN32-extension development kit, enabling
+developers to use extended Microsoft Windows API functionality.&nbsp;Mainly the project
 implements the&nbsp;semi-lightweight wrapper component &nbsp;around Microsoft <STRONG>I</STRONG>nternet
 <STRONG>E</STRONG>xplorer (IE).&nbsp;</p>
 <P>The ideas that were used in embedded IE are very easy:
 </P>
 <OL>
 <LI>
-Replace standard paint event handler to synthetic that does nothing, but notifies java about 
+Replace standard paint event handler to synthetic that does nothing, but notifies java about
 invalidated area (in WIN32 the subclassing is a good choice).
 <LI>
-Implement java repainting procedure for invalidated area based on native browser render. (for 
+Implement java repainting procedure for invalidated area based on native browser render. (for
 IE it is ViewObject-&gt;Draw)
 <LI>
-Implement all DOM/events processing/binding in JavaScript code that is executing in browser 
-engine. That makes functionality of application independent from instance of embedded browser 
+Implement all DOM/events processing/binding in JavaScript code that is executing in browser
+engine. That makes functionality of application independent from instance of embedded browser
 (like SQL hides the differences of relational DB engines).
 <LI>
-Make callbacks from JavaScript to Java synchronous and easy. The easiest way to do it - change some 
-cross browser string-type property that is not affect the render and has property-change API 
-callback notifier. Window status property (window.status) is a perfect candidate. String type of 
+Make callbacks from JavaScript to Java synchronous and easy. The easiest way to do it - change some
+cross browser string-type property that is not affect the render and has property-change API
+callback notifier. Window status property (window.status) is a perfect candidate. String type of
 property makes it easy to transfer as many typified parameters as you like based on XML.
 </LI>
 </OL>
-<P>Practically, to implement the full functional communication with Google map you needs to 
-load prepared HTML, get single point callback from browser and method to execute Javascript 
+<P>Practically, to implement the full functional communication with Google map you needs to
+load prepared HTML, get single point callback from browser and method to execute Javascript
 subroutines.
 </P>
 </blockquote>
-<h3><a name="Demo">Samples and Demo applications</a></h3>
+<h3><a name="Demo">Demo applications and Screenshots</a></h3>
 <blockquote>
 <p>For the best view, please turn off IE "Smooth Scrolling" feature as it is described <a href="http://www.microsoft.com/windowsxp/using/accessibility/smoothscrolling.mspx">
 here</a>.
-<ul>
-<li>
-<A style="COLOR: red" href="ws/SimpleBrowser.jnlp">Java Web Browser - DRAFT RELEASE</A>
-Pay attention to drop-down lightweight menus!
-<li>
-<A href="ws/MapExplorer.jnlp">Googe Map integration</A>
-<li>
-<A href="ws/FlashPlayer.jnlp">Flash Player Games &amp; Amimation</A>
-Have got a problem after the latest Flash player update.
-<li>
-<A href="ws/HTMLEditor.jnlp">HTML Editor</A><br>
-If you have a problem with HTML Editor - just resize it.
-</li>
-</ul>
-<P></P>
+<table border="1" cellspacing="2" cellpadding="3">
+  <tr>
+    <th>Demo<br>
+      <em>(click to run)</em></th>
+    <th> Screenshot<br>
+      <em>(click for full size)</em> </th>
+    <th>Description</th>
+  </tr>
+  <tr bgcolor="#EEEEEE">
+    <td>
+      <p align="center"> <a href="ws/SimpleBrowser.jnlp"><b>WIN32: Web Browser</b></a>
+        <br>
+      </p>
+    </td>
+    <td>
+      <a href="images/SimpleBrowser.jpg">
+      <img src="images/SimpleBrowser.jpg" width="153" height="100" border="0"></a></td>
+    <td>JDICplus: A simple lightweight Java Web Browser with Swing menus and viewes.</td>
+  </tr>
+  <tr>
+    <td>
+      <p align="center"> <a href="ws/MapExplorer.jnlp"><b>WIN32: Map Explorer</b></a>
+        <br>
+      </p>
+    </td>
+    <td>
+      <a href="images/MapExplorer.jpg">
+      <img src="images/MapExplorer.jpg" width="153" height="100" border="0"></a></td>
+    <td>JDICplus: Map Explorer demo application. Shows Java2D drawing in geographical coordinat system. Map Explorer has
+    child Swing components that are mixing correctly with the parent. Tab controls navigation are fully supported in correct order
+    for both Swing and script children.</td>
+  </tr>
+  <tr bgcolor="#EEEEEE">
+    <td>
+      <p align="center"> <a href="ws/FlashPlayer.jnlp"><b>WIN32: Flash player</b></a>
+        <br>
+      </p>
+    </td>
+    <td>
+      <a href="images/FlashPlayer.jpg">
+      <img src="images/FlashPlayer.jpg" width="153" height="100" border="0"></a></td>
+    <td>JDICplus: A simple flash game/movie player. Z-order mixing with Swing component.</td>
+  </tr>
+  <tr>
+    <td>
+      <p align="center"> <a href="ws/HTMLEditor.jnlp"><b>WIN32: HTML Editor</b></a>
+        <br>
+      </p>
+    </td>
+    <td>
+      <a href="images/HTMLEditor.jpg">
+      <img src="images/HTMLEditor.jpg" width="153" height="100" border="0"></a></td>
+    <td>JDICplus: HTML Editor. Draft edition. Supports tables, lists, pictures and etc.</td>
+  </tr>
+</table>
 </blockquote>
 <h3><a name="Download">Download</a></h3>
 <blockquote>
 <p>
 <UL>
 <li>
-<A href="https://jdic.dev.java.net/servlets/ProjectDocumentList?folderID=8903&expandFolder=8903&folderID=1330">
+<A href="https://jdic.dev.java.net/servlets/ProjectDocumentList?folderID=8903&expandFolder=8903&folderID=8903">
 Download</A> - download the latest release of the JDICplus SDK and documentation.</li></UL>
 <P></P>
 </blockquote>
@@ -161,13 +199,13 @@ Internet Explorer 1.5 or greater
 </UL>
 </LI>
 </UL>
-Note: Performance of&nbsp;applications with JDICplus&nbsp;components can vary greatly 
-depending on the underlying hardware and software configuration. Factors include CPU speed, 
-available memory, video card and available video card memory, accelleration support and 
+Note: Performance of&nbsp;applications with JDICplus&nbsp;components can vary greatly
+depending on the underlying hardware and software configuration. Factors include CPU speed,
+available memory, video card and available video card memory, accelleration support and
 video drivers, resolution, color bit depth, and other factors. </blockquote>
 <h3><a name="Build the Source">Build the Source</a></h3>
 <blockquote>
-<p>The CVS module for the SDK source code in the CVS repository is <code>src/jdic/src/incubator/JDICplus</code>. 
+<p>The CVS module for the SDK source code in the CVS repository is <code>src/jdic/src/incubator/JDICplus</code>.
 You can find instructions for checking out the source code <A href="https://jdic.dev.java.net/source/browse/jdic/">
 here</A>.</p>
 <p>To build from source, your system must meet the following requirements:</p>
@@ -184,50 +222,21 @@ Ant 1.5.1 or greater, available from <a href="http://ant.apache.org/">http://ant
 Under&nbsp;construction...&nbsp;
 </li>
 </ul>
-<p>Note:&nbsp; <EM>To rebuild the Win32 native layer, you must have a licensed copy of Microsoft 
-Visual Studio .NET 2003. The binary is checked into the CVS repository so unless you change any 
+<p>Note:&nbsp; <EM>To rebuild the Win32 native layer, you must have a licensed copy of Microsoft
+Visual Studio .NET 2003. The binary is checked into the CVS repository so unless you change any
 files in the</EM> src/windows<EM>&nbsp;directory, you will not need this.</EM></p>
 </blockquote>
 <h3><b><a name="License">License</a></b></h3>
 <blockquote>
-<p><A href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">Lesser General Public License 
+<p><A href="https://jdic.dev.java.net/source/browse/jdic/src/COPYING">Lesser General Public License
 (LGPL)</A>
 </p>
 </blockquote>
 <h3><a name="Web Pages">Web Pages</a></h3>
 <blockquote>
-<p><A href="https://jdic.dev.java.net/servlets/ProjectIssues">Bug Reports and Feedback</A>: 
+<p><A href="https://jdic.dev.java.net/servlets/ProjectIssues">Bug Reports and Feedback</A>:
 report bugs or send feedback.<br>
 </p>
 </blockquote>
-<h3><a name="Screenshots">Screenshots</a></h3>
-<BLOCKQUOTE>
-<ul>
-<li>
-<div>
-<a href="ws/SimpleBrowser.jnlp">Java Web Browser:</a><br>
-<img src="images/SimpleBrowser.jpg">
-</div>
-</li>
-<li>
-<div>
-<a href="ws/MapExplorer.jnlp">Googe Map integration:</a><br>
-<img src="images/MapExplorer.jpg">
-</div>
-</li>
-<li>
-<div>
-<a href="ws/FlashPlayer.jnlp">Flash Player Games &amp; Amimation:</a><br>
-<img src="images/FlashPlayer.jpg">
-</div>
-</li>
-<li>
-<div>
-<a href="ws/HTMLEditor.jnlp">HTML Editor</a><br>
-<img src="images/HTMLEditor.jpg">
-</div>
-</li>
-</ul>
-</BLOCKQUOTE>
 </BODY>
 </html>
