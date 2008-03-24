@@ -19,7 +19,10 @@
  */
 
 import java.awt.Rectangle;
+import javax.swing.JOptionPane;
 import org.jdic.web.BrXMLTree;
+import org.jdic.web.event.BrComponentEvent;
+import org.jdic.web.event.BrComponentListener;
 import org.w3c.dom.Node;
 
 
@@ -27,12 +30,15 @@ import org.w3c.dom.Node;
  * Sample browser implementation.
  * @author  uta
  */
-public class BrowserFrame extends javax.swing.JFrame {
+public class BrowserFrame extends javax.swing.JFrame
+implements BrComponentListener
+{
 
     /** Creates new form BrowserFrame */
     public BrowserFrame() {
         org.jdic.web.BrComponent.DESIGN_MODE = false;
         initComponents();
+        brMain.addBrComponentListener(this);
     }
 
     /** This method is called from within the constructor to
@@ -570,5 +576,37 @@ public class BrowserFrame extends javax.swing.JFrame {
     private javax.swing.JMenu toolsJMenu;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
+
+    public void onClosingWindowByScript(boolean isChildWindow){
+        if(!isChildWindow && JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(
+            this,
+            "The webpage you are viewing is trying to close the window.\n" +
+            "Do you want to close this window?",
+            "Warning",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE))
+        {
+            //System.exit(0);
+            dispose();
+        }
+    }
+    
+    public void sync(BrComponentEvent e) {
+        switch(e.getID()){
+        case BrComponentEvent.DISPID_WINDOWCLOSING:
+            String stValue = e.getValue();
+            if(null==stValue){
+                return;
+            }
+            //OLE boolean: -1 - true, 0 - false; params:(bCancel, bIsChildWindow)                                       
+            final boolean isChildWindow = (0!=Integer.valueOf(stValue.split(",")[1]));
+            javax.swing.SwingUtilities.invokeLater ( new Runnable() {
+                    public void run() {                                                
+                        onClosingWindowByScript(isChildWindow);                            
+                    }
+            });   
+            break;
+        }
+    }
 
 }

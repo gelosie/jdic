@@ -571,6 +571,18 @@ HRESULT CBrIELWControl::Invoke(
     case DISPID_HTMLDOCUMENTEVENTS_ONREADYSTATECHANGE:
         STRACE1(_T("document ready!"));
 	break;
+    case DISPID_WINDOWCLOSING:
+
+#define INDEX_bIsChildWindow 1 
+#define INDEX_bCancel        0 
+        
+        *(pDispParams->rgvarg[INDEX_bCancel].pboolVal) =    
+            VARIANT_TRUE==pDispParams->rgvarg[INDEX_bIsChildWindow].boolVal
+                ? VARIANT_FALSE
+                : VARIANT_TRUE;
+
+        OLE_HR = S_OK; 
+        break;
     case DISPID_AMBIENT_DLCONTROL:
 	// respond to this ambient to indicate that we only want to
 	// download the page, but we don't want to run scripts,

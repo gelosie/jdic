@@ -692,7 +692,7 @@ public class BrComponent
         }
     }
 
-
+            
      /**
       * Internal browser event processor. Converts some events to 
       * <code>BrComponentListener</code> inteface callbacks and property-changed 
@@ -734,19 +734,21 @@ public class BrComponent
                     setWindowTitle(stValue);
                     break;
                 case BrComponentEvent.DISPID_COMMANDSTATECHANGE:
-                    String st[] = stValue.split(",");
-                    boolean enable = (0!=Integer.valueOf(st[0]));
-                    switch(Integer.valueOf(st[1])){
-                    case -1:    
-                        setToolbarChanged(enable);                            
-                        break;
-                    case 1:    
-                        setGoForwardEnable(enable);                            
-                        break;
-                    case 2:    
-                        setGoBackEnable(enable);                                                        
-                        break;                            
-                    }
+                    {
+                        String st[] = stValue.split(",");
+                        boolean enable = (0!=Integer.valueOf(st[0]));
+                        switch(Integer.valueOf(st[1])){
+                        case -1:    
+                            setToolbarChanged(enable);                            
+                            break;
+                        case 1:    
+                            setGoForwardEnable(enable);                            
+                            break;
+                        case 2:    
+                            setGoBackEnable(enable);                                                        
+                            break;                            
+                        }
+                    }    
                     break;
                 }
             }
@@ -952,7 +954,6 @@ public class BrComponent
      * @return     <code>true</code> if this stURL component is
      *                  editable; <code>false</code> otherwise.
      * @see        BrComponent#setEditable
-     * @since      JDK1.0
      */
     public boolean isEditable() {
 	return editable;
@@ -970,9 +971,8 @@ public class BrComponent
      * calling setBackground.
      *
      * @param     b   a flag indicating whether this stURL component
-     *                      is user editable.
+     *                is user editable.
      * @see       BrComponent#isEditable
-     * @since     JDK1.0
      */
     public synchronized void setEditable(boolean b) {
         if (editable == b) {

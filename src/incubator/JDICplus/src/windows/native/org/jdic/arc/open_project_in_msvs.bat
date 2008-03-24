@@ -1,2 +1,2 @@
 call setenv.bat
-start PackerExt.vcproj
+start jdicArc.vcproj

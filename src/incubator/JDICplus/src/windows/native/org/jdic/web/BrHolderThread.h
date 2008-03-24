@@ -102,8 +102,10 @@ public:
     }
     ULONG Release(){
         ULONG cRef = (ULONG)::InterlockedDecrement( (LPLONG)&m_cRef );
-        if(cRef == 0)
-            delete this;
+        if(cRef == 0) {
+            //delete this;//no delete! static inside!
+            Terminate();
+        }
         return cRef;
     }
     static BrowserThread &GetInstance()
