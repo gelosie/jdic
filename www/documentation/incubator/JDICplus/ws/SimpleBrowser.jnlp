@@ -44,5 +44,5 @@
   <resources os="SunOS" arch="sparc">
   </resources>
 
-  <application-desc main-class="simplebrowser.BrowserFrame"/>
+  <application-desc main-class="BrowserFrame"/>
 </jnlp>
