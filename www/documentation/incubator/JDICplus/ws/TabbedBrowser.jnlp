@@ -3,7 +3,7 @@
 <jnlp
   spec="1.6+"
   codebase="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
-  href="SimpleBrowser.jnlp">
+  href="TabbedBrowser.jnlp">
   <information>
     <title>JDICPlus Browser Demo Application</title>
     <vendor>Sun Microsystems, Inc.</vendor>
