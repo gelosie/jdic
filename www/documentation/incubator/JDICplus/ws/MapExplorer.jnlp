@@ -21,6 +21,7 @@
     <j2se version="1.6+"/>
     <jar href="MapExplorer.jar" main="true"/>
     <jar href="lib/JDICplus.jar" />
+    <jar href="lib/beansbinding-1.1.jar" />
   </resources>
 
   <resources os="Windows">
