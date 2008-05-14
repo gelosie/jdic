@@ -36,708 +36,886 @@ import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.geom.Point2D;
 import java.awt.image.RenderedImage;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.FileWriter;
+import org.jdic.web.BrMapMousePos;
 
 
 /**
  * Sample map explorer implementation.
  * @author  uta
  */
-public class MapExplorer extends JFrame
+public class MapExplorer extends javax.swing.JFrame
 {
     MapExplorer() {
         BrMap.DESIGN_MODE = false;
+        initComponents();
 
-        setTitle("Maps Clipper");
+        progressBar.setVisible(false);
 
-        Panel rootPanel = new Panel();
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        rootPanel.setLayout(gridbag);
+        //look and fill group
+	javax.swing.ButtonGroup group = new javax.swing.ButtonGroup();
 
-
-        c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1.0;
-        c.weighty = 1.0;
-
-
-        final  MapClipper mapM = new MapClipper(BrMap.MAP_GOOGLE);
-        mapM.setBounds(0, 0, 740, 600);
-        mapM.setPreferredSize(new Dimension(740, 600));
-                                                                                    
-        c.gridwidth = GridBagConstraints.REMAINDER; //end row REMAINDER
-        gridbag.setConstraints(mapM, c);
-        rootPanel.add(mapM);
-
-        {
-            JTextField help = new JTextField("Use pushed right mouse button for zoomed area selection.");
-            help.setPreferredSize(new Dimension(325, 10));
-            help.setBounds(50,10,325,16);
-            mapM.add(help, BorderLayout.LINE_END);
-
-            /*
-            final BrMapSprite[] bs = new BrMapSprite[]{new BrMapSprite()};
-            bs[0].isPoligon = false;
-
-            JButton btSave = new JButton();
-            btSave.setPreferredSize(new Dimension(32, 32));
-            btSave.setBounds(6,110,32,32);
-            btSave.setIcon(new ImageIcon(getClass().getResource("images/save.png")));
-            btSave.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        JFileChooser fc = new JFileChooser();
-                        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                          "Map Files", "plg");
-                        fc.setFileFilter(filter);
-                        if( JFileChooser.APPROVE_OPTION == fc.showDialog(MapExplorer.this, "Save map") ){
-                            bs[0].save(fc.getSelectedFile().getAbsolutePath());                            
-                            mapM.getSprites().add(bs[0]);
-                            bs[0] = new BrMapSprite();
-                            mapM.repaint();
-                        }
-                    }
-                }
-            );
-            mapM.add(btSave);
-
-            JButton btStart = new JButton();
-            btStart.setPreferredSize(new Dimension(32, 32));
-            btStart.setBounds(6,110+40,32,32);
-            btStart.setIcon(new ImageIcon(getClass().getResource("images/pluse.png")));
-            btStart.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        bs[0].LLs.add( new Point2D.Double(
-                            Double.parseDouble(mapM.edLat.getText()),
-                            Double.parseDouble(mapM.edLng.getText())    
-                        ));
-                        mapM.repaint();
-                    }
-                }
-            );
-            mapM.add(btStart);
-            */
-
-            final SPBMetro mt =  new SPBMetro();
-            JButton btMetro = new JButton();
-            btMetro.setPreferredSize(new Dimension(46, 46));
-            btMetro.setBounds(12,310/*+40+40*/,46,46);
-            btMetro.setIcon(new ImageIcon(getClass().getResource("images/metro.png")));
-            btMetro.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        mt.add(mapM);
-                        mapM.repaint();
-                    }
-                }
-            );
-            mapM.add(btMetro);
-
-            JButton btPrint = new JButton();
-            btPrint.setPreferredSize(new Dimension(46, 46));
-            btPrint.setBounds(12,310/*+40+40*/ + 50, 46, 46);
-            btPrint.setIcon(new ImageIcon(getClass().getResource("images/print.png")));
-            btPrint.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
-                        PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
-                        aset.add(OrientationRequested.LANDSCAPE);
-                        aset.add(new Copies(1));
-                        aset.add(new JobName("Map", null));
-                        // locate a print service that can handle the request
-                        PrintService[] services =
-                                PrintServiceLookup.lookupPrintServices(flavor, aset);
-                        if (services.length > 0) {
-                                System.out.println("selected printer " + services[0].getName());
-                                /// create a print job for the chosen service
-                                DocPrintJob pj = services[0].createPrintJob();
+	final UIManager.LookAndFeelInfo[] LFs = UIManager.getInstalledLookAndFeels();
+	for(int i = 0; i < LFs.length; i++) {
+            JRadioButtonMenuItem lfsMenuItem = (JRadioButtonMenuItem)viewMenu.add(
+                    new JRadioButtonMenuItem(LFs[i].getName()));
+            group.add(lfsMenuItem);
+            lfsMenuItem.setSelected(UIManager.getLookAndFeel().getName().equals(LFs[i].getName()));
+            lfsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1 + i, ActionEvent.ALT_MASK));
+            lfsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    JRadioButtonMenuItem rb = (JRadioButtonMenuItem) evt.getSource();
+                    if(rb.isSelected() ){
+                        for(int j = 0; j < LFs.length; j++) {
+                            if (rb.getText().equals(LFs[j].getName())) {
                                 try {
-                                        //Create a Doc object to hold the print data.
-                                        Doc doc = new SimpleDoc(mapM, flavor, null);
-                                        //print mapM
-                                        pj.print(doc, aset);
-                                } catch(PrintException e) {
-                                        System.err.println(e);
+                                    UIManager.setLookAndFeel(LFs[j].getClassName());
+                                    SwingUtilities.updateComponentTreeUI(MapExplorer.this);
+                                } catch (Exception ex) {
+                                    rb.setEnabled(false);
                                 }
-                        }
-
-                    }
-                }
-            );
-            mapM.add(btPrint);
-        }
-        //c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last in row
-        c.weightx = 0.0;//reset to the default
-        c.weighty = 0.0;
-
-        //
-        Dimension sz = new Dimension(100, 20);
-
-        {
-            JPanel p1 = new JPanel();
-            gridbag.setConstraints(p1, c);
-            rootPanel.add(p1);
-
-
-            mapM.cbSelectWorkingAria = new JCheckBox("Select Area", false);
-            p1.add(mapM.cbSelectWorkingAria, BorderLayout.LINE_END);
-
-            mapM.cbFrosenArea = new JCheckBox("Froze Area", false);
-            p1.add(mapM.cbFrosenArea, BorderLayout.LINE_END);
-
-            JLabel lbAX = new JLabel("X:");
-            p1.add(lbAX, BorderLayout.LINE_START);
-            mapM.edAX = new JTextField("X");
-            mapM.edAX.setPreferredSize(sz);
-            p1.add(mapM.edAX, BorderLayout.CENTER);
-
-            JLabel lbAY = new JLabel("Y:");
-            p1.add(lbAY, BorderLayout.CENTER);
-            mapM.edAY = new JTextField("Y");
-            mapM.edAY.setPreferredSize(sz);
-            p1.add(mapM.edAY, BorderLayout.LINE_END);
-
-            JLabel lbAWidth = new JLabel("W:");
-            p1.add(lbAWidth, BorderLayout.LINE_START);
-            mapM.edAWidth = new JTextField("W");
-            mapM.edAWidth.setPreferredSize(sz);
-            p1.add(mapM.edAWidth, BorderLayout.CENTER);
-
-            JLabel lbAHeight = new JLabel("H:");
-            p1.add(lbAHeight, BorderLayout.CENTER);
-            mapM.edAHeight = new JTextField("H");
-            mapM.edAHeight.setPreferredSize(sz);
-            p1.add(mapM.edAHeight, BorderLayout.LINE_END);
-        }
-        {
-            JPanel p2 = new JPanel();
-            gridbag.setConstraints(p2, c);
-            rootPanel.add(p2);
-
-            mapM.cbGrag = new JCheckBox("gg\u00BAmm\'ss\"", true);
-            p2.add(mapM.cbGrag, BorderLayout.LINE_END);
-
-            JLabel lbLat = new JLabel("Lat:");
-            p2.add(lbLat, BorderLayout.LINE_END);
-            mapM.edLat = new JTextField("Lat");
-            mapM.edLat.setPreferredSize(sz);
-            p2.add(mapM.edLat, BorderLayout.LINE_END);
-
-            JLabel lbLng = new JLabel("Lng:");
-            p2.add(lbLng, BorderLayout.LINE_END);
-            mapM.edLng = new JTextField("Lng");
-            mapM.edLng.setPreferredSize(sz);
-            p2.add(mapM.edLng, BorderLayout.LINE_END);
-
-            JButton btSave = new JButton("Save OZI explorer map");
-            btSave.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        JFileChooser fc = new JFileChooser();
-                        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                          "Map Files", "bmp");
-                        fc.setFileFilter(filter);
-                        if( JFileChooser.APPROVE_OPTION == fc.showDialog(MapExplorer.this, "Save map") ){
-                            mapM.saveMap(fc.getSelectedFile().getAbsolutePath());
-                            mapM.addBoundAsSprite();
-                            mapM.repaint();                            
-                        }
-                    }
-                }
-            );
-
-            mapM.cbGrid = new JCheckBox("cbGrid", false);
-            mapM.cbGrid.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        mapM.repaint();
-                    }
-                }
-            );
-
-            p2.add(mapM.cbGrid, BorderLayout.LINE_END);
-
-            JLabel lbGridStep = new JLabel("Step(m):");
-            p2.add(lbGridStep, BorderLayout.LINE_END);
-            mapM.edAGridStep = new JTextField("100");
-            mapM.edAGridStep.setPreferredSize(sz);
-            p2.add(mapM.edAGridStep, BorderLayout.LINE_END);
-
-            p2.add(btSave, BorderLayout.LINE_END);
-
-            JButton btClear = new JButton("Clear coverage");
-            btClear.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        mapM.getSprites().clear();
-                        mapM.repaint();
-                    }
-                }
-            );
-            p2.add(btClear, BorderLayout.LINE_END);
-
-        }
-
-        add(rootPanel);
-        pack();
-        setVisible(true);        
-        mapM.bCanPaint = true;
-
-        addWindowListener(
-            new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    System.exit(0);
-                }
-            }
-        );
-    }
-
-    public static void main(String [] args) {
-        MapExplorer test = new MapExplorer();
-    }
-
-}
-
-class MapClipper extends BrMap  implements Printable {
-    public Rectangle rcArea;
-    public boolean bShowArea = false;
-    //public boolean bCanPaint = false;
-
-    public JCheckBox  cbGrag;
-    public JTextField edLat;
-    public JTextField edLng;
-    public JTextField edAX;
-    public JTextField edAY;
-    public JTextField edAWidth;
-    public JTextField edAHeight;
-    public JTextField edAGridStep;
-    public JCheckBox  cbSelectWorkingAria;
-    public JCheckBox  cbFrosenArea;
-    public JCheckBox  cbGrid;
-
-
-    public MapClipper(String stWhichMap)
-    {
-        super(stWhichMap);                
-    }
-    public void addBoundAsSprite()
-    {
-        if(null!=rcArea){
-            BrMapSprite pg = new BrMapSprite();
-            pg.createFromPoints(this, new Point[] {
-                new Point(rcArea.x, rcArea.y),
-                new Point(rcArea.x + rcArea.width, rcArea.y),
-                new Point(rcArea.x + rcArea.width, rcArea.y + rcArea.height),
-                new Point(rcArea.x, rcArea.y + rcArea.height)
-            });
-           getSprites().add(pg);
-        }
-    }
-    public void paintGrid(Graphics g) {
-        if(cbGrid.isValid() && cbGrid.isSelected()){
-            Graphics2D g2 = (Graphics2D)g;
-            try{
-                double gridStep = Double.parseDouble(edAGridStep.getText());
-
-                String result = execJS("_getArea("
-                    + rcArea.x + "," + rcArea.y + "," + rcArea.width + "," + rcArea.height + ")"
-                );
-                String args[] = result.split(",");
-                double m2p = Double.parseDouble(args[8]);
-
-                double step = gridStep/m2p;
-                if( (step >= 3.0) && ((rcArea.height/step)<1000.0) ){
-                    //the number of point in grid is big enouth
-                    double iX0 = rcArea.x;
-                    double iY0 = rcArea.y;
-                    if(true){
-                        //grid lines
-                        Color colorsR[] = new Color[] {
-                            new Color(1.0F, 0.0F, 0.0F, 1.0F),
-                            new Color(0.0F, 1.0F, 0.0F, 1.0F),
-                            new Color(0.0F, 0.0F, 1.0F, 1.0F),
-                            new Color(1.0F, 1.0F, 0.0F, 1.0F),
-                            new Color(0.0F, 1.0F, 1.0F, 1.0F),
-
-                            new Color(0.5F, 0.0F, 0.0F, 1.0F),
-                            new Color(0.0F, 0.5F, 0.0F, 1.0F),
-                            new Color(0.0F, 0.0F, 0.5F, 1.0F),
-                            new Color(0.5F, 0.5F, 0.0F, 1.0F),
-                            new Color(0.0F, 0.5F, 0.5F, 1.0F)
-                        };
-
-                        int iC = 0;
-                        for(double iX = iX0; iX<(rcArea.x + rcArea.width); iX += step){
-                            g2.setColor( colorsR[ iC % colorsR.length ] );
-                            g2.drawLine((int)iX, rcArea.y, (int)iX, rcArea.y + rcArea.height - 1);
-                            ++iC;
-                        }
-                        iC = 0;
-                        for(double iY = iY0; iY<(rcArea.y + rcArea.height); iY += step){
-                            g2.setColor( colorsR[ iC % colorsR.length ] );
-                            g2.drawLine(rcArea.x, (int)iY, rcArea.x + rcArea.width - 1, (int)iY);
-                            ++iC;
-                        }
-                    } else {
-                        Color colorsR[] = new Color[] {
-                            new Color(1.0F, 0.0F, 0.0F, 0.15F),
-                            new Color(0.0F, 1.0F, 0.0F, 0.15F),
-                            new Color(0.0F, 0.0F, 1.0F, 0.15F)
-                        };
-
-                        Color colorsC[] = new Color[] {
-                            new Color(0.5F, 0.5F, 0.0F, 0.15F),
-                            new Color(0.0F, 0.5F, 0.5F, 0.15F),
-                            new Color(0.5F, 0.0F, 0.5F, 0.15F)
-                        };
-
-                        boolean bStartLine = false;
-                        int iRow = 0;
-                        for(double iX = iX0; iX<(rcArea.x + rcArea.width); iX += step){
-                            ++iRow;
-                            int iCol = 0;
-                            bStartLine = !bStartLine;
-                            boolean bDraw = bStartLine;
-                            for(double iY = iY0; iY<(rcArea.y + rcArea.height); iY += step){
-                               ++iCol;
-                               g2.setColor( bDraw
-                                 ? colorsR[ iRow % colorsR.length ]
-                                 : colorsC[ iCol % colorsC.length ]);
-                               Rectangle rc = new Rectangle(
-                                       (int)iX, (int)iY,
-                                       (int)Math.min( step - 0.5, rcArea.x + rcArea.width - iX),
-                                       (int)Math.min( step - 0.5, rcArea.y + rcArea.height - iY) );
-                               g2.fill(rc);
-                               bDraw = !bDraw;
                             }
                         }
                     }
                 }
-            }catch(NumberFormatException e){}
-        }
+            });
+	}
+        setBounds(-1, -1, 800, 600);
     }
 
-    @Override
-    public synchronized Image getImage(int x, int y, int w, int h)
-    {
-        Image updateImage = super.getImage(x, y, w, h);
-        if( null!=updateImage ){
-            Graphics g1 = updateImage.getGraphics();
-            if(null!=g1){
-                try{
-                    g1.translate(-x, -y);
-                    paintGrid(g1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                g1.dispose();                        
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel2 = new javax.swing.JPanel();
+        statusPanel = new javax.swing.JPanel();
+        edLng = new javax.swing.JTextField();
+        lbLat = new javax.swing.JLabel();
+        edLat = new javax.swing.JTextField();
+        lbLng = new javax.swing.JLabel();
+        cbGrid = new javax.swing.JCheckBox();
+        edScale = new javax.swing.JTextField();
+        lbMeter = new javax.swing.JLabel();
+        progressBar = new javax.swing.JProgressBar();
+        cbInGrade = new javax.swing.JCheckBox();
+        tbArea = new javax.swing.JToolBar();
+        cbSelectWorkingArea = new javax.swing.JToggleButton();
+        btResetSelection = new javax.swing.JButton();
+        tbMetro = new javax.swing.JToggleButton();
+        tbComposite = new javax.swing.JToggleButton();
+        lbAddress = new javax.swing.JLabel();
+        edAddress = new javax.swing.JTextField();
+        bnGo = new javax.swing.JButton();
+        pnCentral = new javax.swing.JPanel();
+        brMap = new MapClipper();
+        mainJMenuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        miOpen = new javax.swing.JMenuItem();
+        miSave = new javax.swing.JMenuItem();
+        miOZIExport = new javax.swing.JMenuItem();
+        miPrint = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JSeparator();
+        miExit = new javax.swing.JMenuItem();
+        viewMenu = new javax.swing.JMenu();
+        toolsMenu = new javax.swing.JMenu();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Map Clipper");
+        setIconImage(new javax.swing.ImageIcon(getClass().getResource("/images/icon.png")).getImage());
+        setName("mainFrame"); // NOI18N
+
+        jPanel2.setLayout(new java.awt.BorderLayout(2, 2));
+
+        statusPanel.setRequestFocusEnabled(false);
+
+        lbLat.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lbLat.setText("Latitude:");
+        lbLat.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+
+        lbLng.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lbLng.setText("Longitude:");
+
+        cbGrid.setText("Grid:");
+        cbGrid.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbGridActionPerformed(evt);
+            }
+        });
+
+        edScale.setText("10000");
+
+        lbMeter.setText("m");
+
+        cbInGrade.setSelected(true);
+        cbInGrade.setText("gg°mm'ss\"");
+        cbInGrade.setFocusable(false);
+        cbInGrade.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        cbInGrade.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbInGrade.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbInGradeActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
+        statusPanel.setLayout(statusPanelLayout);
+        statusPanelLayout.setHorizontalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addComponent(lbLat, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(edLat, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbLng, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(edLng, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbInGrade)
+                .addGap(24, 24, 24)
+                .addComponent(cbGrid)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(edScale, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbMeter, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        statusPanelLayout.setVerticalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lbLat, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+            .addComponent(edLat, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+            .addComponent(lbLng, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+            .addComponent(edLng, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+            .addComponent(cbInGrade, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cbGrid, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(edScale, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+            .addComponent(lbMeter, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+            .addComponent(progressBar, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        jPanel2.add(statusPanel, java.awt.BorderLayout.PAGE_END);
+
+        tbArea.setRollover(true);
+        tbArea.setMaximumSize(new java.awt.Dimension(506, 27));
+        tbArea.setMinimumSize(new java.awt.Dimension(0, 0));
+        tbArea.setName("Map Working Area Setup"); // NOI18N
+
+        cbSelectWorkingArea.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/sel_zoom.png"))); // NOI18N
+        cbSelectWorkingArea.setFocusable(false);
+        cbSelectWorkingArea.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cbSelectWorkingArea.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        cbSelectWorkingArea.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/sel_area.png"))); // NOI18N
+        cbSelectWorkingArea.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbSelectWorkingAreaActionPerformed(evt);
+            }
+        });
+        tbArea.add(cbSelectWorkingArea);
+
+        btResetSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/sel_auto.png"))); // NOI18N
+        btResetSelection.setEnabled(false);
+        btResetSelection.setFocusable(false);
+        btResetSelection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btResetSelection.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        btResetSelection.setMaximumSize(null);
+        btResetSelection.setMinimumSize(null);
+        btResetSelection.setPreferredSize(null);
+        btResetSelection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btResetSelection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btResetSelectionActionPerformed(evt);
+            }
+        });
+        tbArea.add(btResetSelection);
+
+        tbMetro.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/metro.png"))); // NOI18N
+        tbMetro.setFocusable(false);
+        tbMetro.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbMetro.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        tbMetro.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tbMetro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tbMetroActionPerformed(evt);
+            }
+        });
+        tbArea.add(tbMetro);
+
+        tbComposite.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/mapover.png"))); // NOI18N
+        tbComposite.setFocusable(false);
+        tbComposite.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbComposite.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        tbComposite.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tbComposite.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tbCompositeActionPerformed(evt);
+            }
+        });
+        tbArea.add(tbComposite);
+
+        lbAddress.setText(" Location:");
+        tbArea.add(lbAddress);
+
+        edAddress.setText("Greenwich");
+        edAddress.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                edAddressMouseClicked(evt);
+            }
+        });
+        edAddress.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                edAddressActionPerformed(evt);
+            }
+        });
+        edAddress.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                edAddressKeyTyped(evt);
+            }
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                edAddressKeyPressed(evt);
+            }
+        });
+        tbArea.add(edAddress);
+
+        bnGo.setText("Go");
+        bnGo.setFocusable(false);
+        bnGo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        bnGo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        bnGo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bnGoActionPerformed(evt);
+            }
+        });
+        tbArea.add(bnGo);
+
+        jPanel2.add(tbArea, java.awt.BorderLayout.PAGE_START);
+
+        pnCentral.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                pnCentralComponentResized(evt);
+            }
+        });
+
+        brMap.setPreferredSize(new java.awt.Dimension(0, 0));
+        brMap.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                brMapPropertyChange(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnCentralLayout = new javax.swing.GroupLayout(pnCentral);
+        pnCentral.setLayout(pnCentralLayout);
+        pnCentralLayout.setHorizontalGroup(
+            pnCentralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(brMap, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
+        );
+        pnCentralLayout.setVerticalGroup(
+            pnCentralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(brMap, javax.swing.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
+        );
+
+        jPanel2.add(pnCentral, java.awt.BorderLayout.CENTER);
+
+        fileMenu.setText("File");
+        fileMenu.setToolTipText("File Operations");
+
+        miOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        miOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/open.png"))); // NOI18N
+        miOpen.setText("Open File...");
+        miOpen.setToolTipText("Opens a document in this window");
+        miOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miOpenActionPerformed(evt);
+            }
+        });
+        fileMenu.add(miOpen);
+
+        miSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        miSave.setText("Save Page As...");
+        miSave.setToolTipText("Saves this document as a file");
+        miSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSaveActionPerformed(evt);
+            }
+        });
+        fileMenu.add(miSave);
+
+        miOZIExport.setText("Export As OZI map...");
+        miOZIExport.setToolTipText("Saves this document as a file");
+        miOZIExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miOZIExportActionPerformed(evt);
+            }
+        });
+        fileMenu.add(miOZIExport);
+
+        miPrint.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        miPrint.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print.png"))); // NOI18N
+        miPrint.setText("Print");
+        miPrint.setToolTipText("Prints this page");
+        miPrint.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miPrintActionPerformed(evt);
+            }
+        });
+        fileMenu.add(miPrint);
+        fileMenu.add(jSeparator3);
+
+        miExit.setText("Exit");
+        miExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miExitActionPerformed(evt);
+            }
+        });
+        fileMenu.add(miExit);
+
+        mainJMenuBar.add(fileMenu);
+
+        viewMenu.setText("View");
+        mainJMenuBar.add(viewMenu);
+
+        toolsMenu.setText("Tools");
+        mainJMenuBar.add(toolsMenu);
+
+        setJMenuBar(mainJMenuBar);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+private void cbInGradeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbInGradeActionPerformed
+// TODO add your handling code here:
+}//GEN-LAST:event_cbInGradeActionPerformed
+
+private void miOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miOpenActionPerformed
+    //brMain.open();
+}//GEN-LAST:event_miOpenActionPerformed
+
+private void miSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSaveActionPerformed
+    //brMain.save();
+}//GEN-LAST:event_miSaveActionPerformed
+
+private void miPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miPrintActionPerformed
+    //brMain.print();
+    DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
+    PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+    aset.add(OrientationRequested.LANDSCAPE);
+    aset.add(new Copies(1));
+    aset.add(new JobName("Map", null));
+    // locate a print service that can handle the request
+    PrintService[] services =
+            PrintServiceLookup.lookupPrintServices(flavor, aset);
+    if (services.length > 0) {
+            System.out.println("selected printer " + services[0].getName());
+            /// create a print job for the chosen service
+            DocPrintJob pj = services[0].createPrintJob();
+            try {
+                    //Create a Doc object to hold the print data.
+                    Doc doc = new SimpleDoc(brMap, flavor, null);
+                    //print mapM
+                    pj.print(doc, aset);
+            } catch(PrintException e) {
+                    System.err.println(e);
+            }
+    }
+}//GEN-LAST:event_miPrintActionPerformed
+
+private void miExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miExitActionPerformed
+    dispose();
+}//GEN-LAST:event_miExitActionPerformed
+
+private void btResetSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btResetSelectionActionPerformed
+    ((MapClipper)brMap).bAutoArea = true;
+    ((MapClipper)brMap).rcArea = new Rectangle(
+            68, 32, 
+            ((MapClipper)brMap).getWidth() - 68 - 2, ((MapClipper)brMap).getHeight() - 32 - 28);
+    if(null!=brMapBack){
+        brMapBack.setBounds(((MapClipper)brMap).rcArea);
+    }
+    ((MapClipper)brMap).repaint();    
+    btResetSelection.setEnabled(false);
+}//GEN-LAST:event_btResetSelectionActionPerformed
+
+private void cbSelectWorkingAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbSelectWorkingAreaActionPerformed
+    ((MapClipper)brMap).setSelectionMode(cbSelectWorkingArea.isSelected());
+    
+}//GEN-LAST:event_cbSelectWorkingAreaActionPerformed
+
+private void tbMetroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbMetroActionPerformed
+    brMap.getSprites().clear();
+    if( tbMetro.isSelected() ){
+        SPBMetro mt = new SPBMetro();    
+        mt.add(brMap);
+    }    
+    brMap.repaint();    
+}//GEN-LAST:event_tbMetroActionPerformed
+
+private void miOZIExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miOZIExportActionPerformed
+    JFileChooser fc = new JFileChooser();
+    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+      "Map Files", "bmp");
+    fc.setFileFilter(filter);
+    if( JFileChooser.APPROVE_OPTION == fc.showDialog(MapExplorer.this, "Export As OZI Map") ){
+        ((MapClipper)brMap).saveMap(fc.getSelectedFile().getAbsolutePath());
+        ((MapClipper)brMap).addBoundAsSprite();
+        ((MapClipper)brMap).repaint();                            
+    }
+}//GEN-LAST:event_miOZIExportActionPerformed
+
+private void pnCentralComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_pnCentralComponentResized
+    //((MapClipper)brMap).setSize(pnCentral.getSize());    
+}//GEN-LAST:event_pnCentralComponentResized
+
+private void tbCompositeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbCompositeActionPerformed
+    if( tbComposite.isSelected() ){
+        brMapBack = new org.jdic.web.BrMapOver();
+        brMapBack.setMapProvider(brMap.getMapProvider());        
+        brMapBack.setSyncMap(brMap);        
+        brMapBack.bnZoomMinus.setVisible(false);
+        brMapBack.bnZoomPlus.setVisible(false);
+        brMapBack.sbZoomLevel.setVisible(false);
+        brMap.getCentralPanel().add(brMapBack);
+        if(((MapClipper)brMap).bAutoArea){
+            ((MapClipper)brMap).rcArea.width /= 2;
+            ((MapClipper)brMap).rcArea.height /= 2;
+            ((MapClipper)brMap).bAutoArea = false;
+            btResetSelection.setEnabled(true);
+        }
+        brMapBack.setBounds( ((MapClipper)brMap).rcArea );  
+        brMap.repaint();        
+    } else {
+        brMap.getCentralPanel().remove(brMapBack);
+        brMap.validate();
+        brMapBack = null;
+        brMap.repaint();
+    }    
+}//GEN-LAST:event_tbCompositeActionPerformed
+
+private void bnGoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bnGoActionPerformed
+    if( brMap.isMapReady() ){
+        brMap.execJS( ":_findAddress(\"" + edAddress.getText().replace("\'", "\\\'") +   "\")" );
+    }
+}//GEN-LAST:event_bnGoActionPerformed
+
+private void edAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edAddressActionPerformed
+    bnGoActionPerformed(evt);
+}//GEN-LAST:event_edAddressActionPerformed
+
+private void edAddressKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_edAddressKeyPressed
+}//GEN-LAST:event_edAddressKeyPressed
+
+private void edAddressKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_edAddressKeyTyped
+    //BasicLookAndFeel
+    edAddress.setBackground(UIManager.getColor("text"));
+}//GEN-LAST:event_edAddressKeyTyped
+
+private void edAddressMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_edAddressMouseClicked
+    // TODO add your handling code here:
+}//GEN-LAST:event_edAddressMouseClicked
+
+    private void brMapPropertyChange(java.beans.PropertyChangeEvent evt) {
+            String stPN = evt.getPropertyName();
+            if(stPN.equals("securityIcon")
+              || stPN.equals("navigatedURL")
+              || stPN.equals("progressBar")
+            ){
+                String stNV = (String)evt.getNewValue();
+                if(null==stNV)
+                    stNV = "";
+                String st[] = stNV.split(",");
+                /*
+                if(stPN.equals("navigatedURL")) {
+                    edAddress.setText( st[0] );
+                    stOldParams = "";
+                    brXMLTree.empty();
+                } else*/ if(stPN.equals("progressBar")) {
+                    int iMax = Integer.parseInt(st[0]),
+                        iPos = Integer.parseInt(st[1]);
+                    if(0==iMax){
+                        progressBar.setVisible(false);
+                    } else {
+                        progressBar.setMaximum(iMax);
+                        progressBar.setValue(iPos);
+                        progressBar.setVisible(true);
+                    }
+                } /*else if(stPN.equals("securityIcon")) {
+                    bnLocker.setVisible(!stNV.equals("0"));
+                } */
+            } else if( stPN.equals("mouseGeoPos") ){
+               Point2D gp = ((BrMapMousePos)evt.getNewValue()).getMouseGeoPos();
+               Double Latitude = gp.getX();
+               Double Longitude = gp.getY();
+               edLat.setText( cbInGrade.isSelected() ? BrMap.getGrade(Latitude, BrMap.LAT) : ("" + Latitude));
+               edLng.setText( cbInGrade.isSelected() ? BrMap.getGrade(Longitude, BrMap.LNG) : ("" + Longitude));
+            }
+    }
+
+    private void cbGridActionPerformed(java.awt.event.ActionEvent evt) {
+        brMap.repaint();
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        SwingUtilities.invokeLater(new Runnable() {public void run() {
+                new MapExplorer().setVisible(true);
+        }});
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    javax.swing.JButton bnGo;
+    org.jdic.web.BrMap brMap;
+    javax.swing.JButton btResetSelection;
+    javax.swing.JCheckBox cbGrid;
+    javax.swing.JCheckBox cbInGrade;
+    javax.swing.JToggleButton cbSelectWorkingArea;
+    javax.swing.JTextField edAddress;
+    javax.swing.JTextField edLat;
+    javax.swing.JTextField edLng;
+    javax.swing.JTextField edScale;
+    javax.swing.JMenu fileMenu;
+    javax.swing.JPanel jPanel2;
+    javax.swing.JSeparator jSeparator3;
+    javax.swing.JLabel lbAddress;
+    javax.swing.JLabel lbLat;
+    javax.swing.JLabel lbLng;
+    javax.swing.JLabel lbMeter;
+    javax.swing.JMenuBar mainJMenuBar;
+    javax.swing.JMenuItem miExit;
+    javax.swing.JMenuItem miOZIExport;
+    javax.swing.JMenuItem miOpen;
+    javax.swing.JMenuItem miPrint;
+    javax.swing.JMenuItem miSave;
+    javax.swing.JPanel pnCentral;
+    javax.swing.JProgressBar progressBar;
+    javax.swing.JPanel statusPanel;
+    javax.swing.JToolBar tbArea;
+    javax.swing.JToggleButton tbComposite;
+    javax.swing.JToggleButton tbMetro;
+    javax.swing.JMenu toolsMenu;
+    javax.swing.JMenu viewMenu;
+    // End of variables declaration//GEN-END:variables
+    
+    org.jdic.web.BrMapOver brMapBack;
+    
+    class MapClipper extends BrMap  implements Printable {
+        public Rectangle rcArea;
+
+        public MapClipper(){
+            super();
+        }
+        public MapClipper(
+            int _iMapIndex,
+            double _viewCenterLatitude,
+            double _viewCenterLongitude,
+            int _viewZoomLevel,
+            int _viewType)
+        {
+            super(
+                _iMapIndex,
+                _viewCenterLatitude,
+                _viewCenterLongitude,
+                _viewZoomLevel,
+                _viewType);
+        }
+        public void addBoundAsSprite()
+        {
+            if(null!=rcArea){
+                BrMapSprite pg = new BrMapSprite();
+                pg.createFromPoints(this, new Point[] {
+                    new Point(rcArea.x, rcArea.y),
+                    new Point(rcArea.x + rcArea.width, rcArea.y),
+                    new Point(rcArea.x + rcArea.width, rcArea.y + rcArea.height),
+                    new Point(rcArea.x, rcArea.y + rcArea.height)
+                });
+               getSprites().add(pg);
             }
         }
-        return updateImage;
-    }
+        public void paintGrid(Graphics g) {
+            if(isMapReady() && cbGrid.isSelected()){
+                Graphics2D g2 = (Graphics2D)g;
+                try{
+                    double gridStep = Double.parseDouble(edScale.getText());
 
-    @Override
-    public void paintContent(Graphics g) {
-        super.paintContent(g);
-        if(null!=rcArea){
-            Graphics2D g2 = (Graphics2D)g;
-            g2.setColor(Color.BLACK);
-            g2.drawRect(
-                rcArea.x, rcArea.y,
-                rcArea.width-1, rcArea.height-1
-            );
-        }
-    }
-    public boolean bCanPaint = false;
-    
-    @Override
-    public void reshape(int x, int y, int width, int height)
-    {
-        super.reshape(x, y, width, height);
-        if( null!=cbFrosenArea && !cbFrosenArea.isSelected() ){
-            rcArea = new Rectangle(x + 68, y + 28, width - 68 - 2, height - 28 - 28);
-            if(bCanPaint){
-                areaDisplay();
+                    String result = execJS( "_fromPointToLatLng("
+                        + (rcArea.x + rcArea.width/2) + ","
+                        + (rcArea.y + rcArea.height/2) + ")" );
+                    double m2p = getMeter2pixel( Double.parseDouble( result.split(",")[0]) );
+
+                    double step = gridStep/m2p;
+                    if( (step >= 3.0) && ((rcArea.height/step)<1000.0) ){
+                        //the number of point in grid is big enouth
+                        double iX0 = rcArea.x;
+                        double iY0 = rcArea.y;
+                        if(true){
+                            //grid lines
+                            final Color colorsR[] = new Color[] {
+                                new Color(1.0F, 0.0F, 0.0F, 1.0F),
+                                new Color(0.0F, 1.0F, 0.0F, 1.0F),
+                                new Color(0.0F, 0.0F, 1.0F, 1.0F),
+                                new Color(1.0F, 1.0F, 0.0F, 1.0F),
+                                new Color(0.0F, 1.0F, 1.0F, 1.0F),
+
+                                new Color(0.5F, 0.0F, 0.0F, 1.0F),
+                                new Color(0.0F, 0.5F, 0.0F, 1.0F),
+                                new Color(0.0F, 0.0F, 0.5F, 1.0F),
+                                new Color(0.5F, 0.5F, 0.0F, 1.0F),
+                                new Color(0.0F, 0.5F, 0.5F, 1.0F)
+                            };
+
+                            int iC = 0;
+                            for(double iX = iX0; iX<(rcArea.x + rcArea.width); iX += step){
+                                g2.setColor( colorsR[ iC % colorsR.length ] );
+                                g2.drawLine((int)iX, rcArea.y, (int)iX, rcArea.y + rcArea.height - 1);
+                                ++iC;
+                            }
+                            iC = 0;
+                            for(double iY = iY0; iY<(rcArea.y + rcArea.height); iY += step){
+                                g2.setColor( colorsR[ iC % colorsR.length ] );
+                                g2.drawLine(rcArea.x, (int)iY, rcArea.x + rcArea.width - 1, (int)iY);
+                                ++iC;
+                            }
+                        } else {
+                            final Color colorsR[] = new Color[] {
+                                new Color(1.0F, 0.0F, 0.0F, 0.15F),
+                                new Color(0.0F, 1.0F, 0.0F, 0.15F),
+                                new Color(0.0F, 0.0F, 1.0F, 0.15F)
+                            };
+
+                            final Color colorsC[] = new Color[] {
+                                new Color(0.5F, 0.5F, 0.0F, 0.15F),
+                                new Color(0.0F, 0.5F, 0.5F, 0.15F),
+                                new Color(0.5F, 0.0F, 0.5F, 0.15F)
+                            };
+
+                            boolean bStartLine = false;
+                            int iRow = 0;
+                            for(double iX = iX0; iX<(rcArea.x + rcArea.width); iX += step){
+                                ++iRow;
+                                int iCol = 0;
+                                bStartLine = !bStartLine;
+                                boolean bDraw = bStartLine;
+                                for(double iY = iY0; iY<(rcArea.y + rcArea.height); iY += step){
+                                   ++iCol;
+                                   g2.setColor( bDraw
+                                     ? colorsR[ iRow % colorsR.length ]
+                                     : colorsC[ iCol % colorsC.length ]);
+                                   Rectangle rc = new Rectangle(
+                                           (int)iX, (int)iY,
+                                           (int)Math.min( step - 0.5, rcArea.x + rcArea.width - iX),
+                                           (int)Math.min( step - 0.5, rcArea.y + rcArea.height - iY) );
+                                   g2.fill(rc);
+                                   bDraw = !bDraw;
+                                }
+                            }
+                        }
+                    }
+                }catch(Exception e){}
             }
         }
-    }
 
-    public static String getGrad(double d, char[] ch){
-        char c = (d > 0) ? ch[0] : ch[1];
-        d = Math.abs(d);
-        double G = Math.floor(d);
-        double M = (d - G)*60.0;
-        double S = (M - Math.floor(M))*60.0;
-        return String.format("%d\u00BA%d\'%2.2f\" %c", (int)G, (int)Math.floor(M), S, c);        
-    }
-    
-    @Override
-    public void OnFreeMove(int x, int y, double lat, double lng)
-    {
-        final char[] EW = new char[] {'E', 'W'};
-        final char[] NS = new char[] {'N', 'S'};
-        //saveNativeCursor();
-        edLat.setText( cbGrag.isSelected() ? getGrad(lat, NS) : ("" + lat));
-        edLng.setText( cbGrag.isSelected() ? getGrad(lng, EW) : ("" + lng));
-        //restoreNativeCursor();
-    }
-    public void areaDisplay()
-    {
-        if(null!=edAX){
-            edAX.setText( "" + rcArea.x );
-            edAY.setText( "" + rcArea.y );
-            edAWidth.setText( "" + rcArea.width );
-            edAHeight.setText( "" + rcArea.height );
-        }            
-    }
-
-    @Override
-    public void OnZoomRect(Rectangle rc, boolean bShow)
-    {
-        if(cbSelectWorkingAria.isSelected()){
-            rcArea = new Rectangle(rc);
-            areaDisplay();
+        @Override
+        public void paintContent(Graphics g) {
+            super.paintContent(g);
+            if(null!=rcArea){
+                paintGrid(g);
+                Graphics2D g2 = (Graphics2D)g;
+                g2.setColor(Color.BLACK);
+                g2.drawRect(
+                    rcArea.x, rcArea.y,
+                    rcArea.width-1, rcArea.height-1
+                );
+            }
         }
-    }
-    public void saveMap(String stFN)
-    {
-        System.out.println("save to " + stFN);
-        if(null!=rcArea){
-            Image im = getImage(rcArea.x, rcArea.y, rcArea.width, rcArea.height);
-            if(null!=im){
-                try{
-                    stFN = stFN.toLowerCase();
-                    if(!stFN.endsWith(".bmp")){
-                       stFN += ".bmp"; 
+        
+        public boolean bAutoArea = true;
+
+        @Override
+        public void onSelectionRectChanged(Rectangle rc, boolean bShow)
+        {
+            if(cbSelectWorkingArea.isSelected()){
+                ((MapClipper)brMap).rcArea = rc;
+                if(!bShow){
+                    SwingUtilities.invokeLater(new Runnable(){ public void run() {                    
+                        bAutoArea = false;                    
+                        btResetSelection.setEnabled(true);
+                        if(null!=brMapBack){
+                            brMapBack.setBounds(((MapClipper)brMap).rcArea);
+                        }
+                        repaint();                                        
+                    }});
+                } else {
+                    repaint();
+                }        
+            }
+        }
+        public void saveMap(String stFN)
+        {
+            System.out.println("save to " + stFN);
+            if(null!=rcArea){
+                Image im = new BufferedImage(
+                        rcArea.width, 
+                        rcArea.height, 
+                        BufferedImage.TYPE_INT_BGR);
+                if(null!=im){
+                    Graphics g = im.getGraphics();
+                    try{
+                       g.translate(-rcArea.x, -rcArea.y); 
+                       paintClientArea(g, true);
+                    } finally {
+                       g.dispose(); 
                     }
-                    File fn = new File(stFN);
-                    ImageIO.write((RenderedImage)im, "BMP", fn);
+                    try{
+                        stFN = stFN.toLowerCase();
+                        if(!stFN.endsWith(".bmp")){
+                           stFN += ".bmp";
+                        }
+                        File fn = new File(stFN);
+                        ImageIO.write((RenderedImage)im, "BMP", fn);
 
-                    int read = 1024;
-                    InputStreamReader rd = new InputStreamReader(
-                            getClass().getResourceAsStream("temp_ozf.map"));
-                    char[] buf = new char[read];
-                    StringBuffer sb = new StringBuffer(read);
-                    while( -1 != (read = rd.read(buf, 0, read)) ){
-                       sb.append(buf, 0, read);
+                        int read = 1024;
+                        InputStreamReader rd = new InputStreamReader(
+                                getClass().getResourceAsStream("temp_ozf.map"));
+                        char[] buf = new char[read];
+                        StringBuffer sb = new StringBuffer(read);
+                        while( -1 != (read = rd.read(buf, 0, read)) ){
+                           sb.append(buf, 0, read);
+                        }
+                        rd.close();
+                        String stFormat = sb.toString();
+
+
+                        String result = execJS("_fromPointToLatLng("
+                            + rcArea.x + "," + rcArea.y + ","
+                            + (rcArea.x + rcArea.width) + "," + rcArea.y + ","
+                            + (rcArea.x + rcArea.width) + "," + (rcArea.y + rcArea.height) + ","
+                            + rcArea.x + "," + (rcArea.y + rcArea.height)+ ");"
+                        );
+                        String args[] = result.split(",");
+                        for(int i=0; i<4; ++i){
+                            double d = Double.parseDouble(args[i*2]);
+                            String toRepl = String.format("$(4lt%d)", i+1);
+                            stFormat = stFormat.replace(toRepl, "" + (int)Math.floor(d));
+
+                            toRepl = String.format("$(mlat%d)", i+1);
+                            String that = String.format("%2.6f", ((d - Math.floor(d))*60.0));
+                            stFormat = stFormat.replace(toRepl, that );
+
+                            d = Double.parseDouble(args[i*2+1]);
+                            toRepl = String.format("$(4ln%d)", i+1);
+                            stFormat = stFormat.replace(toRepl, "" + (int)Math.floor(d));
+
+                            toRepl = String.format("$(mlng%d)", i+1);
+                            that = String.format("%2.6f", ((d - Math.floor(d))*60.0));
+                            stFormat = stFormat.replace(toRepl, that );
+                        }
+
+                        stFormat = stFormat.replace("$(8lat1)", args[0]);
+                        stFormat = stFormat.replace("$(8lng1)", args[1]);
+                        stFormat = stFormat.replace("$(8lat2)", args[2]);
+                        stFormat = stFormat.replace("$(8lng2)", args[3]);
+                        stFormat = stFormat.replace("$(8lat3)", args[4]);
+                        stFormat = stFormat.replace("$(8lng3)", args[5]);
+                        stFormat = stFormat.replace("$(8lat4)", args[6]);
+                        stFormat = stFormat.replace("$(8lng4)", args[7]);
+
+                        stFormat = stFormat.replace("$(scale)", "not impl yet");//scale in metters/pixel
+
+                        String w5 = String.format("%5d", rcArea.width);
+                        stFormat = stFormat.replace("$(5w)", w5);
+                        String h5 = String.format("%5d", rcArea.height);
+                        stFormat = stFormat.replace("$(5h)", h5);
+                        stFormat = stFormat.replace("$(w)", ""+ rcArea.width);
+                        stFormat = stFormat.replace("$(h)", ""+ rcArea.height);
+
+                        stFormat = stFormat.replace("$(BMP)", fn.getName());
+
+                        int iPos = stFN.lastIndexOf('.');
+                        String stBMP = stFN.substring(0, iPos);
+                        String stOZF2 = stBMP;
+                        stBMP += "_ozf.map";
+                        stOZF2 += ".ozf2";
+
+                        stFormat = stFormat.replace("$(OZF2)", stOZF2);
+
+                        FileWriter wt = new FileWriter(stBMP);
+
+                        wt.write(stFormat);
+                        wt.close();
+                    }catch(Exception ex){
+                        ex.printStackTrace();
                     }
-                    rd.close();
-                    String stFormat = sb.toString();                                        
-
-
-                    String result = execJS("_getArea("
-                        + rcArea.x + "," + rcArea.y + "," + rcArea.width + "," + rcArea.height + ")"
-                    );
-                    String args[] = result.split(",");
-                    for(int i=0; i<4; ++i){
-                        double d = Double.parseDouble(args[i*2]);
-                        String toRepl = String.format("$(4lt%d)", i+1);
-                        stFormat = stFormat.replace(toRepl, "" + (int)Math.floor(d));
-
-                        toRepl = String.format("$(mlat%d)", i+1);
-                        String that = String.format("%2.6f", ((d - Math.floor(d))*60.0));
-                        stFormat = stFormat.replace(toRepl, that );
-
-                        d = Double.parseDouble(args[i*2+1]);
-                        toRepl = String.format("$(4ln%d)", i+1);
-                        stFormat = stFormat.replace(toRepl, "" + (int)Math.floor(d));
-
-                        toRepl = String.format("$(mlng%d)", i+1);
-                        that = String.format("%2.6f", ((d - Math.floor(d))*60.0));
-                        stFormat = stFormat.replace(toRepl, that );
-                    }
-
-                    stFormat = stFormat.replace("$(8lat1)", args[0]);
-                    stFormat = stFormat.replace("$(8lng1)", args[1]);
-                    stFormat = stFormat.replace("$(8lat2)", args[2]);
-                    stFormat = stFormat.replace("$(8lng2)", args[3]);
-                    stFormat = stFormat.replace("$(8lat3)", args[4]);
-                    stFormat = stFormat.replace("$(8lng3)", args[5]);
-                    stFormat = stFormat.replace("$(8lat4)", args[6]);
-                    stFormat = stFormat.replace("$(8lng4)", args[7]);
-
-                    stFormat = stFormat.replace("$(scale)", args[8]);//scale in metters/pixel
-
-                    String w5 = String.format("%5d", rcArea.width);
-                    stFormat = stFormat.replace("$(5w)", w5);
-                    String h5 = String.format("%5d", rcArea.height);
-                    stFormat = stFormat.replace("$(5h)", h5);
-                    stFormat = stFormat.replace("$(w)", ""+ rcArea.width);
-                    stFormat = stFormat.replace("$(h)", ""+ rcArea.height);
-
-                    stFormat = stFormat.replace("$(BMP)", fn.getName());
-
-                    int iPos = stFN.lastIndexOf('.');
-                    String stBMP = stFN.substring(0, iPos);
-                    String stOZF2 = stBMP;
-                    stBMP += "_ozf.map";
-                    stOZF2 += ".ozf2";
-
-                    stFormat = stFormat.replace("$(OZF2)", stOZF2);
-                    
-                    FileWriter wt = new FileWriter(stBMP);
-
-                    wt.write(stFormat);
-                    wt.close();
-                }catch(Exception ex){
-                    ex.printStackTrace();
                 }
+            }
+        }
+
+        public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
+            if(pageIndex == 0 && null!=rcArea) {
+                    Graphics2D g2d = (Graphics2D)g;
+                    g2d.translate(
+                       pf.getImageableX() - rcArea.x, 
+                       pf.getImageableY() - rcArea.y);
+                    g2d.scale(
+                            pf.getImageableWidth()/rcArea.width, 
+                            pf.getImageableHeight()/rcArea.height);
+                    paintClientArea(g2d, true);
+                    return Printable.PAGE_EXISTS;
+            }
+            return Printable.NO_SUCH_PAGE;
+        }
+
+        @Override
+        public void reshape(int x, int y, int width, int height)
+        {
+            super.reshape(x, y, width, height);
+            if( bAutoArea ){
+                rcArea = new Rectangle(68, 32, width - 68 - 2, height - 32 - 28);
+            }
+            if(null!=brMapBack){
+                brMapBack.setBounds(rcArea);
             }    
         }
-    }
 
-    public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
-        if (pageIndex == 0) {
-                Graphics2D g2d = (Graphics2D)g;
-                g2d.translate(pf.getImageableX(), pf.getImageableY());
-                g2d.drawImage(
-                        getImage(
-                                rcArea.x,
-                                rcArea.y,
-                                rcArea.width,
-                                rcArea.height),
-                        0,0,
-                        null);
-                return Printable.PAGE_EXISTS;
-        }
-        return Printable.NO_SUCH_PAGE;
-    }
-}
-
-class SPBMetro {
-    BrMapSprite line1 = new BrMapSprite(new Color(1.0F, 0.0F, 0.0F, 0.5F)){
+        final Color colorSuccess = new Color(128, 255, 128);
+        final Color colorFail = new Color(255, 128, 128);
         @Override
-        public void paint(Graphics g, int[] x, int[] y) {
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.setStroke(new BasicStroke(5));
-            super.paint(g2, x, y);
-            g2.dispose();
+        public void onFoundAddress(final String[] args) {
+            SwingUtilities.invokeLater(new Runnable(){ public void run() {
+                edAddress.setBackground(
+                   ( 4 == args.length)
+                   ? colorSuccess
+                   : colorFail);
+                if(4 == args.length){
+                    setZoomLevel(Math.max(14, getZoomLevel()));
+                    setViewCenter(args[2] + "," + args[3]);
+                    MapBalloon bl = new MapBalloon(
+                        edAddress.getText(),
+                        getPoint(getViewCenter())
+                    );
+                    bl.add(brMap);
+                }        
+            }});//end posponed operation
         }
-    };
-    BrMapSprite line2 = new BrMapSprite(new Color(0.0F, 0.0F, 1.0F, 0.5F)){
-        @Override
-        public void paint(Graphics g, int[] x, int[] y) {
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.setStroke(new BasicStroke(5));
-            super.paint(g2, x, y);
-            g2.dispose();
-        }
-    };
-    BrMapSprite line3 = new BrMapSprite(new Color(0.0F, 1.0F, 0.0F, 0.5F)){
-        @Override
-        public void paint(Graphics g, int[] x, int[] y) {
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.setStroke(new BasicStroke(5));
-            super.paint(g2, x, y);
-            g2.dispose();
-        }
-    };
-    BrMapSprite line4 = new BrMapSprite(new Color(1.0F, 0.8F, 0.3F, 0.8F)){
-        @Override
-        public void paint(Graphics g, int[] x, int[] y) {
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.setStroke(new BasicStroke(5));
-            super.paint(g2, x, y);
-            g2.dispose();
-        }
-    };
-
-    BrMapSprite duke = new BrMapSprite(){
-        ImageIcon img = new ImageIcon(getClass().getResource("images/java.png"));
-
-        @Override
-        public void paint(Graphics g, int[] x, int[] y) {
-            img.paintIcon(null, g, x[0], y[0]);
-        }
-    };
-
-    public SPBMetro(){
-        line1.isPoligon = false;
-        line1.LLs.add( new Point2D.Double(60.04993183627221,30.44260025024414));
-        line1.LLs.add( new Point2D.Double(60.034502033818626,30.418052673339844));
-        line1.LLs.add( new Point2D.Double(60.01228761005297,30.395565032958984));
-        line1.LLs.add( new Point2D.Double(60.008834027824285,30.370845794677734));
-        line1.LLs.add( new Point2D.Double(59.99997318904818,30.366125106811523));
-        line1.LLs.add( new Point2D.Double(59.98467031810702,30.34376621246338));
-        line1.LLs.add( new Point2D.Double(59.97094966918809,30.347285270690918));
-        line1.LLs.add( new Point2D.Double(59.956965507618506,30.355310440063477));
-        line1.LLs.add( new Point2D.Double(59.9443940587573,30.35994529724121));
-        line1.LLs.add( new Point2D.Double(59.93138780071647,30.360546112060547));
-        line1.LLs.add( new Point2D.Double(59.92743116676219,30.34797191619873));
-        line1.LLs.add( new Point2D.Double(59.91644043083372,30.31848907470703));
-        line1.LLs.add( new Point2D.Double(59.907102974165,30.29956340789795));
-        line1.LLs.add( new Point2D.Double(59.90096980546479,30.274672508239746));
-        line1.LLs.add( new Point2D.Double(59.87965631128972,30.262012481689453));
-        line1.LLs.add( new Point2D.Double(59.86716326554173,30.261454582214355));
-        line1.LLs.add( new Point2D.Double(59.85046264369983,30.269179344177246));
-        line1.LLs.add( new Point2D.Double(59.841775006732156,30.252270698547363));
-
-        line2.isPoligon = false;
-        line2.LLs.add( new Point2D.Double(60.05134587413322,30.33252239227295));
-        line2.LLs.add( new Point2D.Double(60.0370741682298,30.321407318115234));
-        line2.LLs.add( new Point2D.Double(60.01659871888036,30.315699577331543));
-        line2.LLs.add( new Point2D.Double(60.002224,30.296516));
-        line2.LLs.add( new Point2D.Double(59.985357274664224,30.300850868225098));
-        line2.LLs.add( new Point2D.Double(59.96642855457519,30.311365127563477));
-        line2.LLs.add( new Point2D.Double(59.956116816299456,30.31881093978882));
-        line2.LLs.add( new Point2D.Double(59.93517196554956,30.328617095947266));
-        line2.LLs.add( new Point2D.Double(59.926990316913894,30.320441722869873));
-        line2.LLs.add( new Point2D.Double(59.90622072842308,30.31750202178955));
-        line2.LLs.add( new Point2D.Double(59.891531121270596,30.31773805618286));
-        line2.LLs.add( new Point2D.Double(59.87921482676433,30.318467617034912));
-        line2.LLs.add( new Point2D.Double(59.86630150313929,30.321943759918213));
-        line2.LLs.add( new Point2D.Double(59.85203609220049,30.32172918319702));
-        line2.LLs.add( new Point2D.Double(59.833149799540486,30.349559783935547));
-        line2.LLs.add( new Point2D.Double(59.82967752298239,30.375566482543945));
-
-        line3.isPoligon = false;
-        line3.LLs.add( new Point2D.Double(59.94834866950482,30.234460830688477));
-        line3.LLs.add( new Point2D.Double(59.94252405136852,30.278191566467285));
-        line3.LLs.add( new Point2D.Double(59.93388195785884,30.33350944519043));
-        line3.LLs.add( new Point2D.Double(59.93145230714296,30.35501003265381));
-        line3.LLs.add( new Point2D.Double(59.929560066503775,30.360889434814453));
-        line3.LLs.add( new Point2D.Double(59.9242268075892,30.38522243499756));
-        line3.LLs.add( new Point2D.Double(59.89670820033645,30.423717498779297));
-        line3.LLs.add( new Point2D.Double(59.877244226779155,30.4416561126709));
-        line3.LLs.add( new Point2D.Double(59.865116543375315,30.470194816589355));
-        line3.LLs.add( new Point2D.Double(59.848436,30.45770645));
-        line3.LLs.add( new Point2D.Double(59.83101471582272,30.500707626342773));
         
-        line4.isPoligon = false;
-        line4.LLs.add( new Point2D.Double(60.00842643842314,30.25905132293701));
-        line4.LLs.add( new Point2D.Double(59.98980068049731,30.25536060333252));
-        line4.LLs.add( new Point2D.Double(59.97172281464221,30.259780883789062));
-        line4.LLs.add( new Point2D.Double(59.96106899949782,30.291881561279297));
-        line4.LLs.add( new Point2D.Double(59.95174410010812,30.29055118560791));
-        line4.LLs.add( new Point2D.Double(59.92605483563711,30.317373275756836));
-        line4.LLs.add( new Point2D.Double(59.92816231944967,30.34595489501953));
-        line4.LLs.add( new Point2D.Double(59.920269,30.355396));
-        line4.LLs.add( new Point2D.Double(59.92349556816952,30.383291244506836)); //pl AN
-        line4.LLs.add( new Point2D.Double(59.929065485817034,30.411357879638672));
-        line4.LLs.add( new Point2D.Double(59.9323553839424,30.439252853393555)); //Ladozhskaya
-        line4.LLs.add( new Point2D.Double(59.91986063898404,30.466718673706055));
-        line4.LLs.add( new Point2D.Double(59.907361187996464,30.48332691192627));
-
-        duke.LLs.add( new Point2D.Double(59.91237,30.295046));
-        duke.LLs.add( new Point2D.Double(59.911884983705214,30.295625925064087));
-    }
-
-    public void add(BrMap m){
-        m.getSprites().clear();
-        m.getSprites().add(line1);
-        m.getSprites().add(line2);
-        m.getSprites().add(line3);
-        m.getSprites().add(line4);
-        m.getSprites().add(duke);
-        m.execJS( "map.setCenter( new GLatLng(59.94, 30.33), 12);" );
     }
 }
+
+

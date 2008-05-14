@@ -19,7 +19,16 @@
  */
 
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import org.jdic.web.BrXMLTree;
 import org.jdic.web.event.BrComponentEvent;
 import org.jdic.web.event.BrComponentListener;
@@ -39,6 +48,36 @@ implements BrComponentListener
         org.jdic.web.BrComponent.DESIGN_MODE = false;
         initComponents();
         brMain.addBrComponentListener(this);
+        
+	ButtonGroup group = new ButtonGroup();
+	
+	final UIManager.LookAndFeelInfo[] LFs = UIManager.getInstalledLookAndFeels();
+	for(int i = 0; i < LFs.length; i++) {
+            JRadioButtonMenuItem lfsMenuItem = (JRadioButtonMenuItem)viewJMenu.add(
+                    new JRadioButtonMenuItem(LFs[i].getName()));
+            group.add(lfsMenuItem);
+            lfsMenuItem.setSelected(UIManager.getLookAndFeel().getName().equals(LFs[i].getName()));
+            lfsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1 + i, ActionEvent.ALT_MASK));
+            lfsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    JRadioButtonMenuItem rb = (JRadioButtonMenuItem) evt.getSource();
+                    if(rb.isSelected() ){
+                        for(int j = 0; j < LFs.length; j++) {
+                            if (rb.getText().equals(LFs[j].getName())) {
+                                try {
+                                    UIManager.setLookAndFeel(LFs[j].getClassName());
+                                    SwingUtilities.updateComponentTreeUI(BrowserFrame.this);
+                                } catch (Exception ex) {
+                                    rb.setEnabled(false);
+                                    Logger.getLogger(BrowserFrame.class.getName()).log(Level.SEVERE, null, ex);
+                                } 
+                            }
+                        }
+                    }
+                }
+            });
+	}
+        
     }
 
     /** This method is called from within the constructor to
@@ -57,7 +96,7 @@ implements BrComponentListener
         bnRefresh = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         brXMLTree = new org.jdic.web.BrXMLTree();
-        brMain = new org.jdic.web.BrComponent();
+        brMain = new org.jdic.web.BrTabbed();
         ieToolBar = new javax.swing.JToolBar();
         bnBack = new javax.swing.JButton();
         bnForward = new javax.swing.JButton();
@@ -72,11 +111,13 @@ implements BrComponentListener
         pbDownloadDoc = new javax.swing.JProgressBar();
         mainJMenuBar = new javax.swing.JMenuBar();
         fileJMenu = new javax.swing.JMenu();
+        miNewTab = new javax.swing.JMenuItem();
         miOpen = new javax.swing.JMenuItem();
         miSave = new javax.swing.JMenuItem();
         miPrint = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         miExit = new javax.swing.JMenuItem();
+        viewJMenu = new javax.swing.JMenu();
         toolsJMenu = new javax.swing.JMenu();
         cmiTraceRedraw = new javax.swing.JCheckBoxMenuItem();
 
@@ -147,28 +188,11 @@ implements BrComponentListener
         jSplitPane1.setRightComponent(jPanel2);
 
         brMain.setURL("http://java.net");
-        brMain.setPreferredSize(new java.awt.Dimension(220, 220));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, cmiTraceRedraw, org.jdesktop.beansbinding.ELProperty.create("${selected}"), brMain, org.jdesktop.beansbinding.BeanProperty.create("doubleBuffered"));
-        bindingGroup.addBinding(binding);
-
         brMain.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                onBrowserPropertyChange(evt);
+                brMainPropertyChange(evt);
             }
         });
-
-        javax.swing.GroupLayout brMainLayout = new javax.swing.GroupLayout(brMain);
-        brMain.setLayout(brMainLayout);
-        brMainLayout.setHorizontalGroup(
-            brMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 299, Short.MAX_VALUE)
-        );
-        brMainLayout.setVerticalGroup(
-            brMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 503, Short.MAX_VALUE)
-        );
-
         jSplitPane1.setLeftComponent(brMain);
 
         jPanel1.add(jSplitPane1, java.awt.BorderLayout.CENTER);
@@ -236,6 +260,7 @@ implements BrComponentListener
 
         edAddress.setText("http://");
         edAddress.setToolTipText("URL for navigation");
+        edAddress.setMinimumSize(new java.awt.Dimension(16, 20));
         edAddress.setPreferredSize(new java.awt.Dimension(400, 20));
         edAddress.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -299,6 +324,15 @@ implements BrComponentListener
         fileJMenu.setText("File");
         fileJMenu.setToolTipText("File Operations");
 
+        miNewTab.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
+        miNewTab.setText("New Tab");
+        miNewTab.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miNewTabActionPerformed(evt);
+            }
+        });
+        fileJMenu.add(miNewTab);
+
         miOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         miOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/open.png"))); // NOI18N
         miOpen.setText("Open File...");
@@ -341,6 +375,9 @@ implements BrComponentListener
         fileJMenu.add(miExit);
 
         mainJMenuBar.add(fileJMenu);
+
+        viewJMenu.setText("View");
+        mainJMenuBar.add(viewJMenu);
 
         toolsJMenu.setText("Tools");
 
@@ -385,7 +422,6 @@ implements BrComponentListener
 }//GEN-LAST:event_miSaveActionPerformed
 
     private void miExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miExitActionPerformed
-        //brMain.dispose();
         dispose();
     }//GEN-LAST:event_miExitActionPerformed
 
@@ -393,34 +429,8 @@ implements BrComponentListener
         // TODO add your handling code here:
 }//GEN-LAST:event_bnLockerActionPerformed
 
-    private void onBrowserPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_onBrowserPropertyChange
-        String stPN = evt.getPropertyName();
-        if(stPN.equals("navigatedURL")) {
-            String st[] = ((String)evt.getNewValue()).split(",");
-            edAddress.setText( st[0] );
-            stOldParams = "";
-            brXMLTree.empty();
-        } else if(stPN.equals("progressBar")) {
-            String st[] = ((String)evt.getNewValue()).split(",");
-            int iMax = Integer.parseInt(st[0]),
-                iPos = Integer.parseInt(st[1]);
-            if(0==iMax){
-                pbDownloadDoc.setVisible(false);
-                if(brMain.isDocumentReady()){
-                    //bnRefreshActionPerformed(null);
-                }
-            } else {
-                pbDownloadDoc.setMaximum(iMax);
-                pbDownloadDoc.setValue(iPos);
-                pbDownloadDoc.setVisible(true);
-            }
-        }  else if(stPN.equals("securityIcon")) {
-            bnLocker.setVisible(!((String)evt.getNewValue()).equals("0"));
-        }
-    }//GEN-LAST:event_onBrowserPropertyChange
-
     private void onNavigate(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onNavigate
-        brMain.setURL(edAddress.getText());
+        brMain.setURL(edAddress.getText()); 
 }//GEN-LAST:event_onNavigate
 
     private void bnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bnBackActionPerformed
@@ -530,18 +540,53 @@ implements BrComponentListener
     }//GEN-LAST:event_brXMLTreeTreeWillExpand
 
     private void bnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bnRefreshActionPerformed
-        brXMLTree.setXMLSource(brMain.getXHTML(true));
+        brXMLTree.setXMLSource(brMain.getXHTML());
     }//GEN-LAST:event_bnRefreshActionPerformed
+
+    private void brMainPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_brMainPropertyChange
+        String stPN = evt.getPropertyName();
+        if(stPN.equals("securityIcon")
+          || stPN.equals("navigatedURL")
+          || stPN.equals("progressBar")        
+        ){
+            String stNV = (String)evt.getNewValue();
+            if(null==stNV)
+                stNV = "";
+            String st[] = stNV.split(",");            
+            if(stPN.equals("navigatedURL")) {
+                edAddress.setText( st[0] );
+                stOldParams = "";
+                brXMLTree.empty();
+            } else if(stPN.equals("progressBar")) {
+                int iMax = Integer.parseInt(st[0]),
+                    iPos = Integer.parseInt(st[1]);
+                if(0==iMax){
+                    pbDownloadDoc.setVisible(false);
+                    if(brMain.isDocumentReady()){
+                        //bnRefreshActionPerformed(null);
+                    }
+                } else {
+                    pbDownloadDoc.setMaximum(iMax);
+                    pbDownloadDoc.setValue(iPos);
+                    pbDownloadDoc.setVisible(true);
+                }
+            } else if(stPN.equals("securityIcon")) {
+                bnLocker.setVisible(!stNV.equals("0"));
+            } 
+        }    
+    }//GEN-LAST:event_brMainPropertyChange
+
+    private void miNewTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miNewTabActionPerformed
+        brMain.openInNewBrowserPanel(null);
+    }//GEN-LAST:event_miNewTabActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new BrowserFrame().setVisible(true);
-            }
-        });
+        SwingUtilities.invokeLater ( new Runnable() { public void run() { 
+            new BrowserFrame().setVisible(true);
+        }});
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -552,7 +597,7 @@ implements BrComponentListener
     private javax.swing.JButton bnRefresh;
     private javax.swing.JButton bnReload;
     private javax.swing.JButton bnStop;
-    private org.jdic.web.BrComponent brMain;
+    private org.jdic.web.BrTabbed brMain;
     private org.jdic.web.BrXMLTree brXMLTree;
     private javax.swing.JCheckBoxMenuItem cmiTraceRedraw;
     private javax.swing.JTextField edAddress;
@@ -569,11 +614,13 @@ implements BrComponentListener
     private javax.swing.JLabel lbURL;
     private javax.swing.JMenuBar mainJMenuBar;
     private javax.swing.JMenuItem miExit;
+    private javax.swing.JMenuItem miNewTab;
     private javax.swing.JMenuItem miOpen;
     private javax.swing.JMenuItem miPrint;
     private javax.swing.JMenuItem miSave;
     private javax.swing.JProgressBar pbDownloadDoc;
     private javax.swing.JMenu toolsJMenu;
+    private javax.swing.JMenu viewJMenu;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
@@ -586,8 +633,7 @@ implements BrComponentListener
             JOptionPane.YES_NO_OPTION,
             JOptionPane.QUESTION_MESSAGE))
         {
-            //System.exit(0);
-            dispose();
+            brMain.closeCurrentPage();
         }
     }
     
@@ -598,14 +644,13 @@ implements BrComponentListener
             if(null!=stValue){
                 //OLE boolean: -1 - true, 0 - false; params:(bCancel, bIsChildWindow)                                       
                 final boolean isChildWindow = (0!=Integer.valueOf(stValue.split(",")[1]));
-                javax.swing.SwingUtilities.invokeLater ( new Runnable() {
-                        public void run() {                                                
-                            onClosingWindowByScript(isChildWindow);                            
-                        }
-                });   
+                SwingUtilities.invokeLater ( new Runnable() { public void run() { 
+                            onClosingWindowByScript(isChildWindow);
+                }});
             }    
             break;
         }
         return null;
     }
+
 }
