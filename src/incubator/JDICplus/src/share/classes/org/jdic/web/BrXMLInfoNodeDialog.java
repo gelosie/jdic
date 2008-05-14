@@ -109,27 +109,31 @@ public class BrXMLInfoNodeDialog extends JDialog {
                 ByteArrayOutputStream chaw = new ByteArrayOutputStream(4096);
                 OutputStreamWriter outw = new OutputStreamWriter(chaw, encode);
 
-                domSer.setOutputFormat(new OutputFormat("xml", encode, true));
+                OutputFormat xmlFmt = new OutputFormat("xhtml", encode, true);
+                xmlFmt.setOmitXMLDeclaration(true);
+                        
+                domSer.setOutputFormat(xmlFmt);
                 domSer.setOutputCharStream(outw);
                 domSer.serialize((Element) masterNode);
                 outw.flush();
-                txtPaneAsIs.setEditable(false);
+                
+                txtPaneAsIs.setEditable(true);
                 String t = chaw.toString(encode);
-                txtPaneAsIs.setEditable(false);
                 txtPaneAsIs.setText(t);
                 tabsInfo.add("As XML", new JScrollPane(txtPaneAsIs));
                 
                 chaw.reset();
                 
-                OutputFormat outputFormat = new OutputFormat("html", "UTF-16", true);
-                outputFormat.setOmitXMLDeclaration(true);
-                domSer.setOutputFormat(outputFormat);
+                OutputFormat htmlFmt = new OutputFormat("html", encode, true);
+                htmlFmt.setOmitXMLDeclaration(true);
                 
+                domSer.setOutputFormat(htmlFmt);
                 domSer.setOutputCharStream(outw);
                 domSer.serialize((Element) masterNode);
                 outw.flush();
-                
-                txtPaneAsHtml.setHTML(new ByteArrayInputStream(chaw.toByteArray()), "");
+
+                String sb = new String(chaw.toByteArray(), encode);
+                txtPaneAsHtml.setHTML(new ByteArrayInputStream(sb.getBytes("UTF-8")), "");
                 tabsInfo.add("As HTML", txtPaneAsHtml);
             } catch (Exception e) {
                 e.printStackTrace();

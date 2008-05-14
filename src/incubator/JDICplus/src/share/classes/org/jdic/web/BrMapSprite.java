@@ -32,14 +32,16 @@ public class BrMapSprite implements BrISprite {
     public final java.util.LinkedList LLs = new java.util.LinkedList();
     public boolean isPoligon = true;
     public Color color;
+    public String name;
 
-    public BrMapSprite(Color cl)
+    public BrMapSprite(String spriteName, Color spriteColor)
     {
-        color = cl;
+        color = spriteColor;
+        name = spriteName;
     }
     public BrMapSprite()
     {
-        this(new Color(0.0F, 0.0F, 1.0F, 0.25F));
+        this("", new Color(0.0F, 0.0F, 1.0F, 0.25F));
     }
     public void createFromPoints(BrMap mc, Point[] pts) {
         String args = "";
@@ -61,6 +63,9 @@ public class BrMapSprite implements BrISprite {
     }
     
     public void drawOn(BrComponent mc, Graphics g) {
+       if(!((BrMap)mc).isMapReady()) {
+           return;
+       }    
        String args = "";
        for(Object LL : LLs) {
             Point2D o = (Point2D) LL;//GLangLng
@@ -74,7 +79,9 @@ public class BrMapSprite implements BrISprite {
        if(0==aret.length){
            return;
        }
-       g.setColor(color);
+       if(null!=color){
+            g.setColor(color);
+       } 
        int pontsCount = aret.length/2;
        int[] x = new int[pontsCount];
        int[] y = new int[pontsCount];

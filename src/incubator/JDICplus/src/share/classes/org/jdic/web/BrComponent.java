@@ -144,6 +144,10 @@ public class BrComponent
      */
     public InputStream isHTMLSrc;
     
+    public boolean isPeerReady()
+    {
+        return null!=brPeer && brPeer.isNativeReady();
+    }
     /**
      * Sets the current document URL. If the peer browser object is ready an 
      * asyncronous navigation starts.
@@ -151,10 +155,10 @@ public class BrComponent
      * <code>null</code> the <code>stURL</code> propery contains an empty string 
      * <code>""</code>
      */
-    public synchronized void setURL(String _stURL) {
+    public void setURL(String _stURL) {
         isHTMLSrc = null;
         stURL = (null==_stURL || 0==_stURL.length()) ? stAboutBlank : _stURL;
-        if(brPeer != null) {
+        if(isPeerReady()) {
             setDocumentReady(false);
             brPeer.acceptTargetURL();
         }
@@ -166,25 +170,26 @@ public class BrComponent
      * @param _stURL the string incarnation of the document URL. 
      * <cote>null</cote> value means <code>about:blank</code> URL
      */
-    public synchronized void setHTML(InputStream _isHTMLSrc, String _stURL) {
+    public void setHTML(InputStream _isHTMLSrc, String _stURL) {
         if(null==_isHTMLSrc){
             setURL(stAboutBlank);
             return;
         }
         isHTMLSrc = _isHTMLSrc;
         stURL = _stURL;
-        if(brPeer != null) {
+        if(isPeerReady()) {
             setDocumentReady(false);
             brPeer.acceptTargetURL();
         }
     }
+    
     
     /**
      * Loads the document from the string. The document URL doesn't change while this 
      * call. It simplifies the document post-processing procedure.
      * @param stHTML the string with document content inside.
      */
-    public synchronized void setHTML(String stHTML)
+    public void setHTML(String stHTML)
     {
         setHTML(new StringBufferInputStream(stHTML), stURL);                
     }
@@ -196,7 +201,7 @@ public class BrComponent
      * @see #setHTML(InputStream _isHTMLSrc, String _stURL)
      * @throws java.io.FileNotFoundException
      */
-    public synchronized void setURL(URL url) throws FileNotFoundException {
+    public void setURL(URL url) throws FileNotFoundException {
         if(null==url){
             setURL(stAboutBlank);
             return;
@@ -208,8 +213,8 @@ public class BrComponent
      * Getter for the current document URL.
      * @return the string of the current document URL 
      */
-    public synchronized String getURL() {
-        if (brPeer != null) {
+    public String getURL() {
+        if( isPeerReady() ){
             stURL = brPeer.getURL();
         }
         return stURL;
@@ -221,8 +226,8 @@ public class BrComponent
      * @return the string of the current document HTML content. 
      * <code>null</code> if peer object is not ready.
      */
-    public synchronized String getHTML() {
-        if (brPeer != null) {
+    public String getHTML() {
+        if( isPeerReady() ){
             return brPeer.getNativeHTML();
         }
         return null;
@@ -233,7 +238,7 @@ public class BrComponent
      * @return the string of the current document HTML content 
      * <code>null</code> if peer object is not ready.* 
      */
-    public synchronized String getXHTML() {
+    public String getXHTML() {
         return getXHTML(false);
     }
     
@@ -246,8 +251,8 @@ public class BrComponent
      * @return the string of the current document HTML content 
      * <code>null</code> if peer object is not ready. 
      */
-    public synchronized String getXHTML(boolean bWithUniqueID) {
-        if (brPeer != null) {
+    public  String getXHTML(boolean bWithUniqueID) {
+        if( isPeerReady() ){
             return brPeer.getNativeXHTML(bWithUniqueID);
         }
         return null;
@@ -275,7 +280,7 @@ public class BrComponent
     @Override
     public void setVisible(boolean aFlag){
         super.setVisible(aFlag);
-        if( brPeer != null ) {
+        if( isPeerReady() ) {
             brPeer.setVisible(isVisible());
         }
     }
@@ -293,7 +298,7 @@ public class BrComponent
     @Override
     public void setEnabled(boolean enabled){
         super.setVisible(enabled);
-        if( brPeer != null ) {
+        if( isPeerReady() ) {
             brPeer.setEnabled(isEnabled());
         }
     }
@@ -301,20 +306,17 @@ public class BrComponent
     /**
      * Resets the base JComponent to default state
      */
-    public void init(){
+    private void init(){        
         enableEvents(AWTEvent.KEY_EVENT_MASK |
             AWTEvent.INPUT_METHOD_EVENT_MASK |
             AWTEvent.MOUSE_EVENT_MASK |
             AWTEvent.MOUSE_MOTION_EVENT_MASK |
             AWTEvent.MOUSE_WHEEL_EVENT_MASK);
         setOpaque(true);
-        setFocusable(true);
-        setDoubleBuffered(true);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         addFocusListener(this);
-        setEnabled(true);
         setRequestFocusEnabled(true);
-        updateUI();        
+        brPeer = PeerClassFactory.createBrComponentPeer(this);
     }
 
     /**
@@ -406,7 +408,7 @@ public class BrComponent
     public void validate()
     {
         super.validate(); 
-        if(null!=brPeer) {
+        if( isPeerReady() ) {
             brPeer.validate();
         }
     }
@@ -414,19 +416,18 @@ public class BrComponent
     @Override
     public void reshape(int x, int y, int width, int height)
     {
-        synchronized (getTreeLock()) {
-            if(null!=brPeer) {
-                brPeer.reshape(x, y, width, height);
-            }
-            super.reshape(x, y, width, height);
-            validate();
+        super.reshape(x, y, width, height);
+        if( isPeerReady() ) {
+            brPeer.reshape(x, y, width, height);
+            brPeer.validate();                    
         }
     }
 
+    public JComponent getCentralPanel()
+    {
+        return brPeer.getCentralPanel();
+    }
 
-    protected int notifyCounter = 0;    
-    protected boolean showOnZero = true;
-    
     /**
      * Makes this Component displayable by connecting it to a
      * native screen resource.
@@ -436,29 +437,8 @@ public class BrComponent
      */
     @Override
     public void addNotify() {
-        synchronized(getTreeLock()) {
-            super.addNotify();
-            if(0 == notifyCounter){
-                if(brPeer == null && !DESIGN_MODE ) {
-                    brPeer = PeerClassFactory.createBrComponentPeer(this);
-                } else if( isMandatoryDispose() ){
-                    setVisible(showOnZero);
-                }
-                setBounds(getBounds());
-            }
-            ++notifyCounter;
-        }
-    }
-    
-    /**
-     * Final peer disposal.
-     */
-    public void dispose()
-    {
-        if(brPeer != null) {
-            PeerClassFactory.destroyBrComponentPeer(brPeer);
-            brPeer = null;
-        }
+        super.addNotify();
+        brPeer.onAddNotify();        
     }
     
     /**
@@ -469,20 +449,8 @@ public class BrComponent
      */
     @Override
     public void removeNotify() {
-        synchronized (getTreeLock()) {
-            --notifyCounter;                
-           if( 0==notifyCounter ){
-                showOnZero = isVisible();
-                if( isMandatoryDispose() ) {
-                    if(showOnZero){
-                       setVisible(false);
-                    }
-                } else {
-                   dispose(); 
-                }
-            }
-	    super.removeNotify();
-	}
+        brPeer.onRemoveNotify();
+        super.removeNotify();
     }
 
     /**
@@ -502,8 +470,8 @@ public class BrComponent
      * @param code the string with Java Script code.
      * @return the string with execution result.
      */
-    public synchronized String execJS(String code) {
-        if( null != brPeer && null!=code || 0!=code.length() ) {
+    public String execJS(String code) {
+        if( isPeerReady() && null!=code || 0!=code.length() ) {
             return brPeer.execJS(code);
         }
         return null;
@@ -514,28 +482,13 @@ public class BrComponent
      * @param dropNativeAction <code>true</code> switches off browser from user 
      * input; <code>false</code> switches on native input events treatment. 
      */
-    public synchronized void blockNativeInputHandler(boolean dropNativeAction)
+    public void blockNativeInputHandler(boolean dropNativeAction)
     {
-        if( null != brPeer) {
+        if( isPeerReady() ) {
            brPeer.blockNativeInputHandler(dropNativeAction);
         }
     }
     
-    /**
-     * 
-     * @param x
-     * @param y
-     * @param w
-     * @param h
-     * @return
-     */
-    public synchronized Image getImage(int x, int y, int w, int h)
-    {
-        return (null == brPeer)
-           ? null
-           : brPeer.getImage(x, y, w, h);
-    }
-
     public void paintPlaceHolder(
             Graphics g,
             int x, int y, int width, int height,
@@ -579,8 +532,7 @@ public class BrComponent
                     x + width - 2, y + height - 2
                 );
             }
-        }
-        g2.dispose();
+        }        
     }
 
     public void paintDesignMode(Graphics g) {
@@ -588,7 +540,7 @@ public class BrComponent
                 g,
                 0, 0,
                 getWidth(), getHeight(),
-                "IE Browser");        
+                getClass().getName() + " " + getName() );        
     }
 
     public void paintContent(Graphics g) {
@@ -599,94 +551,50 @@ public class BrComponent
         }
     }
 
-    @Override
-    public void paintComponent(Graphics g) {
-        //execJS("##showCaret(false)");
-        Rectangle updateRect = g.getClipBounds();
-        //System.out.printf("{z x:%d, y:%d, w:%d, h:%d", updateRect.x, updateRect.y, updateRect.width, updateRect.height);
-        if(
-            isVisible() &&
-            null != updateRect &&
-            null != brPeer &&
-            0 < updateRect.width &&
-            0 < updateRect.height
-        ){
-            if(DRAW_NATIVE_BEFORE_CONTENT==paintAlgorithm ){
-                if( null != brPeer ){
-                    brPeer.nativeDraw(
-                        updateRect.x,
-                        updateRect.y,
-                        updateRect.width,
-                        updateRect.height);
-                }
-                paintContent(g);
-            } else if(DRAW_DOUBLE_BUFFERED==paintAlgorithm ){
-                Image updateImage = getImage(
-                    updateRect.x,                                                 
-                    updateRect.y,
-                    updateRect.width,
-                    updateRect.height);
-                if( null!=updateImage ){
-                    Graphics g1 = updateImage.getGraphics();
-                    if(null!=g1){
-                        try{
-                            g1.translate(-updateRect.x, -updateRect.y);
-                            paintContent(g1);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        g1.dispose();                        
-                        g.drawImage(
-                            updateImage,
-                            updateRect.x,
-                            updateRect.y,
-                            null
-                        );
-                    }
-                }
-            }  else {
-                paintContent(g);                
-            }
-            if(isDebugDrawBorder()){
-                paintPlaceHolder(
-                    g, 
-                    updateRect.x, updateRect.y,
-                    updateRect.width, updateRect.height, 
-                    "");
-                /*
-                g.setColor(Color.BLACK);
-                g.drawRect(
-                    updateRect.x, updateRect.y,
-                    updateRect.width-1, updateRect.height-1
-                );
-                */
-            }
+    static int iPaintCount = 0;
+    public void paintClientArea(Graphics g,  boolean withPeer) {
+        if( isPeerReady() && withPeer ){
+            brPeer.paintClientArea(g, paintAlgorithm);
         } else if(DESIGN_MODE){
             paintDesignMode(g);
         }
-        //System.out.println("}zzzzzzzzz");
+        paintContent(g);
+        if(isDebugDrawBorder()){
+            Rectangle updateRect = g.getClipBounds();
+            paintPlaceHolder(
+                g, 
+                updateRect.x, updateRect.y,
+                updateRect.width, updateRect.height, 
+                (++iPaintCount) + "");
+        }
+    }
+    
+    @Override
+    public void paintComponent(Graphics g) {
+        //execJS("##showCaret(false)");
         super.paintComponent(g);
+        if( !isPeerReady() || !brPeer.isSelfPaint()  ){
+            paintClientArea(g, true);
+        }    
     }
 
 
     /**
-     * Adds the specified stURL event listener to receive stURL events
+     * Adds the specified browser event listener to receive stURL events
      * from this stURL component.
      * If <code>l</code> is <code>null</code>, no exception is
      * thrown and no action is performed.
-     * <p>Refer to <a href="doc-files/AWTThreadIssues.html#ListenersThreads"
-     * >AWT Threading Issues</a> for details on AWT's threading model.
      *
-     * @param l the stURL event listener
+     * @param l the browser event listener
      * #see           	#removeTextListener
      * #see           	#getTextListeners
      * @see           	java.awt.event.TextListener
      */
-    public synchronized void addBrComponentListener(BrComponentListener l) {
+    public void addBrComponentListener(BrComponentListener l) {
         ieListener = l;
     }
 
-    public synchronized void removeBrComponentListener(BrComponentListener l) {
+    public void removeBrComponentListener(BrComponentListener l) {
         if( ieListener == l ) {
             ieListener = null;
         }
@@ -699,19 +607,17 @@ public class BrComponent
       * notifications.
       * @param e the happened browser event
       */
-     public void processBrComponentEvent(final BrComponentEvent e) {
-        //System.out.println( "IEE:" + e.getID() + " Name:" + e.getName() + " Value:"+ e.getValue() );        
+     public String processBrComponentEvent(final BrComponentEvent e) {
+        //System.out.println( "IEE:" + e.getID() + " Name:" + e.getName() + " Value:"+ e.getValue() ); 
+        String res = null;
         BrComponentListener listener = ieListener;
         if (listener != null) {
-            listener.sync(e);
+            res = listener.sync(e);
         }
-        javax.swing.SwingUtilities.invokeLater ( new Runnable() {
-            public void run() {
-                System.out.println(e);
+        SwingUtilities.invokeLater ( new Runnable() { public void run() {
+                //System.out.println(e);
                 String stValue = e.getValue();
-                if(null==stValue){
-                    stValue = "";
-                }
+                stValue = (null==stValue)?"":stValue; 
                 switch(e.getID()){
                 case BrComponentEvent.DISPID_STATUSTEXTCHANGE:
                     setStatusText(stValue);
@@ -751,9 +657,8 @@ public class BrComponent
                     }    
                     break;
                 }
-            }
-        });
-        
+        }});//end posponed operation   
+        return res;
     }
 
     /**
@@ -771,18 +676,16 @@ public class BrComponent
 
     //FocusListener
     public void focusGained(FocusEvent e) {
-        if( brPeer != null ){
-            System.out.println("##focusGain");
+        if( isPeerReady() ){
             brPeer.focusGain(true);
         }
     }
     public void focusLost(FocusEvent e) {
-        System.out.println("##focusLLLLLost");        
     }
 
     //Input methods capturing
     public void checkMouse(MouseEvent e) {
-        if( brPeer != null ){
+        if( isPeerReady() ){
             brPeer.sendMouseEvent(e);
         }
     }
@@ -813,7 +716,7 @@ public class BrComponent
     /**
      * Utility field used by bound properties.
      */
-    private java.beans.PropertyChangeSupport propertyChangeSupport =  new java.beans.PropertyChangeSupport(this);
+    protected java.beans.PropertyChangeSupport propertyChangeSupport = new java.beans.PropertyChangeSupport(this);
 
     /**
      * Adds a PropertyChangeListener to the listener list.
@@ -945,7 +848,9 @@ public class BrComponent
      * @param debugDrawBorder New value of property debugDrawBorder.
      */
     public void setDebugDrawBorder(boolean debugDrawBorder) {
+        boolean old = this.debugDrawBorder;
         this.debugDrawBorder = debugDrawBorder;
+        propertyChangeSupport.firePropertyChange("debugDrawBorder", old, debugDrawBorder);
     }
     
     private boolean editable;    
@@ -974,12 +879,12 @@ public class BrComponent
      *                is user editable.
      * @see       BrComponent#isEditable
      */
-    public synchronized void setEditable(boolean b) {
+    public void setEditable(boolean b) {
         if (editable == b) {
             return;
         }
         editable = b;
-        if(brPeer != null) {
+        if( isPeerReady() ) {
             brPeer.setEditable(b);
         }
     }
@@ -999,6 +904,7 @@ public class BrComponent
 
     /**
      * Setter for property securityIcon.
+     * One of secureLockIconXXXX const
      * @param securityIcon New value of property securityIcon.
      */
     protected void setSecurityIcon(String securityIcon) {
@@ -1010,14 +916,14 @@ public class BrComponent
     /**
      * Holds value of property mandatoryDispose.
      */
-    private boolean mandatoryDispose = false;
+    private boolean mandatoryDispose = true;
 
     /**
      * Getter for property mandatoryDispose.
      * @return Value of property mandatoryDispose.
      */
     public boolean isMandatoryDispose() {
-        return this.mandatoryDispose;
+        return mandatoryDispose;
     }
 
     /**
@@ -1025,9 +931,9 @@ public class BrComponent
      * @param mandatoryDispose New value of property mandatoryDispose.
      */
     public void setMandatoryDispose(boolean mandatoryDispose) {
-        boolean oldMandatoryDispose = this.mandatoryDispose;
+        boolean old = this.mandatoryDispose;
         this.mandatoryDispose = mandatoryDispose;
-        propertyChangeSupport.firePropertyChange ("mandatoryDispose", oldMandatoryDispose, mandatoryDispose);
+        propertyChangeSupport.firePropertyChange("mandatoryDispose", old, mandatoryDispose);
     }
 
     /**
@@ -1048,9 +954,9 @@ public class BrComponent
      * @param goBackEnable New value of property goBackEnable.
      */
     public void setGoBackEnable(boolean goBackEnable) {
-        boolean oldGoBackEnable = this.goBackEnable;
+        boolean old = this.goBackEnable;
         this.goBackEnable = goBackEnable;
-        propertyChangeSupport.firePropertyChange ("goBackEnable", new Boolean (oldGoBackEnable), new Boolean (goBackEnable));
+        propertyChangeSupport.firePropertyChange("goBackEnable", old, goBackEnable);
     }
 
     /**
@@ -1071,9 +977,9 @@ public class BrComponent
      * @param goForwardEnable New value of property goForwardEnable.
      */
     public void setGoForwardEnable(boolean goForwardEnable) {
-        boolean oldGoForwardEnable = this.goForwardEnable;
+        boolean old = this.goForwardEnable;
         this.goForwardEnable = goForwardEnable;
-        propertyChangeSupport.firePropertyChange ("goForwardEnable", new Boolean (oldGoForwardEnable), new Boolean (goForwardEnable));
+        propertyChangeSupport.firePropertyChange("goForwardEnable", old, goForwardEnable);
     }
 
     /**
@@ -1094,9 +1000,9 @@ public class BrComponent
      * @param toolbarChanged New value of property toolbarChanged.
      */
     public void setToolbarChanged(boolean toolbarChanged) {
-        boolean oldToolbarChanged = this.toolbarChanged;
+        boolean old = this.toolbarChanged;
         this.toolbarChanged = toolbarChanged;
-        propertyChangeSupport.firePropertyChange ("toolbarChanged", new Boolean (oldToolbarChanged), new Boolean (toolbarChanged));
+        propertyChangeSupport.firePropertyChange("toolbarChanged", old, toolbarChanged);
     }
 
     /**
@@ -1116,10 +1022,24 @@ public class BrComponent
      * Setter for property documentReady.
      * @param documentReady New value of property documentReady.
      */
-    public void setDocumentReady(boolean documentReady) {
-        boolean oldDocumentReady = this.documentReady;
+    protected void setDocumentReady(boolean documentReady) {
+        boolean old = this.documentReady;
         this.documentReady = documentReady;
-        propertyChangeSupport.firePropertyChange ("documentReady", new Boolean (oldDocumentReady), new Boolean (documentReady));
+        propertyChangeSupport.firePropertyChange("documentReady", old, documentReady);
+    }
+    
+    public long getNativeHandle() {
+        return brPeer.getNativeHandle();
+    }
+
+    @Override
+    public boolean isFocusOwner() {
+        return super.isFocusOwner() || ( isPeerReady() && brPeer.hasFocus() );
+    }
+   
+    public BrComponentPeer getBrPeer()
+    {
+        return brPeer;
     }
 }
     

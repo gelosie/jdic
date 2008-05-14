@@ -1,0 +1,227 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>    
+    <script type="text/javascript"
+src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=YD-imerZDc_JX1SFJ.3gx7yhw--">
+    </script> 
+    <script type="text/javascript">
+
+var map;    
+var VIEW_ROAD = 0x00000001;//road view
+var VIEW_SATELLITE = 0x00000002;//road view
+var VIEW_TRAFFIC = 0x00000004;//traffic view
+var VIEW_3D  = 0x00010000; //road view 
+var VIEW_25D = 0x00020000; //landscape view
+var ZOOM_MAX = 18;
+
+/**
+* Set selected view style.
+* @param address the string with an address
+*/
+function _findAddress(address) {
+    map.geoCodeAddress(address);    
+}
+
+function map_addressfound(fr)
+{
+    var res = "";
+    if(fr.success){
+        res += "," + fr.GeoPoint.Lat + "," + fr.GeoPoint.Lon;
+    }     
+    window.status =  "javaevent,foundAddress" + res;    
+}
+
+/**
+* Informs Java about available views
+* @return the combination of VIEW_XXXX consts
+*/
+function _availuableViews(){
+    return VIEW_ROAD | VIEW_SATELLITE | VIEW_TRAFFIC | VIEW_25D;
+}
+
+var PlaneDecoder = [
+    YAHOO_MAP_REG, //default
+    YAHOO_MAP_REG, //VIEW_ROAD
+    YAHOO_MAP_SAT, //VIEW_SATELLITE
+    YAHOO_MAP_HYB //VIEW_SATELLITE | VIEW_ROAD
+];
+
+/**
+* Set selected view style.
+* @param the combination of VIEW_XXXX consts
+*/
+function _setView(view){
+    map.setMapType(PlaneDecoder[view & 3]);        
+}
+
+/**
+* Get current view style.
+* @return the integer combination of VIEW_XXXX consts
+*/
+function _getView(){
+    var map_view = 0;
+    var ms = map.getCurrentMapType();
+    if( YAHOO_MAP_REG==ms )
+        map_view |= VIEW_ROAD;
+    else if( YAHOO_MAP_SAT==ms )
+        map_view |= VIEW_SATELLITE;
+    else if( YAHOO_MAP_HYB==ms )
+        map_view |= VIEW_SATELLITE | VIEW_ROAD;
+    return map_view;
+}
+
+/**
+* String property Center getter
+* @return the string with center "Latitude, Longitude"
+*/
+function _getCenter(){
+    var center = map.getCenterLatLon();    
+    return  center.Lat + "," + center.Lon;
+}
+
+/**
+* String property Center getter
+* @param centerLatitude center latitude
+* @param centerLongitude center longitude
+*/
+function _setCenter(centerLatitude, centerLongitude){
+    map.drawZoomAndCenter( new YGeoPoint(centerLatitude, centerLongitude), map.getZoomLevel() );
+}
+
+/**
+* Integer ZoomLevel property getter
+* @return the integer zoom level
+*/
+function _getZoomLevel(){
+    return ZOOM_MAX - map.getZoomLevel();
+}
+
+/**
+* Integer ZoomLevel property setter
+* @param zoomLevel the integer zoom level
+*/
+function _setZoomLevel(zoomLevel){
+    return map.setZoomLevel(ZOOM_MAX - zoomLevel);
+}
+
+/**
+* String property ViewDescriptor getter
+* @return the string with center "Latitude, Longitude, ZoomLevel, ViewType"
+*/
+function _getViewDescriptor(){
+     return _getCenter() + "," 
+         + _getZoomLevel() + "," 
+         + _getView();
+}
+
+/**
+* String property ViewDescriptor setter 
+* @param Latitude?  the double value of center Latitude
+* @param Longitude? the double value of center Longitude
+* @param ZoomLevel? the int value of zoom level 
+* @param ViewType?  the combination of VIEW_XXXX consts 
+*/
+function _setViewDescriptor(){
+    if( 4 <= arguments.length ) {
+        _setView(arguments[3]);
+    }
+    if( 3 <= arguments.length ) {
+        map.drawZoomAndCenter(
+            new YGeoPoint(arguments[0], arguments[1]), 
+            ZOOM_MAX - arguments[2]);        
+    }
+}
+
+var event_returnValue = false;
+var event_cancelBubble = false;
+function map_onmousemove(){    
+    event_returnValue = false;
+    event_cancelBubbling = false;
+    window.status =  "javaevent"
+        + "," + event.type
+        + "," + event.x 
+        + "," + event.y
+        + "," + event.button;
+    //event.cancelBubble = event_cancelBubble;
+    //return event_returnValue;
+}
+
+var oldMouseMove;    
+function map_onmousemove_plus(e)
+{
+    map_onmousemove();
+    if(null!=oldMouseMove)
+        oldMouseMove(e);
+}
+
+function map_zoomchanged() {    
+    window.status =  "javaevent,zoomchanged" 
+        + "," + _getZoomLevel();
+    map_centerchanged();
+}   
+
+function map_centerchanged() {    
+    window.status =  "javaevent,centerchanged" 
+        + "," + _getCenter();
+}   
+
+function _onload(){
+    map = new YMap(document.getElementById("dmap"));
+    /*    
+    if( null!=document.location.search && 0!=document.location.search.length){
+        //eval( "_setViewDescriptor(" + document.location.search.substr(1) + ");" );
+         var args = document.location.search.substr(1).split(",");                
+        _setViewDescriptor(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]), parseInt(args[3]));            
+    } else {
+        _setViewDescriptor(30.01, -122.4, 5, 2);
+    }
+    */
+    window.status =  "javaevent,viewrequest";
+        
+    oldMouseMove = dmap.onmousemove;   
+    dmap.onmousemove = map_onmousemove_plus;    
+    dmap.oncontextmenu = function() {return false;};
+    //YEvent.Capture(map, EventsList.MouseOver, map_onmousemove);
+    YEvent.Capture(map, EventsList.MouseUp, map_onmousemove);
+    YEvent.Capture(map, EventsList.MouseDown, map_onmousemove);
+    YEvent.Capture(map, EventsList.changeZoom, map_zoomchanged);
+    YEvent.Capture(map, EventsList.endPan, map_centerchanged);
+    YEvent.Capture(map, EventsList.onEndGeoCode, map_addressfound);
+    window.status =  "javaevent,mapready";
+}
+
+function _fromLatLngToPoint(){
+   var numargs = arguments.length;
+   var ret = "";
+   var shift = map.convertLatLonXY(
+           map.convertXYLatLon(new YCoordPoint(0, 0))
+   );
+   for(var i=0 ; i < numargs; i+=2 ){
+      var p = map.convertLatLonXY( new YGeoPoint(arguments[i], arguments[i+1]) );
+      if(0!=ret.length){
+          ret +=",";
+      }
+      ret += (p.x - shift.x).toFixed(0)  + "," + (p.y - shift.y).toFixed(0);
+   }
+   return ret;
+}
+
+function _fromPointToLatLng(){
+   var numargs = arguments.length;
+   var ret = "";
+   for(var i=0 ; i < numargs; i+=2 ){
+      var ll = map.convertXYLatLon(new YCoordPoint(arguments[i], arguments[i+1]) );
+      if(0!=ret.length){
+          ret +=",";
+      }
+      ret += ll.Lat + "," + ll.Lon;
+   }
+   return ret;
+}
+
+</script>
+</head>
+<body style="border:none; margin: 0px 0px 0px 0px;" onload="_onload();" scroll="no" scrolling="no">
+<div id="dmap" style="border:none; width:100%; height:100%; margin: 0px 0px 0px 0px;">
+</body>
+</html>

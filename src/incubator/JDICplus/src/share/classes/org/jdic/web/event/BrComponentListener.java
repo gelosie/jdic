@@ -35,6 +35,7 @@ public interface BrComponentListener {
     /**
      * Invoked when the browser wants to notify.
      * @param e happened event
+     * @return the processing result
      */
-    public void sync(BrComponentEvent e);
+    public String sync(BrComponentEvent e);
 }

@@ -19,6 +19,7 @@
 
 #include "stdafx.h"
 #include "BrMain.h"
+#include "BrHolderThread.h"
 
 JavaVM *jvm;
 
@@ -29,6 +30,8 @@ BOOL APIENTRY DllMain(
 ){
     switch( ul_reason_for_call ){
     case DLL_PROCESS_ATTACH:
+        BrowserThread::RegisterStaffWndClass((HINSTANCE)hModule);
+        break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:

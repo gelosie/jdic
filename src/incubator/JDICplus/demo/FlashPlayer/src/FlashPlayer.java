@@ -84,9 +84,9 @@ public class FlashPlayer extends JFrame
         c.weighty = 1.0;
 
         final BrComponent player = new BrComponent();
-        player.setBounds(0, 0, 425, 365);
-        player.setPreferredSize(new Dimension(425, 365));
-        final String stGame = "http://www.flasharcadegamessite.com/resources/tevlon3d.swf";
+        player.setBounds(0, 0, 500, 363);
+        player.setPreferredSize(new Dimension(425, 363));
+        final String stGame = "http://flashportal.ru/monstertruckcurfew.swfi";
         final String stMovie = 
             "<html><body border=\"no\" scroll=\"no\" style=\"margin: 0px 0px 0px 0px;\">"+
             "<object style=\"margin: 0px 0px 0px 0px; width:100%; height:100%\"" +

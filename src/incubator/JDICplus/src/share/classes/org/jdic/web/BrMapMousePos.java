@@ -20,27 +20,30 @@
 
 package org.jdic.web;
 
-import org.jdic.web.peer.WBrComponentPeer;
-import org.jdic.web.peer.BrComponentPeer;
-//import org.jdic.web.peer.WKBrComponentPeer;
+import com.sun.org.apache.xpath.internal.operations.Equals;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 
 /**
- * The browser peers provider. Class customize the peer in accordance with OS 
- * and user preferences.
+ * Mouse geo and ordinal position holder
  * @author uta
  */
-public class PeerClassFactory{
-    static public BrComponentPeer createBrComponentPeer(BrComponent target){
-        String browserName = System.getProperty("org.jdic.web");
-        if( target.getToolkit() instanceof sun.awt.windows.WToolkit
-            && (null==browserName || !browserName.equalsIgnoreCase("webkit") ))
-        {
-            WBrComponentPeer peer = new WBrComponentPeer(target);
-            //AWTAutoShutdown.getInstance().registerPeer(target, peer);
-            return peer;
-        }
-        //license limitation yet
-        //return new WKBrComponentPeer(target);
-        return null;
+public class BrMapMousePos {
+    private Point pos;
+    private Point2D posGeo;
+
+    public BrMapMousePos(Point _pos, Point2D _posGeo){
+        pos = _pos;
+        posGeo = _posGeo;
     }
+    public boolean equals(BrMapMousePos o){
+        if(null==o)
+            return false;
+        return pos.equals(o.getMousePixelPos()) && posGeo.equals(o.getMouseGeoPos());
+    }
+    public boolean equals(Object o){
+        return equals((BrMapMousePos)o);
+    }
+    public Point getMousePixelPos() { return pos; }
+    public Point2D getMouseGeoPos() { return posGeo; }
 }

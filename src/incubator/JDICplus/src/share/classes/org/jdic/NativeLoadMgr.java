@@ -23,6 +23,7 @@ package org.jdic;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.HashSet;
                               
 
 /**
@@ -30,14 +31,16 @@ import java.net.URL;
  * @author uta
  */
 
-public class NativeLoadMgr {
-    static {
+public class NativeLoadMgr { 
+    static HashSet<String> loadedLibraries = new HashSet<String>();
+    public static void addNativePath(Class o)
+    {
         if (System.getProperty("javawebstart.version") == null){
             try {
                 // Find the root path of this class.
                 String binaryPath = (
                     new URL(
-                        NativeLoadMgr.class.getProtectionDomain().getCodeSource().getLocation(),
+                        o.getProtectionDomain().getCodeSource().getLocation(),
                         "."
                     )
                 ).openConnection().getPermission().getName();
@@ -56,6 +59,9 @@ public class NativeLoadMgr {
             }
         }
     }
+    static {
+        addNativePath(NativeLoadMgr.class);
+    }
     
     /**
      * Class can not be instantiated.
@@ -66,7 +72,12 @@ public class NativeLoadMgr {
      * Loads the native dynamic libruary from the appropriate folder.
      * @param libname the native dynamic libruary name without an extension
      */
-    public static void loadLibrary(String libname) {
-        System.loadLibrary(libname);
+    public static synchronized boolean loadLibrary(String libname) {
+        if( !loadedLibraries.contains(libname) ){
+            loadedLibraries.add(libname);
+            System.loadLibrary(libname);
+            return true;
+        }    
+        return false;
     }
 }

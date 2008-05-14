@@ -39,15 +39,10 @@ import org.jdic.NativeLoadMgr;
  * @author uta
  */
 public class WBrComponentPeer implements BrComponentPeer {
-    static {
-        NativeLoadMgr.loadLibrary("jdicWeb");
-        initIDs();
-    }
     
     //Initialize JNI field and method IDs
     private static native void initIDs();
-
-
+    
     private static final DirectColorModel directColorModel =
         new DirectColorModel(
             24,
@@ -67,17 +62,6 @@ public class WBrComponentPeer implements BrComponentPeer {
     // Toolkit & peer internals
     public WBrComponentPeer(BrComponent target) {
         this.target = target;
-        for( Container c = target.getParent(); null != c; c = c.getParent() )
-        {
-            ComponentPeer cp = c.getPeer();
-            if( (cp instanceof WComponentPeer) ){
-                parentHW = c;
-                data = create( ((WComponentPeer)cp).getHWnd() );
-                acceptTargetURL();
-                setEditable(target.isEditable());
-                return;
-            }
-        }
     }
 
     boolean editable = false;
@@ -202,7 +186,7 @@ public class WBrComponentPeer implements BrComponentPeer {
     }
 
     public void acceptTargetURL() {
-        execJS("##setNativeDraw(" + (target.DRAW_PRIVATE==target.paintAlgorithm) + ")");
+        execJS("##setNativeDraw(" + (BrComponent.DRAW_PRIVATE==target.paintAlgorithm) + ")");
         documentReady = false;
         setURL(target.stURL, target.isHTMLSrc);
     }
@@ -210,15 +194,17 @@ public class WBrComponentPeer implements BrComponentPeer {
     public void validate() {
         if(target.isVisible()) {
             clearRgn();
+            Rectangle cr;
             Component[] cms = target.getComponents();
             for (Component cm : cms) {
                 if (cm.isLightweight() && cm.isVisible()) {
-                    Rectangle cr = cm.getBounds();
+                    cr = cm.getBounds();
                     clipChild(cr.x, cr.y, cr.width, cr.height);
                     //System.out.println("child" + cm);
                 }
             }
-            updateTransparentMask();
+            cr = target.getBounds();
+            updateTransparentMask(cr.x, cr.y, cr.width, cr.height);
         }
     }
 
@@ -229,7 +215,7 @@ public class WBrComponentPeer implements BrComponentPeer {
     public native void destroy();
     public native void setURL(String stURL, InputStream is);
     public native String execJS(String code);
-    public native void updateTransparentMask();
+    public native void updateTransparentMask(int top, int left, int width, int height);
     public native void blockNativeInputHandler(boolean dropNativeAction);
     public native void nativeDraw(int x, int y, int width, int height);
     public native void nativePosOnScreen(int x, int y, int width, int height);
@@ -238,15 +224,6 @@ public class WBrComponentPeer implements BrComponentPeer {
     public native void nativeSetTransparent(boolean bTransparent);    
     public native long nativeSendMouseEvent(int wnd, int wm, int wParam, int lParam);
     public native void nativeReleaseMouseCapture();
-
-    boolean bTransparent = false;
-    public void setTransparent(boolean _bTransparent)
-    {
-        if(bTransparent != _bTransparent){
-           bTransparent = _bTransparent;
-           nativeSetTransparent(bTransparent);
-        }
-    }
 
     public void reshape(int x, int y, int width, int height)
     {
@@ -278,9 +255,9 @@ public class WBrComponentPeer implements BrComponentPeer {
     {
         javax.swing.SwingUtilities.invokeLater ( new Runnable() {
             public void run() {
-                System.out.printf("{refreshHard");                
+                //System.out.printf("{refreshHard");                
                 target.reshape(target.getX(), target.getY(), target.getWidth(), target.getHeight() );
-                System.out.println("}refreshHard");
+                //System.out.println("}refreshHard");
             }
         });
     }
@@ -307,7 +284,7 @@ public class WBrComponentPeer implements BrComponentPeer {
 
     public void focusGain(boolean  bKeyboardFocus) {
         if(!hasFocus()){
-            System.out.println("##setFocus");
+            //System.out.println("##setFocus");
             execJS("##setFocus(" + bKeyboardFocus + ")" );
         }
     }
@@ -327,7 +304,6 @@ public class WBrComponentPeer implements BrComponentPeer {
             | (( 0 != (modifiers & MouseEvent.BUTTON3_DOWN_MASK) ) ? 0x0002/*MK_RBUTTON*/ : 0)
             | (( 0 != (modifiers & MouseEvent.BUTTON2_DOWN_MASK) ) ? 0x0010/*MK_MBUTTON*/ : 0);
         int lParam = e.getX() + (e.getY() << 16 );
-
         if( MouseEvent.MOUSE_PRESSED==e.getID() ){
             switch(e.getButton()){
             case MouseEvent.BUTTON1:
@@ -340,22 +316,24 @@ public class WBrComponentPeer implements BrComponentPeer {
                 wm = 0x0208; //WM_MBUTTONUP
                 break;
             }
-             nativeSendMouseEvent(WND_PARENT, wm, wParam, lParam);            
+            nativeSendMouseEvent(WND_PARENT, wm, wParam, lParam);            
         }
-
-        setTransparent(false);
+        nativeSetTransparent(false);
         //System.out.println("MouseEvent  m:" + e.getModifiers() + " " + e);
         switch(e.getID()){
         case MouseEvent.MOUSE_PRESSED:
             switch(e.getButton()){
             case MouseEvent.BUTTON1:
-                wm = 0x0201; //WM_LBUTTONDOWN  
+                wm = 0x0201; //WM_LBUTTONDOWN             
+                wParam |= 0x0001/*MK_LBUTTON*/; 
                 break;
             case MouseEvent.BUTTON3:
                 wm = 0x0204; //WM_RBUTTONDOWN
+                wParam |= 0x0002/*MK_RBUTTON*/;
                 break;
             case MouseEvent.BUTTON2:
                 wm = 0x0207; //WM_MBUTTONDOWN
+                wParam |= 0x0010/*MK_MBUTTON*/;
                 break;
             }
             break;
@@ -388,13 +366,17 @@ public class WBrComponentPeer implements BrComponentPeer {
             break;
         }
         if(0!=wm && !hasFocus()){
+            int iHitTest = (int)nativeSendMouseEvent(
+                WND_IE,
+                0x0084,//WM_NCHITTEST
+                0, e.getXOnScreen() + (e.getYOnScreen() << 16 ));
             if( MouseEvent.MOUSE_PRESSED==e.getID() ){
                 //System.out.println("##focusGain!");
                 long res = nativeSendMouseEvent(
                     WND_IE,
                     0x0021,//WM_MOUSEACTIVATE
                     (int)((WComponentPeer)target.getTopLevelAncestor().getPeer()).getHWnd(),
-                    1 //HTCLIENT
+                    iHitTest //HTCLIENT
                     + (wm << 16 ));
                 if(1==res || 2==res){
                     focusGain(false);                    
@@ -404,11 +386,6 @@ public class WBrComponentPeer implements BrComponentPeer {
                     return ret;
                 }
             }
-
-            int iHitTest = (int)nativeSendMouseEvent(
-                WND_IE,
-                0x0084,//WM_NCHITTEST
-                0, e.getXOnScreen() + (e.getYOnScreen() << 16 ));
             nativeSendMouseEvent(
                 WND_IE,
                 0x0020,//WM_SETCURSOR
@@ -421,7 +398,7 @@ public class WBrComponentPeer implements BrComponentPeer {
                  lParam);
         }
         if( !hasFocus() ){
-            setTransparent(true);
+            nativeSetTransparent(true);
         }            
         return ret;
     }
@@ -432,8 +409,14 @@ public class WBrComponentPeer implements BrComponentPeer {
 //    public boolean requestFocusInWindow() {
 //        return true;  //To change body of implemented methods use File | Settings | File Templates.
 //    }
-
-    private void postEvent(
+    /**
+     * Synchronous callback for notifications from native code.
+     * @param iId the event identifier - <code>BrComponentEvent.DISPID_XXXX</code> const
+     * @param stName the event name of (optional)
+     * @param stValue the event paramenter(s) (optional)
+     * @return the application respont
+     */
+    private String postEvent(
             int iId,
             String stName,
             String stValue)
@@ -458,9 +441,9 @@ public class WBrComponentPeer implements BrComponentPeer {
             break;
         case BrComponentEvent.DISPID_PROGRESSCHANGE:
             break;
-        }
-        target.processBrComponentEvent( 
-                new BrComponentEvent(target, iId, stName, stValue) );
+        }        
+        return target.processBrComponentEvent(
+                new BrComponentEvent(target, iId, stName, stValue));
     }
 
     public Image getImage(int x, int y, int width, int height){
@@ -489,7 +472,112 @@ public class WBrComponentPeer implements BrComponentPeer {
 
         return new BufferedImage(directColorModel, raster, false, null);
     }
+    
+    public void paintClientArea(Graphics g, int iPaintHint)
+    {
+        if( target.isVisible()  ){
+            Rectangle updateRect = g.getClipBounds();            
+            if(null==updateRect){
+                updateRect = target.getBounds();
+            }
+            if( null!=updateRect ){            
+                if(updateRect.x < 0){
+                    updateRect.width += updateRect.x;
+                    updateRect.x = 0;
+                }
+                if(updateRect.y < 0){
+                    updateRect.height += updateRect.y;
+                    updateRect.y = 0;
+                }
+                if( 0<updateRect.width 
+                    && 0<updateRect.height)
+                {
+                    if(BrComponent.DRAW_NATIVE_BEFORE_CONTENT==iPaintHint ){
+                        nativeDraw(
+                            updateRect.x,
+                            updateRect.y,
+                            updateRect.width,
+                            updateRect.height);
+                    } else if(BrComponent.DRAW_DOUBLE_BUFFERED==iPaintHint ){
+                        Image updateImage = getImage(
+                            updateRect.x,                                                 
+                            updateRect.y,
+                            updateRect.width,
+                            updateRect.height);
+                        if( null!=updateImage ){
+                            g.drawImage(
+                                updateImage,
+                                updateRect.x,
+                                updateRect.y,
+                                null
+                            );
+                        }
+                    }
+                }    
+            }    
+        }    
+    }
 
+    public long getNativeHandle() {
+        return data;
+    }
+    
+    protected int notifyCounter = 0;    
+    protected boolean showOnZero = true;
+    
+    public void onAddNotify() {
+        if(0 == notifyCounter){
+            if( !BrComponent.DESIGN_MODE ) {
+                if( NativeLoadMgr.loadLibrary("jdicWeb") ) {
+                    //init IDs for native callbacks on the first load
+                    initIDs();
+                }   
+                for( Container c = target.getParent(); null != c; c = c.getParent() )
+                {
+                    ComponentPeer cp = c.getPeer();
+                    if( (cp instanceof WComponentPeer) ){
+                        parentHW = c;
+                        data = create( ((WComponentPeer)cp).getHWnd() );
+                        acceptTargetURL();
+                        setEditable(target.isEditable());
+                        break;
+                    }
+                }
+            } else if( !target.isMandatoryDispose() ){
+                setVisible(showOnZero);
+            }
+        }
+        ++notifyCounter;
+    }
+
+    public void onRemoveNotify() {
+        --notifyCounter;                
+       if( 0==notifyCounter ){
+            showOnZero = target.isVisible();
+            if( !target.isMandatoryDispose() ) {
+                if(showOnZero){
+                   setVisible(false);
+                }
+            } else if( 0!=data ) {
+               destroy();
+               data = 0;
+            }
+        }
+    }
+
+    public boolean isNativeReady() {
+        return 0!=data;
+    }
+
+    public boolean isSelfPaint()
+    {
+        return false;
+    }
+    
+    public JComponent getCentralPanel() {
+        return target;
+    }
+    
     BrComponent target;
-    long        data;
-}
+    long        data = 0;
+}    

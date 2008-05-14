@@ -70,7 +70,7 @@ namespace ZZ{
   class CHandlerSup{
   public:
     HANDLE m_Handle;
-    CHandlerSup():m_Handle(::CreateMutex(SUN_KERNAL_SECURITY_ATTRIBUTES,FALSE,TEXT("$DEBUG$"))){}
+    CHandlerSup():m_Handle( ::CreateMutex(SUN_KERNAL_SECURITY_ATTRIBUTES, FALSE, _T("$DEBUG$"))){}
     CHandlerSup(HANDLE Handle):m_Handle(Handle){}
     ~CHandlerSup(){ if(m_Handle) ::CloseHandle(m_Handle); }
     operator HANDLE() { return m_Handle; }
@@ -94,7 +94,7 @@ namespace ZZ{
           SUN_KERNAL_SECURITY_ATTRIBUTES,\
           FALSE,\
           FALSE,\
-          TEXT("SUN_DBWIN_DATA_READY")\
+          _T("SUN_DBWIN_DATA_READY")\
         )\
       );\
       ZZ::CHandlerSup ZZ::g_hSharedDbgFile(\
@@ -104,7 +104,7 @@ namespace ZZ{
           PAGE_READWRITE, \
           0,\
           4096,\
-          TEXT("SUN_DBWIN_BUFFER")\
+          _T("SUN_DBWIN_BUFFER")\
         )\
       );\
       void ZZ::DbgOut(LPCTSTR lpStr)\
@@ -112,7 +112,7 @@ namespace ZZ{
         HANDLE   hBufferReady = ::OpenEvent(\
           SYNCHRONIZE,\
           FALSE, \
-          TEXT("SUN_DBWIN_BUFFER_READY")\
+          _T("SUN_DBWIN_BUFFER_READY")\
         );\
         if( hBufferReady ){\
           if( (HANDLE)ZZ::g_hSharedDbgFile && ::WaitForSingleObject(hBufferReady, 100)==WAIT_OBJECT_0 ){\
@@ -152,9 +152,9 @@ namespace ZZ{
   {
     struct _timeb tb;
     _ftime(&tb);
-    int	len = _tcsftime(lpBuffer, iBufferSize, TEXT("%b %d %H:%M:%S"), localtime(&tb.time));
+    int	len = _tcsftime(lpBuffer, iBufferSize, _T("%b %d %H:%M:%S"), localtime(&tb.time));
     if(len && len+4<iBufferSize) 
-      if( _sntprintf(lpBuffer+len, iBufferSize-len-1, TEXT(".%03d"), tb.millitm)<0 )
+      if( _sntprintf(lpBuffer+len, iBufferSize-len-1, _T(".%03d"), tb.millitm)<0 )
         lpBuffer[iBufferSize-len-1] = 0;
     return lpBuffer;
   }
@@ -167,24 +167,24 @@ namespace ZZ{
       szBuffer[DTRACE_BUF_LEN-1] = 0;
     TCHAR szTime[32];
     CreateTimeStamp(szTime, sizeof(szTime));   
-    _tcscat(szTime, TEXT(" "));
+    _tcscat(szTime, _T(" "));
     TCHAR szBuffer1[DTRACE_BUF_LEN];
     int iFormatLen = _tcslen(lpszFormat);
-    BOOL bErrorReport = iFormatLen>6 && _tcscmp(lpszFormat + iFormatLen - 6, TEXT("[%08x]"))==0;
+    BOOL bErrorReport = iFormatLen>6 && _tcscmp(lpszFormat + iFormatLen - 6, _T("[%08x]"))==0;
     int iTimeLen = _tcslen(szTime);
     if( _sntprintf( 
       szBuffer1 + iTimeLen, 
       DTRACE_BUF_LEN - iTimeLen - 1, //reserver for \n
-      TEXT("P:%04d T:%04d ") TRACE_SUFFIX TEXT("%s%s"), 
+      _T("P:%04d T:%04d ") TRACE_SUFFIX _T("%s%s"), 
       ::GetCurrentProcessId(), 
       ::GetCurrentThreadId(), 
-      bErrorReport?TEXT("Error:"):TEXT(""),
+      bErrorReport?_T("Error:"):_T(""),
       szBuffer
     )<0)
-      _tcscpy(szBuffer1 + DTRACE_BUF_LEN - 5, TEXT("...")); //reserver for \n
+      _tcscpy(szBuffer1 + DTRACE_BUF_LEN - 5, _T("...")); //reserver for \n
 
     memcpy(szBuffer1, szTime, iTimeLen*sizeof(TCHAR));
-    _tcscat(szBuffer1, TEXT("\n"));
+    _tcscat(szBuffer1, _T("\n"));
     DbgOut( szBuffer1 ); 
   }
   inline void snTrace(LPCTSTR lpszFormat, ... ) 
@@ -199,13 +199,13 @@ namespace ZZ{
     inline int  snCheckExeption(int) {return EXCEPTION_EXECUTE_HANDLER;}  
     inline void snAssertEx(BOOL bCheck) { 
       if(!bCheck) 
-        snTrace(TEXT("Assert")); 
+        snTrace(_T("Assert")); 
     }  
   #else //_DEBUG
     inline int snCheckExeption(int code){
       //TCHAR szBuffer[DTRACE_BUF_LEN];
-      //_stprintf( szBuffer, TEXT("Exception[%08x]! P:%04d T:%04d\nPress \'Yes\' after debugger attach!"), code, ::GetCurrentProcessId(), ::GetCurrentThreadId() );
-      //return (::MessageBox(NULL, szBuffer, TEXT(""), MB_YESNO)==IDYES)?/*EXCEPTION_CONTINUE_SEARCH*/EXCEPTION_CONTINUE_EXECUTION:EXCEPTION_EXECUTE_HANDLER;    
+      //_stprintf( szBuffer, _T("Exception[%08x]! P:%04d T:%04d\nPress \'Yes\' after debugger attach!"), code, ::GetCurrentProcessId(), ::GetCurrentThreadId() );
+      //return (::MessageBox(NULL, szBuffer, _T(""), MB_YESNO)==IDYES)?/*EXCEPTION_CONTINUE_SEARCH*/EXCEPTION_CONTINUE_EXECUTION:EXCEPTION_EXECUTE_HANDLER;    
       BOOL  bContinue = TRUE, bNotBreak = TRUE;
       while(bNotBreak){
         ::MessageBeep((UINT)-1);
@@ -221,7 +221,7 @@ namespace ZZ{
   #define snAssert(exp) ZZ::snAssertEx((BOOL)(exp))
 }//ZZ namespace end
 
-//inline BOOL _istspace(TCHAR ch) {return ch && _tcschr(TEXT(" \t\n\r"), ch); }  
+//inline BOOL _istspace(TCHAR ch) {return ch && _tcschr(_T(" \t\n\r"), ch); }  
 
 #define STRACE1       ZZ::snTrace
 #define SCHKE()       ZZ::snCheckExeption(GetExceptionCode())
@@ -237,5 +237,11 @@ struct CLogEntryPoint {
     CLogEntryPoint(LPCTSTR lpTitle):m_lpTitle(lpTitle) { STRACE1(_T("{%s"), m_lpTitle); }
     ~CLogEntryPoint(){ STRACE1(_T("}%s"), m_lpTitle); }
 };
+struct CLogEntryPoint0 {
+    LPCTSTR m_lpTitle;
+    CLogEntryPoint0(LPCTSTR lpTitle):m_lpTitle(lpTitle) { STRACE0(_T("{%s"), m_lpTitle); }
+    ~CLogEntryPoint0(){ STRACE0(_T("}%s"), m_lpTitle); }
+};
 #define SEP(msg)    CLogEntryPoint _ep_(msg);
+#define SEP0(msg)    CLogEntryPoint0 _ep0_(msg);
 #endif

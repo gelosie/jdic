@@ -1,108 +1,268 @@
 <html>
 <head>
     <!-- Map loader -->
-    <script src="http://dev.virtualearth.net/mapcontrol/v4/mapcontrol.js" type="text/javascript"></script>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>    
+    <script type="text/javascript" src="http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6"></script>
     <script type="text/javascript">
     //<![CDATA[
-    var map;
-    var dmap;
-    var center;
-    var zoom;
+var map;
+var dmap;
 
+var VIEW_ROAD = 0x00000001;//road view
+var VIEW_SATELLITE = 0x00000002;//road view
+var VIEW_TRAFFIC = 0x00000004;//traffic view
+var VIEW_STYLE = 0x000000FF;//the bit mask for planes 
+var VIEW_3D  = 0x00010000; //road view 
+var VIEW_25D = 0x00020000; //landscape view
 
-function _onsize(){
-    	map.Resize(
-		document.body.clientWidth,
-                document.body.clientHeight
-	);
+/**
+* Informs Java about available views
+* @return the combination of VIEW_XXXX consts
+*/
+function _availuableViews(){
+    return VIEW_ROAD | VIEW_SATELLITE | VIEW_TRAFFIC | VIEW_3D;
 }
 
-function _resize(x1, y1, x2, y2){
+var PlaneDecoder = [
+    VEMapStyle.Road, //default
+    VEMapStyle.Road, //VIEW_ROAD
+    VEMapStyle.Aerial, //VIEW_SATELLITE
+    VEMapStyle.Hybrid  //VIEW_SATELLITE | VIEW_ROAD
+];
+
+/**
+* Set selected view style.
+* @param address the string with an address
+*/
+function _findAddress(address) {
+    map.Find(
+        null,
+        address,
+        null,
+        null,
+        0,
+        10,
+        false,
+        false,
+        false,
+        false,        
+        fres
+    );
 }
 
-function do_nothing(){
-	alert("asas");
-	map.EndContinuousPan();
-	return false;
+function fres(layer, resultsArray, places, hasMore, veErrorMessag) {    
+    var results = "";  
+    if(null!=places){    
+        for(var r=0; r<places.length; ++r){
+            results += "," + places[r].LatLong.Latitude
+                     + "," + places[r].LatLong.Longitude;
+            break;
+        }                    
+    } else if(null!=resultsArray){
+        for(var r=0; r<resultsArray.length; ++r) if(!resultsArray[r].IsSponsored) {
+            results += "," + resultsArray[r].LatLong.Latitude 
+                     + "," + resultsArray[r].LatLong.Longitude; 
+            alert(resultsArray[r].Description);                                                  
+            break;                     
+        }                    
+    }    
+    window.status =  "javaevent,foundAddress" +  results;
 }
 
-function _onload(){
-    {
-   	dmap = document.getElementById("dmap");
-        map = new VEMap("dmap");
-        map.LoadMap();
-        map.SetCenter(
-	    new VELatLong(37.4328, -122.077),
-	    5
-	);
-	_onsize();
-	//map.AttachEvent("onmousedown", do_nothing);
-	//map.onmousedown = do_nothing;
+/**
+ * Set selected view style.
+ * @param the combination of VIEW_XXXX consts
+ */
+function _setView(view){
+    map.SetMapStyle(PlaneDecoder[view & 3]);        
+    map.SetMapMode( (view & VIEW_3D) ? VEMapMode.Mode3D : VEMapMode.Mode2D);
+    if(view & VIEW_3D){
+        map.Show3DNavigationControl();
+    } else {
+        map.Hide3DNavigationControl();    
     }
 }
 
-
-// converts a VE point str to an obj
-
-function getCoord( point ) {
-	var p = new Object();
-	point = point.toString();
-	//parseFloat
-	p.lat = point.split(",")[0];
-	p.lon = point.split(",")[1];
-	return p;
+/**
+ * Get current view style.
+ * @return the combination of VIEW_XXXX consts
+ */
+function _getView()
+{
+    var map_view = 0;
+    if( VEMapMode.Mode3D==map.GetMapMode() ) 
+        map_view |= VIEW_3D;
+    var ms = map.GetMapStyle();
+    if( VEMapStyle.Road==ms )
+        map_view |= VIEW_ROAD;
+    else if( VEMapStyle.Aerial==ms )
+        map_view |= VIEW_SATELLITE;
+    else if( VEMapStyle.Hybrid==ms )
+        map_view |= VIEW_SATELLITE | VIEW_ROAD;
+    return map_view;
 }
 
-//  convert lat/long in degrees to radians
-function latLonToRadians( point ) {
-	return point * Math.PI / 180.0;
+/**
+ * String property Center getter
+ * @return the string with center "Latitude, Longitude"
+ */
+function _getCenter(){
+    var center = map.GetCenter();    
+    return  center.Latitude + "," + center.Longitude;
 }
 
-function _path(x1, y1, x2, y2){
-	var p1 = getCoord(map.PixelToLatLong(x1, y1));
-	var p2 = getCoord(map.PixelToLatLong(x2, y2));
-
-	p1.lat = latLonToRadians(p1.lat);
-	p1.lon = latLonToRadians(p1.lon);
-
-	p2.lat = latLonToRadians(p2.lat);
-	p2.lon = latLonToRadians(p2.lon);
-
-	var R = 6371.0; // earth's mean radius in km
-	var dSinLat05  = Math.sin( (p2.lat - p1.lat)/2 );
-	var dSinLong05 = Math.sin( (p2.lon - p1.lon)/2 );
-	var a = dSinLat05 * dSinLat05 +
-		Math.cos(p1.lat) * Math.cos(p2.lat) * dSinLong05 * dSinLong05;
-	var c = (0==a || 1==a)
-		? 0
-		: 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0-a));
-	return R * c * 1000.0; //in meters
+/**
+* String property Center getter
+* @param centerLatitude center latitude
+* @param centerLongitude center longitude
+*/
+function _setCenter(centerLatitude, centerLongitude){
+    map.SetCenter(new VELatLong(centerLatitude, centerLongitude));
+    /*    
+    map.SetMapView(new VEMapViewSpecification(
+        new VELatLong(parseFloat(args[0]), parseFloat(args[1])), 
+        map.GetZoomLevel(), 
+        1000, -90, 0)); */   
 }
 
-function _getGBounds(){
-	var p1 = getCoord(map.PixelToLatLong(0, 0));
-	var p2 = getCoord(map.PixelToLatLong(
-		document.body.clientWidth,
-                document.body.clientHeight
-	));
-	var w = p2.lat - p1.lat;
-	var h = p2.lon - p1.lon;
-	return p1.lat + "," + p1.lon + "," + w + "," + h;
+/**
+ * Integer ZoomLevel property getter
+ * @return the integer zoom level
+ */
+function _getZoomLevel(){
+    return map.GetZoomLevel();
 }
 
+/**
+ * Integer ZoomLevel property setter
+ * @param zoomLevel the integer zoom level
+ */
+function _setZoomLevel(zoomLevel){
+    return map.SetZoomLevel(zoomLevel);
+}
+
+/**
+ * String property ViewDescriptor getter
+ * @return the string with center "Latitude, Longitude, ZoomLevel, ViewType"
+ */
+function _getViewDescriptor(){
+    return _getCenter() + "," 
+     + _getZoomLevel()  + "," + _getView();
+}
+
+/**
+* String property ViewDescriptor setter 
+* @param Latitude?  the double value of center Latitude
+* @param Longitude? the double value of center Longitude
+* @param ZoomLevel? the int value of zoom level 
+* @param ViewType?  the combination of VIEW_XXXX consts 
+*/
+function _setViewDescriptor(){
+    if( 4 <= arguments.length ) {
+        _setView(arguments[3]);
+    }
+    if( 3 <= arguments.length ) {
+        map.SetCenterAndZoom(new VELatLong(arguments[0], arguments[1]), arguments[2]);
+    }
+}
+
+function _onsize(){
+    map.Resize(
+            document.body.clientWidth,
+            document.body.clientHeight
+    );
+}
+
+var event_returnValue = false;
+var event_cancelBubble = false;
+function map_onmousemove(){    
+    event_returnValue = false;
+    event_cancelBubble = false;
+    window.status =  "javaevent"
+        + "," + event.type
+        + "," + event.x 
+        + "," + event.y
+        + "," + event.button;
+    event.cancelBubble = event_cancelBubble;
+    return event_returnValue;
+}
+
+//function map_zoomchanged(e) { 
+//e.zoomLevel;
+function map_zoomchanged(e) {    
+    window.status =  "javaevent,zoomchanged" 
+        + "," + _getZoomLevel();
+    map_centerchanged();    
+}        
+
+function map_centerchanged() {    
+    window.status =  "javaevent,centerchanged" 
+        + "," + _getCenter();
+}   
+
+function _onload()
+{
+    dmap = document.getElementById("dmap");
+    map = new VEMap("dmap");
+    map.SetDashboardSize(VEDashboardSize.Small);
+
+    map.LoadMap();
+    map.HideDashboard();
+    //map.SetMapMode(VEMapMode.Mode2D);
+    //map.SetMapStyle(VEMapStyle.Road);
+    _onsize();
+    map.AttachEvent("onmousemove", map_onmousemove);
+    map.AttachEvent("onmouseup", map_onmousemove);
+    map.AttachEvent("onmousedown", map_onmousemove);
+    map.AttachEvent("onendzoom", map_zoomchanged);
+    //map.AttachEvent("onendpan", map_centerchanged);
+    map.AttachEvent("onchangeview", map_centerchanged);
+    
+    /*    
+    if(null!=document.location.search){
+        //eval( "_setViewDescriptor(" + document.location.search.substr(1) + ");" );
+         var args = document.location.search.substr(1).split(",");                
+        _setViewDescriptor(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]), parseInt(args[3]));            
+    } else {
+        _setViewDescriptor(30.01, -122.4, 5, 2);
+    }
+    */
+    window.status =  "javaevent,viewrequest";    
+    window.status =  "javaevent,mapready";    
+}
+
+function _fromLatLngToPoint(){
+   var numargs = arguments.length;
+   var ret = "";
+   var shift = map.LatLongToPixel(
+           map.PixelToLatLong(new VEPixel(0, 0))
+   );
+   for(var i=0 ; i < numargs; i+=2 ){
+      var p = map.LatLongToPixel( new VELatLong(arguments[i], arguments[i+1]) );
+      if(0!=ret.length){
+          ret +=",";
+      }
+      ret += (p.x - shift.x).toFixed(0) + "," + (p.y - shift.y).toFixed(0);
+   }
+   return ret;
+}
+
+function _fromPointToLatLng(){
+   var numargs = arguments.length;
+   var ret = "";
+   for(var i=0 ; i < numargs; i+=2 ){
+      var ll = map.PixelToLatLong(new VEPixel(arguments[i], arguments[i+1]) );
+      if(0!=ret.length){
+          ret +=",";
+      }
+      ret += ll.Latitude + "," + ll.Longitude;
+   }
+   return ret;
+}
     //]]>
     </script>
 </head>
-<body style="margin: 0px 0px 0px 0px; ">
-<div id="dmap" style="border: 1px solid #979797; background-color: #e5e3df; width:100px; height:100px; margin: 0px 0px 0px 0px;">
-  <div style="padding: 1em; color: gray">Loading...</div>
-    <script type="text/javascript">
-    //<![CDATA[
-      document.body.scroll = "no";
-      document.body.onload = _onload;
-      window.onresize = _onsize;
-    //]]>
-    </script>
-</div>
+<body style="border:none; margin: 0px 0px 0px 0px;" onload="_onload();" scroll="no" scrolling="no" onresize="_onsize();">
+<div id="dmap" style="border:none; width:100%; height:100%; margin: 0px 0px 0px 0px;"></div>
 </body>
 </html>

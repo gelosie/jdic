@@ -17,6 +17,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA.
 #include "stdafx.h" 
+#include <vector>
 #include "BrIELWControl.h"       // main symbols
 IMPLEMENT_SECURITY();
 
@@ -173,6 +174,7 @@ HRESULT CBrIELWControl::DestroyControl()
     m_dwAdvised = OLE_BAD_COOKIE;
     m_dwWebCPCookie = OLE_BAD_COOKIE;
     m_spIWebBrowser2 = NULL;
+    m_ccIWebBrowser2 = NULL;
 
     OLE_RETURN_HR
 }
@@ -211,6 +213,7 @@ HRESULT CBrIELWControl::CreateControl(
         (void**)&m_spIWebBrowser2))
     OLE_CHECK_NOTNULLSP(m_spIWebBrowser2)        
 
+    m_ccIWebBrowser2 = m_spIWebBrowser2;
     OLE_HRT( AdviseBrowser(TRUE) )
     OLE_HRT( InplaceActivate(TRUE) )       
 
@@ -232,7 +235,7 @@ HRESULT CBrIELWControl::OnPaint(HDC hdc, LPCRECT prcClip/*InParent*/)
     IViewObjectPtr spViewObject(m_spIWebBrowser2);
     OLE_CHECK_NOTNULLSP(spViewObject)
 
-    SEP(_T("Draw"))
+    SEP0(_T("Draw"))
     RECTL rcIE = {
         0, 0, 
         m_rcIE2.right - m_rcIE2.left, m_rcIE2.bottom - m_rcIE2.top
@@ -244,6 +247,7 @@ HRESULT CBrIELWControl::OnPaint(HDC hdc, LPCRECT prcClip/*InParent*/)
 
     CDCHolder shCopy;
     shCopy.Create(hdc, rcIE.right, rcIE.bottom, FALSE);
+    //STRACE1(_T("shCopy.Create done"));
     OLE_HRT( spViewObject->Draw(
         DVASPECT_CONTENT,
         -1, 
@@ -348,7 +352,7 @@ LRESULT CBrIELWControl::NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
             if(rc.top != rc.bottom && rc.left!=rc.right){
                 RedrawParentRect(&rc);
-                return 0;
+                //return 0;
             } 
 
             //seems empty redraw is a signal...
@@ -376,6 +380,8 @@ LRESULT CBrIELWControl::NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
             }
             return 0;
         }
+    } else if(WM_PARENTNOTIFY == msg && WM_CREATE==wParam){
+        STRACE1(_T("Created Child hWnd:%08x"), hWnd);
     }
 
     LONG_PTR pHook = NULL;
@@ -423,7 +429,8 @@ LRESULT CBrIELWControl::NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
  HRESULT CBrIELWControl::SendIEEvent(
         int iId,
         LPTSTR lpName, 
-        LPTSTR lpValue)
+        LPTSTR lpValue,
+        _bstr_t &bsResult)
  {
      return S_OK;
  }
@@ -523,6 +530,32 @@ IE_EVENT g_aevSupported[] = {
     {DISPID_UPDATEPAGESTATUS              , _T("UPDATEPAGESTATUS")},// Fired to indicate that the spooling status has changed
 };
 
+std::vector<_bstr_t> split(
+    LPCOLESTR pstr, 
+    LPCOLESTR delim = L",",
+    bool empties = true)
+{
+    std::vector<_bstr_t> results;
+    LPOLESTR r = NULL;
+    r = wcsstr(pstr, delim);
+    int dlen = wcslen(delim);
+    while( NULL != r ){
+        LPOLESTR cp = new OLECHAR[(r-pstr)+1];
+        memcpy( cp, pstr, (r-pstr)*sizeof(OLECHAR) );
+        cp[(r-pstr)] = L'\0';
+        if( 0 < wcslen(cp) || empties ){
+            results.push_back(cp);
+        }
+        delete[] cp;
+        pstr = r + dlen;
+        r = wcsstr(pstr, delim);
+    }
+    if( 0 < wcslen(pstr) || empties ){
+        results.push_back(pstr);
+    }
+    return results;
+}
+
 HRESULT CBrIELWControl::Invoke(
         DISPID dispIdMember,
         REFIID riid,
@@ -535,14 +568,17 @@ HRESULT CBrIELWControl::Invoke(
 ){
     STRACE0(_T("DISPID_: %08x %d"), dispIdMember, dispIdMember);
 
-    OLE_DECL
+    OLE_TRY
     BOOL bNotify = TRUE;
     switch(dispIdMember){
+    case DISPID_HTMLWINDOWEVENTS_ONERROR:
+        //STRACE0(_T("DISPID_NAVIGATECOMPLETE2"));
+        ::MessageBoxA(NULL, "Error", "Error", MB_OK);
+        break;
     case DISPID_NAVIGATECOMPLETE2:
     	STRACE0(_T("DISPID_NAVIGATECOMPLETE2"));
         //SendIEEvent(dispIdMember, _T("navigateComplete2"), _T("")/* CreateParamString(pDispParams)*/);
         {               
-            OLE_NEXT_TRY
             UpdateWindowRect();
             STRACE0(_T("hwndShell:%08x"), m_hwndShell);
             if(m_hwndShell){
@@ -563,7 +599,6 @@ HRESULT CBrIELWControl::Invoke(
                 }
             }            
             RedrawInParent();
-            OLE_CATCH
         }
         break;
     case DISPID_PROGRESSCHANGE:
@@ -573,11 +608,11 @@ HRESULT CBrIELWControl::Invoke(
 	break;
     case DISPID_WINDOWCLOSING:
 
-#define INDEX_bIsChildWindow 1 
-#define INDEX_bCancel        0 
+#define INDEX_WINDOWCLOSING_bIsChildWindow 1
+#define INDEX_WINDOWCLOSING_pbCancel       0
         
-        *(pDispParams->rgvarg[INDEX_bCancel].pboolVal) =    
-            VARIANT_TRUE==pDispParams->rgvarg[INDEX_bIsChildWindow].boolVal
+        *(pDispParams->rgvarg[INDEX_WINDOWCLOSING_pbCancel].pboolVal) =    
+            VARIANT_TRUE==pDispParams->rgvarg[INDEX_WINDOWCLOSING_bIsChildWindow].boolVal
                 ? VARIANT_FALSE
                 : VARIANT_TRUE;
 
@@ -617,13 +652,44 @@ HRESULT CBrIELWControl::Invoke(
         );
 
         if(NULL!=pEvent){
+            _bstr_t bsRes;
             SendIEEvent(
                 pEvent->dispid, 
                 _bstr_t(pEvent->lpEventName), 
-                CreateParamString(pDispParams)//_T("")
+                CreateParamString(pDispParams),
+                bsRes
             );
+            switch(dispIdMember){
+            case DISPID_NEWWINDOW2:
+#define INDEX_NEWWINDOW2_ppDisp         1
+#define INDEX_NEWWINDOW2_pbCancel       0
+                if( 0 < bsRes.length() ){
+                    SEP(_T("new window"));
+                    std::vector<_bstr_t> par = split(bsRes);
+
+                    if( INDEX_NEWWINDOW2_pbCancel < par.size() )
+                        *(pDispParams->rgvarg[INDEX_NEWWINDOW2_pbCancel].pboolVal) = 
+                            _V(par[INDEX_NEWWINDOW2_pbCancel]);
+
+                    if( INDEX_NEWWINDOW2_ppDisp < par.size() ){
+                        CBrIELWControl *pThis = (CBrIELWControl *)((LONG)_V(par[INDEX_NEWWINDOW2_ppDisp]));
+                        if(NULL!=pThis && bool(pThis->m_spIWebBrowser2)){
+                            *(pDispParams->rgvarg[INDEX_NEWWINDOW2_ppDisp].ppdispVal) = 
+                                pThis->m_ccIWebBrowser2.GetThreadInstance();
+                                //pThis->m_spIWebBrowser2;
+                                //pThis->m_spIWebBrowser2->AddRef();
+                        } else {
+                            STRACE1(_T("bad new window"));
+                        }
+                    }
+
+                    OLE_HR = S_OK; 
+                }
+                break;
+            }
         }
     }
+    OLE_CATCH
     OLE_RETURN_HR
 }
 

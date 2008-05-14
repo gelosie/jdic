@@ -21,6 +21,7 @@
 #define BrJComponent_H
 
 #include "BrIELWControl.h"
+#include "BrHolderThread.h"
 #include <ole2.h>
 #include <richedit.h>
 #include <richole.h>                                                           
@@ -67,19 +68,23 @@ public:
         jobject othis);
 
     virtual void destroy(JNIEnv *env);
-    virtual void updateTransparentMask();
+    virtual void updateTransparentMask(RECT *prc);
     virtual void setTransparent(boolean bTransparent);
+
+    BrJComponent();
     virtual ~BrJComponent();
 
     virtual HRESULT SendIEEvent(
         int iId,
         LPTSTR lpName, 
-        LPTSTR lpValue);
+        LPTSTR lpValue,
+        _bstr_t &bsResult = _bstr_t());
     virtual HRESULT BrJComponent::Connect(
         IN BSTR bsURL, 
         IN JNIEnv *env, 
         IN jobject jis);
 
+    BrowserThread *GetThread() { return m_pThread; }
 
 private:
     //IELWComp    
@@ -87,11 +92,6 @@ private:
     virtual LRESULT NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 public:
-    // some methods invoked on Toolkit thread
-    HWND GetIEWnd() { return m_hwndIE; }
-    HWND GetTopWnd() { return m_hwndShell; }
-    HWND GetParent() { return m_hwndParent; }
-
     //actors     
     jintArray NativeDraw(LPRECT prcDraw, BOOL bToImage);
        
@@ -100,6 +100,7 @@ private:
     DWORD   m_dwKey;
     jobject m_this;
     boolean m_bTransparent;
+    BrowserThread *m_pThread;
 public:
     boolean m_synthetic;
     boolean m_bBlockNativeInputHandler;

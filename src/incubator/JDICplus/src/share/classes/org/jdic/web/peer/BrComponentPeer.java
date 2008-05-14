@@ -21,6 +21,7 @@ package org.jdic.web.peer;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import javax.swing.JComponent;
 
 /**
  * The peer interface are intended only for use in porting
@@ -34,6 +35,10 @@ import java.awt.event.MouseEvent;
  */
 
 public  interface BrComponentPeer {
+
+    JComponent getCentralPanel();
+    boolean isSelfPaint();
+    boolean isNativeReady();
     /**
      * Switches the browser mode.
      * @param editable if <code>true</code> the browser provides the 
@@ -64,10 +69,10 @@ public  interface BrComponentPeer {
     String getNativeHTML();
     String getNativeXHTML();
     String getNativeXHTML(boolean bWithUniqueID);
-    void setTransparent(boolean bTransparent);
-    void nativeDraw(int x, int y, int width, int height);
+    
+    void paintClientArea(Graphics g, int iPaintHint);
     void blockNativeInputHandler(boolean dropNativeAction);
-    Image getImage(int x, int y, int width, int height);
+    
     String execJS(String code);
     void reshape(int x, int y, int width, int height);
     void destroy();
@@ -77,4 +82,8 @@ public  interface BrComponentPeer {
     long sendMouseEvent(MouseEvent e);
     public void setEnabled(boolean enabled);
     public void setVisible(boolean aFlag);
+    public long getNativeHandle();
+    
+    public void onAddNotify();
+    public void onRemoveNotify();
 }

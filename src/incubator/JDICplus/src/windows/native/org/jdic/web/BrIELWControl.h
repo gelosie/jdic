@@ -31,7 +31,53 @@
 #include <comdefsp.h>
 #include <math.h>
 
-#include "awt_DCHolder.h"
+//#include "awt_DCHolder.h"
+struct CDCHolder
+{
+    HDC m_hMemoryDC;
+    int m_iWidth;
+    int m_iHeight;
+    BOOL m_bForImage;
+    HBITMAP m_hBitmap;
+    HBITMAP m_hAlphaBitmap;
+    HBITMAP m_hOldBitmap;
+    void *m_pPoints;
+
+    CDCHolder();
+    ~CDCHolder();
+
+    void CreateAlphaImageIfCan();
+    void Create(
+        HDC hRelDC,
+        int iWidth,
+        int iHeght,
+        BOOL bForImage);
+    
+    operator HDC()
+    {
+        if( NULL==m_hOldBitmap &&  NULL!=m_hBitmap ){
+            m_hOldBitmap = (HBITMAP)::SelectObject(m_hMemoryDC, m_hOldBitmap);
+        } 
+        return m_hMemoryDC;
+    }
+
+    operator HBITMAP()
+    {
+        if(m_hAlphaBitmap)
+            return m_hAlphaBitmap;
+        if( NULL!=m_hOldBitmap ){
+            m_hBitmap = (HBITMAP)::SelectObject(m_hMemoryDC, m_hOldBitmap);
+            m_hOldBitmap = NULL;
+        } 
+        return m_hBitmap;
+    }
+
+    static HBITMAP CreateJavaContextBitmap(
+        HDC hdc,
+        int iWidth,
+        int iHeight,
+        void **ppPoints);
+};
 
 #define _AWT_OLE_EX_
 #include "awt_ole.h"
@@ -44,11 +90,11 @@ class CBrIELWControl :
     public IOleClientSite,
     public IOleInPlaceSite,
     public IAdviseSink,
-    public IDispatch,
     public DWebBrowserEvents2
 {
 public:
-    IWebBrowser2Ptr m_spIWebBrowser2;
+    IWebBrowser2Ptr                 m_spIWebBrowser2;
+    COLECrossMarshal<IWebBrowser2>  m_ccIWebBrowser2;
     BOOL m_bNativeDraw;
 
 protected:
@@ -57,6 +103,12 @@ protected:
     HWND m_hwndShell;
     RECT m_rcIE2;//rectangle of IE in parent coordinates
     void UpdateWindowRect();
+
+public:
+    //getters
+    HWND GetIEWnd() { return m_hwndIE; }
+    HWND GetTopWnd() { return m_hwndShell; }
+    HWND GetParent() { return m_hwndParent; }
 
 private:
     volatile LONG m_cRef;
@@ -93,7 +145,8 @@ public:
     virtual HRESULT SendIEEvent(
         int iId,
         LPTSTR lpName,
-        LPTSTR lpValue);
+        LPTSTR lpValue,
+        _bstr_t &bsResult = _bstr_t() );
 
 public:
 //IUnknown

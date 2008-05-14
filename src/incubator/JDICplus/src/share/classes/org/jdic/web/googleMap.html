@@ -5,133 +5,195 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <!-- Map loader -->
-   <!--     <script src="http://maps.google.com/maps?file=api&amp;v=2" type="text/javascript"></script> -->
+    <!-- <script src="http://maps.google.com/maps?file=api&amp;v=2" type="text/javascript"></script> -->
     <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=ABQIAAAATzYHx1-XL36zRB3eYwjxART2yXp_ZAY8_ufC3CFXhHIE1NvwkxS5rxqZkoEkahKFutilQayue0IKPQ"
       type="text/javascript"></script>
     <script type="text/javascript">
     //<![CDATA[
+var map; //GMap
+var dmap;
+var geocoder; //GClientGeocoder
+var VIEW_ROAD = 0x00000001;//road view
+var VIEW_SATELLITE = 0x00000002;//road view
+var VIEW_TRAFFIC = 0x00000004;//traffic view
+var VIEW_3D  = 0x00010000; //road view 
+var VIEW_25D = 0x00020000; //landscape view
 
-    var WINDOW_HTML = '<div style="width: 210px; padding-right: 10px"><a href="./signup.html">Sign up<\/a> for a Google Maps API key, or <a href="./documentation/">read more about the API<\/a>.<\/div>';
-    var map;
-    var dmap;
-    var center;
-    var zoom;
+/**
+* Informs Java about available views
+* @return the combination of VIEW_XXXX consts
+*/
+function _availuableViews(){
+    return VIEW_ROAD | VIEW_SATELLITE | VIEW_TRAFFIC | VIEW_25D;
+}
+
+var PlaneDecoder = [
+    G_NORMAL_MAP, //default
+    G_NORMAL_MAP, //VIEW_ROAD
+    G_SATELLITE_MAP, //VIEW_SATELLITE
+    G_HYBRID_MAP //VIEW_SATELLITE | VIEW_ROAD
+];
+
+/**
+* Set selected view style.
+* @param address the string with an address
+*/
+function _findAddress(address) {
+    geocoder.getLatLng(
+        address,
+        function(ll) {
+            //alert("aa:" + ll);
+            window.status =  "javaevent,foundAddress"
+                +( ll?("," + ll.lat() + "," + ll.lng()):"");
+        }
+    );
+}
+/**
+* Set selected view style.
+* @param view the combination of VIEW_XXXX consts
+*/
+function _setView(view){
+    map.setMapType(PlaneDecoder[view & 3]);        
+}
+
+/**
+* Get current view style.
+* @return the integer combination of VIEW_XXXX consts
+*/
+function _getView(){
+    var map_view = 0;
+    var ms = map.getCurrentMapType();
+    if( G_NORMAL_MAP==ms )
+        map_view |= VIEW_ROAD;
+    else if( G_SATELLITE_MAP==ms )
+        map_view |= VIEW_SATELLITE;
+    else if( G_HYBRID_MAP==ms )
+        map_view |= VIEW_SATELLITE | VIEW_ROAD;
+    return map_view;
+}
+
+/**
+* String property Center getter
+* @return the string with center "Latitude, Longitude"
+*/
+function _getCenter(){
+    var center = map.getCenter();    
+    return  center.lat() + "," + center.lng();
+}
+
+/**
+* String property Center getter
+* @param centerLatitude center latitude
+* @param centerLongitude center longitude
+*/
+function _setCenter(centerLatitude, centerLongitude){
+    map.setCenter(new GLatLng(centerLatitude, centerLongitude));
+}
+
+/**
+* Integer ZoomLevel property getter
+* @return the integer zoom level
+*/
+function _getZoomLevel(){
+    return map.getZoom();
+}
+
+/**
+* Integer ZoomLevel property setter
+* @param zoomLevel the integer zoom level
+*/
+function _setZoomLevel(zoomLevel){
+    return map.setZoom(zoomLevel);
+}
+
+/**
+* String property ViewDescriptor getter
+* @return the string with center "Latitude, Longitude, ZoomLevel, ViewType"
+*/
+function _getViewDescriptor(){
+     return _getCenter() + "," 
+         + _getZoomLevel() + "," 
+         + _getView();
+}
+
+/**
+* String property ViewDescriptor setter 
+* @param Latitude?  the double value of center Latitude
+* @param Longitude? the double value of center Longitude
+* @param ZoomLevel? the int value of zoom level 
+* @param ViewType?  the combination of VIEW_XXXX consts 
+*/
+function _setViewDescriptor(){
+    if( 3 <= arguments.length ) {
+        map.setCenter(new GLatLng(arguments[0], arguments[1]), arguments[2]);        
+    }
+    if( 4 <= arguments.length ) {
+        _setView(arguments[3]);
+    }
+}
 
 function _onsize(){
-	dmap.style.width = document.body.clientWidth;
-	dmap.style.height = document.body.clientHeight;
-    	map.checkResize();
+    map.checkResize();
 }
 
-function _resize(gp1, gp2){
-    var bnd = new GLatLngBounds(
-        map.fromContainerPixelToLatLng(
-            new GPoint(
-               Math.min(gp1.x, gp2.x),
-               Math.min(gp1.y, gp2.y))
-        ),
-        map.fromContainerPixelToLatLng(
-            new GPoint(
-               Math.max(gp1.x, gp2.x),
-               Math.max(gp1.y, gp2.y))
-        )
-    );
-    map.setCenter(
-        bnd.getCenter(),
-        map.getBoundsZoomLevel(bnd)
-    );
+var event_returnValue = false;
+var event_cancelBubble = false;
+function map_onmousemove(){    
+    event_returnValue = false;
+    event_cancelBubbling = false;
+    window.status =  "javaevent"
+        + "," + event.type
+        + "," + event.x 
+        + "," + event.y
+        + "," + event.button;
+    event.cancelBubble = event_cancelBubble;
+    return event_returnValue;
 }
 
-function _path(gp1, gp2){
-	return map.fromContainerPixelToLatLng(
-		gp1
-	).distanceFrom(
-        	map.fromContainerPixelToLatLng(
-			gp2
-		)
-	);
-}
+function map_zoomchanged(oldZoomLevel, newZoomLevel) {    
+    window.status =  "javaevent,zoomchanged" 
+        + "," + _getZoomLevel();
+    map_centerchanged();
+}        
 
-
-var FREE_MOVE = 0; //free mouse move
-var SHOW_ZOOM_RECT = 1; //drow rect from ancor
-var HIDE_ZOOM_RECT = 2; //drow rect from ancor
-
-var map_state = FREE_MOVE;
-var ancor;
-
-function map_onmousemove(){
-    var pos = new GPoint(event.x, event.y);
-    var LatLng = map.fromContainerPixelToLatLng( pos );
-    var stCommand = "java";
-
-    window.status = event.type + "----" + event.button;
-    if(FREE_MOVE==map_state &&  2==event.button){
-       map_state = SHOW_ZOOM_RECT;
-       ancor = pos;
-       return;
-    }
-    if(  ( SHOW_ZOOM_RECT==map_state && 0==(2 & event.button) )
-      || ( SHOW_ZOOM_RECT==map_state && 2==event.button && "mouseup"==event.type)
-    ){
-       if(null!=ancor){
-           _resize(ancor, pos);
-           ancor = null;
-       }
-       window.status = stCommand + "," + HIDE_ZOOM_RECT;
-       map_state = FREE_MOVE;
-       return;
-    }
-    stCommand = stCommand
-        + "," + map_state  //1
-        + "," + pos.x      //2
-        + "," + pos.y      //3
-        + "," + LatLng.lat() //4
-        + "," + LatLng.lng(); //5
-    if(SHOW_ZOOM_RECT==map_state && null!=ancor){
-        stCommand = stCommand
-            + "," + ancor.x  //6
-            + "," + ancor.y  //7
-            + "," + _path(ancor, pos); //8
-    };
-    window.status = stCommand;
-    event.cancelBubble = false;
-}
+function map_centerchanged() {    
+    window.status =  "javaevent,centerchanged" 
+        + "," + _getCenter();
+}   
 
 function _onload(){
-    if (GBrowserIsCompatible()) {
-   	dmap = document.getElementById("map");
-	map = new GMap2(dmap);
+    //if (GBrowserIsCompatible()) {
+        dmap = document.getElementById("map");
+        //dmap.onmousemove = map_onmousemove;
+        //dmap.onmouseup = map_onmousemove;
+        //dmap.onmousedown = map_onmousemove;
+                
+        map = new GMap2(dmap);
+        geocoder = new GClientGeocoder();
 
-        map.addControl( new GLargeMapControl() );
-    	map.addControl( new GMapTypeControl() );
+        //map.addControl( new GLargeMapControl() );
+        //map.addControl( new GMapTypeControl() );
         //map.addControl( new GTrafficOverlay() );
-        map.setCenter(
-		new GLatLng(60.0000, 0.0000),
-		4
-	);
+                
+        GEvent.addDomListener(dmap, "mousemove", map_onmousemove);
+        GEvent.addDomListener(dmap, "mouseup", map_onmousemove);
+        GEvent.addDomListener(dmap, "mousedown", map_onmousemove);                
+        GEvent.addListener(map, "zoomend", map_zoomchanged);
+        GEvent.addListener(map, "moveend", map_centerchanged);
 
-        dmap.onmousemove = map_onmousemove;
-        dmap.onmouseup = map_onmousemove;
-        dmap.onmousedown = map_onmousemove;
-
-        _onsize();
-    }
-}
-
-function _getArea(x, y, w, h){
-        var lt = new GPoint(x, y);
-        var lb = new GPoint(x, y+h);
-        var p1 = map.fromContainerPixelToLatLng(new GPoint(x, y) );
-        var p2 = map.fromContainerPixelToLatLng(new GPoint(x+w, y) );
-        var p3 = map.fromContainerPixelToLatLng(new GPoint(x+w, y+h) );
-        var p4 = map.fromContainerPixelToLatLng(new GPoint(x, y+h) );
-        return p1.lat() + "," + p1.lng()
-                + "," + p2.lat() + "," + p2.lng()
-                + "," + p3.lat() + "," + p3.lng()
-                + "," + p4.lat() + "," + p4.lng()
-                + "," + (_path(lt, lb)/h);
-
+        //_onsize();
+        /*                     
+        if(null!=document.location.search){
+            //eval( "_setViewDescriptor(" + document.location.search.substr(1) + ");" );
+             var args = document.location.search.substr(1).split(",");                
+            _setViewDescriptor(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]), parseInt(args[3]));            
+        } else {
+            _setViewDescriptor(30.01, -122.4, 5, 2);
+        }
+        */
+        window.status =  "javaevent,viewrequest";        
+        window.status =  "javaevent,mapready";
+    //}
 }
 
 function _fromLatLngToPoint(){
@@ -145,7 +207,7 @@ function _fromLatLngToPoint(){
       if(0!=ret.length){
           ret +=",";
       }
-      ret += (p.x - shift.x) + "," + (p.y - shift.y);
+      ret += (p.x - shift.x)  + "," + (p.y - shift.y);
    }
    return ret;
 }
@@ -163,27 +225,12 @@ function _fromPointToLatLng(){
    return ret;
 }
 
-function _getGBounds(){
-	var p1 = map.fromContainerPixelToLatLng(new GPoint(0, 0) );
-	var p2 = map.fromContainerPixelToLatLng(new GPoint(document.body.clientWidth, document.body.clientHeight) );
-	var lngSpan = p2.lng() - p1.lng();
-	var latSpan = p2.lat() - p1.lat();
-	return p1.lat() + "," + p1.lng() + "," + latSpan + "," + lngSpan;
-}
-
-    //]]>
+//]]>
     </script>
 </head>
-<body style="margin: 0px 0px 0px 0px; " onunload="GUnload()">
-<div id="map" style="border: 1px solid #979797; background-color: #e5e3df; width:100px; height:100px; margin: 0px 0px 0px 0px;">
-  <div style="padding: 1em; color: gray">Loading...</div>
-    <script type="text/javascript">
-    //<![CDATA[
-      document.body.scroll = "no";
-      document.body.onload = _onload;
-      window.onresize = _onsize;
-    //]]>
-    </script>
+<body style="border:none; margin: 0px 0px 0px 0px; " onunload="GUnload()" onload="_onload();" scroll="no" scrolling="no">
+<div id="map" style="border:none; width:100%; height:100%; margin: 0px 0px 0px 0px;">
+    <div style="padding: 1em; color: gray">Loading...</div>
 </div>
 </body>
 </html>

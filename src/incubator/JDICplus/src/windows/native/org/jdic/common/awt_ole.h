@@ -120,6 +120,51 @@
 
 //reserved for future IE integration - extended COM diagnostic
 #ifdef JNI_UTIL_H
+
+// Now the platform encoding is Unicode (UTF-16), re-define JNU_ functions
+// to proper JNI functions.
+#ifdef UNICODE
+    #define JNU_NewStringPlatform(env, x) env->NewString(x, static_cast<jsize>(_tcslen(x)))
+    #define _W2T(x) x
+#else
+    #define _W2T(x) _B(x)
+#endif
+//WM_MOUSEACTIVATE HTCLIENT MA_NOACTIVATEANDEAT 
+class JStringBuffer
+{
+protected:
+    LPWSTR m_pStr;
+    jsize  m_dwSize;
+
+public:
+    JStringBuffer(jsize cbTCharCount)
+    {
+        m_dwSize = cbTCharCount;
+        m_pStr = (LPWSTR)malloc( (m_dwSize+1)*sizeof(WCHAR) );
+    }
+
+    JStringBuffer(JNIEnv *env, jstring text)
+    {
+        m_dwSize = env->GetStringLength(text);
+        m_pStr = (LPWSTR)malloc( (m_dwSize+1)*sizeof(WCHAR) );
+        env->GetStringRegion(text, 0, m_dwSize, m_pStr);
+        m_pStr[m_dwSize] = 0;
+    }
+
+    ~JStringBuffer(){
+        free(m_pStr);
+    }
+
+    void Resize(jsize cbTCharCount){
+        m_dwSize = cbTCharCount;
+        m_pStr = (LPWSTR)realloc(m_pStr, (m_dwSize+1)*sizeof(TCHAR) );
+    }
+    operator LPWSTR() { return m_pStr; }
+    void *GetData() { return (void *)m_pStr; }
+    jsize  GetSize() { return m_dwSize; }
+};
+
+
 inline void ThrowJNIErrorOnOleError(JNIEnv *env, HRESULT hr, const char *msg)
 {
     if(SUCCEEDED(hr))
@@ -214,15 +259,97 @@ inline long _LV(VARIANT &vt)
 #define _O15     _O5,_O5,_O5,
 #define _O20     _O5,_O5,_O5,_O5
 
+
 #define IMPLEMENT_OLEDISPATCH_HELPERS()\
-    _variant_t ZZ::g__Vopt(DISP_E_PARAMNOTFOUND, VT_ERROR), ZZ::g__Vtrue(true), ZZ::g__Vfalse(false);
+    _variant_t ZZ::g__Vopt(DISP_E_PARAMNOTFOUND, VT_ERROR), ZZ::g__Vtrue(true), ZZ::g__Vfalse(false);\
+    IGlobalInterfaceTablePtr ZZ::g_spGIT;
 
 namespace ZZ{
 extern __declspec(selectany) _variant_t
     g__Vopt(DISP_E_PARAMNOTFOUND, VT_ERROR),
     g__Vtrue(true),
     g__Vfalse(false);
+extern __declspec(selectany) IGlobalInterfaceTablePtr g_spGIT;
 }
+
+
+
+inline HRESULT CreateGlobalInterfaceTable()
+{
+  if( bool(ZZ::g_spGIT) ){
+    return S_OK;
+  }
+  return ZZ::g_spGIT.CreateInstance(CLSID_StdGlobalInterfaceTable);
+}
+
+template <class T, const IID* piid = &__uuidof(T)>
+class COLECrossMarshal{
+public:
+    DWORD m_dwCookie;
+
+    COLECrossMarshal(T *pInterface)
+    :m_dwCookie(0)
+    {
+        attach(pInterface);
+    }
+
+    COLECrossMarshal()
+    :m_dwCookie(0)
+    {}
+
+    ~COLECrossMarshal(){
+        clean();
+    }
+
+    COLECrossMarshal& operator=(T *pInterface) 
+    {
+        attach(pInterface);
+        return *this;
+    }
+
+    HRESULT attach(T *pInterface)
+    {
+        OLE_TRY
+        OLE_HRT(clean())
+        if(NULL!=pInterface){
+            OLE_NEXT_TRY
+            OLE_HRT(CreateGlobalInterfaceTable())
+            OLE_HRT(ZZ::g_spGIT->RegisterInterfaceInGlobal(
+                (T *)pInterface,
+                *piid,
+                &m_dwCookie))
+            OLE_CATCH
+        }
+        OLE_CATCH
+        OLE_RETURN_HR
+    }
+
+    HRESULT clean()
+    {
+        if(0==m_dwCookie)
+            return S_OK;
+        OLE_TRY
+        OLE_HRT(ZZ::g_spGIT->RevokeInterfaceFromGlobal(m_dwCookie))
+        OLE_CATCH
+        m_dwCookie = 0;
+        OLE_RETURN_HR
+    }
+
+    T *GetThreadInstance()
+    {
+        if(0!=m_dwCookie){
+            OLE_TRY
+            T *pInterfaceLoc = NULL;
+            OLE_HRT(ZZ::g_spGIT->GetInterfaceFromGlobal(
+                m_dwCookie,
+                *piid,
+                (void **)&pInterfaceLoc))
+            return pInterfaceLoc;
+            OLE_CATCH
+        }
+        return NULL;
+    }
+};
 
 #endif _AWT_OLE_EX_
 
@@ -374,5 +501,21 @@ public:
 protected:
     ULONG  m_cRef;
 };
+
+struct COLEHolder
+{
+    COLEHolder()
+    : m_hr(::OleInitialize(NULL))
+    {}
+
+    ~COLEHolder(){
+        if(SUCCEEDED(m_hr))
+            ::OleUninitialize();
+    }
+    HRESULT m_hr;
+};
+
+
+
 
 #endif//AWT_OLE_H

@@ -19,12 +19,11 @@
 #include "stdafx.h"
 #include "BrHolderThread.h"
 
-ZZ::CHandlerSup BrowserThread::ms_hAtomMutex(CreateMutex(NULL, FALSE, NULL));
-
 DWORD OLE_CoGetThreadingModel()
 {
     return COINIT_APARTMENTTHREADED;
 }
+
 
 HRESULT OLE_CoWaitForMultipleHandles(
     IN DWORD dwFlags,
@@ -89,7 +88,6 @@ HRESULT OLE_CoWaitForMultipleHandles(
     }
     return hr;
 }
-
 DWORD OLE_CoWaitForSingleObject(
     IN HANDLE hHandle,
     IN DWORD dwMilliseconds)
@@ -136,6 +134,7 @@ DWORD OLE_CoWaitForMultipleObjects(
     return dwRes;
 }
 
+
 void OLE_CoSleep(IN DWORD dwMilliseconds)
 {
     if( COINIT_APARTMENTTHREADED==OLE_CoGetThreadingModel() ){
@@ -151,6 +150,7 @@ void OLE_CoSleep(IN DWORD dwMilliseconds)
     }
 }
 
+
 void OLE_CoPump()
 {
     MSG msg;
@@ -158,4 +158,187 @@ void OLE_CoPump()
         ::TranslateMessage(&msg);
         ::DispatchMessage(&msg);
     }
+}
+
+
+LPCTSTR         BrowserThread::ms_lpStaffWndClass = _T("StaffWndClass");
+HINSTANCE       BrowserThread::ms_hInstance = NULL;
+
+
+void BrowserThread::RegisterStaffWndClass(HINSTANCE hModule)
+{
+    WNDCLASSEX wcex;
+    memset(&wcex,0, sizeof(wcex));
+    wcex.cbSize = sizeof(WNDCLASSEX);
+    wcex.hInstance = ms_hInstance = hModule;
+    wcex.lpfnWndProc = StaffWnd;
+    wcex.lpszClassName = ms_lpStaffWndClass; 
+    ::RegisterClassEx(&wcex);
+}
+
+LRESULT BrowserThread::StaffWnd(
+    HWND hWnd, 
+    UINT uMsg, 
+    WPARAM wParam, 
+    LPARAM lParam)
+{
+    if(WM_CREATE==uMsg){
+        ::SetWindowLong(hWnd, GWL_USERDATA, (LONG)((LPCREATESTRUCT)lParam)->lpCreateParams);
+    } else { 
+        BrowserThread *pThis = (BrowserThread *)::GetWindowLong(hWnd, GWL_USERDATA);
+        if( pThis )
+            return pThis->DefWindowProc(uMsg, wParam, lParam);
+    }
+    return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+LRESULT BrowserThread::DefWindowProc(
+    UINT uMsg, 
+    WPARAM wParam, 
+    LPARAM lParam)
+{
+    LRESULT ret = 0;
+    if(WM_USER==uMsg){
+        BrowserAction *pAction = (BrowserAction *)wParam;
+        ret = pAction->Do(m_env_nt);
+        if(lParam)
+            delete pAction;
+    }
+    return ::DefWindowProc(m_hQueueWnd, uMsg, wParam, lParam);
+}
+
+BrowserThread::BrowserThread():
+    m_hStart(::CreateEvent(NULL, FALSE, FALSE, NULL)),
+    m_hTerminate(::CreateEvent(NULL, FALSE, FALSE, NULL)),
+    m_hAtomMutex(CreateMutex(NULL, FALSE, NULL)),
+    m_hThread(NULL),
+    m_dwThreadId(0),
+    m_hQueueWnd(NULL),
+    m_env_nt(NULL),
+    m_cRef(1)
+{}
+
+BrowserThread::~BrowserThread()
+{
+    Terminate();
+}
+
+ULONG BrowserThread::AddRef(){
+    return (ULONG)::InterlockedIncrement( (LPLONG)&m_cRef );
+}
+
+ULONG BrowserThread::Release(){
+    ULONG cRef = (ULONG)::InterlockedDecrement( (LPLONG)&m_cRef );
+    if(cRef == 0) {
+        delete this;
+    }
+    return cRef;
+}
+
+BrowserThread *BrowserThread::GetInstance()
+{
+    return new BrowserThread();
+}
+
+void BrowserThread::Terminate()
+{
+    _HP_
+    if(NULL!=m_hThread){
+        ::SetEvent(m_hTerminate);
+        //That can be an alarm termination
+        //in this case the thread already disappear.
+        //Long but limited wait is the best solution here.
+        ::WaitForSingleObject(m_hThread, 15000);
+        ::CloseHandle(m_hThread);
+        m_hThread = NULL;
+        m_dwThreadId = 0;
+    }
+}
+
+void BrowserThread::MakeActionAsync(BrowserAction *pAction)
+{
+    RestartIfNeed();
+    ::PostMessage(
+        m_hQueueWnd, 
+        WM_USER, 
+        (WPARAM)pAction,
+        TRUE);
+}
+
+
+HRESULT BrowserThread::MakeAction(
+    JNIEnv *env, 
+    const char *msg, 
+    BrowserAction &Action)
+{
+    OLE_DECL
+    RestartIfNeed();    
+    OLE_HR = ::SendMessage(
+        m_hQueueWnd, 
+        WM_USER, 
+        (WPARAM)&Action,
+        FALSE);
+
+    if(FAILED(OLE_HR)){
+        Action.throwExeption(env, msg, OLE_HR);
+    }
+    OLE_RETURN_HR
+}
+
+unsigned BrowserThread::RunEx(){
+    SEP(_T("Processor"));
+    unsigned int ret = (unsigned int)jvm->AttachCurrentThread(
+        (void**)&m_env_nt,
+        NULL
+    );
+    if(m_env_nt){
+        OLE_TRY
+        COLEHolder oh;
+        OLE_HRW32_BOOL( (m_hQueueWnd = ::CreateWindow(
+            ms_lpStaffWndClass,
+            _T("StaffWnd"),
+            WS_OVERLAPPED,
+            0, 0,
+            0, 0,
+            NULL,
+            NULL,
+            ms_hInstance,
+            this
+        )))
+
+        ::SetEvent(m_hStart);
+
+        OLE_CoWaitForSingleObject(
+            m_hTerminate,
+            INFINITE
+        );
+        OLE_CATCH
+        if(m_hQueueWnd)
+            ::DestroyWindow(m_hQueueWnd);
+        OLE_CoSleep(100);//IE message pumping
+        jvm->DetachCurrentThread();
+    }
+    return 0;
+}
+
+unsigned __stdcall BrowserThread::RunMe(LPVOID pThis){
+    return ((BrowserThread *)pThis)->RunEx();
+}
+void BrowserThread::RestartIfNeed()
+{
+    _HP_
+    if(NULL!=m_hThread)
+        return;
+    m_hThread = (HANDLE)_beginthreadex(
+        NULL,
+        0,
+        RunMe,
+        this,
+        0,
+        &m_dwThreadId);
+    if(INVALID_HANDLE_VALUE==m_hThread){
+        m_hThread = NULL;
+        return;
+    }
+    ::WaitForSingleObject(m_hStart, INFINITE);
 }
