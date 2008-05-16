@@ -20,6 +20,7 @@
 
 import org.jdic.web.BrMap;
 import org.jdic.web.BrMapSprite;
+import org.jdic.web.BrMapBalloonSprite;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -867,6 +868,7 @@ private void edAddressMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:e
             }
         }
 
+        @Override
         public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
             if(pageIndex == 0 && null!=rcArea) {
                     Graphics2D g2d = (Graphics2D)g;
@@ -906,8 +908,8 @@ private void edAddressMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:e
                 if(4 == args.length){
                     setZoomLevel(Math.max(14, getZoomLevel()));
                     setViewCenter(args[2] + "," + args[3]);
-                    MapBalloon bl = new MapBalloon(
-                        edAddress.getText(),
+                    BrMapBalloonSprite bl = new BrMapBalloonSprite(
+                        "<html><b>Location:</b><br><b style=\"color:green\">" + edAddress.getText() + "</b></html>",
                         getPoint(getViewCenter())
                     );
                     bl.add(brMap);
