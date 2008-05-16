@@ -668,23 +668,6 @@ private void btYahooMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     public javax.swing.JSlider sbZoomLevel;
     // End of variables declaration//GEN-END:variables
     
-    public void onSelectionRectChanged(Rectangle rc, boolean bShow)
-    {
-
-    }
-
-    final static int FREE_MOVE = 0; //free mouse move
-    final static int SHOW_ZOOM_RECT = 1; //drow rect from ancor
-    final static int HIDE_ZOOM_RECT = 2; //drow rect from ancor
-
-    double distanse = 0.0;
-    Rectangle rcOldSelect = null;
-    Rectangle rcNewSelect = null;
-
-    int map_state = FREE_MOVE;
-    Point   ancor;
-    Point2D ancorLL;
-
     /*
      var event_cancelBubble = false;
      var event_return = false;
@@ -728,71 +711,7 @@ private void btYahooMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
                 skipJSChanges = false;
             }});
         } else if(isMapReady() && type.contains("mouse")){
-            Point pos = new Point(Integer.parseInt(args[2]), Integer.parseInt(args[3]));
-            final Point2D posLL = point2LL(pos);
-            //System.out.println("posLL:" + posLL);
-            int button = Integer.parseInt(args[4]);
-
-            if(FREE_MOVE==map_state && 2==button){
-                map_state = SHOW_ZOOM_RECT;
-                ancor = pos;
-                ancorLL = posLL;
-            } else  if(
-                 ( SHOW_ZOOM_RECT==map_state && 0==(2 & button) )
-              || ( SHOW_ZOOM_RECT==map_state && 2==button && "mouseup".equals(type))
-            ){
-                if(null!=ancor && !isSelectionMode()){
-                    SwingUtilities.invokeLater(new Runnable(){ public void run() {
-                        skipJSChanges = true;
-                        setZoomLevel(getBestZoomLevel(
-                               ancorLL.getX(), ancorLL.getY(),
-                               posLL.getX(), posLL.getY()));
-                        setViewCenter( ((ancorLL.getX() + posLL.getX())/2)
-                               + "," + ((ancorLL.getY() + posLL.getY())/2) );
-                        skipJSChanges = false;
-                        execJS( ":_setViewDescriptor("
-                               + getViewCenter()
-                               + "," + getZoomLevel() + ")" );
-                        /*
-                        execJS( ":setTimeout(\"_setViewDescriptor("
-                               + getViewCenter()
-                               + "," + getZoomLevel()
-                               + ");\", 0);" );
-                        */
-                    }});
-                }
-                //hide ZoomRect
-                ancor = null;
-                rcNewSelect = null;
-                if(null!=rcOldSelect){
-                    onSelectionRectChanged(rcOldSelect, false);
-                    repaint(rcOldSelect);
-                }
-                rcOldSelect = null;
-            } else if(SHOW_ZOOM_RECT==map_state && null!=ancor ){
-                if(2==button){
-                    execJS( ":event_returnValue=true;event_cancelBubble=true;");
-                }
-                distanse = getDistance(
-                //distanse = getDistanceInPixel(
-                    ancorLL.getX(), ancorLL.getY(),
-                    posLL.getX(), posLL.getY());
-                //System.out.print(ancorLL.getX() + "," + ancorLL.getY() + "\n");
-                if(null!=rcOldSelect){
-                    repaint(rcOldSelect);
-                }
-                rcNewSelect = new Rectangle(
-                    Math.min(ancor.x, pos.x),
-                    Math.min(ancor.y, pos.y),
-                    Math.abs(ancor.x - pos.x),
-                    Math.abs(ancor.y - pos.y)
-                );
-                onSelectionRectChanged(rcNewSelect, true);
-                repaint(rcNewSelect);
-            } else {
-                map_state = FREE_MOVE;
-            }
-            setMouseGeoPos( new BrMapMousePos(pos, posLL) );
+            onMouseEvent(type, args);
         }
     }
 
@@ -1041,7 +960,90 @@ private void btYahooMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             }        
         }});//end posponed operation
     }
+
+    public void onSelectionRectChanged(Rectangle rc, boolean bShow)
+    {}
+
+    final static int FREE_MOVE = 0; //free mouse move
+    final static int SHOW_ZOOM_RECT = 1; //drow rect from ancor
+    final static int HIDE_ZOOM_RECT = 2; //drow rect from ancor
+
+    double distanse = 0.0;
+    Rectangle rcOldSelect = null;
+    Rectangle rcNewSelect = null;
+
+    int map_state = FREE_MOVE;
+    Point   ancor;
+    Point2D ancorLL;
     
+    public void onMouseEvent(final String type, final String args[])
+    {
+        Point pos = new Point(Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+        final Point2D posLL = point2LL(pos);
+        //System.out.println("posLL:" + posLL);
+        int button = Integer.parseInt(args[4]);
+
+        if(FREE_MOVE==map_state && 2==button){
+            map_state = SHOW_ZOOM_RECT;
+            ancor = pos;
+            ancorLL = posLL;
+        } else  if(
+             ( SHOW_ZOOM_RECT==map_state && 0==(2 & button) )
+          || ( SHOW_ZOOM_RECT==map_state && 2==button && "mouseup".equals(type))
+        ){
+            if(null!=ancor && !isSelectionMode()){
+                SwingUtilities.invokeLater(new Runnable(){ public void run() {
+                    skipJSChanges = true;
+                    setZoomLevel(getBestZoomLevel(
+                           ancorLL.getX(), ancorLL.getY(),
+                           posLL.getX(), posLL.getY()));
+                    setViewCenter( ((ancorLL.getX() + posLL.getX())/2)
+                           + "," + ((ancorLL.getY() + posLL.getY())/2) );
+                    skipJSChanges = false;
+                    execJS( ":_setViewDescriptor("
+                           + getViewCenter()
+                           + "," + getZoomLevel() + ")" );
+                    /*
+                    execJS( ":setTimeout(\"_setViewDescriptor("
+                           + getViewCenter()
+                           + "," + getZoomLevel()
+                           + ");\", 0);" );
+                    */
+                }});
+            }
+            //hide ZoomRect
+            ancor = null;
+            rcNewSelect = null;
+            if(null!=rcOldSelect){
+                onSelectionRectChanged(rcOldSelect, false);
+                repaint(rcOldSelect);
+            }
+            rcOldSelect = null;
+        } else if(SHOW_ZOOM_RECT==map_state && null!=ancor ){
+            if(2==button){
+                execJS( ":event_returnValue=true;event_cancelBubble=true;");
+            }
+            distanse = getDistance(
+            //distanse = getDistanceInPixel(
+                ancorLL.getX(), ancorLL.getY(),
+                posLL.getX(), posLL.getY());
+            //System.out.print(ancorLL.getX() + "," + ancorLL.getY() + "\n");
+            if(null!=rcOldSelect){
+                repaint(rcOldSelect);
+            }
+            rcNewSelect = new Rectangle(
+                Math.min(ancor.x, pos.x),
+                Math.min(ancor.y, pos.y),
+                Math.abs(ancor.x - pos.x),
+                Math.abs(ancor.y - pos.y)
+            );
+            onSelectionRectChanged(rcNewSelect, true);
+            repaint(rcNewSelect);
+        } else {
+            map_state = FREE_MOVE;
+        }
+        setMouseGeoPos( new BrMapMousePos(pos, posLL) );
+    }
     
     /**
      * Mouse geo and ordinal position holder.
