@@ -103,6 +103,19 @@ load prepared HTML, get single point callback from browser and method to execute
 subroutines.
 </P>
 </blockquote>
+<h3><a name="Demo">That's new</a></h3>
+<h4>v.0.2.0:</h4>
+<ul>
+<li>Webkit ready. On <a href="https://openjfx.dev.java.net/JavaFXatJavaOne2008.htm">JavaOne</a> the
+    Java port for WebKit interface was annonced as part of JavaFX (TS-6610
+    "Inside The JavaFX<sup><small>TM</small></sup> Script Technology-Based Runtime APIs: Scene Graph & WebKit").
+    It is called JWebPane. JDICplus will accept this functionality as crossplatform solution
+    in time of JavaFX<sup><small>TM</small></sup> final release.</li>
+<li>Improved API for geocoding. Google Maps, Microsoft Virtual Earth, Yahho! Local Maps providers
+    are supported. Please, play with Map Explorer demo!
+</ul>
+<blockquote>
+</blockquote>
 <h3><a name="Demo">Demo applications and Screenshots</a></h3>
 <blockquote>
 <p>For the best view, please turn off IE "Smooth Scrolling" feature as it is described <a href="http://www.microsoft.com/windowsxp/using/accessibility/smoothscrolling.mspx">
@@ -124,7 +137,7 @@ here</a>.
     <td>
       <a href="images/SimpleBrowser.jpg">
       <img src="images/SimpleBrowser.jpg" width="153" height="100" border="0"></a></td>
-    <td>JDICplus: A simple lightweight Java Web Browser with Swing menus and views.</td>
+    <td>JDICplus: A simple lightweight tabbed Java Web Browser with Swing menus and views.</td>
   </tr>
   <tr>
     <td>
@@ -135,9 +148,16 @@ here</a>.
     <td>
       <a href="images/MapExplorer.jpg">
       <img src="images/MapExplorer.jpg" width="153" height="100" border="0"></a></td>
-    <td>JDICplus: Map Explorer demo application. Shows Java2D drawing in geographical coordinate system. Map Explorer has
-    child Swing components that are mixing correctly with the parent. Tab controls navigation are fully supported in correct order
-    for both Swing and script children.</td>
+    <td>
+	JDICplus: Map Explorer demo application. Shows Java2D drawing in geographical coordinate system.
+	Google Maps, Microsoft Virtual Earth, Yahho! Local Maps providers are supported. That is available
+	to synchronize several maps from different providers with alpha-mixing. The maps and photos cover
+	the Earth surface differently in different areas for each provider.  Some islands could be even
+	missed. Maps mixing and providers switching without location and scale loosing get you a lot of
+	flexibility. Some analog of <a href="http://code.google.com/apis/maps/documentation/mapplets/">Google Mapplets</a>
+	was created. You are free in Java implementation of personalized controls painted in geo-coordinates.
+	Universal geo-find interface makes localization	process universal for all providers. Enjoy!
+    </td>
   </tr>
   <tr bgcolor="#EEEEEE">
     <td>
