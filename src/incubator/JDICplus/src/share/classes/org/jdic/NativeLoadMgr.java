@@ -23,6 +23,7 @@ package org.jdic;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashSet;
                               
 
@@ -32,35 +33,49 @@ import java.util.HashSet;
  */
 
 public class NativeLoadMgr { 
-    static HashSet<String> loadedLibraries = new HashSet<String>();
-    public static void addNativePath(Class o)
+    private static HashSet<String> loadedLibraries = new HashSet<String>();
+    //private static Method mdNativeExtractor_loadLibruary;
+    private static boolean initNativeLoader = false;
+    private static Class clNativeExtractor = null;    
+    
+    public static void init()
     {
-        if (System.getProperty("javawebstart.version") == null){
+        try {
+            System.err.println("{Native loader");
+            clNativeExtractor = NativeExtractor.class;
+            System.err.println("}Native loader");
+        } catch (Throwable e) {
+            //that is ok!
+        }
+        if (System.getProperty("javawebstart.version") != null){
+            System.err.println("Web start!");
+        } else {
             try {
                 // Find the root path of this class.
-                String binaryPath = (
-                    new URL(
-                        o.getProtectionDomain().getCodeSource().getLocation(),
-                        "."
-                    )
-                ).openConnection().getPermission().getName();
-                binaryPath = (new File(binaryPath)).getCanonicalPath();
-                String newLibPath = binaryPath + File.separator +  "bin" + File.pathSeparator +
-                                    System.getProperty("java.library.path");
-                System.out.print("New binary path:" + newLibPath);
-                System.setProperty("java.library.path", newLibPath);
-                Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
-                fieldSysPath.setAccessible(true);
-                if (fieldSysPath != null) {
-                    fieldSysPath.set(System.class.getClassLoader(), null);
-                }
+                if( null==clNativeExtractor 
+                    && NativeLoadMgr.class.getClassLoader() instanceof URLClassLoader)
+                {
+                    String binaryPath = (
+                        new URL(
+                            NativeLoadMgr.class.getProtectionDomain().getCodeSource().getLocation(),
+                            "."
+                        )
+                    ).openConnection().getPermission().getName();
+                    binaryPath = (new File(binaryPath)).getCanonicalPath();
+                    String newLibPath = binaryPath + File.separator +  "bin" + File.pathSeparator +
+                                        System.getProperty("java.library.path");
+                    System.err.print("New binary path:" + newLibPath);
+                    System.setProperty("java.library.path", newLibPath);
+                    Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
+                    fieldSysPath.setAccessible(true);
+                    if (fieldSysPath != null) {
+                        fieldSysPath.set(System.class.getClassLoader(), null);
+                    }
+                }   
             } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
-    }
-    static {
-        addNativePath(NativeLoadMgr.class);
     }
     
     /**
@@ -73,9 +88,21 @@ public class NativeLoadMgr {
      * @param libname the native dynamic libruary name without an extension
      */
     public static synchronized boolean loadLibrary(String libname) {
+        if(!initNativeLoader){
+            init();
+            initNativeLoader = true;            
+        }
         if( !loadedLibraries.contains(libname) ){
             loadedLibraries.add(libname);
-            System.loadLibrary(libname);
+            try {
+                if(null!=clNativeExtractor){
+                    NativeExtractor.loadLibruary(libname);                    
+                } else {
+                    System.loadLibrary(libname);
+                }    
+            } catch(Throwable e) {
+                e.printStackTrace();      
+            }
             return true;
         }    
         return false;

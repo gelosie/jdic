@@ -224,6 +224,7 @@ public class WBrComponentPeer implements BrComponentPeer {
     public native void nativeSetTransparent(boolean bTransparent);    
     public native long nativeSendMouseEvent(int wnd, int wm, int wParam, int lParam);
     public native void nativeReleaseMouseCapture();
+    public native int  setActionFiler(int flag, boolean busyState);
 
     public void reshape(int x, int y, int width, int height)
     {
@@ -370,6 +371,9 @@ public class WBrComponentPeer implements BrComponentPeer {
                 WND_IE,
                 0x0084,//WM_NCHITTEST
                 0, e.getXOnScreen() + (e.getYOnScreen() << 16 ));
+            if( MouseEvent.MOUSE_PRESSED==e.getID() )
+                focusGain(false);
+            /*
             if( MouseEvent.MOUSE_PRESSED==e.getID() ){
                 //System.out.println("##focusGain!");
                 long res = nativeSendMouseEvent(
@@ -385,7 +389,7 @@ public class WBrComponentPeer implements BrComponentPeer {
                     //discad message
                     return ret;
                 }
-            }
+            }*/
             nativeSendMouseEvent(
                 WND_IE,
                 0x0020,//WM_SETCURSOR
@@ -577,7 +581,8 @@ public class WBrComponentPeer implements BrComponentPeer {
     public JComponent getCentralPanel() {
         return target;
     }
-    
+
     BrComponent target;
     long        data = 0;
+
 }    

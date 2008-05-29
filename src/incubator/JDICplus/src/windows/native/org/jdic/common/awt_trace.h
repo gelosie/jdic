@@ -70,7 +70,7 @@ namespace ZZ{
   class CHandlerSup{
   public:
     HANDLE m_Handle;
-    CHandlerSup():m_Handle( ::CreateMutex(SUN_KERNAL_SECURITY_ATTRIBUTES, FALSE, _T("$DEBUG$"))){}
+    CHandlerSup():m_Handle( ::CreateMutex(SUN_KERNAL_SECURITY_ATTRIBUTES, FALSE, _T("$_DEBUG$"))){}
     CHandlerSup(HANDLE Handle):m_Handle(Handle){}
     ~CHandlerSup(){ if(m_Handle) ::CloseHandle(m_Handle); }
     operator HANDLE() { return m_Handle; }
@@ -232,16 +232,22 @@ namespace ZZ{
 #endif// _DEBUG
 #define STRACE0       ZZ::snTraceEmp
 #define SASSERT       snAssert
-struct CLogEntryPoint {
+struct CLogEntryPoint1 {
     LPCTSTR m_lpTitle;
-    CLogEntryPoint(LPCTSTR lpTitle):m_lpTitle(lpTitle) { STRACE1(_T("{%s"), m_lpTitle); }
-    ~CLogEntryPoint(){ STRACE1(_T("}%s"), m_lpTitle); }
+    CLogEntryPoint1(LPCTSTR lpTitle):m_lpTitle(lpTitle) { STRACE1(_T("{%s"), m_lpTitle); }
+    ~CLogEntryPoint1(){ STRACE1(_T("}%s"), m_lpTitle); }
 };
 struct CLogEntryPoint0 {
     LPCTSTR m_lpTitle;
     CLogEntryPoint0(LPCTSTR lpTitle):m_lpTitle(lpTitle) { STRACE0(_T("{%s"), m_lpTitle); }
     ~CLogEntryPoint0(){ STRACE0(_T("}%s"), m_lpTitle); }
 };
-#define SEP(msg)    CLogEntryPoint _ep_(msg);
+#define SEP1(msg)    CLogEntryPoint1 _ep1_(msg);
 #define SEP0(msg)    CLogEntryPoint0 _ep0_(msg);
+#ifndef  _DEBUG
+  #define SEP(msg)   CLogEntryPoint1 _ep1_(msg);
+#else // _DEBUG
+  #define SEP(msg)   CLogEntryPoint0 _ep0_(msg);
+#endif// _DEBUG
+
 #endif

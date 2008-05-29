@@ -438,7 +438,7 @@ jintArray CopyDIBBytes(
 
 jintArray BrJComponent::NativeDraw(LPRECT prcDraw, BOOL bToImage)
 {
-    SEP0(_T("NativeDraw"));
+    SEP(_T("NativeDraw"));
     jintArray jaiGPoints = NULL;
     if( bool(m_spIWebBrowser2) ){
         OLE_TRY
@@ -1307,6 +1307,19 @@ JNIEXPORT void JNICALL Java_org_jdic_web_peer_WBrComponentPeer_nativeReleaseMous
     if(!ReleaseCapture()){
         STRACE1(_T("Error:ReleaseCapture"));
     }
+}
+
+
+JNIEXPORT jint JNICALL Java_org_jdic_web_peer_WBrComponentPeer_setActionFiler(
+    JNIEnv *env, 
+    jobject self, 
+    jint  flag, jboolean busyState)
+{
+    BrJComponent *pThis = (BrJComponent *)env->GetLongField(self, BrJComponent::ms_jcidWBrComponentPeer_data);
+    if(pThis ){
+        pThis->GetThread()->SetBusy( BOOL(busyState) );
+    }
+    return 0;
 }
 
 } /* extern "C" */

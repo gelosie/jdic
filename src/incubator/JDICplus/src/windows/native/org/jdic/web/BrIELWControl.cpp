@@ -235,7 +235,7 @@ HRESULT CBrIELWControl::OnPaint(HDC hdc, LPCRECT prcClip/*InParent*/)
     IViewObjectPtr spViewObject(m_spIWebBrowser2);
     OLE_CHECK_NOTNULLSP(spViewObject)
 
-    SEP0(_T("Draw"))
+    SEP(_T("Draw"));
     RECTL rcIE = {
         0, 0, 
         m_rcIE2.right - m_rcIE2.left, m_rcIE2.bottom - m_rcIE2.top
@@ -329,15 +329,25 @@ LRESULT CBrIELWControl::NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     if(!m_bNativeDraw && (WM_PAINT==msg || WM_NCPAINT==msg || WM_SYNCPAINT==msg) ){
         if( !IsSmoothScroll() ){
             UpdateWindowRect();       
-            STRACE0(_T("_PAINT %08x"), msg);
+            STRACE(_T("_PAINT %08x"), msg);
             RECT rc;
-            GetUpdateRect(hWnd, &rc, FALSE);
+            if( !GetUpdateRect(hWnd, &rc, FALSE) ){
+                GetClientRect(hWnd, &rc);
+            } else {
+                ValidateRect(hWnd, &rc);
+            }
 
-            RECT rcValidate = rc;            
-            if(rc.top == rc.bottom && rc.left==rc.right)
-                rcValidate = m_rcIE2;
-
-            ValidateRect(hWnd, &rcValidate);
+#ifdef _DEBUG
+            {
+                RECT rc = {0};
+                int res = GetWindowRgnBox(m_hwndIE, &rc);
+                //if( NULLREGION!=res && ERROR!=res )
+                {
+                    STRACE1(_T("Clip(x:%d y:%d w:%d h:%d)"), rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
+                    STRACE1(_T("IE(x:%d y:%d w:%d h:%d)"), m_rcIE2.left, m_rcIE2.top, m_rcIE2.right - m_rcIE2.left, m_rcIE2.bottom - m_rcIE2.top);
+                }
+            }
+#endif //_DEBUG
 
             if(0!=m_tidUpdate){
                 ::KillTimer(m_hwndIE, m_tidUpdate);
@@ -352,13 +362,13 @@ LRESULT CBrIELWControl::NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
             if(rc.top != rc.bottom && rc.left!=rc.right){
                 RedrawParentRect(&rc);
-                //return 0;
+                return 0;
             } 
 
             //seems empty redraw is a signal...
             return ::CallWindowProc((WNDPROC)m_pOldIEWndProc, hWnd, msg, wParam, lParam);      
         } else {
-            STRACE0(_T("_SPAINT %08x"), msg);
+            STRACE(_T("_SPAINT %08x"), msg);
             LaizyUpdate();
         }
     } else if(WM_GETDLGCODE == msg){
@@ -426,14 +436,14 @@ LRESULT CBrIELWControl::NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     return res;
 }
 
- HRESULT CBrIELWControl::SendIEEvent(
-        int iId,
-        LPTSTR lpName, 
-        LPTSTR lpValue,
-        _bstr_t &bsResult)
- {
-     return S_OK;
- }
+HRESULT CBrIELWControl::SendIEEvent(
+    int iId,
+    LPTSTR lpName, 
+    LPTSTR lpValue,
+    _bstr_t &bsResult)
+{
+    return S_OK;
+}
 
 // IDispatch
 _bstr_t CreateParamString(DISPPARAMS  *pDispParams)
@@ -652,6 +662,7 @@ HRESULT CBrIELWControl::Invoke(
         );
 
         if(NULL!=pEvent){
+            SEP(_T("SendIEEvent"));
             _bstr_t bsRes;
             SendIEEvent(
                 pEvent->dispid, 
@@ -659,6 +670,7 @@ HRESULT CBrIELWControl::Invoke(
                 CreateParamString(pDispParams),
                 bsRes
             );
+            
             switch(dispIdMember){
             case DISPID_NEWWINDOW2:
 #define INDEX_NEWWINDOW2_ppDisp         1

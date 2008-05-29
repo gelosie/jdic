@@ -18,38 +18,39 @@
  * USA.
  */
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import org.jdic.web.BrMap;
-import org.jdic.web.BrMapSprite;
+
+import java.awt.Panel;
+import javax.swing.SwingUtilities;
+import  org.jdic.web.BrComponent;
+import  org.jdic.web.BrTabbed;
 
 /**
- * Megidian geo space holder
+ * Applet example
  * @author uta
  */
-public class MapMeridian extends BrMapSprite {
-    int iStepCount = 100;
-    MapMeridian(Color spriteColor){
-        super("", spriteColor);
-        isPoligon = false;
-        for(int i=5; i<=(iStepCount-5); ++i){
-            LLs.add( new Point2D.Double(i*180.0/iStepCount - 90.0, 0.0) );
-        }    
-    }
+
+public class BrowserApplet extends javax.swing.JApplet{
+    public BrowserApplet() {}
     
+    BrTabbed brMain;
+            
     @Override
-    public void paint(Graphics g, int[] x, int[] y) {
-        Graphics2D g2 = (Graphics2D)g.create();
-        g2.setStroke(new BasicStroke(5));
-        super.paint(g2, x, y);
-        g2.dispose();
+    public void init() {
+        BrComponent.DESIGN_MODE = false;
+        SwingUtilities.invokeLater(new Runnable() { public void run() {
+            setLayout(new java.awt.BorderLayout());
+            //Panel my = new Panel(new java.awt.BorderLayout());
+            brMain = new BrTabbed();
+            brMain.setURL("http://java.com");
+            //my.add(brMain, java.awt.BorderLayout.CENTER);
+            add(brMain, java.awt.BorderLayout.CENTER);
+            //add(my, java.awt.BorderLayout.CENTER);
+        }});
     }
-    
-    public void add(BrMap m){
-        m.getSprites().add(this);
-        m.setZoomLevel(6);
+
+    @Override
+    public void destroy() {
+        remove(brMain);
+        super.destroy();
     }
 }

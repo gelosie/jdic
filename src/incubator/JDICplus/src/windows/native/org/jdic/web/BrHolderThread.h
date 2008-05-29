@@ -67,6 +67,7 @@ private:
     ZZ::CHandlerSup m_hTerminate;
     ZZ::CHandlerSup m_hAtomMutex;
     HWND m_hQueueWnd;
+    BOOL m_bBusy;
 
     static LPCTSTR         ms_lpStaffWndClass;
     static HINSTANCE       ms_hInstance;
@@ -91,7 +92,7 @@ public:
         const char *msg, 
         BrowserAction &Action);
 
-
+    void SetBusy(BOOL bBusy);
     static void RegisterStaffWndClass(HINSTANCE hModule);
 
 private:

@@ -420,12 +420,15 @@ public class BrTabbed
         if(null==res[0]){
                 switch (e.getID()) {
                     case BrComponentEvent.DISPID_NEWWINDOW2:
+                        final BrComponent sbr = (BrComponent)e.getSource();
+                        sbr.setActionFiler(0, true);
                         try {
                             SwingUtilities.invokeAndWait(new Runnable() { public void run() {
                                     BrComponent br = openInNewBrowserPanel(null);
                                     if (null != br) {
                                         res[0] = "0," + br.getNativeHandle();
                                     }
+                                    sbr.setActionFiler(0, false);
                             }});
                         } catch (Exception ex) {
                             Logger.getLogger(BrTabbed.class.getName()).log(Level.SEVERE, null, ex);

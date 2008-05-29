@@ -49,7 +49,7 @@ HRESULT OLE_CoWaitForMultipleHandles(
                 (dwFlags&COWAIT_WAITALL) == COWAIT_WAITALL,       // wait for all or wait for one
                 dwMilliseconds, // time-out interval in milliseconds
                 /*QS_POSTMESSAGE|QS_SENDMESSAGE|QS_PAINT*/
-                QS_ALLINPUT);// type of input events to wait for
+                QS_SENDMESSAGE|QS_ALLINPUT);// type of input events to wait for
             if( WAIT_FAILED == dwRes) {
                 STRACE1(TEXT("MsgWaitForMultipleObjects[%08x]"), hr = HRESULT_FROM_WIN32(::GetLastError()) );
             } else if( WAIT_TIMEOUT == dwRes) {
@@ -198,7 +198,7 @@ LRESULT BrowserThread::DefWindowProc(
     LPARAM lParam)
 {
     LRESULT ret = 0;
-    if(WM_USER==uMsg){
+    if(WM_USER<=uMsg && uMsg<=(WM_USER + 0x100)){
         BrowserAction *pAction = (BrowserAction *)wParam;
         ret = pAction->Do(m_env_nt);
         if(lParam)
@@ -215,6 +215,7 @@ BrowserThread::BrowserThread():
     m_dwThreadId(0),
     m_hQueueWnd(NULL),
     m_env_nt(NULL),
+    m_bBusy(FALSE),
     m_cRef(1)
 {}
 
@@ -255,6 +256,21 @@ void BrowserThread::Terminate()
     }
 }
 
+void BrowserThread::SetBusy(BOOL bBusy)
+{
+
+    if(m_bBusy != bBusy){
+        m_bBusy = bBusy;
+        if(bBusy && ::GetCurrentThreadId() == m_dwThreadId  ){
+            //clean the message stack
+            MSG msg;
+            while( ::PeekMessage(&msg, m_hQueueWnd, 0, 0, PM_REMOVE) ) {
+                ::DispatchMessage(&msg);
+            }
+        }
+    }
+}
+
 void BrowserThread::MakeActionAsync(BrowserAction *pAction)
 {
     RestartIfNeed();
@@ -271,6 +287,8 @@ HRESULT BrowserThread::MakeAction(
     const char *msg, 
     BrowserAction &Action)
 {
+    if(m_bBusy)
+        return RPC_E_RETRY;
     OLE_DECL
     RestartIfNeed();    
     OLE_HR = ::SendMessage(

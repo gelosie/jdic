@@ -23,7 +23,7 @@
     <jar href="lib/JDICplus.jar" />
     <jar href="lib/xercesImpl.jar" />
     <jar href="lib/xml-apis.jar" />
-    <jar href="lib/beansbinding-1.1.jar" />
+    <jar href="lib/beansbinding-1.2.1.jar" />
   </resources>
 
   <resources os="Windows">

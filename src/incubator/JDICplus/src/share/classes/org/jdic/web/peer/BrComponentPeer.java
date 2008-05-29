@@ -80,10 +80,19 @@ public  interface BrComponentPeer {
     boolean hasFocus();
     void focusGain(boolean  bKeyboardFocus);
     long sendMouseEvent(MouseEvent e);
-    public void setEnabled(boolean enabled);
-    public void setVisible(boolean aFlag);
-    public long getNativeHandle();
     
-    public void onAddNotify();
-    public void onRemoveNotify();
+    /**
+     * Process the action stack on browser thread to avoid deadlock with EDT.
+     * Have to be called just before EDT action waiting in browser callback
+     * @param flag reserved
+     * @param busyState 
+     * @return reserved
+     */
+    int setActionFiler(int flag, boolean busyState);
+    void setEnabled(boolean enabled);
+    void setVisible(boolean aFlag);
+    long getNativeHandle();
+    
+    void onAddNotify();
+    void onRemoveNotify();
 }

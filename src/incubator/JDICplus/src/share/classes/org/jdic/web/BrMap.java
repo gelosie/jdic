@@ -859,7 +859,7 @@ private void btYahooMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
      * Setter for property viewType.
      * @param _viewType New value of property viewType.
      */
-    protected void setViewType(int _viewType) {
+    public void setViewType(int _viewType) {
         int old = viewType;
         viewType = _viewType;
         

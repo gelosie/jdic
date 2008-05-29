@@ -1031,6 +1031,11 @@ public class BrComponent
     public long getNativeHandle() {
         return brPeer.getNativeHandle();
     }
+    
+    public int  setActionFiler(int flag, boolean busyState)
+    {
+        return brPeer.setActionFiler(flag, busyState);
+    }
 
     @Override
     public boolean isFocusOwner() {

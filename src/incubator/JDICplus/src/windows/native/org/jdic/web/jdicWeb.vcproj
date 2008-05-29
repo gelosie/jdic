@@ -24,7 +24,7 @@
 "
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\common&quot;;&quot;$(ALT_J2SE_SRC)\windows\native\sun\windows&quot;;&quot;$(ALT_J2SE_SRC)\share\native\common&quot;;&quot;$(ALT_J2SE_SRC)\share\javavm\export&quot;;&quot;$(ALT_J2SE_SRC)\share\javavm\include&quot;;&quot;$(ALT_J2SE_SRC)\windows\javavm\include&quot;;&quot;$(ALT_J2SE_SRC)\windows\javavm\export&quot;"
-				PreprocessorDefinitions="UNICODE"
+				PreprocessorDefinitions="UNICODE;_DEBUG"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
