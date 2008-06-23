@@ -11,7 +11,7 @@
     <description>JDICplus Documents Viewer demo</description>
     <description kind="short"Documents Viewer is an example program for web-started JDICplus.</description>
     <icon href="images/small.gif"/>
-    <icon kind="splash" href="images/splash.jpg"/>
+    <icon kind="splash" href="../images/DocViewDemo.jpg"/>
     <offline-allowed/>
   </information>
   <security>
