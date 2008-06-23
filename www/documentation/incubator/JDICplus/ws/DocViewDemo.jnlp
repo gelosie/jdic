@@ -3,7 +3,7 @@
 <jnlp
   spec="1.6+"
   codebase="https://jdic.dev.java.net/documentation/incubator/JDICplus/ws"
-  href="MapExplorer.jnlp">
+  href="DocViewDemo.jnlp">
   <information>
     <title>JDICPlus Map Explorer Demo Application</title>
     <vendor>Sun Microsystems, Inc.</vendor>
