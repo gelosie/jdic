@@ -25,6 +25,7 @@
   </resources>
 
   <resources os="Windows">
+    <property name="sun.java2d.noddraw" value="true"/>
   </resources>
   <resources os="Windows" arch="x86">
     <nativelib href="lib/windows/x86/JDICplus_native.jar" />
