@@ -36,9 +36,11 @@ public class HTMLEditor extends JFrame
 {
     HTMLEditor() {
         BrComponent.DESIGN_MODE = false;
-        setTitle("HTML Editor");
+        BrComponent.setDefaultPaintAlgorithm(BrComponent.PAINT_NATIVE);
+        //BrComponent.setDefaultPaintAlgorithm(BrComponent.PAINT_JAVA_NATIVE);
+        //setTitle("HTML Editor");
 
-        Panel rootPanel = new Panel();
+        JPanel rootPanel = new JPanel();
         rootPanel.setBounds(0, 0, 800, 600);
         rootPanel.setPreferredSize(new Dimension(800, 600));
 

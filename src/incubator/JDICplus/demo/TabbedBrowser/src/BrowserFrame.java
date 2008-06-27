@@ -29,6 +29,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import org.jdic.web.BrComponent;
 import org.jdic.web.BrXMLTree;
 import org.jdic.web.event.BrComponentEvent;
 import org.jdic.web.event.BrComponentListener;
@@ -78,6 +79,11 @@ implements BrComponentListener
             });
 	}
         
+        //Group the radio buttons.
+        ButtonGroup grPaint = new ButtonGroup();
+        grPaint.add(rbPaintJava);
+        grPaint.add(rbPaintJavaNative);
+        grPaint.add(rbPaintNative);
     }
 
     /** This method is called from within the constructor to
@@ -102,6 +108,7 @@ implements BrComponentListener
         bnForward = new javax.swing.JButton();
         bnReload = new javax.swing.JButton();
         bnStop = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
         lbURL = new javax.swing.JLabel();
         edAddress = new javax.swing.JTextField();
         bnGo = new javax.swing.JButton();
@@ -119,6 +126,10 @@ implements BrComponentListener
         miExit = new javax.swing.JMenuItem();
         viewJMenu = new javax.swing.JMenu();
         toolsJMenu = new javax.swing.JMenu();
+        rbPaintJava = new javax.swing.JRadioButtonMenuItem();
+        rbPaintJavaNative = new javax.swing.JRadioButtonMenuItem();
+        rbPaintNative = new javax.swing.JRadioButtonMenuItem();
+        jSeparator3 = new javax.swing.JSeparator();
         cmiTraceRedraw = new javax.swing.JCheckBoxMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -153,10 +164,10 @@ implements BrComponentListener
         });
 
         brXMLTree.addTreeWillExpandListener(new javax.swing.event.TreeWillExpandListener() {
+            public void treeWillCollapse(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {
+            }
             public void treeWillExpand(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {
                 brXMLTreeTreeWillExpand(evt);
-            }
-            public void treeWillCollapse(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {
             }
         });
         brXMLTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
@@ -254,6 +265,7 @@ implements BrComponentListener
             }
         });
         ieToolBar.add(bnStop);
+        ieToolBar.add(jSeparator2);
 
         lbURL.setText(" URL:");
         ieToolBar.add(lbURL);
@@ -383,6 +395,32 @@ implements BrComponentListener
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, cmiTraceRedraw, org.jdesktop.beansbinding.ELProperty.create("${selected}"), toolsJMenu, org.jdesktop.beansbinding.BeanProperty.create("debugGraphicsOptions"));
         bindingGroup.addBinding(binding);
+
+        rbPaintJava.setSelected(true);
+        rbPaintJava.setText("paint as PAINT_JAVA");
+        rbPaintJava.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbPaintJavaActionPerformed(evt);
+            }
+        });
+        toolsJMenu.add(rbPaintJava);
+
+        rbPaintJavaNative.setText("paint as PAINT_JAVA_NATIVE");
+        rbPaintJavaNative.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbPaintJavaActionPerformed(evt);
+            }
+        });
+        toolsJMenu.add(rbPaintJavaNative);
+
+        rbPaintNative.setText("paint as PAINT_NATIVE");
+        rbPaintNative.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbPaintJavaActionPerformed(evt);
+            }
+        });
+        toolsJMenu.add(rbPaintNative);
+        toolsJMenu.add(jSeparator3);
 
         cmiTraceRedraw.setText("Trace Redraw");
         cmiTraceRedraw.setToolTipText("Shows update region while redraw procedure");
@@ -580,6 +618,17 @@ implements BrComponentListener
         brMain.openInNewBrowserPanel(null);
     }//GEN-LAST:event_miNewTabActionPerformed
 
+private void rbPaintJavaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbPaintJavaActionPerformed
+    Object o = evt.getSource();
+    int paintConst = BrComponent.PAINT_JAVA;
+    if(rbPaintNative.equals(o)){
+        paintConst = BrComponent.PAINT_NATIVE;
+    } else if(rbPaintJavaNative.equals(o)){
+        paintConst = BrComponent.PAINT_JAVA_NATIVE;
+    }
+    BrComponent.setDefaultPaintAlgorithm(paintConst);
+}//GEN-LAST:event_rbPaintJavaActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -610,6 +659,8 @@ implements BrComponentListener
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel lbURL;
     private javax.swing.JMenuBar mainJMenuBar;
@@ -619,6 +670,9 @@ implements BrComponentListener
     private javax.swing.JMenuItem miPrint;
     private javax.swing.JMenuItem miSave;
     private javax.swing.JProgressBar pbDownloadDoc;
+    private javax.swing.JRadioButtonMenuItem rbPaintJava;
+    private javax.swing.JRadioButtonMenuItem rbPaintJavaNative;
+    private javax.swing.JRadioButtonMenuItem rbPaintNative;
     private javax.swing.JMenu toolsJMenu;
     private javax.swing.JMenu viewJMenu;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;

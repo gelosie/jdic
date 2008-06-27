@@ -62,13 +62,14 @@ public:
         LPRECT prc);
     HRESULT create(    
         JNIEnv *env, 
-        HWND    hParent);
+        HWND    hParent,
+        int     ePaintAlgorithm);
     BrJComponent(
         JNIEnv *env, 
         jobject othis);
 
     virtual void destroy(JNIEnv *env);
-    virtual void updateTransparentMask(RECT *prc);
+    virtual void updateTransparentMask(LPRECT prc);
     virtual void setTransparent(boolean bTransparent);
 
     BrJComponent();
@@ -99,7 +100,6 @@ private:
     RECT    m_rcInvalid;
     DWORD   m_dwKey;
     jobject m_this;
-    boolean m_bTransparent;
     BrowserThread *m_pThread;
 public:
     boolean m_synthetic;

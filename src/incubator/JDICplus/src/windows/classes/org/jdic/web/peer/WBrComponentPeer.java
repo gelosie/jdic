@@ -69,8 +69,8 @@ public class WBrComponentPeer implements BrComponentPeer {
         execJS(":document.body.contentEditable=" + e + ";");
     }
     boolean isEditable() {
-        //System.out.println(execJS("document.body.contentEditable=true"));
-        return Boolean.parseBoolean(execJS("document.body.contentEditable"));
+        String st = execJS("document.body.contentEditable").toLowerCase();
+        return !(st.startsWith("error:") || "inherit".equals(st) || "false".equals(st));
     }
 
     // BrComponentPeer implementation
@@ -186,7 +186,6 @@ public class WBrComponentPeer implements BrComponentPeer {
     }
 
     public void acceptTargetURL() {
-        execJS("##setNativeDraw(" + (BrComponent.DRAW_PRIVATE==target.paintAlgorithm) + ")");
         documentReady = false;
         setURL(target.stURL, target.isHTMLSrc);
     }
@@ -211,7 +210,7 @@ public class WBrComponentPeer implements BrComponentPeer {
     //native
     public native void clearRgn();
     public native void clipChild(int top, int left, int width, int height);
-    native long create(long hwnd);
+    native long create(long hwnd, int iPaintAlgorithm);
     public native void destroy();
     public native void setURL(String stURL, InputStream is);
     public native String execJS(String code);
@@ -293,7 +292,7 @@ public class WBrComponentPeer implements BrComponentPeer {
     public final static int WND_TOP = 0;
     public final static int WND_PARENT = 1;
     public final static int WND_IE = 2;
-
+    
     public long sendMouseEvent(MouseEvent e) {
         long ret = 0;
         int wm = 0;
@@ -431,8 +430,10 @@ public class WBrComponentPeer implements BrComponentPeer {
             break;
         case BrComponentEvent.DISPID_DOCUMENTCOMPLETE:
             if(isEditable()!=editable){
+                //System.out.println("setEditable(" + editable + ");");
                 enableEditing(editable);
             } else if(editable) {
+                //System.out.println("refreshHard");
                 refreshHard();
             }
             documentReady = true;
@@ -480,6 +481,7 @@ public class WBrComponentPeer implements BrComponentPeer {
     public void paintClientArea(Graphics g, int iPaintHint)
     {
         if( target.isVisible()  ){
+            //System.err.println("paintClientArea");
             Rectangle updateRect = g.getClipBounds();            
             if(null==updateRect){
                 updateRect = target.getBounds();
@@ -496,19 +498,16 @@ public class WBrComponentPeer implements BrComponentPeer {
                 if( 0<updateRect.width 
                     && 0<updateRect.height)
                 {
-                    if(BrComponent.DRAW_NATIVE_BEFORE_CONTENT==iPaintHint ){
-                        nativeDraw(
-                            updateRect.x,
-                            updateRect.y,
-                            updateRect.width,
-                            updateRect.height);
-                    } else if(BrComponent.DRAW_DOUBLE_BUFFERED==iPaintHint ){
+                    //if(BrComponent.PAINT_NATIVE!=iPaintHint )
+                    {
+                        //System.err.println("getImage");
                         Image updateImage = getImage(
                             updateRect.x,                                                 
                             updateRect.y,
                             updateRect.width,
                             updateRect.height);
                         if( null!=updateImage ){
+                            //System.err.println("getImage is");
                             g.drawImage(
                                 updateImage,
                                 updateRect.x,
@@ -541,7 +540,7 @@ public class WBrComponentPeer implements BrComponentPeer {
                     ComponentPeer cp = c.getPeer();
                     if( (cp instanceof WComponentPeer) ){
                         parentHW = c;
-                        data = create( ((WComponentPeer)cp).getHWnd() );
+                        data = create( ((WComponentPeer)cp).getHWnd(), target.paintAlgorithm);
                         acceptTargetURL();
                         setEditable(target.isEditable());
                         break;

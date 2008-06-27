@@ -90,25 +90,25 @@
 #define OLE_CATCH\
         }catch(_com_error &e){\
             _hr_ = e.Error();\
-            STRACE0(_T("COM Error:%08x %s"), _hr_, e.ErrorMessage());\
+            STRACE1(_T("COM Error:%08x %s"), _hr_, e.ErrorMessage());\
         }
 
 #define OLE_CATCH_BAD_ALLOC\
         }catch(_com_error &e){\
             _hr_ = e.Error();\
-            STRACE0(_T("COM Error:%08x %s"), _hr_, e.ErrorMessage());\
+            STRACE1(_T("COM Error:%08x %s"), _hr_, e.ErrorMessage());\
         }catch(std::bad_alloc&){\
             _hr_ = E_OUTOFMEMORY;\
-            STRACE0(_T("Error: Out of Memory"));\
+            STRACE1(_T("Error: Out of Memory"));\
         }
 
 #define OLE_CATCH_ALL\
         }catch(_com_error &e){\
             _hr_ = e.Error();\
-            STRACE0(_T("COM Error:%08x %s"), _hr_, e.ErrorMessage());\
+            STRACE1(_T("COM Error:%08x %s"), _hr_, e.ErrorMessage());\
         }catch(...){\
             _hr_ = E_FAIL;\
-            STRACE0(_T("Error: General Pritection Failor"));\
+            STRACE1(_T("Error: General Pritection Failor"));\
         }
 
 #define OLE_RETURN_SUCCESS return SUCCEEDED(_hr_);

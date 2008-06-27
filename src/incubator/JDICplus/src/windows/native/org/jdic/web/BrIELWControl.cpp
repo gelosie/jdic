@@ -32,8 +32,10 @@ LPCTSTR CBrIELWControl::ms_lpPN = _T("awt_hook");
 CBrIELWControl::CBrIELWControl()
 {
     m_cRef = 1L;
+    m_cSkipDraw = 0L;
     m_hwndParent = NULL;
     m_hwndIE = NULL;
+    m_hwndFrame = NULL;
     m_hwndShell = NULL;
 
     m_pOldIEWndProc = NULL;
@@ -47,7 +49,8 @@ CBrIELWControl::CBrIELWControl()
     m_dwWebCPCookie = OLE_BAD_COOKIE;
 
     m_tidUpdate = 0;
-    m_bNativeDraw = FALSE;
+    m_ePaintAlgorithm = PAINT_JAVA;
+    m_bTransparent = false;
 }
 
 void CBrIELWControl::UpdateWindowRect()                       
@@ -159,14 +162,14 @@ HRESULT CBrIELWControl::AdviseBrowser(IN BOOL bAdvise)
     OLE_RETURN_HR
 }
 
-
+void OLE_CoPump();
 HRESULT CBrIELWControl::DestroyControl()
 {
     if(m_hwndIE){
-        ::SetWindowLongPtr(m_hwndIE, GWLP_WNDPROC, m_pOldIEWndProc);
+        RemoveHook(m_hwndIE);
     }
-    m_hwndIE = NULL;
     m_hwndShell = NULL;
+
     OLE_TRY 
     OLE_HRT( InplaceActivate(FALSE) )       
     OLE_HRT( AdviseBrowser(FALSE) )
@@ -176,6 +179,7 @@ HRESULT CBrIELWControl::DestroyControl()
     m_spIWebBrowser2 = NULL;
     m_ccIWebBrowser2 = NULL;
 
+    OLE_CoPump();
     OLE_RETURN_HR
 }
 
@@ -248,6 +252,7 @@ HRESULT CBrIELWControl::OnPaint(HDC hdc, LPCRECT prcClip/*InParent*/)
     CDCHolder shCopy;
     shCopy.Create(hdc, rcIE.right, rcIE.bottom, FALSE);
     //STRACE1(_T("shCopy.Create done"));
+    ++m_cSkipDraw;
     OLE_HRT( spViewObject->Draw(
         DVASPECT_CONTENT,
         -1, 
@@ -260,6 +265,7 @@ HRESULT CBrIELWControl::OnPaint(HDC hdc, LPCRECT prcClip/*InParent*/)
         NULL, 
         0
     ));
+    --m_cSkipDraw;
     OLE_HRW32_BOOL( ::BitBlt(
         hdc, 
         rc.left,
@@ -323,54 +329,179 @@ void CBrIELWControl::RedrawInParent()
     OLE_CATCH
 }
 
+void CBrIELWControl::updateTransparentMask(LPRECT prc)
+{
+}
+
+void CBrIELWControl::PaintScreenShort()
+{
+    SEP(_T("PaintScreenShort"));
+    int iWidth = m_rcIE2.right - m_rcIE2.left;//rc.right - rc.left;
+    int iHeight = m_rcIE2.bottom - m_rcIE2.top;//rc.bottom - rc.top;
+    if( (iWidth > m_shScreen.m_iWidth) ||  (iHeight > m_shScreen.m_iHeight) ){
+        HDC hdc = ::GetDC(m_hwndIE);
+        if(hdc){
+            OLE_TRY
+            m_shScreen.Create(
+                hdc, 
+                max(iWidth, m_shScreen.m_iWidth),
+                max(iHeight, m_shScreen.m_iHeight),
+                FALSE);
+            OLE_CATCH
+            ::ReleaseDC(m_hwndIE, hdc);
+        }
+    }
+
+    ++m_cSkipDraw;
+    OLE_TRY
+    //lock the COM server any way!!!
+    IViewObjectPtr spViewObject(m_spIWebBrowser2);
+    OLE_CHECK_NOTNULLSP(spViewObject)
+    if(PAINT_NATIVE == m_ePaintAlgorithm){
+//          ::SendMessage(
+//              m_hwndShell, 
+//              WM_PRINT, 
+//              (WPARAM)(HDC)m_shScreen,
+//              PRF_CLIENT | PRF_NONCLIENT | PRF_OWNED | PRF_CHILDREN | PRF_ERASEBKGND);
+        //PrintWindow(m_hwndIE?m_hwndIE:m_hwndShell, (HDC)m_shScreen, 0);
+        PrintWindow(m_hwndShell, (HDC)m_shScreen, 0);
+    } else {
+        RECTL rcIE = {0, 0, iWidth, iHeight};
+        SEP(_T("DrawJava"));
+        OLE_HRT( spViewObject->Draw(
+            DVASPECT_CONTENT,
+            -1, 
+            NULL, 
+            NULL,
+            NULL, 
+            m_shScreen, 
+            &rcIE, 
+            NULL,
+            NULL, 
+            0
+        ));
+//         HDC hdc = ::GetDC(m_hwndParent); //TODO: pParent->GetDCFromComponent();
+//         if(hdc) {
+//             SEP1(_T("DrawNative"));
+//             OLE_NEXT_TRY
+//             OLE_HRW32_BOOL( ::SetViewportOrgEx(
+//                 hdc, 
+//                 m_rcIE2.left, 
+//                 m_rcIE2.top, 
+//                 NULL ))
+//             OLE_HRT( spViewObject->Draw(
+//                 DVASPECT_CONTENT,
+//                 -1, 
+//                 NULL, 
+//                 NULL,
+//                 NULL, 
+//                 hdc, 
+//                 &rcIE, 
+//                 NULL,
+//                 NULL, 
+//                 0
+//             ));
+//             OLE_HRW32_BOOL( ::SetViewportOrgEx(
+//                 hdc, 
+//                 -m_rcIE2.left, 
+//                 -m_rcIE2.top, 
+//                 NULL ))
+//             OLE_CATCH
+//             ReleaseDC(m_hwndParent, hdc);
+//         }
+    }
+    OLE_CATCH        
+    --m_cSkipDraw;
+}
+
+void CBrIELWControl::RemoveHook(HWND hWnd)
+{
+    if(NULL==m_hwndIE || m_hwndIE!=hWnd){
+        STRACE(_T("}hook-alarm! w:%08x"), hWnd);
+        return;
+    }
+    ::SetWindowLongPtr(m_hwndIE, GWLP_WNDPROC, m_pOldIEWndProc);        
+    ::RemoveProp(m_hwndIE, ms_lpPN);
+    m_pOldIEWndProc = NULL;
+    STRACE(_T("}hook ie:%08x"), m_hwndIE);
+    m_hwndIE = NULL;
+    m_hwndFrame = NULL;
+}
+
+void CBrIELWControl::AddHook()
+{
+    if(NULL!=m_hwndIE)
+        RemoveHook(m_hwndIE);
+
+    UpdateWindowRect();
+    STRACE0(_T("hwndShell:%08x"), m_hwndShell);
+    if(m_hwndShell){
+        m_hwndFrame = ::GetWindow(m_hwndShell, GW_CHILD); 
+        if(m_hwndFrame){
+            m_hwndIE = ::GetWindow(m_hwndFrame, GW_CHILD); 
+            if(m_hwndIE){
+                WNDPROC pOldIEWndProc = (WNDPROC)::GetWindowLongPtr(m_hwndIE, GWLP_WNDPROC);
+                if(NewIEProcStub!=pOldIEWndProc){
+                    STRACE(_T("{hook %08x"), m_hwndIE);
+                    ::SetProp(m_hwndIE, ms_lpPN, this);
+                    m_pOldIEWndProc = ::SetWindowLongPtr(m_hwndIE, GWLP_WNDPROC, (LONG_PTR)NewIEProcStub);
+                    SendIEEvent(
+                        -3, 
+                        _T(""), 
+                        _T("")
+                    );
+                }
+            }
+        }
+    }            
+    if(PAINT_NATIVE!=m_ePaintAlgorithm){
+        RedrawInParent();
+    } 
+}
+
 LRESULT CBrIELWControl::NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     STRACE0(_T("msg:%08x hWnd:%08x"), msg, hWnd);
-    if(!m_bNativeDraw && (WM_PAINT==msg || WM_NCPAINT==msg || WM_SYNCPAINT==msg) ){
-        if( !IsSmoothScroll() ){
-            UpdateWindowRect();       
-            STRACE(_T("_PAINT %08x"), msg);
-            RECT rc;
-            if( !GetUpdateRect(hWnd, &rc, FALSE) ){
-                GetClientRect(hWnd, &rc);
-            } else {
-                ValidateRect(hWnd, &rc);
-            }
-
-#ifdef _DEBUG
-            {
-                RECT rc = {0};
-                int res = GetWindowRgnBox(m_hwndIE, &rc);
-                //if( NULLREGION!=res && ERROR!=res )
-                {
-                    STRACE1(_T("Clip(x:%d y:%d w:%d h:%d)"), rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
-                    STRACE1(_T("IE(x:%d y:%d w:%d h:%d)"), m_rcIE2.left, m_rcIE2.top, m_rcIE2.right - m_rcIE2.left, m_rcIE2.bottom - m_rcIE2.top);
-                }
-            }
-#endif //_DEBUG
-
-            if(0!=m_tidUpdate){
-                ::KillTimer(m_hwndIE, m_tidUpdate);
-                m_tidUpdate = 0;
-                rc = m_rcIE2;
-            } else {
-                rc.top += m_rcIE2.top;
-                rc.bottom += m_rcIE2.top;                                  
-                rc.left += m_rcIE2.left;
-                rc.right += m_rcIE2.left;
-            }
-
-            if(rc.top != rc.bottom && rc.left!=rc.right){
-                RedrawParentRect(&rc);
-                return 0;
-            } 
-
-            //seems empty redraw is a signal...
-            return ::CallWindowProc((WNDPROC)m_pOldIEWndProc, hWnd, msg, wParam, lParam);      
-        } else {
+    if(PAINT_NATIVE!=m_ePaintAlgorithm && (WM_PAINT==msg || WM_NCPAINT==msg || WM_SYNCPAINT==msg) ){
+        if( IsSmoothScroll() ){
             STRACE(_T("_SPAINT %08x"), msg);
             LaizyUpdate();
-        }
+        } else {
+            if( 0==m_cSkipDraw){
+                RECT rc;            
+                if( GetUpdateRect(hWnd, &rc, FALSE) ){
+                    RECT clip = rc; 
+                    UpdateWindowRect();       
+
+                    STRACE(_T("_PAINT %08x %08x"), msg, hWnd);
+
+                    if(0!=m_tidUpdate){
+                        ::KillTimer(m_hwndIE, m_tidUpdate);
+                        m_tidUpdate = 0;
+                        rc = m_rcIE2;
+                    } else {
+                        rc.top += m_rcIE2.top;
+                        rc.bottom += m_rcIE2.top;                                  
+                        rc.left += m_rcIE2.left;
+                        rc.right += m_rcIE2.left;
+                    }
+
+                    PaintScreenShort();
+
+                    if(rc.top != rc.bottom && rc.left!=rc.right){
+                        SEP(_T("Draw"));
+                        if(PAINT_JAVA==m_ePaintAlgorithm){
+                            ValidateRect(hWnd, &clip);
+                        }
+                        RedrawParentRect(&rc);
+                    } 
+                }
+            } 
+            //seems empty redraw is a signal...
+            STRACE(_T("_NPAINT %08x"), msg);
+            return ::CallWindowProc((WNDPROC)m_pOldIEWndProc, hWnd, msg, wParam, lParam);      
+        } 
+        //end paint processing
     } else if(WM_GETDLGCODE == msg){
         return DLGC_WANTALLKEYS 
             | DLGC_WANTARROWS
@@ -382,26 +513,20 @@ LRESULT CBrIELWControl::NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
             if( IsSmoothScroll() ){
                 LaizyUpdate();
             } else {
-                UpdateWindowRect();
-                SEP(_T("_InvalidateRect"));
                 ::KillTimer(m_hwndIE, m_tidUpdate);
                 m_tidUpdate = 0;
-                RedrawParentRect(&m_rcIE2);
+                InvalidateRect(hWnd, NULL, FALSE);
+                UpdateWindow(hWnd);
             }
             return 0;
         }
     } else if(WM_PARENTNOTIFY == msg && WM_CREATE==wParam){
-        STRACE1(_T("Created Child hWnd:%08x"), hWnd);
+        STRACE(_T("Created Child hWnd:%08x"), hWnd);
     }
 
     LONG_PTR pHook = NULL;
     if(WM_NCDESTROY==msg){
-        ::SetWindowLongPtr(hWnd, GWLP_WNDPROC, m_pOldIEWndProc);        
-        ::RemoveProp(hWnd, ms_lpPN);
-        m_pOldIEWndProc = NULL;
-
-        m_hwndIE = NULL;        
-        STRACE1(_T("}hook"));
+        RemoveHook(hWnd);
     } else if(
         (msg >= WM_KEYFIRST 
         && msg <= WM_KEYLAST)
@@ -413,7 +538,7 @@ LRESULT CBrIELWControl::NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
             OLE_DECL;
             OLE_HR = spInPlaceActiveObject->TranslateAccelerator(lpMsg);
             if(WM_KEYDOWN == msg && VK_TAB==wParam && !IsCtrlKeyDown() && !IsAltKeyDown()){
-                STRACE1(_T("WM_KEYDOWN tab %08x %08x"), lParam, OLE_HR);
+                STRACE(_T("WM_KEYDOWN tab %08x %08x"), lParam, OLE_HR);
                 if(S_FALSE==OLE_HR){
                     SendIEEvent(
                         -2,
@@ -586,35 +711,14 @@ HRESULT CBrIELWControl::Invoke(
         ::MessageBoxA(NULL, "Error", "Error", MB_OK);
         break;
     case DISPID_NAVIGATECOMPLETE2:
-    	STRACE0(_T("DISPID_NAVIGATECOMPLETE2"));
+        STRACE0(_T("DISPID_NAVIGATECOMPLETE2"));
         //SendIEEvent(dispIdMember, _T("navigateComplete2"), _T("")/* CreateParamString(pDispParams)*/);
-        {               
-            UpdateWindowRect();
-            STRACE0(_T("hwndShell:%08x"), m_hwndShell);
-            if(m_hwndShell){
-                HWND hwndFrame = ::GetWindow(m_hwndShell, GW_CHILD); 
-                if(hwndFrame){
-                    m_hwndIE = ::GetWindow(hwndFrame, GW_CHILD); 
-                    WNDPROC pOldIEWndProc = (WNDPROC)::GetWindowLongPtr(m_hwndIE, GWLP_WNDPROC);
-                    if(NewIEProcStub!=pOldIEWndProc){
-                        STRACE1(_T("{hook"));
-                        ::SetProp(m_hwndIE, ms_lpPN, this);
-                        m_pOldIEWndProc = ::SetWindowLongPtr(m_hwndIE, GWLP_WNDPROC, (LONG_PTR)NewIEProcStub);
-                        SendIEEvent(
-                            -3, 
-                            _T(""), 
-                            _T("")
-                        );
-                    }
-                }
-            }            
-            RedrawInParent();
-        }
+        AddHook();
         break;
     case DISPID_PROGRESSCHANGE:
         break;
     case DISPID_HTMLDOCUMENTEVENTS_ONREADYSTATECHANGE:
-        STRACE1(_T("document ready!"));
+        STRACE(_T("document ready!"));
 	break;
     case DISPID_WINDOWCLOSING:
 
@@ -629,17 +733,17 @@ HRESULT CBrIELWControl::Invoke(
         OLE_HR = S_OK; 
         break;
     case DISPID_AMBIENT_DLCONTROL:
-	// respond to this ambient to indicate that we only want to
-	// download the page, but we don't want to run scripts,
-	// Java applets, or ActiveX controls
+        // respond to this ambient to indicate that we only want to
+        // download the page, but we don't want to run scripts,
+        // Java applets, or ActiveX controls
         if(FALSE){
-	    V_VT(pVarResult) = VT_I4;
-	    V_I4(pVarResult) =
-		DLCTL_DOWNLOADONLY |
-		DLCTL_NO_JAVA |
-		DLCTL_NO_SCRIPTS |
-		DLCTL_NO_DLACTIVEXCTLS |
-		DLCTL_NO_RUNACTIVEXCTLS;
+            V_VT(pVarResult) = VT_I4;
+            V_I4(pVarResult) =
+                DLCTL_DOWNLOADONLY |
+                DLCTL_NO_JAVA |
+                DLCTL_NO_SCRIPTS |
+                DLCTL_NO_DLACTIVEXCTLS |
+                DLCTL_NO_RUNACTIVEXCTLS;
             return S_OK;
         }
         return DISP_E_MEMBERNOTFOUND;
@@ -736,7 +840,16 @@ void CDCHolder::Create(
     m_iWidth = iWidth;
     m_iHeight = iHeght;
     m_bForImage = bForImage;
-    m_hMemoryDC = ::CreateCompatibleDC(hRelDC);
+    if(NULL==m_hMemoryDC){
+        m_hMemoryDC = ::CreateCompatibleDC(hRelDC);
+    } else {
+        if(m_hOldBitmap)
+            ::SelectObject(m_hMemoryDC, m_hOldBitmap);
+        if(m_hBitmap)
+            ::DeleteObject(m_hBitmap);
+        if(m_hAlphaBitmap)
+            ::DeleteObject(m_hAlphaBitmap);
+    }
     //NB: can not throw an error in non-safe stack!!! Just conversion and logging!
     //OLE_WINERROR2HR just set OLE_HR without any throw! 
     if( !m_hMemoryDC ){

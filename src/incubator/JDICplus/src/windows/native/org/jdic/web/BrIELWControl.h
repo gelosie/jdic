@@ -56,7 +56,7 @@ struct CDCHolder
     operator HDC()
     {
         if( NULL==m_hOldBitmap &&  NULL!=m_hBitmap ){
-            m_hOldBitmap = (HBITMAP)::SelectObject(m_hMemoryDC, m_hOldBitmap);
+            m_hOldBitmap = (HBITMAP)::SelectObject(m_hMemoryDC, m_hBitmap);
         } 
         return m_hMemoryDC;
     }
@@ -95,13 +95,20 @@ class CBrIELWControl :
 public:
     IWebBrowser2Ptr                 m_spIWebBrowser2;
     COLECrossMarshal<IWebBrowser2>  m_ccIWebBrowser2;
-    BOOL m_bNativeDraw;
+    enum E_PAINT {
+        PAINT_JAVA = 0x0001,
+        PAINT_JAVA_NATIVE = 0x0002,
+        PAINT_NATIVE = 0x0004,
+    }; 
+    int m_ePaintAlgorithm;
 
 protected:
     HWND m_hwndParent;
     HWND m_hwndIE;
+    HWND m_hwndFrame;
     HWND m_hwndShell;
     RECT m_rcIE2;//rectangle of IE in parent coordinates
+    CDCHolder m_shScreen;
     void UpdateWindowRect();
 
 public:
@@ -112,11 +119,15 @@ public:
 
 private:
     volatile LONG m_cRef;
+    LONG m_cSkipDraw;
     DWORD m_dwAdvised;
     DWORD m_dwWebCPCookie;
     LONG_PTR m_pOldIEWndProc;
     static LPCTSTR ms_lpPN;
     ULONG m_tidUpdate;
+protected:
+    boolean m_bTransparent;
+
 
 
 public:
@@ -131,6 +142,10 @@ private:
     BOOL IsSmoothScroll();
     static LRESULT CALLBACK NewIEProcStub(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+    void RemoveHook(HWND hWnd);
+    void AddHook();
+
+
 public:
     HRESULT DestroyControl();
     HRESULT Connect(IN BSTR bsURL);
@@ -142,12 +157,13 @@ public:
     virtual void RedrawInParent();
     virtual void RedrawParentRect(LPRECT pRect);
     virtual LRESULT NewIEProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    virtual void updateTransparentMask(LPRECT prc);
     virtual HRESULT SendIEEvent(
         int iId,
         LPTSTR lpName,
         LPTSTR lpValue,
         _bstr_t &bsResult = _bstr_t() );
-
+    void PaintScreenShort();
 public:
 //IUnknown
     STDMETHOD(QueryInterface)(REFIID riid, void **ppvObject)

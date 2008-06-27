@@ -203,6 +203,7 @@ LRESULT BrowserThread::DefWindowProc(
         ret = pAction->Do(m_env_nt);
         if(lParam)
             delete pAction;
+        return ret;
     }
     return ::DefWindowProc(m_hQueueWnd, uMsg, wParam, lParam);
 }
@@ -291,13 +292,27 @@ HRESULT BrowserThread::MakeAction(
         return RPC_E_RETRY;
     OLE_DECL
     RestartIfNeed();    
-    OLE_HR = ::SendMessage(
-        m_hQueueWnd, 
-        WM_USER, 
-        (WPARAM)&Action,
-        FALSE);
-
+    while(true){
+        if( 0==::SendMessageTimeout(
+            m_hQueueWnd, 
+            WM_USER, 
+            (WPARAM)&Action,
+            FALSE,
+            SMTO_ABORTIFHUNG,
+            500,
+            (PDWORD_PTR)&OLE_HR
+        )){
+            //Flash is blocking message queue 
+            OLE_HR = 0x800700AA;
+        }
+        if( Action.repeatOnError(OLE_HR) ){
+            OLE_CoSleep(500);
+            continue;
+        }
+        break;
+    }
     if(FAILED(OLE_HR)){
+        STRACE(_T("MakeAction %08x"), OLE_HR);
         Action.throwExeption(env, msg, OLE_HR);
     }
     OLE_RETURN_HR

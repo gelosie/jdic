@@ -829,11 +829,9 @@ private void btYahooMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         viewZoomLevel = Math.max(viewZoomLevel, ZOOM_MIN);
         viewZoomLevel = Math.min(viewZoomLevel, mapInfos[mapProvider].getMaxZoomLevel());
         bnZoomPlus.setEnabled(
-                bnZoomPlus.isEnabled() 
-                && viewZoomLevel<mapInfos[mapProvider].getMaxZoomLevel());
+                viewZoomLevel<mapInfos[mapProvider].getMaxZoomLevel());
         bnZoomMinus.setEnabled(
-                bnZoomMinus.isEnabled()
-                && viewZoomLevel>1);
+                viewZoomLevel>1);
         //System.out.println("Zoom:" + toString() + "we set:" + viewZoomLevel);        
         sbZoomLevel.setValue(viewZoomLevel);        
         if( old!=viewZoomLevel ){

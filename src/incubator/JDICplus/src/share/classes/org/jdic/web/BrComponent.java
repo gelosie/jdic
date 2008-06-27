@@ -91,32 +91,53 @@ public class BrComponent
      * Initial navigation URL
      */
     public static final String stAboutBlank = "about:blank";    
-    
-    /**
-     * Direct browser context paint just before {@link #paintContent} 
-     * paint callback.
-     */
-    public static final int DRAW_NATIVE_BEFORE_CONTENT = 1;
+
     
     /**
      * Buffered browser context paint as background for {@link #paintContent} 
      * paint callback.
      */
-    public static final int DRAW_DOUBLE_BUFFERED = 2;
+    public static final int PAINT_JAVA = 0x0001;
     
     /**
-     * Custom implementation of painting algorithm.
+     * Direct browser context paint just before {@link #paintContent} 
+     * paint callback.
      */
-    public static final int DRAW_PRIVATE = 3;
+    public static final int PAINT_JAVA_NATIVE = 0x0002;
     
     /**
-     * The hint constants for native browser and {@link #paintContent} 
-     * concurent rendering.
-     * One of <code>DRAW_XXXX</code> constans. 
-     * <code>DRAW_DOUBLE_BUFFERED</code> by default.
+     * Only direct browser implementation of painting algorithm.
      */
-    public int paintAlgorithm = DRAW_DOUBLE_BUFFERED;
+    public static final int PAINT_NATIVE = 0x0004;
 
+     /**
+     * The global hint constants for native browser and {@link #paintContent} 
+     * concurent rendering. Write-only.
+     * One of <code>PAINT_XXXX</code> constans. 
+     * <code>PAINT_JAVA</code> by default.
+     */
+    protected static int defaultPaintAlgorithm = PAINT_JAVA;
+    
+    /**
+     * Setter for {@link #defaultPaintAlgorithm} property.
+     * @param _defaultPaintAlgorithm PAINT_XXXX const
+     */
+    public static void setDefaultPaintAlgorithm(int _defaultPaintAlgorithm)
+    {
+        defaultPaintAlgorithm = _defaultPaintAlgorithm;
+    }
+    
+    
+    /**
+     * The instance hint constants for native browser and {@link #paintContent} 
+     * concurent rendering. It's equeal to {@link #defaultPaintAlgorithm} 
+     * by default.
+     * One of <code>PAINT_XXXX</code> constans. 
+     * <code>PAINT_JAVA</code> by default.
+     */
+    public int paintAlgorithm = defaultPaintAlgorithm;
+
+    
     /**
      * The sprites list to be rendered while default {@link #paintContent} 
      * procedure.
@@ -314,6 +335,7 @@ public class BrComponent
             AWTEvent.MOUSE_WHEEL_EVENT_MASK);
         setOpaque(true);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        setFocusable(true);
         addFocusListener(this);
         setRequestFocusEnabled(true);
         brPeer = PeerClassFactory.createBrComponentPeer(this);

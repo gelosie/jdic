@@ -126,7 +126,6 @@ BrJComponent::BrJComponent(
  m_bBlockNativeInputHandler(false),
  m_this(makeGlobal(env, othis)),
  m_hChildArea(CreateRectRgn(0,0,0,0)),
- m_bTransparent(false),
  m_pThread(BrowserThread::GetInstance())
 {}
 
@@ -148,9 +147,12 @@ HRESULT BrJComponent::getTargetRect(
 
 HRESULT BrJComponent::create(    
     JNIEnv *env, 
-    HWND    hParent)
+    HWND    hParent,
+    int     ePaintAlgorithm)
 {
     SEP(_T("create"))
+    m_ePaintAlgorithm = ePaintAlgorithm;
+    STRACE(_T("paint: %04x"), ePaintAlgorithm);
     OLE_TRY
     RECT rcIE = {0};
     SetWindowLong(
@@ -202,16 +204,17 @@ void BrJComponent::destroy(JNIEnv *env)
     m_this = NULL;
 }
 
-void BrJComponent::updateTransparentMask(RECT *prc)
+void BrJComponent::updateTransparentMask(LPRECT prc)
 {
-    if( !m_bTransparent ){
+    if( !m_bTransparent || PAINT_NATIVE==m_ePaintAlgorithm){
         HRGN hPaintRgn = NULL;
         RECT rc;
         BOOL bRepaint = TRUE;
-        if(NULL==prc){
+        /*if(NULL==prc)*/
+        {
             ::GetClientRect(GetTopWnd(), &rc);
             prc = &rc;
-            //SetWindowRgn(GetParent(), NULL, FALSE);
+            //STRACE1(_T("updateTransparentMask:GetClientRect(%d, %d, %d, %d)"), prc->left, prc->top, prc->right, prc->bottom);
         }
         if(NULL!=m_hChildArea){
             //STRACE1(_T("CreateRectRgn(%d, %d, %d, %d)"), prc->left, prc->top, prc->right, prc->bottom);
@@ -233,9 +236,13 @@ void BrJComponent::updateTransparentMask(RECT *prc)
 
 void BrJComponent::setTransparent(boolean bTransparent)
 {
-    if( m_bTransparent == (int)bTransparent )
+    if( m_bTransparent == (int)bTransparent)
         return;
+
     m_bTransparent = bTransparent;
+    if( PAINT_NATIVE==m_ePaintAlgorithm )
+        return;
+
     if(m_bTransparent){
         SetWindowRgn(
             GetTopWnd(), 
@@ -251,7 +258,13 @@ void BrJComponent::setTransparent(boolean bTransparent)
 
 void BrJComponent::RedrawParentRect(LPRECT pRect)
 {  
-    SEP0(_T("BrJComponent::RedrawParentRect"));
+    if( PAINT_NATIVE == m_ePaintAlgorithm || (!m_bTransparent && PAINT_JAVA_NATIVE==m_ePaintAlgorithm)){
+        //nothing to do
+        //PaintScreenShort();
+        return;
+    }
+
+    SEP(_T("BrJComponent::RedrawParentRect"));
 //   STRACE1(_T("BrJComponent::RedrawParentRect x:%d y:%d w:%d h:%d"),
 //        pRect->left, pRect->top, 
 //        pRect->right - pRect->left, pRect->bottom - pRect->top);
@@ -267,7 +280,7 @@ void BrJComponent::RedrawParentRect(LPRECT pRect)
         //));
 
         //that is mandatory due to WS_CLIPCHILDREN or WS_CLIPCHILDREN style in parent
-        SetWindowRgn(m_hwndParent, NULL, FALSE);
+        ::SetWindowRgn(m_hwndParent, NULL, FALSE);
 
         //CBrIELWControl::RedrawParentRect(pRect);
         JNIEnv *env = (JNIEnv *)JNU_GetEnv(jvm, JNI_VERSION_1_2);
@@ -466,7 +479,8 @@ jintArray BrJComponent::NativeDraw(LPRECT prcDraw, BOOL bToImage)
         )
             return NULL; //nothing to do - empty area or null-object        
 
-        {
+#if 0
+            //reserved branch - never compiled
             HDC hdc = ::GetDC(m_hwndParent); //TODO: pParent->GetDCFromComponent();
             if(hdc) {
                 OLE_NEXT_TRY
@@ -501,10 +515,66 @@ jintArray BrJComponent::NativeDraw(LPRECT prcDraw, BOOL bToImage)
                 OLE_CATCH
                 ::ReleaseDC(m_hwndParent, hdc);
             }
+#else 
+        if(PAINT_NATIVE == m_ePaintAlgorithm){
+            PaintScreenShort();
+            //InvalidateRect(GetParent(), prcDraw, FALSE);
+            //InvalidateRect(GetTopWnd(), NULL, FALSE);
+            //UpdateWindow(GetTopWnd());
+            //return NULL;
         }
-        OLE_CATCH
+
+        //PaintScreenShort();
+
+        if(bToImage){
+            CDCHolder shPicture;
+            shPicture.Create(
+                (HDC)m_shScreen, 
+                rc.right - rc.left,
+                rc.bottom - rc.top,
+                TRUE
+            );
+
+            OLE_HRW32_BOOL( ::BitBlt(
+                (HDC)shPicture, 
+                0,
+                0,
+                shPicture.m_iWidth, 
+                shPicture.m_iHeight,
+                (HDC)m_shScreen,
+                rc.left - m_rcIE2.left,
+                rc.top - m_rcIE2.top,
+                SRCCOPY ));                      
+
+            if(NULL!=shPicture.m_pPoints){
+                jaiGPoints = CopyDIBBytes(
+                    shPicture.m_iWidth, 
+                    shPicture.m_iHeight,
+                    shPicture.m_pPoints
+                );
+            }
+        } else {
+            HDC hdc = ::GetDC(m_hwndParent); //TODO: pParent->GetDCFromComponent();
+            if(hdc){
+                OLE_NEXT_TRY
+                OLE_HRW32_BOOL( ::BitBlt(
+                    hdc, 
+                    0,
+                    0,
+                    rc.right - rc.left,
+                    rc.bottom - rc.top,
+                    (HDC)m_shScreen,
+                    rc.left - m_rcIE2.left,
+                    rc.top - m_rcIE2.top,
+                    SRCCOPY ));                      
+                OLE_CATCH
+                ::ReleaseDC(m_hwndParent, hdc);
+            }
+        }
+#endif
         //IViewObjectPtr spViewObject(m_spIWebBrowser2); 
         //OLE_HRT( spViewObject->Unfreeze(m_dwKey) );
+        OLE_CATCH
     }
     return jaiGPoints;
 }
@@ -640,23 +710,27 @@ struct CreateAction : public BrowserAction
 {
     HWND    m_parent;
     BrJComponent *m_pThis;
+    int m_ePaintAlgorithm;
 
     CreateAction(
         BrJComponent *pThis,
-        HWND parent)
+        HWND parent,
+        int ePaintAlgorithm)
     : m_pThis(pThis),
-      m_parent(parent)
+      m_parent(parent),
+      m_ePaintAlgorithm(ePaintAlgorithm)
     {}
 
     virtual HRESULT Do(JNIEnv *env){
-        return m_pThis->create(env, m_parent);
+        return m_pThis->create(env, m_parent, m_ePaintAlgorithm);
     }
 };
 
 JNIEXPORT jlong JNICALL Java_org_jdic_web_peer_WBrComponentPeer_create(
     JNIEnv *env, 
     jobject self,
-    jlong parent)
+    jlong parent,
+    jint  ePaintAlgorithm)
 {
     BrJComponent *pThis = new BrJComponent(env, self);
     if(pThis){
@@ -666,7 +740,8 @@ JNIEXPORT jlong JNICALL Java_org_jdic_web_peer_WBrComponentPeer_create(
             "Browser create error",
             CreateAction(
                 pThis,
-                (HWND)parent)));
+                (HWND)parent,
+                ePaintAlgorithm)));
         OLE_CATCH
         if(FAILED(OLE_HR)){
             pThis->destroy(env);
@@ -729,9 +804,9 @@ struct ExecJSAction : public BrowserAction
 
     virtual HRESULT Do(JNIEnv *env)
     {
-        //SEP(_T("_ExecJS"))
+        SEP(_T("_ExecJS"))
         LPTSTR pCode = (LPTSTR)m_jstCode;
-        STRACE0(_T("code:%s"), pCode);
+        STRACE(_T("code:%s"), pCode);
         if(NULL==pCode){
             return S_FALSE;
         } else if( 0==_tcsncmp(pCode, _T("##"), 2) ){
@@ -753,14 +828,18 @@ struct ExecJSAction : public BrowserAction
                     NULL, 
                     NULL))
                 if( 0!=_tcscmp(pCode, _T("##setFocus(false)")) ){
-                    SendMessage(m_pThis->GetIEWnd(), WM_KEYDOWN, VK_TAB, 0x0000000);
-                    SendMessage(m_pThis->GetIEWnd(), WM_KEYUP, VK_TAB, 0xc000000);
+                    HWND hwnd = m_pThis->GetIEWnd();
+                    if(NULL==hwnd)
+                        hwnd = m_pThis->GetTopWnd();
+                    SendMessage(hwnd, WM_KEYDOWN, VK_TAB, 0x0000000);
+                    SendMessage(hwnd, WM_KEYUP, VK_TAB, 0xc000000);
                 }
-                ::OLE_CoPump();
+                //::OLE_CoPump();//Flash hole. Dead circle if is.
                 OLE_CATCH
                 OLE_RETURN_HR
-            } else if( 0==_tcsncmp(pCode, _T("##setNativeDraw"), 15) ) {
-                m_pThis->m_bNativeDraw = ( 0==_tcscmp(pCode, _T("##setNativeDraw(true)")) ); 
+            } else if( 0==_tcsncmp(pCode, _T("##setNativeDraw("), 16) ) {
+                m_pThis->m_ePaintAlgorithm = pCode[17] - _T('0'); 
+                //STRACE(_T(">>>>>>>>NativeDraw %d"), m_pThis->m_ePaintAlgorithm);
                 return S_OK;
             } else if( 0==_tcsncmp(pCode, _T("##showCaret"), 11) ) {
                 OLE_TRY
@@ -840,6 +919,8 @@ struct ExecJSAction : public BrowserAction
         if(FAILED(OLE_HR)){
             m_bsResult = _T("error:");
             m_bsResult += _B(_V(OLE_HR));
+            m_bsResult += _T("code:");
+            m_bsResult += pCode;
         }
         OLE_RETURN_HR
     }
@@ -892,7 +973,9 @@ struct SetURLAction : public BrowserAction{
         OLE_TRY
         OLE_HRT( m_pThis->Connect(_B(m_jstURL), env, m_jisURL) )
         OLE_CATCH_ALL
-        releaseGlobal(env, m_jisURL);
+        if(!repeatOnError(OLE_HR)){
+            releaseGlobal(env, m_jisURL);
+        }
         OLE_RETURN_HR
     }
 };
@@ -950,7 +1033,7 @@ struct UpdateTransparentAction : public BrowserAction
     }
     virtual HRESULT Do(JNIEnv *env)
     {
-        m_pThis->updateTransparentMask(&m_rc);
+        m_pThis->updateTransparentMask(/*&m_rc*/NULL);
         return S_OK; 
     }
 };

@@ -24,7 +24,7 @@
 "
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\common&quot;;&quot;$(ALT_J2SE_SRC)\windows\native\sun\windows&quot;;&quot;$(ALT_J2SE_SRC)\share\native\common&quot;;&quot;$(ALT_J2SE_SRC)\share\javavm\export&quot;;&quot;$(ALT_J2SE_SRC)\share\javavm\include&quot;;&quot;$(ALT_J2SE_SRC)\windows\javavm\include&quot;;&quot;$(ALT_J2SE_SRC)\windows\javavm\export&quot;"
-				PreprocessorDefinitions="UNICODE;_DEBUG"
+				PreprocessorDefinitions="UNICODE;DEBUG;_WINDOWS;_USRDLL"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -79,7 +79,7 @@
 				AdditionalOptions="/EHsc
 "
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\common&quot;;&quot;$(ALT_J2SE_SRC)\windows\native\sun\windows&quot;;&quot;$(ALT_J2SE_SRC)\share\native\common&quot;;&quot;$(ALT_J2SE_SRC)\share\javavm\export&quot;;&quot;$(ALT_J2SE_SRC)\share\javavm\include&quot;;&quot;$(ALT_J2SE_SRC)\windows\javavm\include&quot;;&quot;$(ALT_J2SE_SRC)\windows\javavm\export&quot;"
-				PreprocessorDefinitions="UNICODE"
+				PreprocessorDefinitions="UNICODE;NDEBUG;_WINDOWS;_USRDLL;_MDEBUG"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="3"
 				WarningLevel="3"

@@ -70,10 +70,11 @@ public class FlashPlayer extends JFrame
 
     FlashPlayer() {
         BrComponent.DESIGN_MODE = false;
-        
+        BrComponent.setDefaultPaintAlgorithm(BrComponent.PAINT_NATIVE);
+                
         setTitle("Flash Player");
 
-        Panel rootPanel = new Panel();
+        JPanel rootPanel = new JPanel();
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
         rootPanel.setLayout(gridbag);

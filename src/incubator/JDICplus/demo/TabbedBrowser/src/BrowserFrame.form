@@ -90,6 +90,33 @@
             <BindingProperty name="debugGraphicsOptions" source="cmiTraceRedraw" sourcePath="${selected}" target="toolsJMenu" targetPath="debugGraphicsOptions" updateStrategy="0" immediately="false"/>
           </BindingProperties>
           <SubComponents>
+            <MenuItem class="javax.swing.JRadioButtonMenuItem" name="rbPaintJava">
+              <Properties>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="paint as PAINT_JAVA"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rbPaintJavaActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JRadioButtonMenuItem" name="rbPaintJavaNative">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="paint as PAINT_JAVA_NATIVE"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rbPaintJavaActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JRadioButtonMenuItem" name="rbPaintNative">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="paint as PAINT_NATIVE"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rbPaintJavaActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JSeparator" name="jSeparator3">
+            </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="cmiTraceRedraw">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Trace Redraw"/>
@@ -317,6 +344,8 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bnStopActionPerformed"/>
               </Events>
+            </Component>
+            <Component class="javax.swing.JToolBar$Separator" name="jSeparator2">
             </Component>
             <Component class="javax.swing.JLabel" name="lbURL">
               <Properties>

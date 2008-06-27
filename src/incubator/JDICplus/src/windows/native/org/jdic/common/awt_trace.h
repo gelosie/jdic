@@ -70,7 +70,7 @@ namespace ZZ{
   class CHandlerSup{
   public:
     HANDLE m_Handle;
-    CHandlerSup():m_Handle( ::CreateMutex(SUN_KERNAL_SECURITY_ATTRIBUTES, FALSE, _T("$_DEBUG$"))){}
+    CHandlerSup():m_Handle( ::CreateMutex(SUN_KERNAL_SECURITY_ATTRIBUTES, FALSE, _T("$DEBUG$"))){}
     CHandlerSup(HANDLE Handle):m_Handle(Handle){}
     ~CHandlerSup(){ if(m_Handle) ::CloseHandle(m_Handle); }
     operator HANDLE() { return m_Handle; }
@@ -195,13 +195,13 @@ namespace ZZ{
     va_end(argList);
   }
 
-  #ifndef _DEBUG 
+  #ifndef _MDEBUG 
     inline int  snCheckExeption(int) {return EXCEPTION_EXECUTE_HANDLER;}  
     inline void snAssertEx(BOOL bCheck) { 
       if(!bCheck) 
         snTrace(_T("Assert")); 
     }  
-  #else //_DEBUG
+  #else //_MDEBUG
     inline int snCheckExeption(int code){
       //TCHAR szBuffer[DTRACE_BUF_LEN];
       //_stprintf( szBuffer, _T("Exception[%08x]! P:%04d T:%04d\nPress \'Yes\' after debugger attach!"), code, ::GetCurrentProcessId(), ::GetCurrentThreadId() );
@@ -217,7 +217,7 @@ namespace ZZ{
       if(!bCheck) 
         _asm int 3; 
     }  
-  #endif//_DEBUG
+  #endif//_MDEBUG
   #define snAssert(exp) ZZ::snAssertEx((BOOL)(exp))
 }//ZZ namespace end
 
@@ -225,11 +225,11 @@ namespace ZZ{
 
 #define STRACE1       ZZ::snTrace
 #define SCHKE()       ZZ::snCheckExeption(GetExceptionCode())
-#ifndef  _DEBUG
-  #define STRACE      ZZ::snTraceEmp
-#else // _DEBUG
+#ifndef  _MDEBUG
   #define STRACE      ZZ::snTrace
-#endif// _DEBUG
+#else // _MDEBUG
+  #define STRACE      ZZ::snTraceEmp
+#endif// _MDEBUG
 #define STRACE0       ZZ::snTraceEmp
 #define SASSERT       snAssert
 struct CLogEntryPoint1 {
@@ -244,10 +244,10 @@ struct CLogEntryPoint0 {
 };
 #define SEP1(msg)    CLogEntryPoint1 _ep1_(msg);
 #define SEP0(msg)    CLogEntryPoint0 _ep0_(msg);
-#ifndef  _DEBUG
+#ifndef  _MDEBUG
   #define SEP(msg)   CLogEntryPoint1 _ep1_(msg);
-#else // _DEBUG
+#else // _MDEBUG
   #define SEP(msg)   CLogEntryPoint0 _ep0_(msg);
-#endif// _DEBUG
+#endif// _MDEBUG
 
 #endif
