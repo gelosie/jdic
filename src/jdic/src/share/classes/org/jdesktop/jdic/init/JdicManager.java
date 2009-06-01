@@ -293,6 +293,7 @@ public class JdicManager {
 			if (cl.getClass().isAssignableFrom(jnlpClassLoaderClass)) {
 				Method findLibMethod = jnlpClassLoaderClass.getDeclaredMethod(
 						"findLibrary", new Class[] { String.class });
+				findLibMethod.setAccessible(true);
 				String jdicLibURL = (String) findLibMethod.invoke(cl,
 						new Object[] { "jdic" });
 				jdicLibFolder = (new File(jdicLibURL)).getParentFile()
