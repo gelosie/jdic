@@ -1,0 +1,7 @@
+Thumbs.db
+*.swp
+*.class
+build/
+.DS_Store
+
+
